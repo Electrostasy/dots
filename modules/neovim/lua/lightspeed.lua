@@ -1,0 +1,2 @@
+require('lightspeed').setup()
+
