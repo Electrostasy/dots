@@ -70,9 +70,27 @@ mount -o bind /mnt/state/etc/nixos /mnt/etc/nixos
 mount -o bind /mnt/state/var/log /mnt/var/log
 ```
 
-Now you can either build a configuration from the flake, or make your own.
-For historical reasons, this was my process to bootstrap a working configuration
-from scratch.
+Now you can either build a configuration from a flake, or make your own.
+Building from flake, ensure Nix 2.4 and flakes are enabled in your `configuration.nix`:
+```nix
+{
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+}
+```
+
+Rebuild to apply changes, and run the following in your shell:
+```bash
+sudo nixos-rebuild switch --flake github:electrostasy/dots#phobos
+```
+This will set up the Raspberry Pi exactly as defined in the configuration for the
+`phobos` host in this flake.
+
+Alternatively, if you want to build it yourself, I took the steps outlined below.
 
 Generate an initial configuration:
 ```bash
@@ -94,13 +112,14 @@ had to add them manually:
   fileSystems."/state".options = [ "subvol=state" "noatime" "nodiratime" "compress=zstd" "ssd" ];
 }
 ```
-Additionally, the bind mount paths were detected erroneously, and I had to change
+The bind mount paths were detected incorrectly, and I had to change
 them from `device = "/state/state/etc/nixos";` to `device = "/state/etc/nixos";`
 for both `/etc/nixos` and `/var/log` bind mounts.
 
 You may also need to add `neededForBoot = true;` to the `/var/log` and `/state`
-mounts, in my case the Pi would not be able to mount `/var/log` without this,
-and would just be stuck in the stage 1 load.
+mounts, in my case the Pi would not be able to mount `/var/log` without both of them
+set to that and would just be stuck in the stage 1 load waiting for the mount or
+user input to override.
 
 Optionally, I use `depends = [ "/state" ];` for the `/var/log` bind mount as well,
 to ensure its dependency is mounted first, but it's probably unnecessary.
@@ -122,7 +141,7 @@ In the `configuration.nix`, I recommend setting these:
   users.mutableUsers = false;
 }
 ```
-You will need to set up your users with initialHashedPassword as well.
+You will need to set up your users with an `initialHashedPassword` as well.
 
 After setting these options, run:
 ```bash
