@@ -19,11 +19,11 @@
     "heirline-nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1642348730,
-        "narHash": "sha256-xcNrBK2xoYff11k8QJ3rgq+DXshaQhIX6IgNL8JKhYQ=",
+        "lastModified": 1642430672,
+        "narHash": "sha256-nzojdgUWyTs8x6p7COzPgFyk284bRp4FSh+ScFQhy78=",
         "owner": "rebelot",
         "repo": "heirline.nvim",
-        "rev": "61507a7d1cff565ec5b4eb95a74cb53ab4a3b02d",
+        "rev": "cd30484493780eb4daf3cd57b975f4af16fe849e",
         "type": "github"
       },
       "original": {
@@ -39,11 +39,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1642379981,
-        "narHash": "sha256-FE0RIZmrG2ScKGRthNzcFAssLW7MgMLun0g7Qg2zZMA=",
+        "lastModified": 1642463060,
+        "narHash": "sha256-6xXRxvMk4OV/k6VwJq54pahToT4FCZzOKfbvG7f6l1E=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "f71d41ba360cd49b3647bf91402c7479e859fd2e",
+        "rev": "8cf13abffc0808b337590a9e382604ab6c2cb3e7",
         "type": "github"
       },
       "original": {

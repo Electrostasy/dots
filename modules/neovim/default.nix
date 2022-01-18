@@ -45,7 +45,6 @@
       kanagawa-nvim # Neovim theme
       lightspeed-nvim # Navigation and range motions
       lsp_lines-nvim # Virtual line LSP diagnostics
-      lsp_signature-nvim # As-you-type function signatures
       lspkind-nvim # Completion item kind symbols
       luasnip # Completion snippets engine
       nvim-cmp # Completion

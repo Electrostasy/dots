@@ -107,7 +107,7 @@ local git = {
   -- Before and after every component is a separator.
   -- If it's the last component, put the last separator after it
   -- Otherwise, continue with the other components
-  { -- Name/additions separator
+  { -- Additions separator
     condition = function(self) return self.is_modified and self.has_additions end,
     provider = separators.slant_left_down,
     hl = { fg = statusline_colours.git.additions.bg, bg = colours.sumiInk0 }
@@ -120,7 +120,7 @@ local git = {
     hl = { fg = statusline_colours.git.additions.fg, bg = statusline_colours.git.additions.bg },
   },
   { -- Additions/branch separator
-    condition = function(self) return self.is_modified and not self.has_removals and not self.has_changes end,
+    condition = function(self) return self.is_modified and self.has_additions and not self.has_removals and not self.has_changes end,
     provider = separators.slant_right_up,
     hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.branch.bg }
   },
@@ -128,6 +128,16 @@ local git = {
     condition = function(self) return self.is_modified and self.has_additions and self.has_removals end,
     provider = separators.slant_right_up,
     hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.removals.bg }
+  },
+  { -- Additions/changes separator
+    condition = function(self) return self.is_modified and self.has_additions and (not self.has_removals) and self.has_changes end,
+    provider = separators.slant_right_up,
+    hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.changes.bg }
+  },
+  { -- Removals separator
+    condition = function(self) return self.is_modified and self.has_removals and not self.has_additions end,
+    provider = separators.slant_left_down,
+    hl = { fg = statusline_colours.git.removals.bg, bg = colours.sumiInk0 }
   },
   { -- Removals
     provider = function(self)
@@ -145,10 +155,17 @@ local git = {
   },
   { -- Removals/changes separator
     condition = function(self)
-      return self.is_modified and self.has_additions and self.has_removals and self.has_changes
+      return self.is_modified and self.has_removals and self.has_changes
     end,
     provider = separators.slant_right_up,
     hl = { fg = statusline_colours.git.removals.bg, bg = statusline_colours.git.changes.bg }
+  },
+  { -- Changes separator
+    condition = function(self)
+      return self.is_modified and self.has_changes and (not self.has_removals) and (not self.has_additions)
+    end,
+    provider = separators.slant_left_down,
+    hl = { fg = statusline_colours.git.changes.bg, bg = colours.sumiInk0 }
   },
   { -- Changes
     provider = function(self)
@@ -159,7 +176,7 @@ local git = {
   },
   { -- Changes/end separator
     condition = function(self)
-      return self.is_modified and self.has_additions and self.has_removals and self.has_changes
+      return self.is_modified and self.has_changes
     end,
     provider = separators.slant_left_down,
     hl = { fg = statusline_colours.git.branch.bg, bg = statusline_colours.git.changes.bg }
