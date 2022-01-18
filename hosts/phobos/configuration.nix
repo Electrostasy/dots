@@ -54,11 +54,11 @@
     groups.pi = {};
     # Change initialHashedPassword using
     # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
-    users.root.initialHashedPassword = "$6$41X.hRL2a8O$Yiz0oCQxrkS1rNUuv09i2IThiPQy0n11s7HpLLyuWscyjNrw3wXtfzf5dQySkXHerHNeCiKtGZ0sTlnF5X9fP.";
+    users.root.initialHashedPassword = "$6$lunt/24c3rtjL/ir$phf/p57IPZVyh7Y6AlGqnGNnhePfUmVmfPn4apEtjMkNqmN0zAOlzrvGHwLlSJdQz6OpHIAbqo3/IRCTjqwlJ0";
     users.pi = {
       isNormalUser = true;
       group = "pi";
-      initialHashedPassword = "$6$9.t9uWJcX9ZlGQ$An53hxQ6YL2JXnjLyEC5euqkyhNF5CsTF6h09gWf2TWFZoYKVuFe3S/c2l3rOjP0fW4mWJGnbxdTQI1Slt4Tg.";
+      initialHashedPassword = "$6$PmEPeRECuQiC/1XI$6nF0ymwceDeQq8YvPOnos0xY5Q9fDun1zgbIqIyg4yalb6/HBYgS7c2M1JXb8rIT3gfZElqZIrFv.Sla1qM1q1";
       extraGroups = [ "wheel" ];
     };
   };
