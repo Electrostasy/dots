@@ -79,7 +79,7 @@ Generate an initial configuration:
 nixos-generate-config --root /mnt
 ```
 
-`nixos-generate-config` won't detect your configuration perfecly accurately,
+`nixos-generate-config` won't detect your configuration perfectly accurately,
 there are some adjustments to be made to `hardware-configuration.nix` first:
 ```nix
 {
@@ -129,9 +129,11 @@ After setting these options, run:
 nixos-install --no-root-passwd
 ```
 
-Before rebooting, I would (update my firmware)[https://nix.dev/tutorials/installing-nixos-on-a-raspberry-pi#updating-firmware]
+Before rebooting, I would [update my firmware](https://nix.dev/tutorials/installing-nixos-on-a-raspberry-pi#updating-firmware)
 and set `program_USB_boot_mode=1` in `config.txt` in the `/boot` partition
 to enable booting from USB (you can do this after rebooting too, if it doesn't boot again).
 Ensure that the `/boot` partition actually contains the firmware needed to boot!
 
 Execute `shutdown now` - take out the SD card, boot again from SSD, it should work.
+
+See the [hardware-configuration.nix](./hardware-configuration.nix) for more details.
