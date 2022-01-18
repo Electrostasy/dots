@@ -1,0 +1,2 @@
+# Ignore `result` symlinks from building derivations
+result
