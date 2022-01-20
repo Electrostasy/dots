@@ -205,7 +205,6 @@ local file_name = {
       self.file_name = vim.fn.fnamemodify(self.full_path, ":t")
     end
     self.parent_dir = vim.fn.fnamemodify(self.full_path, ":h")
-    self.shortened_path = vim.fn.pathshorten(self.parent_dir)
   end,
 
   { -- Readonly indicator
@@ -223,7 +222,16 @@ local file_name = {
       hl = { fg = colours.autumnRed, bg = colours.winterRed }
     },
     { -- Path (modified)
-      provider = function(self) return ' ' .. self.shortened_path .. '/' end,
+      provider = function(self)
+        local shortened_path = (function()
+          if not conditions.width_percent_below(#self.full_path, 0.5) then
+            return vim.fn.pathshorten(self.full_path)
+          else
+            return self.full_path
+          end
+        end)()
+        return ' ' .. shortened_path .. '/'
+      end,
       hl = { fg = colours.autumnRed, bg = colours.winterRed }
     },
     { -- Filename (modified)
@@ -250,7 +258,16 @@ local file_name = {
       hl = { fg = colours.winterYellow, bg = colours.autumnYellow }
     },
     { -- Path (modified)
-      provider = function(self) return ' ' .. self.shortened_path .. '/' end,
+      provider = function(self)
+        local shortened_path = (function()
+          if not conditions.width_percent_below(#self.full_path, 0.5) then
+            return vim.fn.pathshorten(self.full_path)
+          else
+            return self.full_path
+          end
+        end)()
+        return ' ' .. shortened_path .. '/'
+      end,
       hl = { fg = colours.autumnYellow, bg = colours.winterYellow }
     },
     { -- Filename (modified)
@@ -274,7 +291,16 @@ local file_name = {
       hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
     },
     { -- Path (modified)
-      provider = function(self) return ' ' .. self.shortened_path .. '/' end,
+      provider = function(self)
+        local shortened_path = (function()
+          if not conditions.width_percent_below(#self.full_path, 0.5) then
+            return vim.fn.pathshorten(self.full_path)
+          else
+            return self.full_path
+          end
+        end)()
+        return ' ' .. shortened_path .. '/'
+      end,
       hl = { fg = colours.fujiWhite, bg = colours.sumiInk2 }
     },
     { -- Filename (modified)
@@ -291,7 +317,8 @@ local file_name = {
 local lsp_status = {
   condition = conditions.lsp_attached,
 
-  {
+  { -- If there are any diagnostics, don't show the slant
+    condition = function() return not (#vim.diagnostic.get(0) > 0) end,
     provider = separators.slant_left_down,
     hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
   },
@@ -311,6 +338,57 @@ local lsp_status = {
   },
 }
 
+local lsp_diagnostics = {
+  condition = conditions.has_diagnostics,
+
+  static = {
+    error_icon = '',
+    warn_icon = '',
+    info_icon = '',
+    hint_icon = '',
+  },
+
+  init = function(self)
+    self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+    self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+    self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+    self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
+  end,
+
+  {
+    provider = separators.slant_left_down,
+    hl = { fg = colours.winterBlue, bg = colours.sumiInk0 }
+  },
+  {
+    provider = function(self)
+      return self.errors > 0 and (' ' .. self.error_icon .. ' ' .. self.errors .. ' ')
+    end,
+    hl = { fg = colours.autumnRed, bg = colours.winterBlue },
+  },
+  {
+    provider = function(self)
+      return self.warnings > 0 and (' ' .. self.warn_icon .. ' ' .. self.warnings .. ' ')
+    end,
+    hl = { fg = colours.autumnYellow, bg = colours.winterBlue },
+  },
+  {
+    provider = function(self)
+      return self.info > 0 and (' ' .. self.info_icon .. ' ' .. self.info .. ' ')
+    end,
+    hl = { fg = colours.waveAqua1, bg = colours.winterBlue },
+  },
+  {
+    provider = function(self)
+      return self.hints > 0 and (' ' .. self.hint_icon .. ' ' .. self.hints .. ' ')
+    end,
+    hl = { fg = colours.dragonBlue, bg = colours.winterBlue },
+  },
+  {
+    provider = separators.slant_right_up,
+    hl = { fg = colours.winterBlue, bg = colours.sumiInk2 }
+  },
+}
+
 local encoding = {
   provider = function()
     local enc = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc
@@ -320,7 +398,7 @@ local encoding = {
 }
 
 local ruler = {
-  provider = ' %l:%c/%L ',
+  provider = ' %l, %c (%L) ',
   hl = { fg = colours.sumiInk3, bg = colours.sumiInk0 }
 }
 
@@ -328,7 +406,7 @@ local right_align = { provider = '%=' }
 
 local active_status = {
   mode, file_name,
-  right_align, encoding, ruler, lsp_status, git
+  right_align, encoding, ruler, lsp_diagnostics, lsp_status, git
 }
 
 local inactive_status = {

@@ -4,7 +4,7 @@
   programs.neovim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
-      (nvim-treesitter.withPlugins(p: builtins.attrValues p)) # tree-sitter code AST
+      (nvim-treesitter.withPlugins builtins.attrValues) # tree-sitter code AST
       cmp-buffer # nvim-cmp completion buffer source
       cmp-cmdline # nvim-cmp commands completion source
       cmp-nvim-lsp # nvim-cmp completion LSP source
@@ -28,6 +28,7 @@
       telescope-fzf-native-nvim # FZF sorter for telescope
       telescope-nvim # Fuzzy finder
       gitsigns-nvim # Git integration
+      null-ls-nvim # LSP for formatters and linting
     ] ++ builtins.map (plugin: { inherit plugin; optional = true; }) [
       # Load optional plugins with `:packadd`
       playground # tree-sitter playground
@@ -35,16 +36,20 @@
     extraPackages = with pkgs; [
       ccls # C/C++ LSP
       clang-tools # C/C++ LSP and code formatter
+      cppcheck # C/C++ code linter
       fd # Telescope finder
-      nixpkgs-fmt # Nix code formatter
+      nixfmt # Nix code formatter
       nodePackages.bash-language-server
       nodePackages.pyright # Python LSP
       rnix-lsp # Nix LSP
       statix # Nix code linter
+      stylua # Lua code formatter
+      luajitPackages.luacheck # Lua linter
       sumneko-lua-language-server # Lua LSP
       texlab # LaTeX LSP
       tree-sitter # Incremental parser
       valgrind # Memory debugging
+      python3Packages.flake8 # Python linter
       python3Packages.black # Python code formatter
     ];
     extraConfig = ''
