@@ -44,29 +44,16 @@
       # swayidle # Idle management daemon
       # swaylock # Screen locker
       # tiramisu # Notification reader/handler
-      # viu # CLI in-terminal image viewer
-      # imv # CLI out-of-terminal image viewer
       wl-clipboard # `wl-{copy,paste}` clipboard utilities
       wlr-randr # Outputs querying and management
       xwayland # Legacy X11 glue
-      # wlrctl # CLI utility for wlroots extensions
       wf-recorder # Record wayland displays
     ];
     # Graphical programs, fonts and icons
-    iosevka-custom = iosevka.override {
-      privateBuildPlan = {
-        family = "Iosevka Custom";
-        spacing = "normal";
-        serifs = "sans";
-        no-cv-ss = true;
-        no-litigation = true;
-      };
-      set = "custom";
-    };
     graphicalPkgs = [
       # wdisplays # Graphical output management
       (libreoffice.overrideAttrs (old: { langs = [ "en-US" "lt" ]; })) # Office suite
-      (nerdfonts.override { fonts = [ "Iosevka" ]; }) # Monospace programming icons
+      iosevka-nerdfonts
       firefox-custom # Customized firefox derivation
       ((eww.overrideAttrs (old: rec {
         src = pkgs.fetchFromGitHub {

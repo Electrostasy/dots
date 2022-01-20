@@ -62,6 +62,7 @@
           rofi-unwrapped = rofi-wayland-unwrapped;
         };
         wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
+        iosevka-nerdfonts = mkPackage ./pkgs/iosevka-nerdfonts.nix { };
       }
     );
 
@@ -80,7 +81,8 @@
           rofi-wayland-unwrapped
           rofi-wayland
           gamescope
-          firefox-custom;
+          firefox-custom
+          iosevka-nerdfonts;
       };
     };
 
