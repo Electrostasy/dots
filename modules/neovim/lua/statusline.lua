@@ -225,9 +225,9 @@ local file_name = {
       provider = function(self)
         local shortened_path = (function()
           if not conditions.width_percent_below(#self.full_path, 0.5) then
-            return vim.fn.pathshorten(self.full_path)
+            return vim.fn.pathshorten(self.parent_dir)
           else
-            return self.full_path
+            return self.parent_dir
           end
         end)()
         return ' ' .. shortened_path .. '/'
@@ -261,9 +261,9 @@ local file_name = {
       provider = function(self)
         local shortened_path = (function()
           if not conditions.width_percent_below(#self.full_path, 0.5) then
-            return vim.fn.pathshorten(self.full_path)
+            return vim.fn.pathshorten(self.parent_dir)
           else
-            return self.full_path
+            return self.parent_dir
           end
         end)()
         return ' ' .. shortened_path .. '/'
@@ -294,9 +294,9 @@ local file_name = {
       provider = function(self)
         local shortened_path = (function()
           if not conditions.width_percent_below(#self.full_path, 0.5) then
-            return vim.fn.pathshorten(self.full_path)
+            return vim.fn.pathshorten(self.parent_dir)
           else
-            return self.full_path
+            return self.parent_dir
           end
         end)()
         return ' ' .. shortened_path .. '/'
