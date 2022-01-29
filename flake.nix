@@ -7,28 +7,28 @@
   '';
 
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
-      url = github:nix-community/home-manager/master;
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix = {
-      url = github:NixOS/nix/b4f250417ab64f237c8b51439fe1f427193ab23b;
+      url = "github:NixOS/nix/b4f250417ab64f237c8b51439fe1f427193ab23b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = github:NixOS/nixos-hardware/master;
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     rnix-lsp = {
-      url = github:nix-community/rnix-lsp;
+      url = "github:nix-community/rnix-lsp";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     heirline-nvim = {
-      url = github:rebelot/heirline.nvim;
+      url = "github:rebelot/heirline.nvim";
       flake = false;
     };
     filetype-nvim = {
-      url = github:nathom/filetype.nvim;
+      url = "github:nathom/filetype.nvim";
       flake = false;
     };
     lsp_lines-nvim = {

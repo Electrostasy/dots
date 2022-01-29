@@ -79,18 +79,17 @@
   };
 
   users = {
-    groups.electro = {};
-
     mutableUsers = false;
     # Change initialHashedPassword using
     # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
-    users.root.initialHashedPassword = "$6$XBb5AVQUp0Mx8t.J$NkVlFCGiS8SQWHXbxImTmEBgyPJKgeqyninY18NdJaL3AVh1uCZxV.3ciZy66Pj0CAGWIobkmTp.vOqefVUgW1";
-    users.electro = {
-      isNormalUser = true;
-      group = "electro";
-      initialHashedPassword = "$6$MvsOwXOO9zUGCIQu$88hXJZkSR3okcpW99Xgcs77FLQAkSbCyArsagoducjN0gTY7goCZ4vN07I2zoTECdz1pHUtIVgJYWlwMnEdoY1";
-      extraGroups = [ "wheel" "video" "audio" "sound" ];
-      shell = pkgs.fish;
+    users = {
+      root.initialHashedPassword = "$6$XBb5AVQUp0Mx8t.J$NkVlFCGiS8SQWHXbxImTmEBgyPJKgeqyninY18NdJaL3AVh1uCZxV.3ciZy66Pj0CAGWIobkmTp.vOqefVUgW1";
+      electro = {
+        isNormalUser = true;
+        initialHashedPassword = "$6$MvsOwXOO9zUGCIQu$88hXJZkSR3okcpW99Xgcs77FLQAkSbCyArsagoducjN0gTY7goCZ4vN07I2zoTECdz1pHUtIVgJYWlwMnEdoY1";
+        extraGroups = [ "wheel" "video" "audio" "sound" ];
+        shell = pkgs.fish;
+      };
     };
   };
 

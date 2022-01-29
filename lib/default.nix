@@ -29,7 +29,7 @@ let
           homes = builtins.map mkHomeModule users;
         in [ homeManager homeGlobal ] ++ homes;
 
-      forAllSystems = with prev; f: genAttrs (systems.supported.tier1 ++ systems.supported.tier2) (system: f system);
+      forAllSystems = with prev; genAttrs (systems.supported.tier1 ++ systems.supported.tier2);
 
       nixosSystem = { modules,  ... }@args:
         let
@@ -44,7 +44,7 @@ let
           # https://github.com/NixOS/nixpkgs/pull/101475
           # https://github.com/nix-community/nixos-generators/issues/110#issuecomment-895963028
           overridableSystem = with prev; makeOverridable nixosSystem;
-          configuration = prev.filterAttrs (n: _: n != "overlays") (args) // {
+          configuration = prev.filterAttrs (n: _: n != "overlays") args // {
             modules = [ nixFlakes overlaysModule gitRevModule ] ++ modules;
             # Inherit extended lib and access to flake attrs
             specialArgs = { lib = final; flake = self; } // args.specialArgs or { };
