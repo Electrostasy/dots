@@ -49,8 +49,8 @@
       texlab # LaTeX LSP
       tree-sitter # Incremental parser
       valgrind # Memory debugging
-      python3Packages.flake8 # Python linter
-      python3Packages.black # Python code formatter
+      python310Packages.flake8 # Python linter
+      python310Packages.black # Python code formatter
     ];
     extraConfig = ''
       " Home-Manager and NixOS currently do not support a pure Lua config
