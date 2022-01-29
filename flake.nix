@@ -51,16 +51,11 @@
                 src = inputs.${pname};
                 version = inputs.${pname}.shortRev;
               })) pnames);
-        mkPackage = pkg: { ... }@args:
-          nixpkgs.legacyPackages.${system}.callPackage pkg args;
+        mkPackage = nixpkgs.legacyPackages.${system}.callPackage;
       in
       mkVimPlugins [ "heirline-nvim" "filetype-nvim" "lsp_lines-nvim" ] // rec {
         firefox-custom = mkPackage ./pkgs/firefox { };
         gamescope = mkPackage ./pkgs/gamescope.nix { };
-        rofi-wayland-unwrapped = mkPackage ./pkgs/rofi-wayland.nix { };
-        rofi-wayland = with nixpkgs.legacyPackages.${system}; rofi.override {
-          rofi-unwrapped = rofi-wayland-unwrapped;
-        };
         wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
         iosevka-nerdfonts = mkPackage ./pkgs/iosevka-nerdfonts.nix { };
       }
@@ -78,8 +73,6 @@
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
           wlr-spanbg
-          rofi-wayland-unwrapped
-          rofi-wayland
           gamescope
           firefox-custom
           iosevka-nerdfonts;
