@@ -22,7 +22,7 @@
 , libxkbcommon
 , makeWrapper
 , mesa
-, meson_0_60
+, meson
 , ninja
 , pipewire
 , pixman
@@ -42,8 +42,8 @@ let
   gamescope-src = fetchFromGitHub {
     owner = "plagman";
     repo = "gamescope";
-    rev = "7c94fc3437a1c56cc2971091421cd6837f39c58a";
-    sha256 = "sha256-+wRVIFBlIsFOjljOWXhYvs9FGsK70NyNKulB2d/iQ0s=";
+    rev = "8f1fbe7ce0ae705f500b770dad8b9c2bc17f5d2d";
+    sha256 = "sha256-KKkHBLA88g84txX6joPiq5sZzbdjKtmVHCEwYQSIOk4=";
   };
   libliftoff_2_0_0 = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
@@ -59,15 +59,11 @@ let
     rev = "9f41627aa10a94d9427bc315fa3d363a61b94d7c";
     sha256 = "sha256-NhCbDsmk2Vp94qMdssGQqzrfrJZ99Dr86zeYfTnQv3E=";
   };
-  wayland_1_20_0 = fetchurl {
-    url = "https://wayland.freedesktop.org/releases/wayland-1.20.0.tar.xz";
-    sha256 = "09c7rpbwavjg4y16mrfa57gk5ix6rnzpvlnv1wp7fnbh9hak985q";
-  };
 in
 
 stdenv.mkDerivation {
   pname = "gamescope";
-  version = "3.10.3";
+  version = "3.10.8";
 
   src = gamescope-src;
 
@@ -88,23 +84,13 @@ stdenv.mkDerivation {
     popd
   '';
 
-  # preConfigure = ''
-  #   substituteInPlace meson.build --replace \
-  #   "'examples=false'" \
-  #   "'examples=false', 'logind-provider=systemd', 'libseat=disabled'"
-  # '';
-
   nativeBuildInputs = [
     glslang
     makeWrapper
-    meson_0_60
+    meson
     ninja
     pkgconfig
   ];
-
-  postInstall = ''
-    wrapProgram $out/bin/gamescope --prefix PATH:"${lib.makeBinPath [ xwayland ]}"
-  '';
 
   buildInputs = [
     SDL2
@@ -128,7 +114,7 @@ stdenv.mkDerivation {
     pipewire
     pixman
     vulkan-loader
-    (wayland.overrideAttrs(_: { src = wayland_1_20_0; version = "1.20.0"; patches = []; }))
+    wayland
     wayland-protocols
     xcbutilerrors
     xcbutilrenderutil
