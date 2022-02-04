@@ -32,6 +32,8 @@
     ];
   };
 
+  documentation.enable = false;
+
   security = {
     sudo = {
       enable = true;
