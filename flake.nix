@@ -109,7 +109,6 @@
           ./modules/mpv.nix
           ./modules/neovim
           ./modules/nix-index.nix
-          ./modules/themes/night
           ./modules/wayfire
         ];
         overlays = builtins.attrValues self.outputs.overlays ++ [

@@ -130,6 +130,8 @@
         bold_italic_font Iosevka Bold Italic
         font_size 11
         mouse_map ctrl+left press ungrabbed,grabbed mouse_click_url
+
+        include ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.conf
       '';
       keybindings = {
         "ctrl+shift+c" = "copy_to_clipboard";
@@ -178,6 +180,10 @@
           if isatty stdout; set_color $fish_color_comment; end; \\
           ${pkgs.fortune}/bin/fortune definitions";
       };
+      # Use kanagawa theme
+      interactiveShellInit = ''
+        source ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.fish
+      '';
       loginShellInit = ''
         set EDITOR nvim
         set VISUAL nvim
