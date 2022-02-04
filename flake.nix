@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix = {
-      url = "github:NixOS/nix/b4f250417ab64f237c8b51439fe1f427193ab23b";
+      url = "github:NixOS/nix/2.6-maintenance";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -116,6 +116,10 @@
           # Use the git/master build
           (final: prev: {
             inherit (inputs.rnix-lsp.packages.${prev.system}) rnix-lsp;
+          })
+          (final: prev: {
+            nixFlakes = inputs.nix.packages.${prev.system}.nix;
+            nixUnstable = inputs.nix.packages.${prev.system}.nix;
           })
         ];
       };
