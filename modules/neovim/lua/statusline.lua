@@ -1,6 +1,17 @@
 local conditions = require('heirline.conditions')
 local utils = require('heirline.utils')
 local colours = require('kanagawa.colors').setup()
+local statusline_colours = {
+  modules = {
+    fg = colours.fujiWhite, bg = colours.sumiInk1
+  },
+  git = {
+    additions = { fg = colours.autumnGreen, bg = colours.winterGreen },
+    removals = { fg = colours.autumnRed, bg = colours.winterRed },
+    changes = { fg = colours.autumnYellow, bg = colours.winterYellow },
+    branch = { fg = colours.sumiInk0, bg = colours.autumnGreen },
+  },
+}
 
 local separators = {
   block = '█',
@@ -11,12 +22,8 @@ local separators = {
 }
 
 local mode = {
-  init = function(self)
-    self.mode = vim.fn.mode()
-  end,
-
   static = {
-    names = {
+    mode_names = {
       n = "Normal",
       no = "Normal?",
       nov = "Normal?",
@@ -52,7 +59,7 @@ local mode = {
       ["!"] = "Shell",
       t = "Terminal",
     },
-    colours = {
+    mode_colours = {
       n = colours.oniViolet,
       i = colours.autumnYellow,
       v = colours.springBlue,
@@ -66,27 +73,27 @@ local mode = {
       R = colours.springGreen,
       ["!"] = colours.peachRed,
       t = colours.katanaGray
-    },
+    }
   },
+  init = function(self)
+    self.mode = vim.fn.mode()
+    self.mode_name = self.mode_names[self.mode]
+    self.mode_colour = self.mode_colours[self.mode]
+  end,
 
-  { -- Mode text
-    provider = function(self) return ' ' .. self.names[self.mode] .. ' ' end,
+  {
+    provider = function(self)
+      return ' ' .. self.mode_name .. ' '
+    end,
     hl = function(self)
-      return { fg = colours.sumiInk0, bg = self.colours[self.mode], style = 'bold' }
+      return { fg = colours.sumiInk0, bg = self.mode_colour, style = 'bold' }
     end
   },
-  { -- End separator
+  {
     provider = separators.slant_right_down,
-    hl = function(self) return { fg = self.colours[self.mode], bg = colours.sumiInk0 } end
-  }
-}
-
-local statusline_colours = {
-  git = {
-    additions = { fg = colours.autumnGreen, bg = colours.winterGreen },
-    removals = { fg = colours.autumnRed, bg = colours.winterRed },
-    changes = { fg = colours.autumnYellow, bg = colours.winterYellow },
-    branch = { fg = colours.sumiInk0, bg = colours.autumnGreen },
+    hl = function(self)
+      return { fg = self.mode_colour, bg = statusline_colours.modules.bg }
+    end
   },
 }
 
@@ -101,102 +108,107 @@ local git = {
     self.has_additions = self.status_dict.added ~= 0
     self.has_removals = self.status_dict.removed ~= 0
     self.has_changes = self.status_dict.changed ~= 0
-    self.is_modified = self.has_additions or self.has_removals or self.has_changes
   end,
 
-  -- Before and after every component is a separator.
-  -- If it's the last component, put the last separator after it
-  -- Otherwise, continue with the other components
-  { -- Additions separator
-    condition = function(self) return self.is_modified and self.has_additions end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.additions.bg, bg = colours.sumiInk0 }
-  },
   { -- Additions
-    provider = function(self)
-      local count = self.status_dict.added or 0
-      return count > 0 and '+' .. count
-    end,
-    hl = { fg = statusline_colours.git.additions.fg, bg = statusline_colours.git.additions.bg },
+    condition = function(self) return self.has_additions end,
+
+    { -- Separator
+      provider = separators.slant_left_down,
+      hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.modules.bg },
+    },
+    { -- Text
+      provider = function(self)
+        local count = self.status_dict.added or 0
+        return count > 0 and ' +' .. count .. ' '
+      end,
+      hl = { fg = statusline_colours.git.additions.fg, bg = statusline_colours.git.additions.bg },
+    },
+    { -- Separator
+      condition = function(self)
+        return not (self.has_changes or self.has_removals)
+      end,
+      provider = separators.slant_right_up,
+      hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.modules.bg },
+    },
   },
-  { -- Additions/branch separator
-    condition = function(self) return self.is_modified and self.has_additions and not self.has_removals and not self.has_changes end,
-    provider = separators.slant_right_up,
-    hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.branch.bg }
-  },
-  { -- Additions/removals separator
-    condition = function(self) return self.is_modified and self.has_additions and self.has_removals end,
-    provider = separators.slant_right_up,
-    hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.removals.bg }
-  },
-  { -- Additions/changes separator
-    condition = function(self) return self.is_modified and self.has_additions and (not self.has_removals) and self.has_changes end,
-    provider = separators.slant_right_up,
-    hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.changes.bg }
-  },
-  { -- Removals separator
-    condition = function(self) return self.is_modified and self.has_removals and not self.has_additions end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.removals.bg, bg = colours.sumiInk0 }
-  },
+
   { -- Removals
-    provider = function(self)
-      local count = self.status_dict.removed or 0
-      return count > 0 and '-' .. count
+    condition = function(self) return self.has_removals end,
+    init = function(self)
+      self.front_bg = statusline_colours.modules.bg
+      if self.has_additions then
+        self.front_bg = statusline_colours.git.additions.bg
+      end
     end,
-    hl = { fg = statusline_colours.git.removals.fg, bg = statusline_colours.git.removals.bg },
+
+    { -- Separator
+      provider = separators.slant_right_up,
+      hl = { fg = statusline_colours.git.additions.bg, bg = statusline_colours.git.removals.bg },
+    },
+    { -- Text
+      provider = function(self)
+        local count = self.status_dict.removed or 0
+        return count > 0 and ' -' .. count .. ' '
+      end,
+      hl = { fg = statusline_colours.git.removals.fg, bg = statusline_colours.git.removals.bg },
+    },
+    { -- Separator
+      condition = function(self)
+        return not self.has_changes
+      end,
+      provider = separators.slant_right_up,
+      hl = { fg = statusline_colours.git.removals.bg, bg = statusline_colours.modules.bg },
+    },
   },
-  { -- Removals/end separator
-    condition = function(self)
-      return self.is_modified and self.has_removals and not self.has_changes
-    end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.branch.bg, bg = statusline_colours.git.removals.bg }
-  },
-  { -- Removals/changes separator
-    condition = function(self)
-      return self.is_modified and self.has_removals and self.has_changes
-    end,
-    provider = separators.slant_right_up,
-    hl = { fg = statusline_colours.git.removals.bg, bg = statusline_colours.git.changes.bg }
-  },
-  { -- Changes separator
-    condition = function(self)
-      return self.is_modified and self.has_changes and (not self.has_removals) and (not self.has_additions)
-    end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.changes.bg, bg = colours.sumiInk0 }
-  },
+
   { -- Changes
-    provider = function(self)
-      local count = self.status_dict.changed or 0
-      return count > 0 and '~' .. count
+    condition = function(self) return self.has_changes end,
+    init = function(self)
+      self.front_bg = statusline_colours.modules.bg
+      if self.has_removals then
+        self.front_bg = statusline_colours.git.removals.bg
+      elseif self.has_additions then
+        self.front_bg = statusline_colours.git.additions.bg
+      end
     end,
-    hl = { fg = statusline_colours.git.changes.fg, bg = statusline_colours.git.changes.bg },
+
+    { -- Separator
+      provider = separators.slant_right_up,
+      hl = function(self) return { fg = self.front_bg, bg = statusline_colours.git.changes.bg } end,
+    },
+    { -- Text
+      provider = function(self)
+        local count = self.status_dict.changed or 0
+        return count > 0 and ' ~' .. count .. ' '
+      end,
+      hl = { fg = statusline_colours.git.changes.fg, bg = statusline_colours.git.changes.bg },
+    },
+    { -- Separator
+      provider = separators.slant_right_up,
+      hl = { fg = statusline_colours.git.changes.bg, bg = statusline_colours.modules.bg },
+    },
   },
-  { -- Changes/end separator
-    condition = function(self)
-      return self.is_modified and self.has_changes
-    end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.branch.bg, bg = statusline_colours.git.changes.bg }
-  },
-  { -- Branch name separator if no changes whatsoever
-    condition = function(self)
-      return (not self.has_additions) and (not self.has_removals) and (not self.has_changes)
-    end,
-    provider = separators.slant_left_down,
-    hl = { fg = statusline_colours.git.branch.bg, bg = colours.sumiInk0 }
-  },
-  { -- Branch name
-    provider = function(self)
-      return '  ' .. self.status_dict.head .. ' '
-    end,
-    hl = { fg = statusline_colours.git.branch.fg, bg = statusline_colours.git.branch.bg, style = 'bold' }
+
+  { -- Branch
+    { -- Separator
+      provider = separators.slant_right_up,
+      hl = function(self) return { fg = statusline_colours.modules.bg, bg = self.mode_colour } end
+    },
+    { -- Text
+      provider = function(self)
+        return '  ' .. self.status_dict.head .. ' '
+      end,
+      hl = function(self) return { fg = statusline_colours.git.branch.fg, bg = self.mode_colour, style = 'bold' } end
+    },
   },
 }
 
+
 local file_name = {
+  static = {
+    devicons = require('nvim-web-devicons')
+  },
   init = function(self)
     self.full_path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:~:.")
     if self.full_path == '' then
@@ -205,13 +217,20 @@ local file_name = {
       self.file_name = vim.fn.fnamemodify(self.full_path, ":t")
     end
     self.parent_dir = vim.fn.fnamemodify(self.full_path, ":h")
+
+    if not self.devicons.has_loaded() then
+      self.devicons.setup({})
+    end
+    local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+    local extension = vim.fn.fnamemodify(name, ":e")
+    self.icon, self.icon_colour = self.devicons.get_icon_color(name, extension, { default = true })
   end,
 
   { -- Readonly indicator
     condition = function() return (not vim.bo.modifiable) or vim.bo.readonly end,
     {
       provider = separators.slant_left_up,
-      hl = { fg = colours.autumnRed, bg = colours.sumiInk0 }
+      hl = { fg = colours.autumnRed, bg = statusline_colours.modules.bg }
     },
     {
       provider = '  ',
@@ -238,16 +257,20 @@ local file_name = {
       provider = function(self) return self.file_name .. ' ' end,
       hl = { fg = colours.autumnRed, bg = colours.winterRed, style = 'bold' }
     },
+    { -- Icon (modified)
+      provider = function(self) return self.icon .. ' ' end,
+      hl = function(self) return { fg = self.icon_colour, bg = colours.winterRed } end,
+    },
     {
       provider = separators.slant_right_down,
-      hl = { fg = colours.winterRed, bg = colours.sumiInk0 }
+      hl = { fg = colours.winterRed, bg = statusline_colours.modules.bg }
     },
   },
   { -- Modified indicator
     condition = function() return vim.bo.modified end,
     {
       provider = separators.slant_left_up,
-      hl = { fg = colours.autumnYellow, bg = colours.sumiInk0 }
+      hl = { fg = colours.autumnYellow, bg = statusline_colours.modules.bg }
     },
     {
       provider = '[+]',
@@ -274,69 +297,55 @@ local file_name = {
       provider = function(self) return self.file_name .. ' ' end,
       hl = { fg = colours.autumnYellow, bg = colours.winterYellow, style = 'bold' }
     },
+    { -- Icon (modified)
+      provider = function(self) return self.icon .. ' ' end,
+      hl = function(self) return { fg = self.icon_colour, bg = colours.winterYellow } end,
+    },
     {
       provider = separators.slant_right_down,
-      hl = { fg = colours.winterYellow, bg = colours.sumiInk0 }
+      hl = { fg = colours.winterYellow, bg = statusline_colours.modules.bg }
     },
   },
   { -- Unmodified indicator
     condition = function()
-      local is_modified = vim.bo.modified
-      local is_readonly = (not vim.bo.modifiable) or vim.bo.readonly
-      return (not is_readonly) and (not is_modified)
+      return (not vim.bo.modified) and not (vim.bo.readonly or not vim.bo.modifiable)
     end,
 
     {
       provider = separators.slant_left_up,
-      hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
+      hl = { fg = colours.sumiInk0, bg = statusline_colours.modules.bg }
     },
     { -- Path (modified)
-      provider = function(self)
-        local shortened_path = (function()
-          if not conditions.width_percent_below(#self.full_path, 0.5) then
-            return vim.fn.pathshorten(self.parent_dir)
-          else
-            return self.parent_dir
-          end
-        end)()
-        return ' ' .. shortened_path .. '/'
+      init = function(self)
+        if not conditions.width_percent_below(#self.full_path, 0.5) then
+          self.shortened_path = vim.fn.pathshorten(self.parent_dir)
+        else
+          self.shortened_path = self.parent_dir
+        end
       end,
-      hl = { fg = colours.fujiWhite, bg = colours.sumiInk2 }
+
+      provider = function(self)
+        return ' ' .. self.shortened_path .. '/'
+      end,
+      hl = function(self) return { fg = self.mode_colour, bg = colours.sumiInk0 } end
     },
-    { -- Filename (modified)
+    { -- Filename
       provider = function(self) return self.file_name .. ' ' end,
-      hl = { fg = colours.fujiWhite, bg = colours.sumiInk2, style = 'bold' }
+      hl = function(self) return { fg = self.mode_colour, bg = colours.sumiInk0, style = 'bold' } end
+    },
+    { -- Icon
+      provider = function(self) return self.icon .. ' ' end,
+      hl = function(self) return { fg = self.icon_colour, bg = colours.sumiInk0 } end,
     },
     {
       provider = separators.slant_right_down,
-      hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
+      hl = { fg = colours.sumiInk0, bg = statusline_colours.modules.bg }
     },
   },
 }
-
-local lsp_status = {
-  condition = conditions.lsp_attached,
-
-  { -- If there are any diagnostics, don't show the slant
-    condition = function() return not (#vim.diagnostic.get(0) > 0) end,
-    provider = separators.slant_left_down,
-    hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
-  },
-  {
-    provider = function()
-      local names = {}
-      for _, server in ipairs(vim.lsp.buf_get_clients(0)) do
-        table.insert(names, server.name)
-      end
-      return ' ' .. table.concat(names, ' ') .. ' '
-    end,
-    hl = { fg = colours.sumiInk0, bg = colours.sumiInk2 }
-  },
-  {
-    provider = separators.slant_right_up,
-    hl = { fg = colours.sumiInk2, bg = colours.sumiInk0 }
-  },
-}
+-- file_name component depends on the current mode colour, so make it part of
+-- mode
+table.insert(mode, file_name)
 
 local lsp_diagnostics = {
   condition = conditions.has_diagnostics,
@@ -357,69 +366,71 @@ local lsp_diagnostics = {
 
   {
     provider = separators.slant_left_down,
-    hl = { fg = colours.winterBlue, bg = colours.sumiInk0 }
+    hl = { fg = colours.sumiInk0, bg = statusline_colours.modules.bg }
   },
   {
     provider = function(self)
       return self.errors > 0 and (' ' .. self.error_icon .. ' ' .. self.errors .. ' ')
     end,
-    hl = { fg = colours.autumnRed, bg = colours.winterBlue },
+    hl = { fg = colours.autumnRed, bg = colours.sumiInk0 },
   },
   {
     provider = function(self)
       return self.warnings > 0 and (' ' .. self.warn_icon .. ' ' .. self.warnings .. ' ')
     end,
-    hl = { fg = colours.autumnYellow, bg = colours.winterBlue },
+    hl = { fg = colours.autumnYellow, bg = colours.sumiInk0 },
   },
   {
     provider = function(self)
       return self.info > 0 and (' ' .. self.info_icon .. ' ' .. self.info .. ' ')
     end,
-    hl = { fg = colours.waveAqua1, bg = colours.winterBlue },
+    hl = { fg = colours.waveAqua1, bg = colours.sumiInk0 },
   },
   {
     provider = function(self)
       return self.hints > 0 and (' ' .. self.hint_icon .. ' ' .. self.hints .. ' ')
     end,
-    hl = { fg = colours.dragonBlue, bg = colours.winterBlue },
+    hl = { fg = colours.dragonBlue, bg = colours.sumiInk0 },
   },
   {
     provider = separators.slant_right_up,
-    hl = { fg = colours.winterBlue, bg = colours.sumiInk2 }
+    hl = { fg = colours.sumiInk0, bg = statusline_colours.modules.bg }
   },
 }
 
 local encoding = {
-  provider = function()
-    local enc = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc
-    return enc ~= 'utf-8' and enc
-  end,
-  hl = { fg = colours.sumiInk3, bg = colours.sumiInk0 }
+  provider = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc,
+  hl = { fg = colours.sumiInk4, bg = statusline_colours.modules.bg }
 }
-
 local ruler = {
-  provider = ' %l, %c (%L) ',
-  hl = { fg = colours.sumiInk3, bg = colours.sumiInk0 }
+  provider = '%l, %c (%L)',
+  hl = { fg = colours.sumiInk4, bg = statusline_colours.modules.bg }
 }
 
 local right_align = { provider = '%=' }
+local space = { provider = ' ' }
 
-local active_status = {
-  mode, file_name,
-  right_align, encoding, ruler, lsp_diagnostics, lsp_status, git
+local nested_components = {
+  space, encoding, right_align, space, ruler, space, lsp_diagnostics
 }
+for _, component in ipairs(nested_components) do
+  table.insert(mode, component)
+end
+table.insert(mode, git)
+
+local active_status = mode
+
 
 local inactive_status = {
   condition = function() return not conditions.is_active() end,
 
-  { provider = '[' .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:~:.") .. ']' },
-  right_align, lsp_status
+  { provider = '[' .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p") .. ']' }
 }
 
 require('heirline').setup({
   stop_at_first = true,
 
-  inactive_status,
+  -- inactive_status,
   active_status
 })
 
