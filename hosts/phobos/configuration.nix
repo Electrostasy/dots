@@ -7,10 +7,6 @@
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
-      raspberryPi = {
-        enable = true;
-        version = 4;
-      };
     };
     kernelPackages = pkgs.linuxPackages_rpi4;
     kernelParams = [
