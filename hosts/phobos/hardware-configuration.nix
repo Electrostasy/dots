@@ -21,6 +21,8 @@
     "/" = {
       device = "none";
       fsType = "tmpfs";
+      # Required permissions for sshd to be happy
+      options = [ "defaults" "size=256M" "mode=755" ];
     };
 
     "/boot" = {
@@ -53,6 +55,12 @@
       options = [ "bind" ];
       depends = [ "/state" ];
       neededForBoot = true;
+    };
+
+    "/etc/ssh" = {
+      device = "/state/etc/ssh";
+      fsType = "none";
+      options = [ "bind" ];
     };
   };
 

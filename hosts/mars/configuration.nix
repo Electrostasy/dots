@@ -53,11 +53,16 @@
     sane.enable = true;
   };
 
+  programs.ssh.knownHosts = {
+    phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
+  };
+
   services = {
     openssh = {
       enable = true;
       permitRootLogin = "no";
       passwordAuthentication = false;
+      kbdInteractiveAuthentication = false;
     };
 
     pipewire = {
