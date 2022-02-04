@@ -63,11 +63,12 @@
     pipewire = {
       enable = true;
       pulse.enable = true;
-      alsa = {
-        enable = true;
-        support32Bit = true;
-      };
-      media-session.enable = true;
+      alsa.enable = true;
+      # The module for media-session is automatically enabled
+      # if pipewire is enabled, so explicitly shut it down in favour
+      # of wireplumber
+      media-session.enable = false;
+      wireplumber.enable = true;
     };
   };
 
