@@ -20,12 +20,18 @@ require('lightspeed').setup({})
 local colours = require('kanagawa.colors').setup()
 require('kanagawa').setup({
   overrides = {
+    StatusLine = { bg = colours.sumiInk1 },
+    StatusLineNC = { bg = colours.sumiInk1 },
     Whitespace = { fg = colours.sumiInk2 },
     NonText = { fg = colours.sumiInk2 },
     DiagnosticVirtualTextError = { fg = colours.samuraiRed, bg = colours.winterRed },
     DiagnosticVirtualTextWarn = { fg = colours.roninYellow, bg = colours.winterYellow },
     DiagnosticVirtualTextInfo = { fg = colours.waveAqua1, bg = colours.winterBlue },
     DiagnosticVirtualTextHint = { fg = colours.dragonBlue, bg = colours.winterBlue },
+    TelescopeNormal = { fg = colours.fujiWhite, bg = colours.sumiInk0 },
+    TelescopeBorder = { fg = colours.sumiInk4, bg = colours.sumiInk0 },
+    TelescopePreviewNormal = { bg = colours.sumiInk1 },
+    TelescopePreviewBorder = { fg = colours.sumiInk0, bg = colours.sumiInk0 },
     -- TelescopeResultsNormal = { bg = colours.sumiInk0 },
     -- TelescopeResultsBorder = { bg = colours.sumiInk0 },
     -- TelescopeResultsTitle = { fg = colours.sumiInk0, bg = colours.fujiGray },
@@ -38,6 +44,8 @@ require('kanagawa').setup({
   }
 })
 vim.cmd[[colorscheme kanagawa]]
+
+require('nvim-web-devicons').setup({})
 
 require('nvim-treesitter.configs').setup({
   highlight = { enable = true },
@@ -52,8 +60,8 @@ require('indent_blankline').setup({
   show_current_context = true,
   -- show_current_context_start = true,
   show_first_indent_level = true,
-  char = '│',
-  filetype_exclude = { 'TelescopePrompt' },
+  char = '🭰',
+  filetype_exclude = { },
   buftype_exclude = { 'help', 'terminal', 'nofile' },
   context_patterns = {
     -- Common/C/C++

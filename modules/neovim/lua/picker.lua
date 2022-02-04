@@ -1,37 +1,45 @@
 local telescope_actions = require('telescope.actions')
 require('telescope').setup({
-  pickers = {
-    defaults = {
-      sorting_strategy = 'ascending',
+  defaults = {
+    layout_config = {
+      prompt_position = 'top'
     },
+    sorting_strategy = 'ascending',
+    prompt_prefix = ' ',
+    dynamic_preview_title = true,
+    selection_caret = '▶ ',
+  },
+  pickers = {
     buffers = {
-      prompt_prefix = ' ',
-      selection_caret = '▶ ',
       -- borderchars = {
       --   prompt = { "█", "", "C", "", "█", "█", "G", "H" },
       --   results = { "", "", "", "", "", "", "", "" },
       --   preview = { "─", "│", "─", "│", "╭", "╮", "╯", "┗" },
       -- },
-      borderchars = {
-        prompt = { '─', '', '', '', '─', '─', '', '' },
-      },
-      prompt_title = 'Buffers',
-      theme = 'ivy',
       mappings = {
         i = {
-          ["<C-d>"] = telescope_actions.delete_buffer
+          ["<C-d>"] = telescope_actions.delete_buffer,
         }
-      }
-    },
-    live_grep = {
-      prompt_prefix = ' ',
-      selection_caret = '▶',
-      theme = 'ivy'
+      },
+      preview = {
+        filetype_hook = function(filepath, bufnr, opts)
+          local excluded = vim.tbl_filter(function(extension)
+            return filepath:match(extension)
+          end, { ".*%.png" })
+          if not vim.tbl_isempty(excluded) then
+            require("telescope.previewers.utils").set_preview_message(
+              bufnr, opts.winid, string.format("I don't like %s files!", excluded[1]:sub(5, -1))
+            )
+            return false
+          end
+          return true
+        end
+      },
     },
   }
 })
 
-vim.api.nvim_set_keymap('n', '<leader>b', "<cmd>lua require('telescope.builtin').buffers()<cr>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>b', "<cmd>lua require('telescope.builtin').buffers({ ignore_current_buffer = true })<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>e', "<cmd>lua require('telescope.builtin').find_files()<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>g', "<cmd>lua require('telescope.builtin').live_grep()<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>G', "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>", { silent = true, noremap = true })

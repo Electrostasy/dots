@@ -23,6 +23,7 @@
       luasnip # Completion snippets engine
       nvim-cmp # Completion
       nvim-colorizer-lua # Colour code colorizer
+      nvim-web-devicons # Coloured file icons
       nvim-lspconfig # LSP default configurations
       plenary-nvim # Telescope-nvim dependency
       telescope-fzf-native-nvim # FZF sorter for telescope
