@@ -100,7 +100,7 @@
             binding_terminal = "<super> KEY_ENTER";
             command_terminal = "${pkgs.kitty}/bin/kitty";
             binding_launcher = "<super> KEY_SPACE";
-            command_launcher = "${pkgs.rofi}/bin/rofi -show drun";
+            command_launcher = "${pkgs.rofi}/bin/rofi -show drun -show-icons";
             binding_screenshot = "<super> <shift> KEY_S";
             command_screenshot = "${pkgs.writeShellScriptBin "screenshot" ''
               # For some reason, if this command is not wrapped in a script, the command
