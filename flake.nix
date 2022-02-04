@@ -31,10 +31,6 @@
       url = "github:nathom/filetype.nvim";
       flake = false;
     };
-    lsp_lines-nvim = {
-      url = "git+https://git.sr.ht/~whynothugo/lsp_lines.nvim?ref=main";
-      flake = false;
-    };
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs: {
@@ -53,7 +49,7 @@
               })) pnames);
         mkPackage = nixpkgs.legacyPackages.${system}.callPackage;
       in
-      mkVimPlugins [ "heirline-nvim" "filetype-nvim" "lsp_lines-nvim" ] // rec {
+      mkVimPlugins [ "heirline-nvim" "filetype-nvim" ] // rec {
         firefox-custom = mkPackage ./pkgs/firefox { };
         gamescope = mkPackage ./pkgs/gamescope.nix { };
         wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
@@ -66,8 +62,7 @@
         vimPlugins = prev.vimPlugins // {
           inherit (self.packages.${prev.system})
             heirline-nvim
-            filetype-nvim
-            lsp_lines-nvim;
+            filetype-nvim;
         };
       };
       pkgs = final: prev: {
