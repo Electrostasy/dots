@@ -42,8 +42,8 @@ let
   gamescope-src = fetchFromGitHub {
     owner = "plagman";
     repo = "gamescope";
-    rev = "8f1fbe7ce0ae705f500b770dad8b9c2bc17f5d2d";
-    sha256 = "sha256-KKkHBLA88g84txX6joPiq5sZzbdjKtmVHCEwYQSIOk4=";
+    rev = "bf427b815672bd3052d6c6fd954100eed6c10e47";
+    sha256 = "sha256-p8j/IOfV8IIR2Mij53Os82p5Xbf97VgWdYjqvQJ1u8M=";
   };
   libliftoff_2_0_0 = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
@@ -63,7 +63,7 @@ in
 
 stdenv.mkDerivation {
   pname = "gamescope";
-  version = "3.10.8";
+  version = "3.11.8";
 
   src = gamescope-src;
 
