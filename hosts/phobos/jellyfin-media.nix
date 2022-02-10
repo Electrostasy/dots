@@ -1,11 +1,30 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 # Host-specific configuration to handle devices for jellyfin
 
 lib.mkIf config.services.jellyfin.enable {
-  users = {
-    groups.jellyfin.gid = 995;
-    users.jellyfin.uid = 995;
+  # Hardware acceleration
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+  };
+
+  services.jellyfin.package = pkgs.jellyfin.overrideAttrs (prev: {
+    patches = prev.patches ++ [
+      # Fix h264_v4l2m2m acceleration in Raspberry Pi 4
+      (lib.fetchPatch {
+        url = "https://github.com/jellyfin/jellyfin/pull/7227.patch";
+        sha256 = "sha256-RR5Hf/XEfPE5oCK60+xT33rAB2e2yxNeHwG+d1euk1M=";
+      })
+    ];
+  });
+
+  users = let id = 995; in {
+    groups.jellyfin.gid = id;
+    users.jellyfin = {
+      uid = id;
+      extraGroups = [ "video" ]; # GPU support
+    };
   };
 
   # If we lose any of the required mounts, stop jellyfin
