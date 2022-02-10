@@ -3,11 +3,9 @@
 # Host-specific configuration to handle devices for jellyfin
 
 lib.mkIf config.services.jellyfin.enable {
-  # Retain jellyfin configuration between boots
-  fileSystems."/var/lib/jellyfin" = {
-    device = "/state/var/lib/jellyfin";
-    fsType = "none";
-    options = [ "bind" ];
+  users = {
+    groups.jellyfin.gid = 995;
+    users.jellyfin.uid = 995;
   };
 
   # If we lose any of the required mounts, stop jellyfin
@@ -21,27 +19,37 @@ lib.mkIf config.services.jellyfin.enable {
     ];
   };
 
-  # TODO: when setting up rtorrent and other services to work with jellyfin,
-  # change these into bind-mounts
+  fileSystems = let
+    btrfs = [ "noatime" "nodiratime" "noautodefrag" "compress=zstd" ];
+    automount = [ "noauto" "x-systemd.automount" "x-systemd.mount-timeout=30" ];
+  in {
+    # Retain jellyfin configuration between boots
+    "/var/lib/jellyfin" = {
+      device = "/state/var/lib/jellyfin";
+      fsType = "none";
+      options = [ "bind" ];
+    };
 
-  # Automount the primary and backup external disks for media data
-  fileSystems = let common = [ "noatime" "nodiratime" "noautodefrag" "compress=zstd" ]; in {
+    # TODO: when setting up rtorrent and other services to work with jellyfin,
+    # change these into bind-mounts
+
+    # Automount subvolumes
     "/mnt/jellyfin/anime" = {
       device = "/dev/disk/by-label/media";
       fsType = "btrfs";
-      options = [ "subvol=anime" ] ++ common;
+      options = btrfs ++ automount ++ [ "subvol=anime" ];
     };
 
     "/mnt/jellyfin/shows" = {
       device = "/dev/disk/by-label/media";
       fsType = "btrfs";
-      options = [ "subvol=shows" ] ++ common;
+      options = btrfs ++ automount ++ [ "subvol=shows" ];
     };
 
     "/mnt/jellyfin/movies" = {
       device = "/dev/disk/by-label/media";
       fsType = "btrfs";
-      options = [ "subvol=movies" ] + common;
+      options = btrfs ++ automount ++ [ "subvol=movies" ];
     };
   };
 }
