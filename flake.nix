@@ -121,8 +121,8 @@
         modules = [
           ./hosts/phobos/configuration.nix
           ./hosts/phobos/hardware-configuration.nix
-          ./hosts/phobos/jellyfin-media.nix
-          ./nixos/jellyfin
+          # ./hosts/phobos/jellyfin-media.nix
+          # ./nixos/jellyfin
           nixos-hardware.nixosModules.raspberry-pi-4
         ];
         overlays = builtins.attrValues self.outputs.overlays;
