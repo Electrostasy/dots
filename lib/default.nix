@@ -13,6 +13,9 @@ let
     nix = {
       package = pkgs.nixFlakes;
       extraOptions = "experimental-features = nix-command flakes";
+      # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
+      # channel-dependent programs to use the correct nixpkgs
+      settings.nix-path = [ "nixpkgs=${self.inputs.nixpkgs}" ];
     };
   };
   overlay = final: prev: {
