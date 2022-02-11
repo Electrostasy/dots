@@ -74,21 +74,16 @@
       };
     };
 
-    nixosModules.home-manager.wayfire = import ./nixos/home-manager/wayfire;
+    nixosModules = {
+      home-manager.wayfire = import ./nixos/home-manager/wayfire;
+      unfree = import ./nixos/unfree.nix;
+    };
 
     nixosConfigurations = with self.lib.extended; {
       # Desktop workstation
       mars = nixosSystem {
         system = "x86_64-linux";
         modules = [
-          ({ config, lib, ... }: {
-            nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-              "steam"
-              "steam-run"
-              "teamviewer"
-              "teams"
-            ];
-          })
           ./hosts/mars/configuration.nix
           ./hosts/mars/hardware-configuration.nix
           ./nixos/encrypted-dns.nix
@@ -98,6 +93,7 @@
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
           # ./nixos/cross-aarch64.nix
+          self.outputs.nixosModules.unfree
         ] ++ forAllHomes [ "electro" ] [
           ./hosts/mars/displays.nix
           ./hosts/mars/home.nix
