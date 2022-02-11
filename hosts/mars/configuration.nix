@@ -99,6 +99,23 @@
     };
   };
 
+  # NFS (phobos)
+  fileSystems."/mnt/media/shows" = {
+    device = "phobos:/shows";
+    fsType = "nfs";
+    options = [ "nfsvers=4.2" ];
+  };
+  fileSystems."/mnt/media/movies" = {
+    device = "phobos:/movies";
+    fsType = "nfs";
+    options = [ "nfsvers=4.2" ];
+  };
+  fileSystems."/mnt/media/anime" = {
+    device = "phobos:/anime";
+    fsType = "nfs";
+    options = [ "nfsvers=4.2" ];
+  };
+
   # SSH
   fileSystems."/etc/ssh" = {
     device = "/nix/state/etc/ssh";

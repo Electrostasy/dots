@@ -121,6 +121,7 @@
         modules = [
           ./hosts/phobos/configuration.nix
           ./hosts/phobos/hardware-configuration.nix
+          ./hosts/phobos/nfs.nix
           # ./hosts/phobos/jellyfin-media.nix
           # ./nixos/jellyfin
           nixos-hardware.nixosModules.raspberry-pi-4
