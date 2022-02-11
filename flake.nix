@@ -38,18 +38,19 @@
 
     packages = self.lib.extended.forAllSystems (system:
       let
-        # This is probably a bit too clever
+        mkVimPlugin = pname:
+          nixpkgs.legacyPackages.${system}.vimUtils.buildVimPluginFrom2Nix {
+            inherit pname;
+            src = inputs.${pname};
+            version = inputs.${pname}.shortRev;
+          };
         mkVimPlugins = pnames:
           builtins.listToAttrs (
-            builtins.map (pname: self.lib.nameValuePair pname
-              (nixpkgs.legacyPackages.${system}.vimUtils.buildVimPluginFrom2Nix {
-                inherit pname;
-                src = inputs.${pname};
-                version = inputs.${pname}.shortRev;
-              })) pnames);
+            builtins.map (pname: self.lib.nameValuePair pname (mkVimPlugin pname)) pnames
+          );
         mkPackage = nixpkgs.legacyPackages.${system}.callPackage;
       in
-      mkVimPlugins [ "heirline-nvim" "filetype-nvim" ] // rec {
+      mkVimPlugins [ "heirline-nvim" "filetype-nvim" ] // {
         firefox-custom = mkPackage ./pkgs/firefox { };
         gamescope = mkPackage ./pkgs/gamescope.nix { };
         wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
@@ -107,9 +108,9 @@
           (final: prev: {
             inherit (inputs.rnix-lsp.packages.${prev.system}) rnix-lsp;
           })
-          (final: prev: {
+          (final: prev: rec {
             nixFlakes = inputs.nix.packages.${prev.system}.nix;
-            nixUnstable = inputs.nix.packages.${prev.system}.nix;
+            nixUnstable = nixFlakes;
           })
         ];
       };
