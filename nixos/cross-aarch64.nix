@@ -1,14 +1,15 @@
+# This module allows non-native aarch64-linux package compilation and
+# derivation building for aarch64-linux architectures. With this module enabled
+# you can build and activate a configuration remotely between architectures:
+
+# sudo nixos-rebuild switch --target-host pi@phobos --flake .#phobos --use-remote-sudo --use-subtitutes
+
+# This will however build everything on your host system through QEMU (very slow!).
+# Currently doesn't fetch binaries from the binary cache. No idea how to
+# make it work.
+
 { config, ... }:
 
-# Include this module for any systems that may cross-compile ISO images
-# to aarch64
-
 {
-  # Allow this system to crosscompile packages for aarch64
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-
-  nix = {
-    binaryCaches = [ "https://arm.cachix.org/" ];
-    binaryCachePublicKeys = [ "arm.cachix.org-1:5BZ2kjoL1q6nWhlnrbAl+G7ThY7+HaBRD9PZzqZkbnM=" ];
-  };
 }
