@@ -26,8 +26,13 @@ cmp.setup({
     { name = 'luasnip'},
   },
   formatting = {
+    fields = {
+      cmp.ItemField.Abbr,
+      cmp.ItemField.Menu,
+      cmp.ItemField.Kind,
+    },
     format = require('lspkind').cmp_format({
-      with_text = true,
+      mode = 'text_symbol',
       symbol_map = icons,
       menu = {
         buffer = '[Buffer]',

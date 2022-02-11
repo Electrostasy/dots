@@ -62,7 +62,7 @@ require('indent_blankline').setup({
   show_first_indent_level = true,
   char = '🭰',
   filetype_exclude = { },
-  buftype_exclude = { 'help', 'terminal', 'nofile' },
+  buftype_exclude = { 'help', 'terminal', 'nofile', 'prompt' },
   context_patterns = {
     -- Common/C/C++
     'class', 'struct', 'function', 'method', '.*expression', '.*statement', 'for.*', '.*list',
