@@ -3,82 +3,42 @@
 {
   xdg.enable = true;
 
-  home.packages = with pkgs; let
-    # General CLI utilities used from the terminal or in scripts
-    shellPkgs = [
-      alsaUtils # ALSA audio utility programms
-      # fd # `find` alternative
-      # git # Version control
-      # hexyl # Hex viewer
-      imagemagick # Image processor
-      # libnotify # `notify-send` notifications utility
-      # most # Pager
-      neofetch # System information fetcher
-      # pass # Password manager
-      # pciutils # PCI device utility programs
-      ripgrep # `grep` alternative
-      tealdeer # `tldr` alternative
-      xplr # TUI scriptable file manager
-      pastel # Generate, analyze, convert and manipulate colours
-      chafa # Image data terminal previewer
-      # tomb # File and directory encryption
-      # kalker # Math syntax calculator
-      # rink # Unit-aware calculator/conversion tool
-      du-dust # Disk usage visualizer
-      ffmpeg # Audio/video recording, converting and streaming tool
-      (pkgs.writeShellScriptBin "steam" ''
-        if [[ "$(nixos-container status steam)" == "down" ]]; then
-          sudo nixos-container start steam
-        fi
-        if sudo nixos-container run steam -- runuser steam -c 'cd /; /run/wrappers/bin/gamescope -w 3840 -h 2160 -r 120 -e -- capsh --noamb -- steam -tenfoot -steamos -fulldesktopres'; then
-          sudo nixos-container stop steam
-        fi
-      '')
-      # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
-    ];
-    # CLI utilities specific to Wayland compositing servers
-    waylandPkgs = [
-      grim # Image grabber
-      slurp # Region selector
-      swaybg # Output background setter
-      # swayidle # Idle management daemon
-      # swaylock # Screen locker
-      # tiramisu # Notification reader/handler
-      wl-clipboard # `wl-{copy,paste}` clipboard utilities
-      wlr-randr # Outputs querying and management
-      xwayland # Legacy X11 glue
-      wf-recorder # Record wayland displays
-    ];
-    # Graphical programs, fonts and icons
-    graphicalPkgs = [
-      # wdisplays # Graphical output management
-      (libreoffice.overrideAttrs (old: { langs = [ "en-US" "lt" ]; })) # Office suite
-      iosevka-nerdfonts
-      firefox-custom # Customized firefox derivation
-      ((eww.overrideAttrs (old: rec {
-        src = pkgs.fetchFromGitHub {
-          owner = "elkowar";
-          repo = "eww";
-          rev = "106106ade31e7cc669f2ae53f24191cd0a683c39";
-          sha256 = "sha256-VntDl7JaIfvn3pd+2uDocnXFRkPnQQbRkYDn4XWeC5o=";
-        };
-        cargoDeps = old.cargoDeps.overrideAttrs (_: {
-          inherit src;
-          outputHash = "sha256-+OJ1BC/+iKkoCK2/+xA26fG2XtcgKJMv4UHmhc9Yv9k=";
-        });
-      })).override { withWayland = true; }) # Desktop widgets
-      gimp # Image manipulation program
-      inter # UI typeface
-      iosevka # Monospace programming typeface
-      # kora-icon-theme # Applications icon theme
-      liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-      quintom-cursor-theme # X Cursor theme
-      source-han-sans # Japanese OpenType/CFF fonts
-      meld # Visual diff and merge tool
-      simple-scan # GNOME GUI scanner tool
-    ];
-  in
-  shellPkgs ++ waylandPkgs ++ graphicalPkgs;
+  home.packages = with pkgs; [
+    alsaUtils
+    btop
+    chafa # Image data terminal previewer
+    du-dust # Disk usage visualizer
+    eww-wayland # Desktop widgets
+    f3d # 3D file format viewer
+    ffmpeg
+    firefox-custom
+    gimp
+    grim # Wayland compositor image grabber
+    # hexyl # CLI Hex viewer
+    imagemagick
+    # inter # UI typeface
+    iosevka-nerdfonts
+    keepassxc # Password manager
+    liberation_ttf # Replacement fonts for TNR, Arial and Courier New
+    (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
+    neofetch
+    pastel # Generate, analyze, convert and manipulate colours
+    quintom-cursor-theme
+    # rink # Unit-aware calculator/conversion tool
+    ripgrep
+    slurp # Wayland compositor region selector
+    source-han-sans # Japanese OpenType/CFF fonts
+    swaybg
+    # swayidle # Idle management daemon
+    # swaylock # Screen locker
+    tealdeer # `tldr` alternative
+    # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
+    wf-recorder # Record wayland displays
+    wl-clipboard # `wl-{copy,paste}` clipboard utilities
+    wlr-randr # Outputs querying and management
+    xplr # TUI scriptable file manager
+    xwayland
+  ];
 
   fonts.fontconfig.enable = true;
 
