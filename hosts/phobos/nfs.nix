@@ -16,7 +16,7 @@ let
     };
   };
   mkMounts = xs: lib.foldl (a: b: a // b) {} (builtins.map mkMount xs);
-  mounts = mkMounts [ "anime" "shows" "movies" ];
+  mounts = mkMounts [ "anime" "shows" "movies" "music" ];
 in
 {
   fileSystems = mounts;
