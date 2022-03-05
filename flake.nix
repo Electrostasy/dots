@@ -34,7 +34,7 @@
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs: {
-    lib = import ./lib { inherit (nixpkgs) lib; inherit self; };
+    lib = import ./nixos/lib { inherit (nixpkgs) lib; inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
       let
