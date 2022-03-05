@@ -76,8 +76,8 @@
     };
 
     nixosModules = {
-      home-manager.wayfire = import ./nixos/home-manager/wayfire;
-      unfree = import ./nixos/unfree.nix;
+      home-manager.wayfire = import ./nixos/modules/home-manager/wayfire;
+      unfree = import ./nixos/modules/unfree.nix;
     };
 
     nixosConfigurations = with self.lib.extended; {
@@ -87,14 +87,13 @@
         modules = [
           ./hosts/mars/configuration.nix
           ./hosts/mars/hardware-configuration.nix
-          ./nixos/encrypted-dns.nix
-          ./nixos/steam
-          ./nixos/teamviewer
-          ./nixos/virtual-camera.nix
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
-          # ./nixos/cross-aarch64.nix
-          self.outputs.nixosModules.unfree
+          ./nixos/modules/profiles/dnscrypt-proxy2
+          ./nixos/modules/profiles/flatpak
+          ./nixos/modules/profiles/teamviewer
+          ./nixos/modules/profiles/v4l2loopback
+          self.nixosModules.unfree
         ] ++ forAllHomes [ "electro" ] [
           ./hosts/mars/displays.nix
           ./hosts/mars/home.nix
@@ -103,8 +102,8 @@
           ./modules/nix-index.nix
           ./modules/wayfire
         ];
-        overlays = builtins.attrValues self.outputs.overlays ++ [
-          # Use the git/master build
+        overlays = builtins.attrValues self.overlays ++ [
+          # Use the git/master builds
           (final: prev: {
             inherit (inputs.rnix-lsp.packages.${prev.system}) rnix-lsp;
           })
@@ -122,11 +121,9 @@
           ./hosts/phobos/configuration.nix
           ./hosts/phobos/hardware-configuration.nix
           ./hosts/phobos/nfs.nix
-          # ./hosts/phobos/jellyfin-media.nix
-          # ./nixos/jellyfin
           nixos-hardware.nixosModules.raspberry-pi-4
         ];
-        overlays = builtins.attrValues self.outputs.overlays;
+        overlays = builtins.attrValues self.overlays;
       };
 
       # Raspberry Pi 3 (WIP)
