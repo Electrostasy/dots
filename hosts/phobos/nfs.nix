@@ -26,7 +26,7 @@ in
     exports = let
       nfsRoot = "${fsRoot} ${client}(ro,fsid=0,no_subtree_check)";
       mkNfsMount = mount:
-        "${mount} ${client}(ro,root_squash,nohide,insecure,no_subtree_check)";
+        "${mount} ${client}(rw,root_squash,nohide,insecure,no_subtree_check)";
     in lib.concatStrings (
       lib.intersperse "\n" (
         [ nfsRoot ] ++ builtins.map mkNfsMount (builtins.attrNames mounts)
