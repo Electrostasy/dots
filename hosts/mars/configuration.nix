@@ -12,10 +12,15 @@
   };
 
   nix = {
-    settings.auto-optimise-store = true;
     gc = {
       automatic = true;
       dates = "weekly";
+    };
+    settings = {
+      auto-optimise-store = true;
+      # cq-flake binary cache
+      substituters = [ "https://marcus7070.cachix.org" ];
+      trusted-public-keys = [ "marcus7070.cachix.org-1:JawxHSgnYsgNYJmNqZwvLjI4NcOwrcEZDToWlT3WwXw=" ];
     };
   };
 
