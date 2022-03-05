@@ -144,6 +144,25 @@
           })
         ];
       };
+
+      # Lenovo Thinkpad T420
+      mercury = nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/mercury/configuration.nix
+          ./hosts/mercury/hardware-configuration.nix
+          nixos-hardware.nixosModules.common-pc-laptop
+          nixos-hardware.nixosModules.common-pc-laptop-ssd
+          nixos-hardware.nixosModules.lenovo-thinkpad-t420
+          ./nixos/modules/profiles/dnscrypt-proxy2
+        ] ++ forAllHomes [ "gediminas" ] [
+          ./hosts/mercury/home.nix
+          ./modules/neovim
+          ./modules/nix-index.nix
+          ./modules/wayfire
+        ];
+        overlays = builtins.attrValues self.overlays;
+      };
     };
   };
 }
