@@ -6,8 +6,8 @@ pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
   nixExtensions = [
     (fetchFirefoxAddon {
       name = "canvas-blocker";
-      url = "https://addons.mozilla.org/firefox/downloads/file/3864535/canvasblocker-1.7-an+fx.xpi";
-      sha256 = "sha256-dwyus56T7DMpRkc8GD3mqfh0asTJ1lJ9xMFNEImyPWA=";
+      url = "https://addons.mozilla.org/android/downloads/file/3910598/canvasblocker-1.8-an+fx.xpi";
+      sha256 = "sha256-gXphgb6HdmjsodD++ez3iciY5tfZPcp+KUedQPmGyEQ=";
     })
     (fetchFirefoxAddon {
       name = "https-everywhere";
@@ -21,18 +21,18 @@ pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
     })
     (fetchFirefoxAddon {
       name = "ublock-origin";
-      url = "https://addons.mozilla.org/firefox/downloads/file/3886236/ublock_origin-1.40.2-an+fx.xpi";
-      sha256 = "sha256-g3kVkpyVBlHkbtXMMKqfrthBNudxXnQ2mi6t8yi+oGU=";
+      url = "https://addons.mozilla.org/android/downloads/file/3913320/ublock_origin-1.41.8-an+fx.xpi";
+      sha256 = "sha256-Unx1JxFqbG/925Y837kBUY1W9iTPySL26rMpFrJOj10=";
     })
     (fetchFirefoxAddon {
       name = "localcdn";
-      url = "https://addons.mozilla.org/firefox/downloads/file/3883584/localcdn-2.6.21-an+fx.xpi";
-      sha256 = "sha256-/jz2USUNqPflw3QrMsIuMrZiAE2pe2sM/G1F4z/U0hc=";
+      url = "https://addons.mozilla.org/firefox/downloads/file/3902456/localcdn-2.6.23-an+fx.xpi";
+      sha256 = "sha256-/yoKZKDNyKpisW8fPMQSAXYAM3MSdrQn7wIpDLU+ZIA=";
     })
     (fetchFirefoxAddon {
       name = "multi-account-containers";
-      url = "https://addons.mozilla.org/firefox/downloads/file/3881338/firefox_multi_account_containers-8.0.4-fx.xpi";
-      sha256 = "sha256-4WBpMalV7dsTC60L3xl2G0dFC/UxqyaA2sWuLn/jwJc=";
+      url = "https://addons.mozilla.org/firefox/downloads/file/3907697/firefox_multi_account_containers-8.0.6-fx.xpi";
+      sha256 = "sha256-2T2wsUbvaYIBEgDli4r6nEO9w0URYzNZOCZmfF21z6s=";
     })
   ];
   # Policy list https://github.com/mozilla/policy-templates/blob/master/README.md
