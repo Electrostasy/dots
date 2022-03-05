@@ -16,6 +16,8 @@ vim.api.nvim_set_keymap('i', '<C-d>', "<ESC>diwi", { silent = true, noremap = tr
 
 require('gitsigns').setup({})
 require('lightspeed').setup({})
+require('hlargs').setup({})
+vim.cmd[[highlight! link Hlargs TSParameter]]
 
 local colours = require('kanagawa.colors').setup()
 require('kanagawa').setup({
@@ -45,6 +47,16 @@ require('kanagawa').setup({
 })
 vim.cmd[[colorscheme kanagawa]]
 
+require('modes').setup({
+  colors = {
+    copy = colours.springGreen,
+    delete = colours.waveRed,
+    insert = colours.autumnYellow,
+    visual = colours.springBlue
+  },
+  line_opacity = 0.1,
+  set_cursor = true
+})
 require('nvim-web-devicons').setup({})
 
 require('nvim-treesitter.configs').setup({

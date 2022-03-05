@@ -33,8 +33,8 @@ set.ruler = true -- Show cursor location in file
 set.updatetime = 300 -- Delay after user input before plugins are activated
 
 set.cursorline = true -- Highlight line of cursor while in Insert mode
-vim.cmd[[autocmd InsertEnter,BufLeave * set nocursorline]]
-vim.cmd[[autocmd InsertLeave,BufEnter * set cursorline]]
+-- vim.cmd[[autocmd InsertEnter,BufLeave * set nocursorline]]
+-- vim.cmd[[autocmd InsertLeave,BufEnter * set cursorline]]
 set.hlsearch = true -- Highlight search matches
 set.incsearch = true -- Highlight search matches while typing
 set.inccommand = 'nosplit' -- Live preview when substituting

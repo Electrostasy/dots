@@ -31,6 +31,14 @@
       url = "github:nathom/filetype.nvim";
       flake = false;
     };
+    hlargs-nvim = {
+      url = "github:m-demare/hlargs.nvim";
+      flake = false;
+    };
+    modes-nvim = {
+      url = "github:mvllow/modes.nvim";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs: {
@@ -50,11 +58,12 @@
           );
         mkPackage = nixpkgs.legacyPackages.${system}.callPackage;
       in
-      mkVimPlugins [ "heirline-nvim" "filetype-nvim" ] // {
+      mkVimPlugins [ "heirline-nvim" "filetype-nvim" "hlargs-nvim" "modes-nvim" ] // {
+        eww-wayland = mkPackage ./pkgs/eww.nix { };
         firefox-custom = mkPackage ./pkgs/firefox { };
         gamescope = mkPackage ./pkgs/gamescope.nix { };
-        wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
         iosevka-nerdfonts = mkPackage ./pkgs/iosevka-nerdfonts.nix { };
+        wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
       }
     );
 
@@ -62,16 +71,21 @@
       vimPlugins = final: prev: {
         vimPlugins = prev.vimPlugins // {
           inherit (self.packages.${prev.system})
+            filetype-nvim
             heirline-nvim
-            filetype-nvim;
+            hlargs-nvim
+            modes-nvim
+            ;
         };
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          wlr-spanbg
-          gamescope
+          eww-wayland
           firefox-custom
-          iosevka-nerdfonts;
+          gamescope
+          iosevka-nerdfonts
+          wlr-spanbg
+          ;
       };
     };
 
