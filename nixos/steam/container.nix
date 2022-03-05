@@ -1,28 +1,58 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, flake, ... }:
 
 {
   # sudo nixos-container run steam -- runuser steam -c 'cd /; /run/wrappers/bin/gamescope -w 3840 -h 2160 -r 120 -e -- capsh --noamb -- steam -tenfoot -steamos -fulldesktopres'
-  # https://liolok.com/containerize-steam-with-systemd-nspawn/
-  # https://www.reddit.com/r/archlinux/comments/69raj1/post_your_x_wayland_systemdnspawn_examples/
-  # https://nixos.wiki/wiki/Tor_Browser_in_a_Container
   containers.steam = {
     ephemeral = true;
     bindMounts = {
-      "/dev/dri".isReadOnly = false;
-      # "/dev/input".isReadOnly = false;
-      # "/dev/shm".isReadOnly = false;
-      "/home/steam/.local/share/Steam" = { hostPath = "/home/electro/hdd/steam/Steam"; isReadOnly = false; };
-      "/home/steam/.steam" = { hostPath = "/home/electro/hdd/steam/.steam"; isReadOnly = false; };
-      "/run/user/1000".isReadOnly = false;
+      # Both video and render nodes are required for graphics
+      "/dev/dri/card0".isReadOnly = false;
+      "/dev/dri/renderD128".isReadOnly = false;
+      # Bind wayland socket to run gamescope as an embedded compositor
+      "/run/user/999/wayland-1" = {
+        hostPath = "/run/user/1000/wayland-1";
+        isReadOnly = false;
+      };
+      "/run/user/999/wayland-1.lock" = {
+        hostPath = "/run/user/1000/wayland-1.lock";
+        isReadOnly = false;
+      };
     };
     allowedDevices = [
-      { node = "/dev/dri"; modifier = "rwm"; }
-      # { node = "/dev/shm"; modifier = "rwm"; }
-      # { node = "/dev/input"; modifier = "r"; }
+      # Minimum permissions required for graphics
+      { node = "/dev/dri/card0"; modifier = "rw"; }
+      { node = "/dev/dri/renderD128"; modifier = "rw"; }
+      { node = "/dev/shm"; modifier = "rw"; }
     ];
-    config = import ./configuration.nix {
-      # Use `pkgs` with package overlays applied
-      inherit pkgs config lib;
-    };
+    extraFlags = [ ];
+
+    config = lib.mkMerge [
+      flake.nixosModules.unfree
+      (import ./gamescope.nix { inherit config pkgs lib; })
+      (import ./steam.nix { inherit config pkgs lib; })
+      ({ config, ... }: {
+        environment.variables = {
+          DISPLAY = ":1";
+          WAYLAND_DISPLAY = "wayland-1";
+          XDG_RUNTIME_DIR = "/run/user/999";
+          XDG_SEAT = "seat0";
+          XDG_SESSION_TYPE = "wayland";
+        };
+      })
+      ({ config, ... }: {
+        systemd.services.fix-run-dir-permissions = let uid = "999"; in {
+          script = "chown -R gamescope:users /run/user/${uid}";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          after = [
+            "run-user-${uid}-wayland\\x2d1.mount"
+            "run-user-${uid}-wayland\\x2d1.lock.mount"
+          ];
+          wantedBy = [ "multi-user.target" ];
+        };
+      })
+    ];
   };
 }
