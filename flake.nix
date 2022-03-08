@@ -105,6 +105,7 @@
         modules = [
           ./hosts/mars/configuration.nix
           ./hosts/mars/hardware-configuration.nix
+          ./hosts/phobos/nfs-client.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd

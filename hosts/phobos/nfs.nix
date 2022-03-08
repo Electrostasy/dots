@@ -24,7 +24,7 @@ in
   services.nfs.server = {
     enable = true;
     exports = let
-      nfsRoot = "${fsRoot} ${client}(ro,fsid=0,no_subtree_check)";
+      nfsRoot = "${fsRoot} ${client}(rw,fsid=0,no_subtree_check)";
       mkNfsMount = mount:
         "${mount} ${client}(rw,root_squash,nohide,insecure,no_subtree_check)";
     in lib.concatStrings (
