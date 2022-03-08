@@ -60,12 +60,7 @@
     pipewire = {
       enable = true;
       pulse.enable = true;
-      alsa.enable = false; # Wait for fix from nixos/staging to get merged
-      # The module for media-session is automatically enabled
-      # if pipewire is enabled, so explicitly shut it down in favour
-      # of wireplumber
-      media-session.enable = false;
-      wireplumber.enable = true;
+      alsa.enable = true;
     };
 
     greetd = {
