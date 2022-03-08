@@ -12,6 +12,10 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    impermanence = {
+      url = "github:nix-community/impermanence/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix = {
       url = "github:NixOS/nix/2.6-maintenance";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +45,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, impermanence, nixos-hardware, ... }@inputs: {
     lib = import ./nixos/lib { inherit (nixpkgs) lib; inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
@@ -101,6 +105,7 @@
         modules = [
           ./hosts/mars/configuration.nix
           ./hosts/mars/hardware-configuration.nix
+          impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
           ./nixos/modules/profiles/dnscrypt-proxy2
@@ -135,6 +140,7 @@
           ./hosts/phobos/configuration.nix
           ./hosts/phobos/hardware-configuration.nix
           ./hosts/phobos/nfs.nix
+          impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
         ];
         overlays = builtins.attrValues self.overlays;

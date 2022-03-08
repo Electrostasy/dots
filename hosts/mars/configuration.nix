@@ -120,53 +120,5 @@
     fsType = "nfs";
     options = [ "nfsvers=4.2" ];
   };
-
-  # SSH
-  fileSystems."/etc/ssh" = {
-    device = "/nix/state/etc/ssh";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-  fileSystems."/home/electro/.ssh" = {
-    device = "/nix/state/home/electro/.ssh";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  # Nix configuration and logs
-  fileSystems."/etc/nixos" = {
-    device = "/nix/state/etc/nixos";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-  fileSystems."/var/log" = {
-    device = "/nix/state/var/log";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  # TLDR and Nix-index caches that should persist
-  fileSystems."/home/electro/.cache/tealdeer" = {
-    device = "/nix/state/home/electro/.cache/tealdeer";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-  fileSystems."/home/electro/.cache/nix-index" = {
-    device = "/nix/state/home/electro/.cache/nix-index";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  fileSystems."/home/electro/.mozilla" = {
-    device = "/nix/state/home/electro/.mozilla";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  # Wallpapers and stuff
-  fileSystems."/home/electro/Pictures" = {
-    device = "/nix/state/home/electro/Pictures";
-    fsType = "none";
-    options = [ "bind" ];
   };
 }
