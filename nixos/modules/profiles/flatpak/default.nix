@@ -8,8 +8,16 @@ let
   # users = builtins.attrNames
   #   (lib.filterAttrs (_: v: v.isNormalUser) config.users.users);
   users = [ "electro" ];
-  mkUserModule = user: {
+  flatpakModule = {
     services.flatpak.enable = true;
+    xdg.portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-wlr
+      ];
+    };
+  };
+  mkUserModule = user: {
     users.users.${user}.packages = with pkgs; [ gamescope ];
     # Run steam (steamdeck beta) using:
     # $ gamescope -W 3840 -H 2160 -e -- flatpak run com.valvesoftware.Steam -gamepadui -fulldesktopres -pipewire-dmabuf
@@ -19,4 +27,4 @@ let
     };
   };
 
-in lib.mkMerge (builtins.map mkUserModule users)
+in lib.mkMerge ([ flatpakModule ] ++ (builtins.map mkUserModule users))

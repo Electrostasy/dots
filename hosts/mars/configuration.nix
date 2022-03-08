@@ -39,60 +39,23 @@
     ];
   };
 
-  security = {
-    sudo = {
-      enable = true;
-      wheelNeedsPassword = false;
-      execWheelOnly = true;
-    };
-
-    rtkit.enable = true;
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false;
+    execWheelOnly = true;
   };
 
-  hardware = {
-    opengl = {
-      enable = true;
-      driSupport = true;
-    };
-
-    sane.enable = true;
-  };
+  hardware.sane.enable = true;
 
   programs.ssh.knownHosts = {
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
   };
 
-  services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-    };
-
-    pipewire = {
-      enable = true;
-      pulse.enable = true;
-      alsa.enable = true;
-    };
-
-    greetd = {
-      enable = true;
-      settings.default_session.command = ''
-        ${pkgs.greetd.tuigreet}/bin/tuigreet \
-          --time \
-          --asterisks \
-          --greeting "Access is restricted to authorized users only." \
-          --cmd wayfire
-      '';
-    };
-  };
-
-  xdg.portal = {
+  services.openssh = {
     enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-    ];
+    permitRootLogin = "no";
+    passwordAuthentication = false;
+    kbdInteractiveAuthentication = false;
   };
 
   users = {

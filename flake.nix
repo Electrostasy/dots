@@ -109,8 +109,11 @@
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
+          ./nixos/modules/profiles/audio
           ./nixos/modules/profiles/dnscrypt-proxy2
           ./nixos/modules/profiles/flatpak
+          ./nixos/modules/profiles/graphical
+          ./nixos/modules/profiles/login-manager
           ./nixos/modules/profiles/teamviewer
           ./nixos/modules/profiles/v4l2loopback
           self.nixosModules.unfree
@@ -175,7 +178,10 @@
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-t420
+          ./nixos/modules/profiles/audio
           ./nixos/modules/profiles/dnscrypt-proxy2
+          ./nixos/modules/profiles/graphical
+          ./nixos/modules/profiles/login-manager
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
           ./modules/neovim

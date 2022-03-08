@@ -34,45 +34,17 @@
     ];
   };
 
-  security = {
-    sudo = {
-      enable = true;
-      wheelNeedsPassword = false;
-      execWheelOnly = true;
-    };
-
-    rtkit.enable = true;
-  };
-
-  hardware.opengl = {
+  security.sudo = {
     enable = true;
-    driSupport = true;
+    wheelNeedsPassword = false;
+    execWheelOnly = true;
   };
 
-  services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-    };
-
-    pipewire = {
-      enable = true;
-      pulse.enable = true;
-      alsa.enable = true;
-    };
-
-    greetd = {
-      enable = true;
-      settings.default_session.command = ''
-        ${pkgs.greetd.tuigreet}/bin/tuigreet \
-          --time \
-          --asterisks \
-          --greeting "Access is restricted to authorized users only." \
-          --cmd wayfire
-      '';
-    };
+  services.openssh = {
+    enable = true;
+    permitRootLogin = "no";
+    passwordAuthentication = false;
+    kbdInteractiveAuthentication = false;
   };
 
   users = {
