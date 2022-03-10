@@ -146,6 +146,7 @@
           ./hosts/phobos/nfs.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
+          ./nixos/modules/profiles/matrix
         ];
         overlays = builtins.attrValues self.overlays;
       };
