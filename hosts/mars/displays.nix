@@ -13,21 +13,21 @@
           status = "enable";
           mode = "3840x2160@119.910Hz";
           position = "0,1080";
-          scale = 1.25;
+          scale = 1.5;
         }
         {
           # BenQ Xl2420T
           criteria = "DP-1";
           status = "enable";
           mode = "1920x1080@119.982Hz";
-          position = "576,0";
+          position = "360,0";
         }
         {
           # Random LG
           criteria = "HDMI-A-1";
           status = "enable";
           mode = "1920x1080@74.973Hz";
-          position = "3072,984";
+          position = "2560,860";
           transform = "270";
         }
       ];
@@ -41,14 +41,14 @@
           status = "enable";
           mode = "3840x2160@119.910Hz";
           position = "0,1080";
-          scale = 1.25;
+          scale = 1.5;
         }
         {
           # Random LG
           criteria = "HDMI-A-1";
           status = "enable";
           mode = "1920x1080@74.973Hz";
-          position = "3072,984";
+          position = "2560,860";
           transform = "270";
         }
       ];
