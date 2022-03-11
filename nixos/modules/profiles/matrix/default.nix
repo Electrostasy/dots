@@ -70,7 +70,7 @@
       "user_api__account_database"
       "mscs__database"
     ];
-    mergeAttrs = lib.foldl (a: b: a // b) { };
+    mergeAttrs = lib.foldl lib.recursiveUpdate {};
     dbAttrs = mergeAttrs (builtins.map (db:
       lib.setAttrByPath (lib.splitString "__" db) {
         connection_string =
