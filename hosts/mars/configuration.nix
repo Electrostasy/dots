@@ -67,7 +67,7 @@
       electro = {
         isNormalUser = true;
         initialHashedPassword = "$6$MvsOwXOO9zUGCIQu$88hXJZkSR3okcpW99Xgcs77FLQAkSbCyArsagoducjN0gTY7goCZ4vN07I2zoTECdz1pHUtIVgJYWlwMnEdoY1";
-        extraGroups = [ "wheel" "video" "audio" "sound" ];
+        extraGroups = [ "wheel" ];
         shell = pkgs.fish;
       };
     };
