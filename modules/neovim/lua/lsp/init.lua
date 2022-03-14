@@ -42,11 +42,8 @@ for _, server in ipairs(servers) do
   lspconfig[server].setup(vim.tbl_deep_extend('force', module, shared_config))
 end
 
--- Show LSP diagnostics in virtual lines
-require('lsp_lines').register_lsp_virtual_lines()
 vim.diagnostic.config({
-  virtual_lines = true,
-  virtual_text = false,
+  virtual_text = true,
   signs = true,
   underline = true,
   update_in_insert = false,

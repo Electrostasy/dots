@@ -47,16 +47,6 @@ require('kanagawa').setup({
 })
 vim.cmd[[colorscheme kanagawa]]
 
-require('modes').setup({
-  colors = {
-    copy = colours.springGreen,
-    delete = colours.waveRed,
-    insert = colours.autumnYellow,
-    visual = colours.springBlue
-  },
-  line_opacity = 0.1,
-  set_cursor = true
-})
 require('nvim-web-devicons').setup({})
 
 require('nvim-treesitter.configs').setup({

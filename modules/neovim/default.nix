@@ -20,9 +20,7 @@
       kanagawa-nvim # Neovim theme
       lightspeed-nvim # Navigation and range motions
       lspkind-nvim # Completion item kind symbols
-      lsp_lines-nvim # Virtual line LSP diagnostics
       luasnip # Completion snippets engine
-      modes-nvim # Change cursor/cursorline colour based on mode
       null-ls-nvim # LSP for formatters and linting
       nvim-cmp # Completion
       nvim-colorizer-lua # Colour code colorizer
@@ -43,7 +41,6 @@
       fd # Telescope finder
       luajitPackages.luacheck # Lua linter
       nixfmt # Nix code formatter
-      nodePackages.bash-language-server
       nodePackages.pyright # Python LSP
       python310Packages.black # Python code formatter
       python310Packages.flake8 # Python linter

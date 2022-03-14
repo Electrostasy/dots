@@ -1,9 +1,6 @@
 {
   description = ''
-    NixOS configurations, out-of-tree/local packages, overlays and Home-Manager
-    modules
-
-    github:electrostasy/dots
+    NixOS systems, (home-manager) modules, packages and overlays I use
   '';
 
   inputs = {
@@ -16,31 +13,18 @@
       url = "github:nix-community/impermanence/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix = {
-      url = "github:NixOS/nix/2.6-maintenance";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    rnix-lsp = {
-      url = "github:nix-community/rnix-lsp";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    heirline-nvim = {
-      url = "github:rebelot/heirline.nvim";
-      flake = false;
-    };
     filetype-nvim = {
       url = "github:nathom/filetype.nvim";
       flake = false;
     };
-    hlargs-nvim = {
-      url = "github:m-demare/hlargs.nvim";
+    heirline-nvim = {
+      url = "github:rebelot/heirline.nvim";
       flake = false;
     };
-    modes-nvim = {
-      url = "github:mvllow/modes.nvim";
+    hlargs-nvim = {
+      url = "github:m-demare/hlargs.nvim";
       flake = false;
     };
   };
@@ -57,39 +41,28 @@
             version = inputs.${pname}.shortRev;
           };
         mkVimPlugins = pnames:
-          builtins.listToAttrs (
-            builtins.map (pname: self.lib.nameValuePair pname (mkVimPlugin pname)) pnames
-          );
-        mkPackage = nixpkgs.legacyPackages.${system}.callPackage;
-      in
-      mkVimPlugins [ "heirline-nvim" "filetype-nvim" "hlargs-nvim" "modes-nvim" ] // {
-        eww-wayland = mkPackage ./pkgs/eww.nix { };
-        firefox-custom = mkPackage ./pkgs/firefox { };
-        gamescope = mkPackage ./pkgs/gamescope.nix { };
-        iosevka-nerdfonts = mkPackage ./pkgs/iosevka-nerdfonts.nix { };
-        wlr-spanbg = mkPackage ./pkgs/wlr-spanbg { };
-      }
-    );
+          with self.lib;
+          foldl recursiveUpdate { }
+          (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
+        inherit (nixpkgs.legacyPackages.${system}) callPackage;
+      in mkVimPlugins [ "filetype-nvim" "heirline-nvim" "hlargs-nvim" ] // {
+        eww-wayland = callPackage ./pkgs/eww.nix { };
+        firefox-custom = callPackage ./pkgs/firefox { };
+        gamescope = callPackage ./pkgs/gamescope.nix { };
+        iosevka-nerdfonts = callPackage ./pkgs/iosevka-nerdfonts.nix { };
+        wlr-spanbg = callPackage ./pkgs/wlr-spanbg { };
+      });
 
     overlays = {
       vimPlugins = final: prev: {
         vimPlugins = prev.vimPlugins // {
           inherit (self.packages.${prev.system})
-            filetype-nvim
-            heirline-nvim
-            hlargs-nvim
-            modes-nvim
-            ;
+            filetype-nvim heirline-nvim hlargs-nvim;
         };
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          eww-wayland
-          firefox-custom
-          gamescope
-          iosevka-nerdfonts
-          wlr-spanbg
-          ;
+          eww-wayland firefox-custom gamescope iosevka-nerdfonts wlr-spanbg;
       };
     };
 
@@ -99,7 +72,6 @@
     };
 
     nixosConfigurations = with self.lib.extended; {
-      # Desktop workstation
       mars = nixosSystem {
         system = "x86_64-linux";
         modules = [
@@ -125,19 +97,9 @@
           ./modules/nix-index.nix
           ./modules/wayfire
         ];
-        overlays = builtins.attrValues self.overlays ++ [
-          # Use the git/master builds
-          (final: prev: {
-            inherit (inputs.rnix-lsp.packages.${prev.system}) rnix-lsp;
-          })
-          (final: prev: rec {
-            nixFlakes = inputs.nix.packages.${prev.system}.nix;
-            nixUnstable = nixFlakes;
-          })
-        ];
+        overlays = builtins.attrValues self.overlays;
       };
 
-      # Raspberry Pi 4B
       phobos = nixosSystem {
         system = "aarch64-linux";
         modules = [
@@ -148,15 +110,11 @@
           nixos-hardware.nixosModules.raspberry-pi-4
           ./nixos/modules/profiles/matrix
         ];
-        overlays = builtins.attrValues self.overlays;
       };
 
-      # Raspberry Pi 3 (WIP)
       deimos = nixosSystem {
         system = "aarch64-linux";
-        modules = [
-          ./hosts/deimos/configuration.nix
-        ];
+        modules = [ ./hosts/deimos/configuration.nix ];
         overlays = [
           # Cross-compilation of aarch64 ISO from x86_64-linux expects
           # unavailable kernel modules to be present since #78430:
@@ -170,7 +128,6 @@
         ];
       };
 
-      # Lenovo Thinkpad T420
       mercury = nixosSystem {
         system = "x86_64-linux";
         modules = [
