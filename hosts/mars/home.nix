@@ -28,14 +28,12 @@
     ripgrep
     slurp # Wayland compositor region selector
     source-han-sans # Japanese OpenType/CFF fonts
-    swaybg
     # swayidle # Idle management daemon
     # swaylock # Screen locker
     tealdeer # `tldr` alternative
     # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
     wf-recorder # Record wayland displays
     wl-clipboard # `wl-{copy,paste}` clipboard utilities
-    wlr-randr # Outputs querying and management
     xplr # TUI scriptable file manager
     xwayland
   ];

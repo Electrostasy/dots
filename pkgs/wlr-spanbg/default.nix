@@ -1,5 +1,9 @@
-{ writeShellScriptBin, wlr-randr, gawk }:
+{ writeShellApplication, wlr-randr, gawk, swaybg }:
 
-writeShellScriptBin "wlr-spanbg" ''
-  ${wlr-randr}/bin/wlr-randr | ${gawk}/bin/awk -v bg=$1 -f ${./wlr-spanbg.awk}
-''
+writeShellApplication {
+  name = "wlr-spanbg";
+  text = ''
+    ${wlr-randr}/bin/wlr-randr | ${gawk}/bin/awk -v bg="$1" -f ${./wlr-spanbg.awk}
+  '';
+  runtimeInputs = [ wlr-randr gawk swaybg ];
+}
