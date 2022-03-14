@@ -5,7 +5,7 @@
 
   home.packages = with pkgs; [
     alsaUtils
-    btop
+    bottom # System resources monitor
     chafa # Image data terminal previewer
     du-dust # Disk usage visualizer
     eww-wayland # Desktop widgets
@@ -14,9 +14,8 @@
     firefox-custom
     gimp
     grim # Wayland compositor image grabber
-    # hexyl # CLI Hex viewer
     imagemagick
-    # inter # UI typeface
+    inter # UI typeface
     iosevka-nerdfonts
     keepassxc # Password manager
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
@@ -33,6 +32,7 @@
     # swaylock # Screen locker
     tealdeer # `tldr` alternative
     # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
+    transmission-qt # BitTorrent client
     wf-recorder # Record wayland displays
     wl-clipboard # `wl-{copy,paste}` clipboard utilities
     xplr # TUI scriptable file manager
@@ -139,7 +139,6 @@
           if isatty stdout; set_color $fish_color_comment; end; \\
           ${pkgs.fortune}/bin/fortune definitions";
       };
-      # Use kanagawa theme
       interactiveShellInit = ''
         source ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.fish
       '';
