@@ -26,6 +26,7 @@
     quintom-cursor-theme
     # rink # Unit-aware calculator/conversion tool
     ripgrep
+    schildichat-desktop-wayland # Matrix chat client
     slurp # Wayland compositor region selector
     source-han-sans # Japanese OpenType/CFF fonts
     # swayidle # Idle management daemon

@@ -32,6 +32,7 @@
     users.electro.directories = [
       ".cache/nix-index"
       ".cache/tealdeer"
+      ".config/SchildiChat"
       { directory = ".ssh"; mode = "0700"; }
       ".mozilla"
       "Pictures"
