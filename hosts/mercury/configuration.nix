@@ -23,10 +23,6 @@
 
   networking = {
     hostName = "mercury";
-    hosts = {
-      "192.168.205.85" = [ "phobos" "pi4" ];
-      "192.168.205.84" = [ "deimos" "pi3" ];
-    };
     timeServers = [
       "1.europe.pool.ntp.org"
       "1.lt.pool.ntp.org"

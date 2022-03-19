@@ -21,10 +21,6 @@
 
   networking = {
     hostName = "phobos";
-    hosts = {
-      "192.168.205.22" = [ "mars" ];
-      "192.168.205.84" = [ "deimos" "pi3" ];
-    };
     timeServers = [
       "1.europe.pool.ntp.org"
       "1.lt.pool.ntp.org"
