@@ -30,12 +30,10 @@
 
   documentation.enable = false;
 
-  security = {
-    sudo = {
-      enable = true;
-      wheelNeedsPassword = false;
-      execWheelOnly = true;
-    };
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false;
+    execWheelOnly = true;
   };
 
   services = {
@@ -44,6 +42,16 @@
       permitRootLogin = "no";
       passwordAuthentication = false;
       kbdInteractiveAuthentication = false;
+    };
+    avahi = {
+      enable = true;
+      publish = {
+        enable = true;
+        addresses = true;
+        domain = true;
+      };
+      nssmdns = true;
+      interfaces = [ "eth0" ];
     };
   };
 

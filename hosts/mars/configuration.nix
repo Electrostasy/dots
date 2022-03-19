@@ -42,11 +42,24 @@
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
   };
 
-  services.openssh = {
-    enable = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-    kbdInteractiveAuthentication = false;
+  services = {
+    openssh = {
+      enable = true;
+      permitRootLogin = "no";
+      passwordAuthentication = false;
+      kbdInteractiveAuthentication = false;
+    };
+    dbus.enable = true;
+    avahi = {
+      enable = true;
+      publish = {
+        enable = true;
+        addresses = true;
+        domain = true;
+      };
+      nssmdns = true;
+      interfaces = [ "eno1" "enp8s0" ];
+    };
   };
 
   users = {

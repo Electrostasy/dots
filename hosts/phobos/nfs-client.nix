@@ -2,7 +2,7 @@
 
 let
   fsRoot = "/mnt/media";
-  host = "phobos";
+  host = "phobos.local";
   mkMount = x: {
     "${fsRoot}/${x}" = {
       device = "${host}:/${x}";

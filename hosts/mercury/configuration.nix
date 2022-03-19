@@ -36,11 +36,23 @@
     execWheelOnly = true;
   };
 
-  services.openssh = {
-    enable = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-    kbdInteractiveAuthentication = false;
+  services = {
+    openssh = {
+      enable = true;
+      permitRootLogin = "no";
+      passwordAuthentication = false;
+      kbdInteractiveAuthentication = false;
+    };
+    avahi = {
+      enable = true;
+      publish = {
+        enable = true;
+        addresses = true;
+        domain = true;
+      };
+      nssmdns = true;
+      interfaces = [ "enp0s25" ];
+    };
   };
 
   users = {
