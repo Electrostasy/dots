@@ -7,6 +7,7 @@
     alsaUtils
     bottom # System resources monitor
     chafa # Image data terminal previewer
+    cura # 3D printer slicer software
     du-dust # Disk usage visualizer
     eww-wayland # Desktop widgets
     f3d # 3D file format viewer
@@ -27,7 +28,9 @@
     ripgrep
     schildichat-desktop-wayland # Matrix chat client
     slurp # Wayland compositor region selector
+    solvespace # Parametric 3D CAD
     source-han-sans # Japanese OpenType/CFF fonts
+    super-slicer # 3D printer slicer software
     # swayidle # Idle management daemon
     # swaylock # Screen locker
     tealdeer # `tldr` alternative
