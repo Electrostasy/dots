@@ -52,6 +52,8 @@
       tree-sitter # Incremental parser
       valgrind # Memory debugging
     ];
+    withRuby = false;
+    withPython3 = false;
     extraConfig = ''
       " Home-Manager and NixOS currently do not support a pure Lua config
       " without a generated init.vim containing the runtimepath and packpath,
@@ -62,5 +64,9 @@
 
   # Link the Neovim lua configuration to ~/.config/nvim
   home.file.".config/nvim/lua".source = ./lua;
+
+  programs.fish.interactiveShellInit = ''
+    set EDITOR nvim
+  '';
 }
 

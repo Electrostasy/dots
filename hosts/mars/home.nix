@@ -73,50 +73,10 @@
       };
     };
 
-    kitty = {
-      enable = true;
-      settings = {
-        cursor_shape = "beam";
-        disable_ligatures = "always";
-        scrollback_lines = 10000;
-        enable_audio_bell = false;
-        update_check_interval = 0;
-        linux_display_server = "wayland";
-      };
-      extraConfig = ''
-        font_family Iosevka
-        bold_font Iosevka Bold
-        italic_font Iosevka Italic
-        bold_italic_font Iosevka Bold Italic
-        font_size 11
-        mouse_map ctrl+left press ungrabbed,grabbed mouse_click_url
-
-        include ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.conf
-      '';
-      keybindings = {
-        "ctrl+shift+c" = "copy_to_clipboard";
-        "ctrl+shift+v" = "paste_from_clipboard";
-        "shift+up" = "scroll_line_up";
-        "shift+down" = "scroll_line_down";
-        "page_up" = "scroll_page_up";
-        "page_down" = "scroll_page_down";
-        "ctrl+shift+equal" = "change_font_size all +1.0";
-        "ctrl+shift+minus" = "change_font_size all -1.0";
-        "ctrl+shift+backspace" = "change_font_size all 0";
-      };
-    };
-
-    fish = {
-      enable = true;
-
-      shellAliases.ssh = lib.mkIf config.programs.kitty.enable "kitty +kitten ssh";
-      shellAbbrs = with lib; {
-        n = mkIf config.programs.neovim.enable "nvim";
-        z = mkIf config.programs.zathura.enable "zathura";
-        x = mkIf (any (elem: elem == pkgs.xplr) config.home.packages) "xplr";
-      };
-      functions = {
-        reboot-windows = ''
+    fish.functions = {
+      reboot-windows = {
+        description = "Reboot into Windows if it is present";
+        body = ''
           set -l windows (${pkgs.efibootmgr}/bin/efibootmgr | grep 'Windows Boot Manager')
           if [ "$status" -eq 1 ]
             echo 'Cannot reboot into Windows: Windows not found'
@@ -130,44 +90,16 @@
             end
           end
         '';
-        share-screen = ''
+      };
+      share-screen = {
+        description = "Share a selected screen using v4l2";
+        body = ''
           set -l intro 'Select a display to begin sharing to /dev/video0.\nOnce selected, "mpv --demuxer-lavf-format=video4linux2 av://v4l2:/dev/video0" to preview.'
           set -l command "echo $intro; wf-recorder --muxer=v4l2 --file=/dev/video0 -c rawvideo -o (slurp -o -f \"%o\") -x yuyv422"
 
           kitty fish -c "$command"
         '';
-        qr = {
-          description = ''
-            Encode clipboard contents as a QR code, or decode a QR code from selected screen region
-          '';
-          body = ''
-            argparse -x e,d 'e/encode' 'd/decode' -- $argv
-            if set -q _flag_encode
-              echo (${pkgs.wl-clipboard}/bin/wl-paste) | ${pkgs.qrencode}/bin/qrencode -t ansiutf8
-              return 0
-            end
-            if set -q _flag_decode
-              ${pkgs.grim}/bin/grim -g (${pkgs.slurp}/bin/slurp) - | ${pkgs.zbar}/bin/zbarimg -q --raw PNG:
-              return 0
-            end
-            echo 'Usage:'
-            echo '  -e/--encode: encode clipboard'
-            echo '  -d/--decode: decode selected region'
-            return 1
-          '';
-        };
-        fish_greeting = ''
-          if isatty stdout
-            set_color $fish_color_comment
-          end; ${pkgs.fortune}/bin/fortune definitions
-        '';
       };
-      interactiveShellInit = ''
-        source ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.fish
-        set EDITOR nvim
-        set VISUAL nvim
-        set PAGER less
-      '';
     };
 
     git = {

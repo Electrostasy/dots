@@ -92,6 +92,8 @@
         ] ++ forAllHomes [ "electro" ] [
           ./hosts/mars/displays.nix
           ./hosts/mars/home.nix
+          ./modules/fish.nix
+          ./modules/kitty.nix
           ./modules/mpv.nix
           ./modules/neovim
           ./modules/nix-index.nix
@@ -142,6 +144,8 @@
           ./nixos/modules/profiles/login-manager
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
+          ./modules/fish.nix
+          ./modules/kitty.nix
           ./modules/neovim
           ./modules/nix-index.nix
           ./modules/wayfire
