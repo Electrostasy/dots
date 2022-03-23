@@ -51,6 +51,7 @@
         gamescope = callPackage ./pkgs/gamescope.nix { };
         iosevka-nerdfonts = callPackage ./pkgs/iosevka-nerdfonts.nix { };
         wlr-spanbg = callPackage ./pkgs/wlr-spanbg { };
+        simp1e-cursor-theme = callPackage ./pkgs/simp1e-cursor-theme.nix { };
       });
 
     overlays = {
@@ -62,7 +63,7 @@
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          eww-wayland firefox-custom gamescope iosevka-nerdfonts wlr-spanbg;
+          eww-wayland firefox-custom gamescope iosevka-nerdfonts wlr-spanbg simp1e-cursor-theme;
       };
     };
 
