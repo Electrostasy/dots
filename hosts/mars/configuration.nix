@@ -42,6 +42,8 @@
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
   };
 
+  # Without dconf enabled, GTK settings in Home Manager won't work
+  programs.dconf.enable = true;
   services = {
     openssh = {
       enable = true;
@@ -49,7 +51,10 @@
       passwordAuthentication = false;
       kbdInteractiveAuthentication = false;
     };
-    dbus.enable = true;
+    dbus = {
+      enable = true;
+      packages = [ pkgs.dconf ];
+    };
     avahi = {
       enable = true;
       publish = {

@@ -112,8 +112,6 @@
         {
           plugin = "input";
           settings = {
-            # cursor theme package installed under home.packages
-            cursor_theme = "Quintom_Ink";
             mouse_accel_profile = "flat";
             xkb_layout = "us,lt";
             xkb_model = "pc105";

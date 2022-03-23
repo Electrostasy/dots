@@ -3,6 +3,28 @@
 {
   xdg.enable = true;
 
+  wayland.windowManager.wayfire.settings.plugins = [{
+    plugin = "input";
+    settings = {
+      cursor_theme = "Simp1e-Gruvbox-Dark";
+      cursor_size = 24;
+    };
+  }];
+
+  gtk = {
+    enable = true;
+    cursorTheme = {
+      package = pkgs.simp1e-cursor-theme;
+      name = "Simp1e-Gruvbox-Dark";
+      size = 24;
+    };
+    theme = {
+      package = pkgs.gnome-themes-extra;
+      name = "Adwaita-dark";
+    };
+    gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
+  };
+
   home.packages = with pkgs; [
     alsaUtils
     bottom # System resources monitor
@@ -23,7 +45,6 @@
     (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
     neofetch
     pastel # Generate, analyze, convert and manipulate colours
-    quintom-cursor-theme
     # rink # Unit-aware calculator/conversion tool
     ripgrep
     schildichat-desktop-wayland # Matrix chat client
