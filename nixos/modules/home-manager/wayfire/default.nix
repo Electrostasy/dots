@@ -5,7 +5,8 @@ with lib;
 let
   cfg = config.wayland.windowManager.wayfire;
 
-  allowedTypes = with types; either str (either int (either bool (either float (listOf float))));
+  allowedTypes = with types;
+    either str (either int (either bool (either float (listOf float))));
 
   plugin = types.submodule {
     options = {
@@ -30,9 +31,7 @@ let
       };
 
       settings = mkOption {
-        type = types.submodule {
-          freeformType = types.attrsOf allowedTypes;
-        };
+        type = types.submodule { freeformType = types.attrsOf allowedTypes; };
         description = ''
           Key-value style attribute set of settings for an individual
           plugin. Valid values: int, float, bool, str, or list or floats.
@@ -41,22 +40,16 @@ let
       };
     };
   };
-in
-{
+in {
   options.wayland.windowManager.wayfire = {
     enable = mkEnableOption "Wayfire 3D wayland compositor";
 
     package = mkOption {
       type = types.package;
       default = pkgs.wayfireApplications-unwrapped.wayfire;
-      example = literalExample "pkgs.unstable.wayfireApplications-unwrapped.wayfire";
+      example =
+        literalExample "pkgs.unstable.wayfireApplications-unwrapped.wayfire";
       description = "Package to use";
-    };
-
-    systemdIntegration = mkOption {
-      type = types.bool;
-      default = pkgs.stdenv.isLinux;
-      description = "Whether to create a systemd service";
     };
 
     settings = mkOption {
@@ -65,7 +58,7 @@ in
 
         options.plugins = mkOption {
           type = types.listOf plugin;
-          default = [];
+          default = [ ];
           description = "List of plugins to enable and configure";
         };
       };
@@ -79,33 +72,26 @@ in
   };
 
   config = let
+    mergePluginSettings = ps:
+      map (foldl recursiveUpdate { })
+      (attrValues (groupBy (x: x.plugin) ps));
+    plugins = mergePluginSettings cfg.settings.plugins;
     listToString = list: sep:
-      concatStrings (
-        intersperse sep (
-          # Convert list elements to a sensible string representation
-          map (x: generators.mkValueStringDefault {} x) list
-        )
-      );
+      concatStrings (intersperse sep (
+        # Convert list elements to a sensible string representation
+        map (generators.mkValueStringDefault { }) list));
     pluginsAttrs = listToAttrs (
       # Each plugin name becomes INI section name, and its `settings` attrs
       # become INI key-value pairs under that section name
-      map (
-        p: nameValuePair p.plugin (
-          mapAttrs (
-            _: value:
-            # RGBA colour values are presented as `1.0 1.0 1.0 1.0` in the INI,
-            # but the generator doesn't accept lists, so convert lists to strings
-              if isList value then
-                listToString value " "
-              else
-                value
-          ) p.settings
-        )
-      ) cfg.settings.plugins
-    );
+      map (p:
+        nameValuePair p.plugin (mapAttrs (_: value:
+          # RGBA colour values are presented as `1.0 1.0 1.0 1.0` in the INI,
+          # but the generator doesn't accept lists, so convert lists to strings
+          if isList value then listToString value " " else value) p.settings))
+      plugins);
     coreAttrs = {
       core = overrideExisting cfg.settings {
-        plugins = listToString (map (p: p.plugin) cfg.settings.plugins) " \\ \n  ";
+        plugins = listToString (map (p: p.plugin) plugins) " \\ \n  ";
       };
     };
     settings = coreAttrs // pluginsAttrs;
@@ -114,27 +100,13 @@ in
     # the wrapper `wrapWayfireApplication` directly as it is called in Nixpkgs at
     # nixpkgs/applications/window-managers/wayfire/applications.nix#L17 to wrap
     # Wayfire with a specified list of derivations (plugins)
-    finalPackage = /*pkgs.wayfireApplications.wrapWayfireApplication*/ (pkgs.callPackage ./wrapper.nix {}) cfg.package (
-      plugins:
-        remove null (unique (catAttrs "package" cfg.settings.plugins))
-    );
-  in
-    mkIf cfg.enable {
-      home.packages = [ finalPackage ];
-
-      # Required for Pipewire screen/window sharing
-      home.sessionVariables.XDG_CURRENT_DESKTOP = "wayfire";
-
-      xdg.configFile."wayfire.ini".text = generators.toINI {} settings;
-
-      systemd.user.targets.wayfire-session = mkIf cfg.systemdIntegration {
-        Unit = {
-          Description = "Wayfire compositor session";
-          Documentation = [ "man:systemd.special(7)" ];
-          BindsTo = [ "graphical-session.target" ];
-          Wants = [ "graphical-session-pre.target" ];
-          After = [ "graphical-session-pre.target" ];
-        };
-      };
+    finalPackage = /* pkgs.wayfireApplications.wrapWayfireApplication */ (pkgs.callPackage ./wrapper.nix { }) cfg.package
+      (_: remove null (unique (catAttrs "package" plugins)));
+  in mkIf cfg.enable {
+    home = {
+      packages = [ finalPackage ];
+      sessionVariables.XDG_CURRENT_DESKTOP = "wayfire";
     };
+    xdg.configFile."wayfire.ini".text = generators.toINI { } settings;
+  };
 }
