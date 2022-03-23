@@ -1,6 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./hardware-configuration.nix
+    ./nfs.nix
+  ];
+
   system.stateVersion = "22.05";
 
   boot = {

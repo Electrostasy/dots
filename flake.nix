@@ -5,6 +5,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,7 +17,6 @@
       url = "github:nix-community/impermanence/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     filetype-nvim = {
       url = "github:nathom/filetype.nvim";
@@ -77,7 +80,6 @@
         system = "x86_64-linux";
         modules = [
           ./hosts/mars/configuration.nix
-          ./hosts/mars/hardware-configuration.nix
           ./hosts/phobos/nfs-client.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.common-cpu-intel
@@ -107,8 +109,6 @@
         system = "aarch64-linux";
         modules = [
           ./hosts/phobos/configuration.nix
-          ./hosts/phobos/hardware-configuration.nix
-          ./hosts/phobos/nfs.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
           ./nixos/modules/profiles/matrix
@@ -118,24 +118,12 @@
       deimos = nixosSystem {
         system = "aarch64-linux";
         modules = [ ./hosts/deimos/configuration.nix ];
-        overlays = [
-          # Cross-compilation of aarch64 ISO from x86_64-linux expects
-          # unavailable kernel modules to be present since #78430:
-          #   https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
-          # Tracking issue:
-          #   https://github.com/NixOS/nixpkgs/issues/109280#issuecomment-973636212
-          (final: prev: {
-            makeModulesClosure = x:
-              prev.makeModulesClosure (x // { allowMissing = true; });
-          })
-        ];
       };
 
       mercury = nixosSystem {
         system = "x86_64-linux";
         modules = [
           ./hosts/mercury/configuration.nix
-          ./hosts/mercury/hardware-configuration.nix
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-t420

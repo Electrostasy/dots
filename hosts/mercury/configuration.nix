@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [ ./hardware-configuration.nix ];
+
   system.stateVersion = "21.11";
 
   boot = {
