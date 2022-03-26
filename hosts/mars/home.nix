@@ -57,12 +57,13 @@
     alsaUtils
     bottom # System resources monitor
     chafa # Image data terminal previewer
-    cura # 3D printer slicer software
     du-dust # Disk usage visualizer
     eww-wayland # Desktop widgets
     f3d # 3D file format viewer
     ffmpeg
+    fio # IO benchmark tool
     firefox-custom
+    freecad
     gimp
     grim # Wayland compositor image grabber
     imagemagick
@@ -73,9 +74,10 @@
     (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
     neofetch
     pastel # Generate, analyze, convert and manipulate colours
+    rehex # Hex editor
     # rink # Unit-aware calculator/conversion tool
     ripgrep
-    schildichat-desktop-wayland # Matrix chat client
+    schildichat-desktop # Matrix chat client
     slurp # Wayland compositor region selector
     solvespace # Parametric 3D CAD
     source-han-sans # Japanese OpenType/CFF fonts
@@ -87,7 +89,7 @@
     transmission-qt # BitTorrent client
     wf-recorder # Record wayland displays
     wl-clipboard # `wl-{copy,paste}` clipboard utilities
-    xdg-utils # for xdg-open
+    xdg-utils # for `xdg-open`
     xplr # TUI scriptable file manager
     xwayland
   ];
