@@ -43,7 +43,7 @@ stdenvNoCC.mkDerivation {
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
-  buildInputs = [ librsvg python3Packages.pillow xcursorgen ];
+  nativeBuildInputs = [ librsvg python3Packages.pillow xcursorgen ];
 
   preBuildPhase = let
     fileName = builtins.replaceStrings [ " " ] [ "-" ] theme.name;
