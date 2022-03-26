@@ -65,7 +65,7 @@
         domain = true;
       };
       nssmdns = true;
-      interfaces = [ "eno1" "enp8s0" ];
+      interfaces = [ "enp0s31f6" "enp5s0" ];
     };
   };
 
