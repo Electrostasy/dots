@@ -6,7 +6,7 @@
   wayland.windowManager.wayfire.settings.plugins = [{
     plugin = "input";
     settings = {
-      cursor_theme = "Simp1e-Gruvbox-Dark";
+      cursor_theme = "Simp1e-Kanagawa";
       cursor_size = 24;
     };
   }];
@@ -14,8 +14,36 @@
   gtk = {
     enable = true;
     cursorTheme = {
-      package = pkgs.simp1e-cursor-theme;
-      name = "Simp1e-Gruvbox-Dark";
+      package = pkgs.simp1e-cursor-theme.override {
+        theme = {
+          name = "Simp1e Kanagawa";
+          shadow_opacity = 0.35;
+          shadow = "#16161D";
+          cursor_border = "#DCD7BA";
+          default_cursor_bg = "#1F1F28";
+          hand_bg = "#1F1F28";
+          question_mark_bg = "#658594";
+          question_mark_fg = "#1F1F28";
+          plus_bg = "#76946A";
+          plus_fg = "#1F1F28";
+          link_bg = "#957FB8";
+          link_fg = "#1F1F28";
+          move_bg = "#FFA066";
+          move_fg = "#1F1F28";
+          context_menu_bg = "#7E9CD8";
+          context_menu_fg = "#1F1F28";
+          forbidden_bg = "#1F1F28";
+          forbidden_fg = "#E82424";
+          magnifier_bg = "#1F1F28";
+          magnifier_fg = "#DCD7BA";
+          skull_bg = "#1F1F28";
+          skull_eye = "#DCD7BA";
+          spinner_bg = "#1F1F28";
+          spinner_fg1 = "#DCD7BA";
+          spinner_fg2 = "#DCD7BA";
+        };
+      };
+      name = "Simp1e-Kanagawa";
       size = 24;
     };
     theme = {
