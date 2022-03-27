@@ -1,0 +1,75 @@
+configuration {
+  show-icons: true;
+  font: "Inter Regular 12";
+}
+
+* {
+  border: none;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+
+  bg: #1f1f28;
+  bg-alt: #2a2a37;
+  bg-focus: #363646;
+  bg-dark: #16161d;
+  fg: #dcd7ba;
+  blue: #7e9cd8;
+  hi: bold underline #739cd8;
+}
+
+window {
+  background-color: @bg;
+  border: none;
+  width: 25%;
+}
+
+inputbar {
+  padding: 0.5em;
+  background-color: @bg-alt;
+  children: [entry, num-filtered-rows, textbox-numrows-separator, num-rows];
+}
+
+textbox-numrows-separator {
+  expand: false;
+  str: "/";
+}
+
+textbox-numrows-separator, num-rows, num-filtered-rows {
+  text-color: #54546d;
+}
+
+entry {
+  text-color: @fg;
+  placeholder: "Type program name or description...";
+  placeholder-color: #53546d;
+}
+
+listview {
+  border: none;
+  background-color: none;
+  scrollbar: false;
+  columns: 2;
+}
+
+element-text {
+  padding: 0.25em;
+  text-color: @fg;
+  highlight: @hi;
+}
+
+element-icon {
+  padding: 0 0 0 0.25em;
+}
+
+element normal normal, element alternate normal {
+  background-color: none;
+}
+
+element selected normal {
+  background-color: @bg-focus;
+}
+
+element-text selected normal {
+  text-color: @fg;
+}
