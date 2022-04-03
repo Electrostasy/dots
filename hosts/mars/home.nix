@@ -89,6 +89,7 @@
     transmission-qt # BitTorrent client
     wf-recorder # Record wayland displays
     wl-clipboard # `wl-{copy,paste}` clipboard utilities
+    wlopm # Wayland output management
     xdg-utils # for `xdg-open`
     xplr # TUI scriptable file manager
     xwayland
