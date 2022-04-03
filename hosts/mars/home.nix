@@ -81,6 +81,7 @@
     inter # UI typeface
     iosevka-nerdfonts
     jq
+    (imv.override { withWindowSystem = "wayland"; })
     keepassxc # Password manager
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
@@ -94,11 +95,9 @@
     solvespace # Parametric 3D CAD
     source-han-sans # Japanese OpenType/CFF fonts
     super-slicer # 3D printer slicer software
-    # swayidle # Idle management daemon
-    # swaylock # Screen locker
     tealdeer # `tldr` alternative
     # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
-    transmission-qt # BitTorrent client
+    transmission-gtk # BitTorrent client
     wf-recorder # Record wayland displays
     wl-clipboard # `wl-{copy,paste}` clipboard utilities
     wlopm # Wayland output management
