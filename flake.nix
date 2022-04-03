@@ -57,7 +57,7 @@
         eww-wayland = callPackage ./pkgs/eww.nix { };
         firefox-custom = callPackage ./pkgs/firefox { };
         gamescope = callPackage ./pkgs/gamescope.nix { };
-        iosevka-nerdfonts = callPackage ./pkgs/iosevka-nerdfonts.nix { };
+        nerdfonts-patch = callPackage ./pkgs/nerdfonts-patch.nix { };
         wlr-spanbg = callPackage ./pkgs/wlr-spanbg { };
         simp1e-cursor-theme = callPackage ./pkgs/simp1e-cursor-theme.nix { };
         wlopm = callPackage ./pkgs/wlopm.nix { };
@@ -72,7 +72,7 @@
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          eww-wayland firefox-custom gamescope iosevka-nerdfonts wlr-spanbg simp1e-cursor-theme wlopm;
+          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm;
       };
     };
 

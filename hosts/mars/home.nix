@@ -53,7 +53,18 @@
     gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
   };
 
-  home.packages = with pkgs; [
+  home.packages = with pkgs; let
+    iosevka-nerdfonts = nerdfonts-patch (iosevka.override {
+      privateBuildPlan = {
+        family = "Iosevka Custom";
+        spacing = "normal";
+        serifs = "sans";
+        no-cv-ss = true;
+        no-litigation = true;
+      };
+      set = "custom";
+    });
+    in [
     alsaUtils
     bottom # System resources monitor
     chafa # Image data terminal previewer
