@@ -86,6 +86,14 @@
         {
           plugin = "autostart";
           settings = {
+            dbus = ''
+              exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+              exec hash dbus-update-activation-environment 2>/dev/null && \
+                dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+            '';
+            screenshare = ''
+              sleep 1 && (XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=sway ${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal --replace & ${pkgs.xdg-desktop-portal-wlr}/libexec/xdg-desktop-portal-wlr)
+            '';
             idle = ''
               ${pkgs.swayidle}/bin/swayidle -w \
                 timeout 600 '${pkgs.fish}/bin/fish -c ${./outputs.fish} --off' \

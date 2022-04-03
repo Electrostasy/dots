@@ -44,6 +44,22 @@
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
   };
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+    wlr = {
+      enable = true;
+      settings.screencast = {
+        max_fps = 30;
+        chooser_type = "simple";
+        chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+      };
+    };
+    gtkUsePortal = true;
+  };
+
   # Without dconf enabled, GTK settings in Home Manager won't work
   programs.dconf.enable = true;
   services = {
