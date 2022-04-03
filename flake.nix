@@ -41,7 +41,12 @@
           nixpkgs.legacyPackages.${system}.vimUtils.buildVimPluginFrom2Nix {
             inherit pname;
             src = inputs.${pname};
-            version = inputs.${pname}.shortRev;
+            version = let
+              date = inputs.${pname}.lastModifiedDate;
+              year = builtins.substring 0 4 date;
+              month = builtins.substring 4 2 date;
+              day = builtins.substring 6 2 date;
+            in "unstable-${year}-${month}-${day}";
           };
         mkVimPlugins = pnames:
           with self.lib;
