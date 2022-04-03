@@ -61,6 +61,7 @@
         wlr-spanbg = callPackage ./pkgs/wlr-spanbg { };
         simp1e-cursor-theme = callPackage ./pkgs/simp1e-cursor-theme.nix { };
         wlopm = callPackage ./pkgs/wlopm.nix { };
+        wayfire-git = callPackage ./pkgs/wayfire/wayfire-git.nix { };
       });
 
     overlays = {
@@ -72,7 +73,7 @@
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm;
+          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git;
       };
     };
 

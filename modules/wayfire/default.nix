@@ -3,6 +3,7 @@
 {
   wayland.windowManager.wayfire = {
     enable = true;
+    package = pkgs.wayfire-git;
 
     settings = {
       close_top_view = "<super> <shift> KEY_W";
