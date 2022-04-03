@@ -32,8 +32,18 @@
         end; ${pkgs.fortune}/bin/fortune definitions
       '';
     };
+    plugins = [{
+      name = "fzf.fish";
+      inherit (pkgs.fishPlugins.fzf-fish) src;
+    }];
     interactiveShellInit = ''
       source ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.fish
     '';
   };
+
+  home.packages = with pkgs; [
+    fzf
+    fd
+    bat
+  ];
 }
