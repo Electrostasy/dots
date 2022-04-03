@@ -69,6 +69,7 @@
     imagemagick
     inter # UI typeface
     iosevka-nerdfonts
+    jq
     keepassxc # Password manager
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))

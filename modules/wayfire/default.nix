@@ -86,12 +86,12 @@
         {
           plugin = "autostart";
           settings = {
+            idle = ''
+              ${pkgs.swayidle}/bin/swayidle -w \
+                timeout 600 '${pkgs.fish}/bin/fish -c ${./outputs.fish} --off' \
+                resume '${pkgs.fish}/bin/fish -c ${./outputs.fish} --on'
+            '';
             outputs = "${pkgs.kanshi}/bin/kanshi";
-            idle = "${pkgs.swayidle}/bin/swayidle before-sleep ${pkgs.swaylock}/bin/swaylock";
-
-            # TODO: Possible to fix in alsa/pipewire configs somehow?
-            # https://askubuntu.com/a/687812
-            audio = "${pkgs.alsaUtils}/bin/amixer -c 0 cset name='Analog Output Playback Enum' 2";
           };
         }
         {
