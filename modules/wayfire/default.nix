@@ -12,6 +12,20 @@
 
       plugins = [
         {
+          package = pkgs.wayfirePlugins.firedecor;
+          plugin = "firedecor";
+          settings = {
+            border_size = 8;
+            active_border = [ 0.12 0.12 0.15 1.0 ];
+            inactive_border = [ 0.12 0.12 0.15 1.0 ];
+            outline_size = 4;
+            active_outline = [ 0.176 0.31 0.4 1.0 ];
+            inactive_outline = [ 0.086 0.086 0.114 1.0 ];
+            corner_radius = 8;
+            layout = "-";
+          };
+        }
+        {
           # Allows using true fullscreen mode for windows, which
           # enables direct scanout in nested usecases like gamescope
           plugin = "wm-actions";

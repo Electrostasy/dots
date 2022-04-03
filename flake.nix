@@ -53,7 +53,7 @@
           foldl recursiveUpdate { }
           (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
         inherit (nixpkgs.legacyPackages.${system}) callPackage;
-      in mkVimPlugins [ "filetype-nvim" "heirline-nvim" "hlargs-nvim" ] // {
+      in mkVimPlugins [ "filetype-nvim" "heirline-nvim" "hlargs-nvim" ] // rec {
         eww-wayland = callPackage ./pkgs/eww.nix { };
         firefox-custom = callPackage ./pkgs/firefox { };
         gamescope = callPackage ./pkgs/gamescope.nix { };
@@ -62,6 +62,7 @@
         simp1e-cursor-theme = callPackage ./pkgs/simp1e-cursor-theme.nix { };
         wlopm = callPackage ./pkgs/wlopm.nix { };
         wayfire-git = callPackage ./pkgs/wayfire/wayfire-git.nix { };
+        wayfire-firedecor = callPackage ./pkgs/wayfire/firedecor.nix { wayfire = wayfire-git; };
       });
 
     overlays = {
@@ -74,6 +75,7 @@
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
           eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git;
+        wayfirePlugins.firedecor = self.packages.${prev.system}.wayfire-firedecor;
       };
     };
 
