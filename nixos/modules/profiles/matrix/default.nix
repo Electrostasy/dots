@@ -70,7 +70,7 @@
       "user_api__account_database"
       "mscs__database"
     ];
-    mergeAttrs = lib.foldl lib.recursiveUpdate {};
+    mergeAttrs = lib.foldl lib.recursiveUpdate { };
     dbAttrs = mergeAttrs (builtins.map (db:
       lib.setAttrByPath (lib.splitString "__" db) {
         connection_string =
@@ -127,6 +127,11 @@
         };
 
         client_api.registration_disabled = true;
+
+        logging = [{
+          type = "std";
+          level = "error";
+        }];
       };
     };
 
