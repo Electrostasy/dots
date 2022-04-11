@@ -9,6 +9,10 @@
       url = "github:NixOS/nixos-hardware/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, impermanence, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, impermanence, nixos-hardware, nixos-wsl, ... }@inputs: {
     lib = import ./nixos/lib { inherit (nixpkgs) lib; inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
@@ -147,6 +151,20 @@
           ./modules/neovim
           ./modules/nix-index.nix
           ./modules/wayfire
+        ];
+        overlays = builtins.attrValues self.overlays;
+      };
+
+      BERLA = nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/BERLA/configuration.nix
+          nixos-wsl.nixosModules.wsl
+        ] ++ forAllHomes [ "nixos" ] [
+          ./hosts/BERLA/home.nix
+          ./modules/fish.nix
+          ./modules/neovim
+          ./modules/nix-index.nix
         ];
         overlays = builtins.attrValues self.overlays;
       };
