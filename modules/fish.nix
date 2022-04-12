@@ -13,7 +13,17 @@
         body = ''
           argparse -x e,d 'e/encode' 'd/decode' -- $argv
           if set -q _flag_encode
-            echo (${pkgs.wl-clipboard}/bin/wl-paste) | ${pkgs.qrencode}/bin/qrencode -t ansiutf8
+            # If stdin is used, encode that instead of clipboard
+            set -l text
+            if isatty stdin
+              set text (${pkgs.wl-clipboard}/bin/wl-paste)
+              if test $status -ne 0
+                return 1
+              end
+            else
+              read text
+            end
+            echo $text | ${pkgs.qrencode}/bin/qrencode -t ansiutf8
             return 0
           end
           if set -q _flag_decode
@@ -21,7 +31,7 @@
             return 0
           end
           echo 'Usage:'
-          echo '  -e/--encode: encode clipboard'
+          echo '  -e/--encode: encode one of clipboard or from stdin'
           echo '  -d/--decode: decode selected region'
           return 1
         '';
