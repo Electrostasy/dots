@@ -1,6 +1,8 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
+  imports = [ ./noise-suppression.nix ];
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
