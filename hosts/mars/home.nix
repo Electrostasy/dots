@@ -2,6 +2,7 @@
 
 {
   xdg.enable = true;
+  home.file.".config/eww".source = ./eww;
 
   wayland.windowManager.wayfire.settings.plugins = [{
     plugin = "input";

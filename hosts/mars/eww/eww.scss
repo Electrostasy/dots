@@ -1,0 +1,71 @@
+$fuji-white: #dcd7ba;
+$old-white: #c8c093;
+$sumi-ink0: #16161d;
+$sumi-ink1: #1f1f28;
+$sumi-ink2: #2a2a37;
+$sumi-ink3: #363646;
+$sumi-ink4: #54546d;
+$spring-violet: #948aa9;
+$oni-violet: #957fb8;
+
+$bg: $sumi-ink1;
+$bg-dark: $sumi-ink0;
+$fg: $fuji-white;
+$fg-light: $spring-violet;
+
+* { all: unset; }
+
+@mixin ui-font {
+  font-family: "Inter";
+  color: $fg;
+}
+
+@mixin radius {
+  border-radius: 8px;
+}
+
+.bar { background: $bg-dark; }
+
+.clock {
+  @include ui-font;
+
+  .date, .time {
+    background: $bg;
+    padding: 0.25rem;
+  }
+  .time { font-weight: bold; }
+}
+
+.audio {
+  @include ui-font;
+
+  button { background: $bg; }
+
+  .audio-dropdown, .audio-dropdown-short {
+    padding: 0.25rem;
+    background: $bg;
+  }
+}
+
+.audio-node {
+  background: $bg;
+
+  label {
+    @include ui-font;
+  }
+}
+
+.volume-indicator { font-family: "Iosevka", monospace; }
+
+scale.audio-scale {
+  padding: 0.5rem;
+
+  trough { background-color: $bg-dark; }
+
+  highlight {
+    background-color: $fg-light;
+    padding: 0.5rem;
+  }
+
+  slider { }
+}
