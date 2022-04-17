@@ -19,7 +19,7 @@ local shared_config = {
     map('n', '<Space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', map_opts)
     map('n', '<Space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', map_opts)
     map('n', '<Space>R', '<cmd>lua vim.lsp.buf.references()<CR>', map_opts)
-    map('n', '<Space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', map_opts)
+    map('n', '<Space>F', '<cmd>lua vim.lsp.buf.formatting()<CR>', map_opts)
 
     for i, kind in ipairs(vim.lsp.protocol.CompletionItemKind) do
       vim.lsp.protocol.CompletionItemKind[i] = icons[kind] or kind

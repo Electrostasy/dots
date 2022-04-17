@@ -22,8 +22,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    filetype-nvim = {
-      url = "github:nathom/filetype.nvim";
+    fzf-lua = {
+      url = "github:ibhagwan/fzf-lua";
       flake = false;
     };
     heirline-nvim = {
@@ -57,7 +57,7 @@
           foldl recursiveUpdate { }
           (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
         inherit (nixpkgs.legacyPackages.${system}) callPackage;
-      in mkVimPlugins [ "filetype-nvim" "heirline-nvim" "hlargs-nvim" ] // rec {
+      in mkVimPlugins [ "fzf-lua" "heirline-nvim" "hlargs-nvim" ] // rec {
         eww-wayland = callPackage ./pkgs/eww.nix { };
         firefox-custom = callPackage ./pkgs/firefox { };
         gamescope = callPackage ./pkgs/gamescope.nix { };

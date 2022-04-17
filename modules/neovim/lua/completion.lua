@@ -59,16 +59,3 @@ cmp.setup({
     ghost_text = true
   }
 })
-
-cmp.setup.cmdline('/', {
-  sources = cmp.config.sources({
-    { name = 'buffer' }
-  })
-})
-
-cmp.setup.cmdline(':', {
-  sources = cmp.config.sources({
-    { name = 'path' },
-    { name = 'cmdline' }
-  })
-})
