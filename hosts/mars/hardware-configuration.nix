@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, modulesPath, ... }:
 
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
@@ -17,28 +17,34 @@
     "/" = {
       device = "none";
       fsType = "tmpfs";
-      # Required permissions for sshd to be happy
-      options = [ "defaults" "size=4G" "mode=755" ];
+      options = [ "defaults" "size=512M" "mode=755" ];
     };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/B9B8-94A8";
+      device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
 
     "/nix" = {
-      device = "/dev/disk/by-uuid/5e459add-acb1-464c-9560-74d4b9b7f7d1";
-      fsType = "ext4";
+      device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+    };
+
+    "/state" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=state" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+      neededForBoot = true;
     };
   };
 
-  environment.persistence."/nix/state" = {
+  environment.persistence."/state" = {
     hideMounts = true;
     directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
     files = [ "/etc/machine-id" ];
     users.electro.directories = [
-      ".cache/nix-index"
-      ".cache/tealdeer"
+      ".cache"
       ".config/SchildiChat"
       { directory = ".ssh"; mode = "0700"; }
       ".mozilla"

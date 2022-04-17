@@ -3,7 +3,7 @@
 {
   imports = [ ./hardware-configuration.nix ];
 
-  system.stateVersion = "21.11";
+  system.stateVersion = "22.05";
 
   boot = {
     loader = {
@@ -11,14 +11,6 @@
       efi.canTouchEfiVariables = true;
     };
     kernelPackages = pkgs.linuxPackages_latest;
-  };
-
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-    };
-    settings.auto-optimise-store = true;
   };
 
   time.timeZone = "Europe/Vilnius";
