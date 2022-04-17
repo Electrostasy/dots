@@ -1,20 +1,64 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
-
   system.stateVersion = "22.05";
 
   boot = {
+    initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
+    kernelModules = [ "kvm-intel" ];
+    kernelPackages = pkgs.linuxPackages_latest;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    kernelPackages = pkgs.linuxPackages_latest;
+  };
+
+  hardware = {
+    cpu.intel.updateMicrocode = true;
+    enableRedistributableFirmware = true;
+    sane.enable = true;
+  };
+
+  fileSystems = {
+    "/" = {
+      device = "none";
+      fsType = "tmpfs";
+      options = [ "defaults" "size=512M" "mode=755" ];
+    };
+
+    "/boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+    };
+
+    "/nix" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+    };
+
+    "/state" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=state" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+      neededForBoot = true;
+    };
+  };
+
+  environment.persistence."/state" = {
+    hideMounts = true;
+    directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
+    files = [ "/etc/machine-id" ];
+    users.electro.directories = [
+      ".cache"
+      ".config/SchildiChat"
+      { directory = ".ssh"; mode = "0700"; }
+      ".mozilla"
+      "Pictures"
+    ];
   };
 
   time.timeZone = "Europe/Vilnius";
-
   networking = {
     hostName = "mars";
     timeServers = [
@@ -30,58 +74,24 @@
     execWheelOnly = true;
   };
 
-  hardware.sane.enable = true;
+  programs.ssh.knownHosts.phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
 
-  programs.ssh.knownHosts = {
-    phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
-  };
-
-  xdg.portal = {
+  xdg.portal.wlr = {
     enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-    ];
-    wlr = {
-      enable = true;
-      settings.screencast = {
-        max_fps = 30;
-        chooser_type = "simple";
-        chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
-      };
+    settings.screencast = {
+      max_fps = 30;
+      chooser_type = "simple";
+      chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
     };
-    gtkUsePortal = true;
   };
 
-  # Without dconf enabled, GTK settings in Home Manager won't work
-  programs.dconf.enable = true;
-  services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-    };
-    dbus = {
-      enable = true;
-      packages = [ pkgs.dconf ];
-    };
-    avahi = {
-      enable = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        domain = true;
-      };
-      nssmdns = true;
-      interfaces = [ "enp0s31f6" "enp5s0" ];
-    };
-  };
+  services.avahi.interfaces = [ "enp0s31f6" "enp5s0" ];
 
   users = {
     mutableUsers = false;
-    # Change initialHashedPassword using
-    # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
     users = {
+      # Change initialHashedPassword using
+      # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
       root.initialHashedPassword = "$6$XBb5AVQUp0Mx8t.J$NkVlFCGiS8SQWHXbxImTmEBgyPJKgeqyninY18NdJaL3AVh1uCZxV.3ciZy66Pj0CAGWIobkmTp.vOqefVUgW1";
       electro = {
         isNormalUser = true;

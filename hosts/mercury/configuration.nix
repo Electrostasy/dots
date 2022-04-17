@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [ ./hardware-configuration.nix ];
@@ -6,18 +6,10 @@
   system.stateVersion = "21.11";
 
   boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-    };
-    kernelPackages = pkgs.linuxPackages_latest;
-  };
-
-  nix = {
-    settings.auto-optimise-store = true;
-    gc = {
-      automatic = true;
-      dates = "weekly";
     };
   };
 
@@ -32,36 +24,13 @@
     ];
   };
 
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-    execWheelOnly = true;
-  };
-
-  services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-    };
-    avahi = {
-      enable = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        domain = true;
-      };
-      nssmdns = true;
-      interfaces = [ "enp0s25" ];
-    };
-  };
+  services.avahi.interfaces = [ "enp0s25" ];
 
   users = {
     mutableUsers = false;
-    # Change initialHashedPassword using
-    # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
     users = {
+      # Change initialHashedPassword using
+      # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
       root.initialHashedPassword = "$6$41X.hRL2a8O$Yiz0oCQxrkS1rNUuv09i2IThiPQy0n11s7HpLLyuWscyjNrw3wXtfzf5dQySkXHerHNeCiKtGZ0sTlnF5X9fP.";
       gediminas = {
         isNormalUser = true;

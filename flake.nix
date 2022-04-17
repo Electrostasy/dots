@@ -98,11 +98,14 @@
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
           ./nixos/modules/profiles/audio
+          ./nixos/modules/profiles/avahi
+          ./nixos/modules/profiles/dconf
           ./nixos/modules/profiles/dnscrypt-proxy2
           ./nixos/modules/profiles/flatpak
           ./nixos/modules/profiles/graphical
           ./nixos/modules/profiles/login-manager
-          ./nixos/modules/profiles/teamviewer
+          ./nixos/modules/profiles/ssh
+          ./nixos/modules/profiles/sudo
           ./nixos/modules/profiles/v4l2loopback
           self.nixosModules.unfree
         ] ++ forAllHomes [ "electro" ] [
@@ -141,9 +144,13 @@
           nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-t420
           ./nixos/modules/profiles/audio
+          ./nixos/modules/profiles/avahi
+          ./nixos/modules/profiles/dconf
           ./nixos/modules/profiles/dnscrypt-proxy2
           ./nixos/modules/profiles/graphical
           ./nixos/modules/profiles/login-manager
+          ./nixos/modules/profiles/ssh
+          ./nixos/modules/profiles/sudo
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
           ./modules/fish.nix
