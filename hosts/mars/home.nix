@@ -4,6 +4,36 @@
   xdg.enable = true;
   home.file.".config/eww".source = ./eww;
 
+  services.kanshi = {
+    enable = true;
+
+    profiles.default = {
+      exec = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/Pictures -type f | shuf -n1)\"";
+      outputs = [
+        {
+          criteria = "Acer Technologies XV273K 0x0000BBC4";
+          status = "enable";
+          mode = "3840x2160@119.910Hz";
+          position = "0,1080";
+          scale = 1.5;
+        }
+        {
+          criteria = "BenQ Corporation BenQ XL2420T M3D05947SL0";
+          status = "enable";
+          mode = "1920x1080@119.982Hz";
+          position = "320,0";
+        }
+        {
+          criteria = "Goldstar Company Ltd LG FULL HD";
+          status = "enable";
+          mode = "1920x1080@74.973Hz";
+          position = "2560,860";
+          transform = "270";
+        }
+      ];
+    };
+  };
+
   wayland.windowManager.wayfire.settings.plugins = [{
     plugin = "input";
     settings = {

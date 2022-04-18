@@ -37,7 +37,7 @@
   };
 
   outputs = { self, nixpkgs, impermanence, nixos-hardware, nixos-wsl, ... }@inputs: {
-    lib = import ./nixos/lib { inherit (nixpkgs) lib; inherit self; };
+    lib = import ./modules/lib { inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
       let
@@ -58,22 +58,24 @@
           (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
         inherit (nixpkgs.legacyPackages.${system}) callPackage;
       in mkVimPlugins [ "fzf-lua" "heirline-nvim" "hlargs-nvim" ] // rec {
-        eww-wayland = callPackage ./pkgs/eww.nix { };
-        firefox-custom = callPackage ./pkgs/firefox { };
-        gamescope = callPackage ./pkgs/gamescope.nix { };
-        nerdfonts-patch = callPackage ./pkgs/nerdfonts-patch.nix { };
-        wlr-spanbg = callPackage ./pkgs/wlr-spanbg { };
-        simp1e-cursor-theme = callPackage ./pkgs/simp1e-cursor-theme.nix { };
-        wlopm = callPackage ./pkgs/wlopm.nix { };
-        wayfire-git = callPackage ./pkgs/wayfire/wayfire-git.nix { };
-        wayfire-firedecor = callPackage ./pkgs/wayfire/firedecor.nix { wayfire = wayfire-git; };
+        eww-wayland = callPackage ./packages/eww-wayland { };
+        firefox-custom = callPackage ./packages/firefox { };
+        gamescope = callPackage ./packages/gamescope { };
+        nerdfonts-patch = callPackage ./packages/nerdfonts-patch { };
+        wlr-spanbg = callPackage ./packages/wlr-spanbg { };
+        simp1e-cursor-theme = callPackage ./packages/simp1e-cursor-theme { };
+        wlopm = callPackage ./packages/wlopm { };
+        wayfire-git = callPackage ./packages/wayfire { };
+        wayfire-firedecor = callPackage ./packages/wayfire/wayfirePlugins/firedecor {
+          wayfire = wayfire-git;
+        };
       });
 
     overlays = {
       vimPlugins = final: prev: {
         vimPlugins = prev.vimPlugins // {
           inherit (self.packages.${prev.system})
-            filetype-nvim heirline-nvim hlargs-nvim;
+            fzf-lua heirline-nvim hlargs-nvim;
         };
       };
       pkgs = final: prev: {
@@ -84,8 +86,8 @@
     };
 
     nixosModules = {
-      home-manager.wayfire = import ./nixos/modules/home-manager/wayfire;
-      unfree = import ./nixos/modules/unfree.nix;
+      home-manager.wayfire = import ./modules/user/wayfire;
+      unfree = import ./modules/system/unfree;
     };
 
     nixosConfigurations = with self.lib.extended; {
@@ -97,26 +99,25 @@
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.common-cpu-intel
           nixos-hardware.nixosModules.common-pc-ssd
-          ./nixos/modules/profiles/audio
-          ./nixos/modules/profiles/avahi
-          ./nixos/modules/profiles/dconf
-          ./nixos/modules/profiles/dnscrypt-proxy2
-          ./nixos/modules/profiles/flatpak
-          ./nixos/modules/profiles/graphical
-          ./nixos/modules/profiles/login-manager
-          ./nixos/modules/profiles/ssh
-          ./nixos/modules/profiles/sudo
-          ./nixos/modules/profiles/v4l2loopback
+          ./profiles/system/audio
+          ./profiles/system/avahi
+          ./profiles/system/dconf
+          ./profiles/system/dnscrypt-proxy2
+          ./profiles/system/flatpak
+          ./profiles/system/graphical
+          ./profiles/system/login-manager
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+          ./profiles/system/v4l2loopback
           self.nixosModules.unfree
         ] ++ forAllHomes [ "electro" ] [
-          ./hosts/mars/displays.nix
           ./hosts/mars/home.nix
-          ./modules/fish.nix
-          ./modules/kitty.nix
-          ./modules/mpv.nix
-          ./modules/neovim
-          ./modules/nix-index.nix
-          ./modules/wayfire
+          ./profiles/user/fish
+          ./profiles/user/kitty
+          ./profiles/user/mpv
+          ./profiles/user/neovim
+          ./profiles/user/nix-index
+          ./profiles/user/wayfire
         ];
         overlays = builtins.attrValues self.overlays;
       };
@@ -127,7 +128,7 @@
           ./hosts/phobos/configuration.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
-          ./nixos/modules/profiles/matrix
+          ./profiles/system/matrix
         ];
       };
 
@@ -143,21 +144,21 @@
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-t420
-          ./nixos/modules/profiles/audio
-          ./nixos/modules/profiles/avahi
-          ./nixos/modules/profiles/dconf
-          ./nixos/modules/profiles/dnscrypt-proxy2
-          ./nixos/modules/profiles/graphical
-          ./nixos/modules/profiles/login-manager
-          ./nixos/modules/profiles/ssh
-          ./nixos/modules/profiles/sudo
+          ./profiles/system/audio
+          ./profiles/system/avahi
+          ./profiles/system/dconf
+          ./profiles/system/dnscrypt-proxy2
+          ./profiles/system/graphical
+          ./profiles/system/login-manager
+          ./profiles/system/ssh
+          ./profiles/system/sudo
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
-          ./modules/fish.nix
-          ./modules/kitty.nix
-          ./modules/neovim
-          ./modules/nix-index.nix
-          ./modules/wayfire
+          ./profiles/user/fish
+          ./profiles/user/kitty
+          ./profiles/user/neovim
+          ./profiles/user/nix-index
+          ./profiles/user/wayfire
         ];
         overlays = builtins.attrValues self.overlays;
       };
@@ -169,9 +170,9 @@
           nixos-wsl.nixosModules.wsl
         ] ++ forAllHomes [ "nixos" ] [
           ./hosts/BERLA/home.nix
-          ./modules/fish.nix
-          ./modules/neovim
-          ./modules/nix-index.nix
+          ./profiles/user/fish
+          ./profiles/user/neovim
+          ./profiles/user/nix-index
         ];
         overlays = builtins.attrValues self.overlays;
       };
