@@ -2,7 +2,7 @@ foreach (inputs, null) as $entry
   ( null
   ; if $entry then .nodes =
       if . != null
-      then .nodes | map(select(.id != $entry[].id))
+      then .nodes | map(select(.id != $entry[].id)) | unique_by(.id)
       else .nodes end
 
       + [ $entry[]
@@ -34,4 +34,3 @@ foreach (inputs, null) as $entry
     else . end
   )
   | .nodes
-  | unique_by(.id)
