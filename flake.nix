@@ -107,6 +107,7 @@
           ./profiles/system/graphical
           ./profiles/system/login-manager
           ./profiles/system/ssh
+          ./profiles/system/steam
           ./profiles/system/sudo
           ./profiles/system/v4l2loopback
           self.nixosModules.unfree
