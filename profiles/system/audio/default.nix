@@ -1,7 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./noise-suppression.nix ];
+  imports = [
+    ./noise-suppression.nix
+    ./equalizer.nix
+  ];
 
   security.rtkit.enable = true;
   services.pipewire = {
