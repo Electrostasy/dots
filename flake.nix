@@ -69,6 +69,12 @@
         wayfire-firedecor = callPackage ./packages/wayfire/wayfirePlugins/firedecor {
           wayfire = wayfire-git;
         };
+        wayfire-dbus-interface = callPackage ./packages/wayfire/wayfirePlugins/wayfire-dbus {
+          wayfire = wayfire-git;
+        };
+        wayfire-plugins-extra = callPackage ./packages/wayfire/wayfirePlugins/wayfire-plugins-extra {
+          wayfire = wayfire-git;
+        };
       });
 
     overlays = {
@@ -81,7 +87,11 @@
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
           eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git;
-        wayfirePlugins.firedecor = self.packages.${prev.system}.wayfire-firedecor;
+        wayfirePlugins = {
+          firedecor = self.packages.${prev.system}.wayfire-firedecor;
+          dbus-interface = self.packages.${prev.system}.wayfire-dbus-interface;
+          plugins-extra = self.packages.${prev.system}.wayfire-plugins-extra;
+        };
       };
     };
 

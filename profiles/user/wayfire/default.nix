@@ -5,12 +5,25 @@
     enable = true;
     package = pkgs.wayfire-git;
 
+    withGtkWrapper = true;
+    extraSessionCommands = [
+      "export NIXOS_OZONE_WL=1"
+
+      # Make Wayfire aware of gsettings schemas
+      "export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:$XDG_DATA_DIRS"
+      # Add gsettings schema from dbus-interface plugin
+      "export XDG_DATA_DIRS=${pkgs.wayfirePlugins.dbus-interface}/share/gsettings-schemas/${pkgs.wayfirePlugins.dbus-interface.name}/:$XDG_DATA_DIRS"
+    ];
+
     settings = {
       close_top_view = "<super> <shift> KEY_W";
       preferred_decoration_mode = "server";
       xwayland = true;
 
       plugins = [
+        { package = pkgs.wayfirePlugins.dbus-interface; plugin = "dbus_interface"; }
+        { package = pkgs.wayfirePlugins.plugins-extra; plugin = "glib-main-loop"; }
+
         {
           package = pkgs.wayfirePlugins.firedecor;
           plugin = "firedecor";
@@ -25,26 +38,10 @@
             layout = "-";
           };
         }
-        {
-          # Allows using true fullscreen mode for windows, which
-          # enables direct scanout in nested usecases like gamescope
-          plugin = "wm-actions";
-          settings.toggle_fullscreen = "<super> KEY_F11";
-        }
-        {
-          plugin = "move";
-          settings = {
-            activate = "<super> BTN_LEFT";
-            snap_threshold = 16;
-            quarter_snap_threshold = 64;
-          };
-        }
-        {
-          plugin = "resize";
-          settings = {
-            activate = "<super> BTN_RIGHT";
-          };
-        }
+
+        { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
+        { plugin = "resize"; settings.activate = "<super> BTN_RIGHT"; }
+        { plugin = "move"; settings.activate = "<super> BTN_LEFT"; }
         {
           plugin = "switcher";
           settings = {
@@ -94,17 +91,16 @@
             close_animation = "zoom";
             open_animation = "zoom";
             zoom_duration = 250;
-            zoom_enabled_for = "(type is \"toplevel\" | (type is \"x-or\" & focusable is true))";
+            # zoom_enabled_for = "(type is \"toplevel\" | (type is \"x-or\" & focusable is true))";
             startup_duration = 1500;
           };
         }
         {
           plugin = "autostart";
           settings = {
-            dbus = ''
-              exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-              exec hash dbus-update-activation-environment 2>/dev/null && \
-                dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+            importEnv = ''
+              systemctl --user import-environment DISPLAY WAYLAND_DISPLAY \
+              hash dbus-update-activation-environment @>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY
             '';
             screenshare = ''
               sleep 1 && (XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=sway ${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal --replace & ${pkgs.xdg-desktop-portal-wlr}/libexec/xdg-desktop-portal-wlr)

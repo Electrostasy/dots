@@ -13,7 +13,7 @@ let
       package = mkOption {
         type = with types; nullOr package;
         default = null;
-        example = literalExample "pkgs.swayfire";
+        example = literalExample "pkgs.wayfirePlugins.firedecor";
         description = ''
           Optional package containing one or more wayfire plugins not bundled
           with wayfire. If the plugin comes from a package, specify the package
@@ -32,6 +32,7 @@ let
 
       settings = mkOption {
         type = types.submodule { freeformType = types.attrsOf allowedTypes; };
+        default = { };
         description = ''
           Key-value style attribute set of settings for an individual
           plugin. Valid values: int, float, bool, str, or list or floats.
@@ -47,10 +48,21 @@ in {
     package = mkOption {
       type = types.package;
       default = pkgs.wayfireApplications-unwrapped.wayfire;
-      example =
-        literalExample "pkgs.unstable.wayfireApplications-unwrapped.wayfire";
+      example = literalExample "pkgs.wayfireApplications-unwrapped.wayfire";
       description = "Package to use";
     };
+
+    extraSessionCommands = mkOption {
+      type = with types; listOf str;
+      default = [ ];
+      description = ''
+        Additional commands to run when launching
+      '';
+    };
+
+    withGtkWrapper = mkEnableOption ''
+      Whether to let Wayfire be aware of Gtk themes and settings
+    '';
 
     settings = mkOption {
       type = types.submodule {
@@ -80,33 +92,31 @@ in {
       concatStrings (intersperse sep (
         # Convert list elements to a sensible string representation
         map (generators.mkValueStringDefault { }) list));
-    pluginsAttrs = listToAttrs (
-      # Each plugin name becomes INI section name, and its `settings` attrs
-      # become INI key-value pairs under that section name
-      map (p:
-        nameValuePair p.plugin (mapAttrs (_: value:
-          # RGBA colour values are presented as `1.0 1.0 1.0 1.0` in the INI,
-          # but the generator doesn't accept lists, so convert lists to strings
-          if isList value then listToString value " " else value) p.settings))
-      plugins);
+    pluginsAttrs = let
+      # Plugins without settings will not have a section generated for them
+      pluginsWithSettings = filter (p: p.settings != { }) plugins;
+    in listToAttrs (
+        # Each plugin name becomes INI section name, and its `settings` attrs
+        # become INI key-value pairs under that section name
+        map (p:
+          nameValuePair p.plugin (mapAttrs (_: value:
+            # RGBA colour values are presented as `1.0 1.0 1.0 1.0` in the INI,
+            # but the generator doesn't accept lists, so convert lists to strings
+            if isList value then listToString value " " else value) p.settings))
+        pluginsWithSettings);
     coreAttrs = {
       core = overrideExisting cfg.settings {
-        plugins = listToString (map (p: p.plugin) plugins) " \\ \n  ";
+        plugins = listToString (map (p: if p.plugin != "input" then p.plugin else "") plugins) " ";
       };
     };
     settings = coreAttrs // pluginsAttrs;
-    # The current `wayfireApplications.withPlugins` interface for wrapping wayfire
-    # plugins does not allow using a different wayfire derivation, so we call
-    # the wrapper `wrapWayfireApplication` directly as it is called in Nixpkgs at
-    # nixpkgs/applications/window-managers/wayfire/applications.nix#L17 to wrap
-    # Wayfire with a specified list of derivations (plugins)
-    finalPackage = /* pkgs.wayfireApplications.wrapWayfireApplication */ (pkgs.callPackage ./wrapper.nix { }) cfg.package
-      (_: remove null (unique (catAttrs "package" plugins)));
-  in mkIf cfg.enable {
-    home = {
-      packages = [ finalPackage ];
-      sessionVariables.XDG_CURRENT_DESKTOP = "wayfire";
+    finalPackage = pkgs.callPackage ./wrapper.nix {
+      wayfire = cfg.package;
+      plugins = remove null (catAttrs "package" plugins);
+      inherit (cfg) extraSessionCommands withGtkWrapper;
     };
+  in mkIf cfg.enable {
+    home.packages = [ finalPackage ];
     xdg.configFile."wayfire.ini".text = generators.toINI { } settings;
   };
 }
