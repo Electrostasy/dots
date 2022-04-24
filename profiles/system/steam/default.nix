@@ -22,6 +22,14 @@
     steamPackages.steam-runtime
   ];
 
+  # Allow gamescope to re-nice itself and use realtime priority compute
+  security.wrappers.gamescope = {
+    owner = "root";
+    group = "root";
+    source = "${pkgs.gamescope}/bin/gamescope";
+    capabilities = "cap_sys_nice=ep";
+  };
+
   # TODO: Remove flatpak-supplied Steam .desktop file
   # TODO: Trap exit/shutdown somehow and instead kill gamescope?
   home-manager.users.electro = {
@@ -48,12 +56,14 @@
       # $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.var/app/com.valvesoftware.Steam/data/Steam/package/beta
       steamArgs = "-gamepadui -fulldesktopres -pipewire-dmabuf";
 
-      gamescopeCmd = "${pkgs.gamescope}/bin/gamescope ${gamescopeArgs}";
-      steamCmd = "${env} ${pkgs.steam}/bin/steam ${steamArgs}";
+      # `capsh --noamb` lets gamescope run with CAP_SYS_NICE, but not propagate that
+      # capability to child processes
+      gamescopeCmd = "${config.security.wrapperDir}/gamescope ${gamescopeArgs}";
+      steamCmd = "${env} capsh --noamb -- ${pkgs.steam}/bin/steam ${steamArgs}";
       steamFlatpakCmd = let
         flatpakArgs =
           "--branch=stable --arch=x86_64 --command=/app/bin/steam-wrapper";
-      in "${env} ${pkgs.flatpak}/bin/flatpak run ${flatpakArgs} com.valvesoftware.Steam ${steamArgs} steam://open/games";
+      in "${env} capsh --noamb -- ${pkgs.flatpak}/bin/flatpak run ${flatpakArgs} com.valvesoftware.Steam ${steamArgs} steam://open/games";
     in {
       steam = {
         name = "Steam (native)";
