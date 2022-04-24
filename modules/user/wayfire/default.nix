@@ -6,7 +6,7 @@ let
   cfg = config.wayland.windowManager.wayfire;
 
   allowedTypes = with types;
-    either str (either int (either bool (either float (listOf float))));
+    either str (either int (either bool (either float (listOf (either float int)))));
 
   plugin = types.submodule {
     options = {

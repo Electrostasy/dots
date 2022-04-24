@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   wayland.windowManager.wayfire = {
@@ -12,36 +12,51 @@
       # Make Wayfire aware of gsettings schemas
       "export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:$XDG_DATA_DIRS"
       # Add gsettings schema from dbus-interface plugin
-      "export XDG_DATA_DIRS=${pkgs.wayfirePlugins.dbus-interface}/share/gsettings-schemas/${pkgs.wayfirePlugins.dbus-interface.name}/:$XDG_DATA_DIRS"
+      "export XDG_DATA_DIRS=${pkgs.wayfirePlugins.dbus-interface}/share/gsettings-schemas/${pkgs.wayfirePlugins.dbus-interface.name}:$XDG_DATA_DIRS"
     ];
 
     settings = {
       close_top_view = "<super> <shift> KEY_W";
       preferred_decoration_mode = "server";
       xwayland = true;
+      vheight = 3;
+      vwidth = 3;
 
       plugins = [
         { package = pkgs.wayfirePlugins.dbus-interface; plugin = "dbus_interface"; }
         { package = pkgs.wayfirePlugins.plugins-extra; plugin = "glib-main-loop"; }
 
+        { plugin = "move"; settings.activate = "<super> BTN_LEFT"; }
+        { plugin = "place"; settings.mode = "cascade"; }
+        { plugin = "resize"; settings.activate = "<super> BTN_RIGHT"; }
+        { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
+
+        {
+          package = pkgs.wayfirePlugins.shadows;
+          plugin = "winshadows";
+          settings = {
+            clip_shadow_inside = false;
+            horizontal_offset = 8;
+            include_undecorated_views = true;
+            shadow_color = "#000000FF";
+            shadow_radius = 64;
+            vertical_offset = 8;
+          };
+        }
         {
           package = pkgs.wayfirePlugins.firedecor;
           plugin = "firedecor";
           settings = {
+            active_border = [ 0.121569 0.121569 0.156863 1.000000 ];
+            active_outline = [ 0.176471 0.309804 0.403922 1.000000 ];
             border_size = 8;
-            active_border = [ 0.12 0.12 0.15 1.0 ];
-            inactive_border = [ 0.12 0.12 0.15 1.0 ];
-            outline_size = 4;
-            active_outline = [ 0.176 0.31 0.4 1.0 ];
-            inactive_outline = [ 0.086 0.086 0.114 1.0 ];
             corner_radius = 8;
+            inactive_border = [ 0.121569 0.121569 0.156863 1.000000 ];
+            inactive_outline = [ 0.133333 0.196078 0.286275 1.000000 ];
             layout = "-";
+            outline_size = 4;
           };
         }
-
-        { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
-        { plugin = "resize"; settings.activate = "<super> BTN_RIGHT"; }
-        { plugin = "move"; settings.activate = "<super> BTN_LEFT"; }
         {
           plugin = "switcher";
           settings = {
@@ -52,9 +67,44 @@
           };
         }
         {
+          plugin = "vswitch";
+          settings = let
+            workspaces = builtins.genList (x: x + 1) 9;
+            mkBinding = lprefix: rprefix:
+              builtins.map (a:
+              let
+                replace = builtins.replaceStrings [ "{}" ] [ (toString a) ];
+                left = replace lprefix;
+                right = replace rprefix;
+              in { "${left}" = "${right}"; }) workspaces;
+            mergeAttrs = lib.foldl lib.recursiveUpdate { };
+            workspacesAttrs = mergeAttrs (lib.flatten [
+              (mkBinding "binding_{}" "<super> KEY_{}")
+              (mkBinding "with_win_{}" "<super> <shift> KEY_{}")
+              (mkBinding "send_win_{}" "<super> <ctrl> KEY_{}")
+            ]);
+          in {
+            # Disable default keybinds
+            binding_down = "";
+            binding_up = "";
+            binding_left = "";
+            binding_right = "";
+            binding_last = "";
+            with_win_down = "";
+            with_win_up = "";
+            with_win_left = "";
+            with_win_right = "";
+            send_win_down = "";
+            send_win_up = "";
+            send_win_left = "";
+            send_win_right = "";
+          } // workspacesAttrs;
+        }
+        {
           plugin = "scale";
           settings = {
             toggle = "<super> KEY_TAB";
+            toggle_all = "<super> <shift> KEY_TAB";
             animation_transition_time = 350;
             interact = false;
             allow_zoom = false;
@@ -67,6 +117,16 @@
             bg_color = [ 0.1 0.1 0.1 0.9 ];
             text_color = [ 0.8 0.8 0.8 1.0 ];
           };
+        }
+        {
+          plugin = "expo";
+          settings = let
+            workspaces = builtins.genList (x: x + 1) 9;
+            bindings = builtins.map (a: {
+              "select_workspace_${toString a}" = "KEY_${toString a}";
+            }) workspaces;
+            workspacesAttrs = lib.foldl (a: b: a // b) {} bindings;
+          in { toggle = "<super> <shift>"; } // workspacesAttrs;
         }
         {
           plugin = "grid";
@@ -91,8 +151,8 @@
             close_animation = "zoom";
             open_animation = "zoom";
             zoom_duration = 250;
-            # zoom_enabled_for = "(type is \"toplevel\" | (type is \"x-or\" & focusable is true))";
-            startup_duration = 1500;
+            enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
+            zoom_enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
           };
         }
         {

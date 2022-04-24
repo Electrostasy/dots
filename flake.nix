@@ -75,6 +75,9 @@
         wayfire-plugins-extra = callPackage ./packages/wayfire/wayfirePlugins/wayfire-plugins-extra {
           wayfire = wayfire-git;
         };
+        wayfire-shadows = callPackage ./packages/wayfire/wayfirePlugins/wayfire-shadows {
+          wayfire = wayfire-git;
+        };
       });
 
     overlays = {
@@ -91,6 +94,7 @@
           firedecor = self.packages.${prev.system}.wayfire-firedecor;
           dbus-interface = self.packages.${prev.system}.wayfire-dbus-interface;
           plugins-extra = self.packages.${prev.system}.wayfire-plugins-extra;
+          shadows = self.packages.${prev.system}.wayfire-shadows;
         };
       };
     };
