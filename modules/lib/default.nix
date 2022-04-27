@@ -41,6 +41,10 @@ let
                 # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
                 # channel-dependent programs to use the correct nixpkgs
                 settings.nix-path = [ "nixpkgs=${self.inputs.nixpkgs}" ];
+                registry.nixpkgs = {
+                  from = { type = "indirect"; id = "nixpkgs"; };
+                  flake = self.inputs.nixpkgs;
+                };
               };
             }] ++ modules;
             # Inherit extended lib and access to flake attrs
@@ -53,4 +57,3 @@ let
 in
 
 self.inputs.nixpkgs.lib.extend overlay
-
