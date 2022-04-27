@@ -115,6 +115,7 @@
           nixos-hardware.nixosModules.common-pc-ssd
           ./profiles/system/audio
           ./profiles/system/avahi
+          ./profiles/system/common
           ./profiles/system/dconf
           ./profiles/system/dnscrypt-proxy2
           ./profiles/system/flatpak
@@ -143,6 +144,7 @@
           ./hosts/phobos/configuration.nix
           impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
+          ./profiles/system/common
           ./profiles/system/matrix
         ];
       };
@@ -161,6 +163,7 @@
           nixos-hardware.nixosModules.lenovo-thinkpad-t420
           ./profiles/system/audio
           ./profiles/system/avahi
+          ./profiles/system/common
           ./profiles/system/dconf
           ./profiles/system/dnscrypt-proxy2
           ./profiles/system/graphical
@@ -183,6 +186,7 @@
         modules = [
           ./hosts/BERLA/configuration.nix
           nixos-wsl.nixosModules.wsl
+          ./profiles/system/common
         ] ++ forAllHomes [ "nixos" ] [
           ./hosts/BERLA/home.nix
           ./profiles/user/fish
