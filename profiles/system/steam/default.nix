@@ -44,6 +44,10 @@
       settings = {
         font_file = "${pkgs.inter}/share/fonts/opentype/Inter-Regular.otf";
         font_scale = 1.5;
+        gpu_temp = true;
+        cpu_temp = true;
+        vram = true;
+        ram = true;
         no_display = true;
         toggle_hud = "Shift_L+F12";
       };
