@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }:
 
+# For Steam Deck mode (`-gamepadui`), enter the following beta by running (native and flatpak):
+# $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.steam/root/package/beta
+# $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.var/app/com.valvesoftware.Steam/data/Steam/package/beta
+
 {
   fileSystems."/home/electro/games" = {
     device = "/dev/disk/by-label/games";
@@ -46,43 +50,40 @@
     };
 
     xdg.desktopEntries = let
-      gamescopeArgs = "-w 3840 -h 2160 -r 120 -f -e";
+      gamescopeCmd = "${config.security.wrapperDir}/gamescope -w 3840 -h 2160 -r 120 -f -e";
+
       env = lib.concatMapStringsSep " " (x: "env ${x}") [
+        # Enable mangohud for supported programs
         "MANGOHUD=1"
+        # Steam will be unstable and/or crash if set to `wayland`
         "SDL_VIDEODRIVER=x11"
       ];
-      # For Steam Deck mode (`-gamepadui`), enter the following beta by running (native and flatpak):
-      # $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.steam/root/package/beta
-      # $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.var/app/com.valvesoftware.Steam/data/Steam/package/beta
-      steamArgs = "-gamepadui -fulldesktopres -pipewire-dmabuf";
 
       # `capsh --noamb` lets gamescope run with CAP_SYS_NICE, but not propagate that
-      # capability to child processes
-      gamescopeCmd = "${config.security.wrapperDir}/gamescope ${gamescopeArgs}";
-      steamCmd = "${env} capsh --noamb -- ${pkgs.steam}/bin/steam ${steamArgs}";
-      steamFlatpakCmd = let
-        flatpakArgs =
-          "--branch=stable --arch=x86_64 --command=/app/bin/steam-wrapper";
-      in "${env} capsh --noamb -- ${pkgs.flatpak}/bin/flatpak run ${flatpakArgs} com.valvesoftware.Steam ${steamArgs} steam://open/games";
-    in {
-      steam = {
-        name = "Steam (native)";
+      # capability to child processes like Steam, which the nixpkgs fhsenv wrapper
+      # by bwrap would otherwise complain about
+      mkSteamCmd = steamBin:
+        "${env} capsh --noamb -- ${steamBin} -gamepadui -fulldesktopres -pipewire-dmabuf steam://open/games";
+
+      mkSteamDesktopEntry = { type, exec, icon }: {
+        name = "Steam (${type})";
         genericName = "Steam";
-        exec = "${gamescopeCmd} -- ${steamCmd}";
-        icon = "steam";
+        inherit exec icon;
         terminal = false;
         categories = [ "Network" "FileTransfer" "Game" ];
         mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
       };
+    in {
+      steam = mkSteamDesktopEntry {
+        type = "native";
+        exec = "${gamescopeCmd} -- ${mkSteamCmd "${pkgs.steam}/bin/steam"}";
+        icon = "steam";
+      };
 
-      steam-flatpak = {
-        name = "Steam (flatpak)";
-        genericName = "Steam";
-        exec = "${gamescopeCmd} -- ${steamFlatpakCmd}";
+      steamFlatpak = mkSteamDesktopEntry {
+        type = "flatpak";
+        exec = "${gamescopeCmd} -- ${mkSteamCmd "${pkgs.flatpak}/bin/flatpak run com.valvesoftware.Steam"}";
         icon = "com.valvesoftware.Steam";
-        terminal = false;
-        categories = [ "Network" "FileTransfer" "Game" ];
-        mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
       };
     };
   };
