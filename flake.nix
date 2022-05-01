@@ -78,6 +78,7 @@
         wayfire-shadows = callPackage ./packages/wayfire/wayfirePlugins/wayfire-shadows {
           wayfire = wayfire-git;
         };
+        umc = callPackage ./packages/umc { };
       });
 
     overlays = {
@@ -89,7 +90,7 @@
       };
       pkgs = final: prev: {
         inherit (self.packages.${prev.system})
-          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git;
+          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git umc;
         wayfirePlugins = {
           firedecor = self.packages.${prev.system}.wayfire-firedecor;
           dbus-interface = self.packages.${prev.system}.wayfire-dbus-interface;
