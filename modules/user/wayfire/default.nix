@@ -106,7 +106,13 @@ in {
         pluginsWithSettings);
     coreAttrs = {
       core = overrideExisting cfg.settings {
-        plugins = listToString (map (p: if p.plugin != "input" then p.plugin else "") plugins) " ";
+        plugins = listToString (map (p:
+          if
+            (p.plugin != "input") || ((builtins.match "output:(.*)" p.plugin) == null)
+          then
+            p.plugin
+          else
+            "") plugins) " ";
       };
     };
     settings = coreAttrs // pluginsAttrs;
