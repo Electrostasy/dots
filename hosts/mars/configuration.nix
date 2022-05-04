@@ -19,6 +19,12 @@
     sane.enable = true;
   };
 
+  zramSwap = {
+    enable = true;
+    memoryPercent = 150;
+    algorithm = "zstd";
+  };
+
   fileSystems = {
     "/" = {
       device = "none";
