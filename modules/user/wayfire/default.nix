@@ -13,7 +13,6 @@ let
       package = mkOption {
         type = with types; nullOr package;
         default = null;
-        example = literalExample "pkgs.wayfirePlugins.firedecor";
         description = ''
           Optional package containing one or more wayfire plugins not bundled
           with wayfire. If the plugin comes from a package, specify the package
@@ -23,7 +22,6 @@ let
 
       plugin = mkOption {
         type = types.str;
-        example = "blur";
         description = ''
           Name of the plugin. Name can be obtained from the plugin documentation
           and/or the metadata XML files.
@@ -48,21 +46,18 @@ in {
     package = mkOption {
       type = types.package;
       default = pkgs.wayfireApplications-unwrapped.wayfire;
-      example = literalExample "pkgs.wayfireApplications-unwrapped.wayfire";
+      example = literalExpression "pkgs.wayfireApplications-unwrapped.wayfire";
       description = "Package to use";
     };
 
     extraSessionCommands = mkOption {
       type = with types; listOf str;
       default = [ ];
-      description = ''
-        Additional commands to run when launching
-      '';
+      example = literalExpression ''[ "export NIXOS_OZONE_WL=1" ]'';
+      description = "Additional commands to run when launching";
     };
 
-    withGtkWrapper = mkEnableOption ''
-      Whether to let Wayfire be aware of Gtk themes and settings
-    '';
+    withGtkWrapper = mkEnableOption "Make Wayfire aware of Gtk themes and settings";
 
     settings = mkOption {
       type = types.submodule {
@@ -71,6 +66,21 @@ in {
         options.plugins = mkOption {
           type = types.listOf plugin;
           default = [ ];
+          example = literalExpression ''
+            [
+              { plugin = "move"; settings.activate = "<super> BTN_LEFT"; }
+              { plugin = "place"; settings.mode = "cascade"; }
+              { package = pkgs.wayfirePlugins.firedecor;
+                plugin = "firedecor";
+                settings = {
+                  layout = "-";
+                  border_size = 8;
+                  active_border = [ 0.121569 0.121569 0.156863 1.000000 ];
+                  inactive_border = [ 0.121569 0.121569 0.156863 1.000000 ];
+                };
+              }
+            ]
+          '';
           description = "List of plugins to enable and configure";
         };
       };
@@ -84,43 +94,46 @@ in {
   };
 
   config = let
-    mergePluginSettings = ps:
-      map (foldl recursiveUpdate { })
-      (attrValues (groupBy (x: x.plugin) ps));
-    plugins = mergePluginSettings cfg.settings.plugins;
-    listToString = list: sep:
-      concatStrings (intersperse sep (
-        # Convert list elements to a sensible string representation
-        map (generators.mkValueStringDefault { }) list));
-    pluginsAttrs = let
-      # Plugins without settings will not have a section generated for them
+    # Plugins defined in other modules overlap previous definitions
+    # in the final plugins list, so we explicitly merge them
+    plugins = let
+      mergeFn = foldl recursiveUpdate { };
+      list = attrValues (groupBy (x: x.plugin) cfg.settings.plugins);
+    in map mergeFn list;
+
+    # Convert lists to strings for generators.toINI
+    listToString = list:
+      concatStrings (intersperse " " (map (generators.mkValueStringDefault { }) list));
+
+    pluginsSettings = let
+      mkSettings = p: let
+        name = p.plugin;
+        content = mapAttrs (_: v: if isList v then listToString v else v) p.settings;
+      in nameValuePair name content;
       pluginsWithSettings = filter (p: p.settings != { }) plugins;
-    in listToAttrs (
-        # Each plugin name becomes INI section name, and its `settings` attrs
-        # become INI key-value pairs under that section name
-        map (p:
-          nameValuePair p.plugin (mapAttrs (_: value:
-            # RGBA colour values are presented as `1.0 1.0 1.0 1.0` in the INI,
-            # but the generator doesn't accept lists, so convert lists to strings
-            if isList value then listToString value " " else value) p.settings))
-        pluginsWithSettings);
-    coreAttrs = {
+    in listToAttrs (map mkSettings pluginsWithSettings);
+
+    # Configuration not part of any plugins goes into the `core` attrset,
+    # and each plugin will have its own attrset with corresponding settings
+    settings = pluginsSettings // {
       core = overrideExisting cfg.settings {
-        plugins = listToString (map (p:
-          if
-            (p.plugin != "input") || ((builtins.match "output:(.*)" p.plugin) == null)
-          then
-            p.plugin
-          else
-            "") plugins) " ";
+        # `input` and `output` are `core` plugins and are loaded by default,
+        # it is unnecessary to put them in the plugins list
+        plugins = let
+          filterFn = p: let
+            notInput = p.plugin != "input";
+            notOutput = (builtins.match "output:(.*)" p.plugin) == null;
+          in if notInput || notOutput then p.plugin else "";
+        in listToString (map filterFn plugins);
       };
     };
-    settings = coreAttrs // pluginsAttrs;
+
     finalPackage = pkgs.callPackage ./wrapper.nix {
       wayfire = cfg.package;
       plugins = remove null (catAttrs "package" plugins);
       inherit (cfg) extraSessionCommands withGtkWrapper;
     };
+
   in mkIf cfg.enable {
     home.packages = [ finalPackage ];
     xdg.configFile."wayfire.ini".text = generators.toINI { } settings;
