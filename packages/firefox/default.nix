@@ -34,6 +34,16 @@ pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       url = "https://addons.mozilla.org/firefox/downloads/file/3907697/firefox_multi_account_containers-8.0.6-fx.xpi";
       sha256 = "sha256-2T2wsUbvaYIBEgDli4r6nEO9w0URYzNZOCZmfF21z6s=";
     })
+    (fetchFirefoxAddon {
+      name = "sponsorblock";
+      url = "https://addons.mozilla.org/firefox/downloads/file/3923928/sponsorblock_skip_sponsorships_on_youtube-4.2.1-an+fx.xpi";
+      sha256 = "sha256-SPBEORMKAB5zPnJr9U8H2DWErO+X/Ni2yofzPLlHvgE=";
+    })
+    (fetchFirefoxAddon {
+      name = "consent-o-matic";
+      url = "https://addons.mozilla.org/firefox/downloads/file/3931888/consent_o_matic-1.0.0-an+fx.xpi";
+      sha256 = "sha256-ErM6Qvkv1Tub1W8peKvtqGaBNh8jVGleXCn24zTPQw0=";
+    })
   ];
   # Policy list https://github.com/mozilla/policy-templates/blob/master/README.md
   extraPolicies = {
