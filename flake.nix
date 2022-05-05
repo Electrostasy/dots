@@ -40,65 +40,13 @@
     lib = import ./modules/lib { inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
-      let
-        mkVimPlugin = pname:
-          nixpkgs.legacyPackages.${system}.vimUtils.buildVimPluginFrom2Nix {
-            inherit pname;
-            src = inputs.${pname};
-            version = let
-              date = inputs.${pname}.lastModifiedDate;
-              year = builtins.substring 0 4 date;
-              month = builtins.substring 4 2 date;
-              day = builtins.substring 6 2 date;
-            in "unstable-${year}-${month}-${day}";
-          };
-        mkVimPlugins = pnames:
-          with self.lib;
-          foldl recursiveUpdate { }
-          (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
-        inherit (nixpkgs.legacyPackages.${system}) callPackage;
-      in mkVimPlugins [ "fzf-lua" "heirline-nvim" "hlargs-nvim" ] // rec {
-        eww-wayland = callPackage ./packages/eww-wayland { };
-        firefox-custom = callPackage ./packages/firefox { };
-        gamescope = callPackage ./packages/gamescope { };
-        nerdfonts-patch = callPackage ./packages/nerdfonts-patch { };
-        wlr-spanbg = callPackage ./packages/wlr-spanbg { };
-        simp1e-cursor-theme = callPackage ./packages/simp1e-cursor-theme { };
-        wlopm = callPackage ./packages/wlopm { };
-        wayfire-git = callPackage ./packages/wayfire { };
-        wayfire-firedecor = callPackage ./packages/wayfire/wayfirePlugins/firedecor {
-          wayfire = wayfire-git;
-        };
-        wayfire-dbus-interface = callPackage ./packages/wayfire/wayfirePlugins/wayfire-dbus {
-          wayfire = wayfire-git;
-        };
-        wayfire-plugins-extra = callPackage ./packages/wayfire/wayfirePlugins/wayfire-plugins-extra {
-          wayfire = wayfire-git;
-        };
-        wayfire-shadows = callPackage ./packages/wayfire/wayfirePlugins/wayfire-shadows {
-          wayfire = wayfire-git;
-        };
-        umc = callPackage ./packages/umc { };
-      });
+      nixpkgs.legacyPackages.${system}.callPackage ./packages { flake = self; });
 
-    overlays = {
-      vimPlugins = final: prev: {
-        vimPlugins = prev.vimPlugins // {
-          inherit (self.packages.${prev.system})
-            fzf-lua heirline-nvim hlargs-nvim;
-        };
-      };
-      pkgs = final: prev: {
-        inherit (self.packages.${prev.system})
-          eww-wayland firefox-custom gamescope nerdfonts-patch wlr-spanbg simp1e-cursor-theme wlopm wayfire-git umc;
-        wayfirePlugins = {
-          firedecor = self.packages.${prev.system}.wayfire-firedecor;
-          dbus-interface = self.packages.${prev.system}.wayfire-dbus-interface;
-          plugins-extra = self.packages.${prev.system}.wayfire-plugins-extra;
-          shadows = self.packages.${prev.system}.wayfire-shadows;
-        };
-      };
-    };
+    overlays.default = final: prev:
+      prev.lib.recursiveUpdate
+        prev
+        # TODO: callPackage/self.packages just gives infinite recursion errors if used here
+        (import ./packages { inherit (prev) lib; pkgs = nixpkgs.legacyPackages.${prev.system}; flake = self; });
 
     nixosModules = {
       home-manager.wayfire = import ./modules/user/wayfire;
@@ -136,7 +84,7 @@
           ./profiles/user/nix-index
           ./profiles/user/wayfire
         ];
-        overlays = builtins.attrValues self.overlays;
+        overlays = [ self.overlays.default ];
       };
 
       phobos = nixosSystem {
@@ -179,7 +127,7 @@
           ./profiles/user/nix-index
           ./profiles/user/wayfire
         ];
-        overlays = builtins.attrValues self.overlays;
+        overlays = [ self.overlays.default ];
       };
 
       BERLA = nixosSystem {
@@ -194,7 +142,7 @@
           ./profiles/user/neovim
           ./profiles/user/nix-index
         ];
-        overlays = builtins.attrValues self.overlays;
+        overlays = [ self.overlays.default ];
       };
     };
   };
