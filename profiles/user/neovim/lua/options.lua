@@ -33,8 +33,18 @@ set.ruler = true -- Show cursor location in file
 set.updatetime = 300 -- Delay after user input before plugins are activated
 
 set.cursorline = true -- Highlight line of cursor while in Insert mode
--- vim.cmd[[autocmd InsertEnter,BufLeave * set nocursorline]]
--- vim.cmd[[autocmd InsertLeave,BufEnter * set cursorline]]
+local augroup = vim.api.nvim_create_augroup("ActiveBufferCursorline", { clear = true })
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = augroup,
+  pattern = "*",
+  callback = function() vim.opt.cursorline = true end
+})
+vim.api.nvim_create_autocmd("BufLeave", {
+  group = augroup,
+  pattern = "*",
+  callback = function() vim.opt.cursorline = false end
+})
+
 set.hlsearch = true -- Highlight search matches
 set.incsearch = true -- Highlight search matches while typing
 set.inccommand = 'nosplit' -- Live preview when substituting
@@ -51,9 +61,18 @@ set.splitright = true -- Put new windows right of current
 
 -- Show non-whitespace characters while in Insert mode
 set.listchars:append('eol:↲')
-set.listchars:append('space:∙')
-set.listchars:append('tab:––⇥')
+set.listchars:append('space:·')
+set.listchars:append('tab:––>')
 set.listchars:append('nbsp:×')
-vim.cmd[[autocmd InsertEnter * set list | redraw!]]
-vim.cmd[[autocmd BufEnter,InsertLeave * set nolist]]
 
+local augroup = vim.api.nvim_create_augroup("InsertModeListChars", { clear = true })
+vim.api.nvim_create_autocmd("InsertEnter", {
+  group = augroup,
+  pattern = "*",
+  callback = function() vim.opt.list = true end
+})
+vim.api.nvim_create_autocmd({ "InsertLeave", "InsertLeavePre" }, {
+  group = augroup,
+  pattern = "*",
+  callback = function() vim.opt.list = false end
+})

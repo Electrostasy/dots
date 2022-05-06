@@ -1,9 +1,22 @@
 local conditions = require('heirline.conditions')
 local utils = require('heirline.utils')
 local colours = require('kanagawa.colors').setup()
+
+-- Global statusline
+vim.opt.laststatus = 3
+vim.opt.fillchars:append({
+  horiz = '━',
+  horizup = '┻',
+  horizdown = '┳',
+  vert = '┃',
+  vertleft = '┨',
+  vertright = '┣',
+  verthoriz = '╋',
+})
+
 local statusline_colours = {
   modules = {
-    fg = colours.fujiWhite, bg = colours.sumiInk1
+    fg = colours.fujiWhite, bg = colours.sumiInk0
   },
   git = {
     additions = { fg = colours.autumnGreen, bg = colours.winterGreen },
@@ -24,35 +37,35 @@ local separators = {
 local mode = {
   static = {
     mode_names = {
-      n = "Normal ◆",
-      no = "Normal ◆",
-      nov = "Normal ◆",
-      noV = "Normal ◆",
-      ["no^V"] = "Normal ◆",
-      niI = "Normal ◆",
-      niR = "Normal ◆",
-      niV = "Normal ◆",
-      nt = "Normal ⯅",
-      v = "Visual ⯅",
-      vs = "Visual ⯅",
-      V = "V-Line ⯅",
-      Vs = "V-Line ⯅",
-      [""] = "V-Block ⯅",
-      ["s"] = "V-Block ⯅",
-      s = "Select ●",
-      S = "Select ●",
-      [""] = "Select ●",
-      i = "Insert ▼",
-      ic = "Insert ▼",
-      ix = "Insert ▼",
-      R = "Replace ■",
-      Rc = "Replace ■",
-      Rx = "Replace ■",
-      Rv = "V-Replace ■",
-      Rvc = "V-Replace ■",
-      Rvx = "V-Replace ■",
-      c = "Command 🞂",
-      cv = "Ex-Command 🞂",
+      n = "Normal",
+      no = "Normal",
+      nov = "Normal",
+      noV = "Normal",
+      ["no\22"] = "Normal",
+      niI = "Normal",
+      niR = "Normal",
+      niV = "Normal",
+      nt = "Normal",
+      v = "Visual",
+      vs = "Visual",
+      V = "V-Line",
+      Vs = "V-Line",
+      ["\22"] = "V-Block",
+      ["\22ss"] = "V-Block",
+      s = "Select",
+      S = "Select",
+      ["\19"] = "Select",
+      i = "Insert",
+      ic = "Insert",
+      ix = "Insert",
+      R = "Replace",
+      Rc = "Replace",
+      Rx = "Replace",
+      Rv = "V-Replace",
+      Rvc = "V-Replace",
+      Rvx = "V-Replace",
+      c = "Command",
+      cv = "Ex-Command",
       r = "Prompt",
       rm = "More Prompt",
       ["r?"] = "Confirm",
@@ -60,41 +73,38 @@ local mode = {
       t = "Terminal",
     },
     mode_colours = {
-      n = colours.oniViolet,
+      n = colours.fujiWhite,
       i = colours.autumnYellow,
       v = colours.springBlue,
       V = colours.springBlue,
-      [""] = colours.springBlue,
-      c = colours.peachRed,
-      s = colours.springBlue,
-      S = colours.springBlue,
-      [""] = colours.springBlue,
+      ["\22"] = colours.springBlue,
+      c = colours.surimiOrange,
+      s = colours.waveBlue2,
+      S = colours.waveBlue2,
+      ["\19"] = colours.springBlue,
       r = colours.springGreen,
       R = colours.springGreen,
       ["!"] = colours.peachRed,
-      t = colours.katanaGray
+      t = colours.peachRed
     }
   },
+
   init = function(self)
     self.mode = vim.fn.mode()
     self.mode_name = self.mode_names[self.mode]
     self.mode_colour = self.mode_colours[self.mode]
   end,
 
-  {
-    provider = function(self)
-      return ' ' .. self.mode_name .. ' '
-    end,
-    hl = function(self)
-      return { fg = colours.sumiInk0, bg = self.mode_colour, style = 'bold' }
-    end
-  },
-  {
-    provider = separators.slant_right_down,
-    hl = function(self)
-      return { fg = self.mode_colour, bg = statusline_colours.modules.bg }
-    end
-  },
+  utils.surround(
+    { '', separators.slant_right_down },
+    function(self) return self.mode_colour end,
+    {
+      provider = function(self)
+        return ' ' .. self.mode_name .. ' '
+      end,
+      hl = { fg = statusline_colours.modules.bg, bold = true }
+    }
+  )
 }
 
 local git = {
@@ -197,18 +207,16 @@ local git = {
     },
     { -- Text
       provider = function(self)
-        return '  ' .. self.status_dict.head .. ' '
+        return ' ' .. self.status_dict.head .. '  '
       end,
-      hl = function(self) return { fg = statusline_colours.git.branch.fg, bg = self.mode_colour, style = 'bold' } end
+      hl = function(self) return { fg = statusline_colours.git.branch.fg, bg = self.mode_colour, bold = true } end
     },
   },
 }
 
 
 local file_name = {
-  static = {
-    devicons = require('nvim-web-devicons')
-  },
+  static = { devicons = require('nvim-web-devicons') },
   init = function(self)
     self.full_path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:~:.")
     if self.full_path == '' then
@@ -234,7 +242,7 @@ local file_name = {
     },
     {
       provider = '  ',
-      hl = { fg = colours.sumiInk0, bg = colours.autumnRed, style = 'bold' }
+      hl = { fg = colours.sumiInk0, bg = colours.autumnRed, bold = true }
     },
     {
       provider = separators.slant_right_down,
@@ -255,7 +263,7 @@ local file_name = {
     },
     { -- Filename (modified)
       provider = function(self) return self.file_name .. ' ' end,
-      hl = { fg = colours.autumnRed, bg = colours.winterRed, style = 'bold' }
+      hl = { fg = colours.autumnRed, bg = colours.winterRed, bold = true }
     },
     { -- Icon (modified)
       provider = function(self) return self.icon .. ' ' end,
@@ -274,7 +282,7 @@ local file_name = {
     },
     {
       provider = '[+]',
-      hl = { fg = colours.sumiInk0, bg = colours.autumnYellow, style = 'bold' }
+      hl = { fg = colours.sumiInk0, bg = colours.autumnYellow, bold = true }
     },
     {
       provider = separators.slant_left_up,
@@ -295,7 +303,7 @@ local file_name = {
     },
     { -- Filename (modified)
       provider = function(self) return self.file_name .. ' ' end,
-      hl = { fg = colours.autumnYellow, bg = colours.winterYellow, style = 'bold' }
+      hl = { fg = colours.autumnYellow, bg = colours.winterYellow, bold = true }
     },
     { -- Icon (modified)
       provider = function(self) return self.icon .. ' ' end,
@@ -331,7 +339,7 @@ local file_name = {
     },
     { -- Filename
       provider = function(self) return self.file_name .. ' ' end,
-      hl = function(self) return { fg = self.mode_colour, bg = colours.sumiInk0, style = 'bold' } end
+      hl = function(self) return { fg = self.mode_colour, bg = colours.sumiInk0, bold = true } end
     },
     { -- Icon
       provider = function(self) return self.icon .. ' ' end,
@@ -341,6 +349,7 @@ local file_name = {
       provider = separators.slant_right_down,
       hl = { fg = colours.sumiInk0, bg = statusline_colours.modules.bg }
     },
+
   },
 }
 -- file_name component depends on the current mode colour, so make it part of
@@ -402,8 +411,9 @@ local encoding = {
   provider = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc,
   hl = { fg = colours.sumiInk4, bg = statusline_colours.modules.bg }
 }
+
 local ruler = {
-  provider = '%l, %c (%L)',
+  provider = '%c',
   hl = { fg = colours.sumiInk4, bg = statusline_colours.modules.bg }
 }
 
@@ -418,19 +428,9 @@ for _, component in ipairs(nested_components) do
 end
 table.insert(mode, git)
 
-local active_status = mode
-
-
-local inactive_status = {
-  condition = function() return not conditions.is_active() end,
-
-  { provider = '[' .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p") .. ']' }
-}
-
 require('heirline').setup({
-  stop_at_first = true,
+  --stop_at_first = true,
 
-  -- inactive_status,
-  active_status
+  mode
 })
 

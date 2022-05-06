@@ -22,10 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    fzf-lua = {
-      url = "github:ibhagwan/fzf-lua";
-      flake = false;
-    };
     heirline-nvim = {
       url = "github:rebelot/heirline.nvim";
       flake = false;

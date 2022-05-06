@@ -10,7 +10,6 @@
       cmp-nvim-lua
       cmp-path
       cmp-under-comparator
-      fzf-lua
       gitsigns-nvim
       heirline-nvim
       hlargs-nvim
@@ -26,6 +25,8 @@
       nvim-lspconfig
       (nvim-treesitter.withPlugins builtins.attrValues)
       nvim-web-devicons
+      telescope-fzf-native-nvim
+      telescope-nvim
     ] ++ builtins.map (plugin: { inherit plugin; optional = true; }) [
       playground
     ];

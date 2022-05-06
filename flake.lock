@@ -31,22 +31,6 @@
         "type": "github"
       }
     },
-    "fzf-lua": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1651434813,
-        "narHash": "sha256-C5ACpnxU+HzDnzVxvLQhFF6xbruHKjN1IoNSfxZ5NLM=",
-        "owner": "ibhagwan",
-        "repo": "fzf-lua",
-        "rev": "5fbbc3b6536bd3a02d5b7b5b62e038f084ad957b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ibhagwan",
-        "repo": "fzf-lua",
-        "type": "github"
-      }
-    },
     "heirline-nvim": {
       "flake": false,
       "locked": {
@@ -173,7 +157,6 @@
     },
     "root": {
       "inputs": {
-        "fzf-lua": "fzf-lua",
         "heirline-nvim": "heirline-nvim",
         "hlargs-nvim": "hlargs-nvim",
         "home-manager": "home-manager",
