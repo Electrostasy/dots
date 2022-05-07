@@ -74,14 +74,6 @@
     ];
   };
 
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-    execWheelOnly = true;
-  };
-
-  programs.ssh.knownHosts.phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
-
   xdg.portal.wlr = {
     enable = true;
     settings.screencast = {
@@ -93,8 +85,14 @@
 
   services.avahi.interfaces = [ "enp0s31f6" "enp5s0" ];
 
+  programs.ssh.knownHosts = {
+    phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
+    mercury.publicKeyFile = ../mercury/ssh_root_ed25519_key.pub;
+  };
+
   users = {
     mutableUsers = false;
+
     users = {
       # Change initialHashedPassword using
       # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`

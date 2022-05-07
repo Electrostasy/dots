@@ -74,7 +74,6 @@
         initialHashedPassword = "$6$PmEPeRECuQiC/1XI$6nF0ymwceDeQq8YvPOnos0xY5Q9fDun1zgbIqIyg4yalb6/HBYgS7c2M1JXb8rIT3gfZElqZIrFv.Sla1qM1q1";
         openssh.authorizedKeys.keyFiles = [
           ../mars/ssh_electro_ed25519_key.pub
-          ../mars/ssh_root_ed25519_key.pub
         ];
       };
     };
