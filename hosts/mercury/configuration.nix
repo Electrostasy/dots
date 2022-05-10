@@ -17,11 +17,73 @@
 
   networking = {
     hostName = "mercury";
-    timeServers = [
-      "1.europe.pool.ntp.org"
-      "1.lt.pool.ntp.org"
-      "2.europe.pool.ntp.org"
-    ];
+
+    wireless = {
+      enable = true;
+      userControlled.enable = true;
+    };
+
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+  };
+
+  # Keeps failing, but networking works fine without it
+  systemd.services."systemd-networkd-wait-online".enable = false;
+  systemd.network = {
+    enable = true;
+
+    # Wired network configuration to be used at work and at home, depending
+    # on where a connection can be established
+    networks."40-wired-work-or-home" = {
+      name = "enp0s25";
+
+      address = [
+        "192.168.200.26" # Try work IP
+        "192.168.205.56" # Fallback to home IP
+      ];
+      gateway = [
+        "192.168.200.1" # Try work gateway
+        "192.168.205.1" # Fallback to home gateway
+      ];
+      dns = [
+        "192.168.200.10" # Try work DNS
+        "127.0.0.1" "::1" # Fallback to local DNS resolver
+      ];
+      ntp = [
+        "1.europe.pool.ntp.org"
+        "1.lt.pool.ntp.org"
+        "2.europe.pool.ntp.org"
+      ];
+
+      dhcpV4Config.RouteMetric = 1024;
+    };
+
+    # Wireless network configuration to be used wherever, taking public
+    # networks into accouont
+    networks."40-wireless" = {
+      name = "wlp3s0";
+
+      DHCP = "yes";
+      dns = [ "127.0.0.1" "::1" ];
+      ntp = [
+        "1.europe.pool.ntp.org"
+        "1.lt.pool.ntp.org"
+        "2.europe.pool.ntp.org"
+      ];
+
+      networkConfig.IgnoreCarrierLoss = "yes";
+      dhcpV4Config = {
+        Anonymize = true;
+        RouteMetric = 2048;
+      };
+    };
+
+    # Randomize the wireless interface MAC Address each time the device appears
+    links."40-wireless-random-mac" = {
+      matchConfig.Type = "wlan";
+      linkConfig.MACAddressPolicy = "random";
+    };
   };
 
   services = {
