@@ -90,16 +90,30 @@
     mercury.publicKeyFile = ../mercury/ssh_root_ed25519_key.pub;
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      rootPassword.neededForUsers = true;
+      electroPassword.neededForUsers = true;
+      sshHostKey = { };
+    };
+  };
+
+  services.openssh.hostKeys = [
+    { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
+  ];
+
   users = {
     mutableUsers = false;
 
     users = {
       # Change initialHashedPassword using
       # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
-      root.initialHashedPassword = "$6$XBb5AVQUp0Mx8t.J$NkVlFCGiS8SQWHXbxImTmEBgyPJKgeqyninY18NdJaL3AVh1uCZxV.3ciZy66Pj0CAGWIobkmTp.vOqefVUgW1";
+      root.passwordFile = config.sops.secrets.rootPassword.path;
       electro = {
         isNormalUser = true;
-        initialHashedPassword = "$6$MvsOwXOO9zUGCIQu$88hXJZkSR3okcpW99Xgcs77FLQAkSbCyArsagoducjN0gTY7goCZ4vN07I2zoTECdz1pHUtIVgJYWlwMnEdoY1";
+        passwordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         shell = pkgs.fish;
       };

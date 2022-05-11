@@ -60,18 +60,31 @@
     };
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      rootPassword.neededForUsers = true;
+      piPassword.neededForUsers = true;
+    };
+  };
+
+  services.openssh.hostKeys = [
+    { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
+  ];
+
   users = {
     mutableUsers = false;
 
     # Change initialHashedPassword using
     # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
     users = {
-      root.initialHashedPassword = "$6$lunt/24c3rtjL/ir$phf/p57IPZVyh7Y6AlGqnGNnhePfUmVmfPn4apEtjMkNqmN0zAOlzrvGHwLlSJdQz6OpHIAbqo3/IRCTjqwlJ0";
+      root.passwordFile = config.sops.secrets.rootPassword.path;
       pi = {
         isNormalUser = true;
         group = "pi";
         extraGroups = [ "wheel" ];
-        initialHashedPassword = "$6$PmEPeRECuQiC/1XI$6nF0ymwceDeQq8YvPOnos0xY5Q9fDun1zgbIqIyg4yalb6/HBYgS7c2M1JXb8rIT3gfZElqZIrFv.Sla1qM1q1";
+        passwordFile = config.sops.secrets.piPassword.path;
         openssh.authorizedKeys.keyFiles = [
           ../mars/ssh_electro_ed25519_key.pub
         ];

@@ -32,21 +32,53 @@ let
           # https://github.com/nix-community/nixos-generators/issues/110#issuecomment-895963028
           overridableSystem = with prev; makeOverridable nixosSystem;
           configuration = prev.filterAttrs (n: _: n != "overlays") args // {
-            modules = [{
-              nixpkgs.overlays = args.overlays or [];
-              system.configurationRevision = prev.mkIf (self ? rev) self.rev;
-              nix = {
-                package = self.inputs.nixpkgs.legacyPackages.${system}.nixFlakes;
-                extraOptions = "experimental-features = nix-command flakes";
-                # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
-                # channel-dependent programs to use the correct nixpkgs
-                settings.nix-path = [ "nixpkgs=${self.inputs.nixpkgs}" ];
-                registry.nixpkgs = {
-                  from = { type = "indirect"; id = "nixpkgs"; };
-                  flake = self.inputs.nixpkgs;
+            modules = [
+              # Nix/Nixpkgs common configuration
+              {
+                nixpkgs.overlays = args.overlays or [];
+                system.configurationRevision = prev.mkIf (self ? rev) self.rev;
+
+                nix = {
+                  package = self.inputs.nixpkgs.legacyPackages.${system}.nixFlakes;
+                  extraOptions = "experimental-features = nix-command flakes";
+
+                  # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
+                  # channel-dependent programs to use the correct nixpkgs
+                  settings.nix-path = [ "nixpkgs=${self.inputs.nixpkgs}" ];
+                  registry.nixpkgs = {
+                    from = { type = "indirect"; id = "nixpkgs"; };
+                    flake = self.inputs.nixpkgs;
+                  };
                 };
-              };
-            }] ++ modules;
+              }
+
+              # Secrets management
+              {
+                fileSystems."/var/lib/sops-nix" = {
+                  device = "/state/var/lib/sops-nix";
+                  fsType = "none";
+                  options = [ "bind" ];
+                  depends = [ "/state" ];
+                  neededForBoot = true;
+                };
+
+                environment = {
+                  sessionVariables.SOPS_AGE_KEY_FILE = "/var/lib/sops-nix/keys.txt";
+
+                  systemPackages =
+                    with self.inputs.nixpkgs.legacyPackages.${system};
+                    [ sops rage sequoia ];
+                };
+
+                sops = {
+                  age = {
+                    keyFile = "/var/lib/sops-nix/keys.txt";
+                    sshKeyPaths = [];
+                  };
+                  gnupg.sshKeyPaths = [];
+                };
+              }
+            ] ++ modules;
             # Inherit extended lib and access to flake attrs
             specialArgs = { lib = final; flake = self; } // args.specialArgs or { };
           };

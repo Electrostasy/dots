@@ -1,0 +1,13 @@
+keys:
+- &electrostasy age1teutywnl8gnqptetmjygakw3w6m2fsj2fnjaduu6thls2zu4y4yqswkr4r
+creation_rules:
+  # Per-host secrets
+  - path_regex: hosts\/.+\/secrets.yaml
+    key_groups:
+      - age:
+        - *electrostasy
+  # Per-profile secrets
+  - path_regex: profiles\/.+\/secrets.yaml
+    key_groups:
+      - age:
+        - *electrostasy

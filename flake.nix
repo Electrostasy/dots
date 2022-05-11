@@ -21,6 +21,10 @@
       url = "github:nix-community/impermanence/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     heirline-nvim = {
       url = "github:rebelot/heirline.nvim";
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, impermanence, nixos-hardware, nixos-wsl, ... }@inputs: {
+  outputs = { self, nixpkgs, nixos-hardware, nixos-wsl, impermanence, sops-nix, ... }@inputs: {
     lib = import ./modules/lib { inherit self; };
 
     packages = self.lib.extended.forAllSystems (system:
@@ -71,6 +75,7 @@
           ./profiles/system/sudo
           ./profiles/system/v4l2loopback
           self.nixosModules.unfree
+          sops-nix.nixosModules.sops
         ] ++ forAllHomes [ "electro" ] [
           ./hosts/mars/home.nix
           ./profiles/user/fish
@@ -91,6 +96,7 @@
           nixos-hardware.nixosModules.raspberry-pi-4
           ./profiles/system/common
           ./profiles/system/matrix
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -115,6 +121,7 @@
           ./profiles/system/login-manager
           ./profiles/system/ssh
           ./profiles/system/sudo
+          sops-nix.nixosModules.sops
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
           ./profiles/user/fish

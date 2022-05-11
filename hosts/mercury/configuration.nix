@@ -129,16 +129,29 @@
     mars.publicKeyFile = ../mars/ssh_root_ed25519_key.pub;
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      rootPassword.neededForUsers = true;
+      gediminasPassword.neededForUsers = true;
+    };
+  };
+
+  services.openssh.hostKeys = [
+    { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
+  ];
+
   users = {
     mutableUsers = false;
 
     users = {
       # Change initialHashedPassword using
       # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
-      root.initialHashedPassword = "$6$41X.hRL2a8O$Yiz0oCQxrkS1rNUuv09i2IThiPQy0n11s7HpLLyuWscyjNrw3wXtfzf5dQySkXHerHNeCiKtGZ0sTlnF5X9fP.";
+      root.passwordFile = config.sops.secrets.rootPassword.path;
       gediminas = {
         isNormalUser = true;
-        initialHashedPassword = "$6$9.t9uWJcX9ZlGQ$An53hxQ6YL2JXnjLyEC5euqkyhNF5CsTF6h09gWf2TWFZoYKVuFe3S/c2l3rOjP0fW4mWJGnbxdTQI1Slt4Tg.";
+        passwordFile = config.sops.secrets.gediminasPassword.path;
         extraGroups = [ "wheel" ];
         shell = pkgs.fish;
       };

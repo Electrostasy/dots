@@ -20,14 +20,12 @@
         mode = "u=rwx,g=rx,o=x";
       }
     ];
-    files = [{
-      file = "/run/keys/dendrite/matrix_key.pem";
-      parentDirectory = {
-        user = "dendrite";
-        group = "dendrite";
-        mode = "0700";
-      };
-    }];
+  };
+
+  sops.secrets.matrix_key = {
+    mode = "0700";
+    owner = config.users.users.dendrite.name;
+    inherit (config.users.users.dendrite) group;
   };
 
   networking.firewall = {
@@ -50,13 +48,16 @@
     users.dendrite = {
       isSystemUser = true;
       group = "dendrite";
-      # Allow access to /run/keys for matrix_key.pem
-      extraGroups = [ "keys" ];
     };
   };
 
-  # Dendrite may try loading after postgresql, failing before it can connect
-  systemd.services.dendrite.after = [ "postgresql.service" ];
+  systemd.services.dendrite = {
+    # Dendrite may try loading after postgresql, failing before it can connect
+    after = [ "postgresql.service" ];
+
+    # Allow access to /run/keys for matrix_key.pem
+    serviceConfig.SupplementaryGroups = [ config.users.groups.keys.name ];
+  };
 
   services = let
     server_name = "0x6776.lt";
@@ -120,7 +121,7 @@
           inherit server_name;
           # Generate a private_key using:
           # $ nix shell nixpkgs#dendrite --command generate-keys --private-key matrix_key.pem
-          private_key = "/run/keys/dendrite/matrix_key.pem";
+          private_key = config.sops.secrets.matrix_key.path;
           trusted_third_party_id_servers = [ "matrix.org" "vector.im" ];
           key_validity_period = "168h0m0s";
           disable_federation = false;
