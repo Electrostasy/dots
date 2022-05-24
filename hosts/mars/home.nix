@@ -1,39 +1,27 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   xdg.enable = true;
-  home.file.".config/eww".source = ./eww;
 
-  services.kanshi = {
-    enable = true;
-
-    profiles.default = {
-      exec = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/Pictures -type f | shuf -n1)\"";
-      outputs = [
-        {
-          criteria = "Acer Technologies XV273K 0x0000BBC4";
-          status = "enable";
-          mode = "3840x2160@119.910Hz";
-          position = "0,1080";
-          scale = 1.5;
-        }
-        {
-          criteria = "BenQ Corporation BenQ XL2420T M3D05947SL0";
-          status = "enable";
-          mode = "1920x1080@119.982Hz";
-          position = "320,0";
-        }
-        {
-          criteria = "Goldstar Company Ltd LG FULL HD";
-          status = "enable";
-          mode = "1920x1080@74.973Hz";
-          position = "2560,860";
-          transform = "270";
-        }
-      ];
-    };
-  };
-
+  wayland.windowManager.wayfire.settings.plugins = [
+    { plugin = "output:DP-1";
+      settings = {
+        mode = "3840x2160@119910";
+        position = "0,250";
+        scale = 1.5;
+      };
+    }
+    { plugin = "output:DP-2";
+      settings.mode = "off";
+    }
+    { plugin = "output:HDMI-A-1";
+      settings = {
+        mode = "1920x1080@74973";
+        position = "2560,0";
+        transform = 270;
+      };
+    }
+  ];
 
   home.pointerCursor = {
     package = pkgs.simp1e-cursor-theme.override {
@@ -74,6 +62,7 @@
 
   gtk = {
     enable = true;
+
     theme = {
       package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
@@ -93,62 +82,92 @@
       set = "custom";
     });
     in [
-    alsaUtils
-    bottom # System resources monitor
+    (aspellWithDicts (ds: with ds; [ en lt ]))
     chafa # Image data terminal previewer
-    du-dust # Disk usage visualizer
-    eww-wayland # Desktop widgets
-    f3d # 3D file format viewer
+    cura
+    # dfeet # graphical dbus monitor
+    du-dust
+    element-desktop
+    f3d
     ffmpeg
-    fio # IO benchmark tool
+    fio
     firefox-custom
     freecad
     gimp
-    grim # Wayland compositor image grabber
+    glib # for gdbus
+    grim
     imagemagick
+    (imv.override { withWindowSystem = "wayland"; })
     inter # UI typeface
     iosevka-nerdfonts
-    jq
-    (imv.override { withWindowSystem = "wayland"; })
-    keepassxc # Password manager
+    keepassxc
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
-    neofetch
-    pastel # Generate, analyze, convert and manipulate colours
-    rehex # Hex editor
-    # rink # Unit-aware calculator/conversion tool
-    ripgrep
-    schildichat-desktop # Matrix chat client
-    slurp # Wayland compositor region selector
-    solvespace # Parametric 3D CAD
-    source-han-sans # Japanese OpenType/CFF fonts
-    super-slicer # 3D printer slicer software
-    tealdeer # `tldr` alternative
-    # (texlive.combine { inherit (texlive) scheme-minimal lithuanian hyphen-lithuanian collection-langenglish; })
-    transmission-gtk # BitTorrent client
-    wf-recorder # Record wayland displays
-    wl-clipboard # `wl-{copy,paste}` clipboard utilities
-    wlopm # Wayland output management
-    xdg-utils # for `xdg-open`
-    xplr # TUI scriptable file manager
-    xwayland
+    pastel
+    slurp
+    solvespace
+    source-han-sans # Required for rendering Japanese font
+    super-slicer
+    transmission-gtk
+    wf-recorder
+    wl-clipboard
+    wlopm
+    xdg-utils
+    xplr
+    youtube-dl
   ];
 
   fonts.fontconfig.enable = true;
 
   programs = {
-    zathura.enable = true;
+    zathura = {
+      enable = true;
+
+      options = {
+        default-bg = "#1F1F28";
+        default-fg = "#DCD7BA";
+        recolor = true;
+      };
+    };
 
     rofi = {
       enable = true;
-
       package = pkgs.rofi-wayland;
-      plugins = [ ];
+
       terminal = "${pkgs.kitty}/bin/kitty";
       extraConfig = {
         modi = "drun,run";
         kb-primary-paste = "Control+V";
         kb-secondary-paste = "Control+v";
+      };
+    };
+
+    eww = {
+      enable = true;
+      package = pkgs.eww-wayland;
+
+      configDir = ./eww;
+    };
+
+    bottom = {
+      enable = true;
+
+      settings.flags.tree = true;
+    };
+
+    tealdeer = {
+      enable = true;
+
+      settings = {
+        display = {
+          use_pager = false;
+          compact = false;
+        };
+
+        updates = {
+          auto_update = true;
+          auto_update_interval_hours = 720;
+        };
       };
     };
 
@@ -168,23 +187,6 @@
     };
 
     fish.functions = {
-      reboot-windows = {
-        description = "Reboot into Windows if it is present";
-        body = ''
-          set -l windows (${pkgs.efibootmgr}/bin/efibootmgr | grep 'Windows Boot Manager')
-          if [ "$status" -eq 1 ]
-            echo 'Cannot reboot into Windows: Windows not found'
-          else
-            for text in "Rebooting into Windows in 3..." "2..." "1..."
-              echo -n "$text" && sleep 1
-            end
-            set -l next_boot (echo "$windows" | cut -d '*' -f1 | cut -c 5-)
-            if sudo ${pkgs.efibootmgr}/bin/efibootmgr -n "$next_boot"
-              reboot
-            end
-          end
-        '';
-      };
       share-screen = {
         description = "Share a selected screen using v4l2";
         body = ''
