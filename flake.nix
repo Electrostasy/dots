@@ -23,7 +23,10 @@
     };
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-21_11.follows = "nixpkgs";
+      };
     };
 
     heirline-nvim = {
