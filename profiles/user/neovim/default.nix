@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   programs.neovim = {
@@ -23,7 +23,7 @@
       nvim-cmp
       nvim-colorizer-lua
       nvim-lspconfig
-      (nvim-treesitter.withPlugins builtins.attrValues)
+      (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars))
       nvim-web-devicons
       telescope-fzf-native-nvim
       telescope-nvim
@@ -31,23 +31,15 @@
       playground
     ];
     extraPackages = with pkgs; [
-      # ccls # C/C++ LSP
-      # clang-tools # C/C++ LSP and code formatter
-      # cppcheck # C/C++ code linter
+      fd
       fzf
-      fd # Telescope finder
-      luajitPackages.luacheck # Lua linter
-      nixfmt # Nix code formatter
-      # nodePackages.pyright # Python LSP
-      # python310Packages.black # Python code formatter
-      # python310Packages.flake8 # Python linter
-      rnix-lsp # Nix LSP
-      statix # Nix code linter
-      stylua # Lua code formatter
-      sumneko-lua-language-server # Lua LSP
-      # texlab # LaTeX LSP
-      tree-sitter # Incremental parser
-      # valgrind # Memory debugging
+      luajitPackages.luacheck
+      nixfmt
+      rnix-lsp
+      statix
+      stylua
+      sumneko-lua-language-server
+      tree-sitter
     ];
     withRuby = false;
     withPython3 = false;
@@ -60,4 +52,3 @@
     set EDITOR nvim
   '';
 }
-
