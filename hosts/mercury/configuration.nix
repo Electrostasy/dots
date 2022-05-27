@@ -18,9 +18,24 @@
   networking = {
     hostName = "mercury";
 
-    wireless = {
+    # To connect to a wireless network using `iwd`, use `iwctl`:
+    # $ iwctl station wlan0 connect L19A3A
+
+    # To scan and list wireless networks:
+    # $ iwctl station wlan0 scan
+    # $ iwctl station wlan0 get-networks
+
+    # To disconnect from a wireless network:
+    # $ iwctl station wlan0 disconnect
+    wireless.iwd = {
       enable = true;
-      userControlled.enable = true;
+
+      settings = {
+        Settings.AutoConnect = true;
+        General.EnableNetworkConfiguration = false;
+        Network.EnableIPv6 = true;
+        Scan.DisablePeriodicScan = true;
+      };
     };
 
     dhcpcd.enable = false;
@@ -77,7 +92,7 @@
     # Wireless network configuration to be used wherever, taking public
     # networks into accouont
     networks."40-wireless" = {
-      name = "wlp3s0";
+      name = "wlan*";
 
       DHCP = "yes";
       dns = [ "127.0.0.1" "::1" ];
@@ -96,7 +111,7 @@
 
     # Randomize the wireless interface MAC Address each time the device appears
     links."40-wireless-random-mac" = {
-      matchConfig.Type = "wlan";
+      matchConfig.Type = "wlan*";
       linkConfig.MACAddressPolicy = "random";
     };
   };
