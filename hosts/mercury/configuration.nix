@@ -165,6 +165,7 @@
     secrets = {
       rootPassword.neededForUsers = true;
       gediminasPassword.neededForUsers = true;
+      sshHostKey = { };
     };
   };
 
