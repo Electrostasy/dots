@@ -59,6 +59,21 @@
       dhcpV4Config.RouteMetric = 1024;
     };
 
+    # Wired network configuration for USB tethering network from phone
+    networks."40-usb-tethering" = {
+      name = "enp0s*u1u*";
+
+      DHCP = "yes";
+      dns = [ "127.0.0.1" "::1" ];
+      ntp = [
+        "1.europe.pool.ntp.org"
+        "1.lt.pool.ntp.org"
+        "2.europe.pool.ntp.org"
+      ];
+
+      networkConfig.IgnoreCarrierLoss = "yes";
+    };
+
     # Wireless network configuration to be used wherever, taking public
     # networks into accouont
     networks."40-wireless" = {
