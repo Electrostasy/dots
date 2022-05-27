@@ -67,11 +67,29 @@
   time.timeZone = "Europe/Vilnius";
   networking = {
     hostName = "mars";
-    timeServers = [
-      "1.europe.pool.ntp.org"
-      "1.lt.pool.ntp.org"
-      "2.europe.pool.ntp.org"
-    ];
+
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+  };
+
+  # Keeps failing, but networking works fine without it
+  systemd.services."systemd-networkd-wait-online".enable = false;
+  systemd.network = {
+    enable = true;
+
+    networks."40-wired" = {
+      name = "enp5s0";
+
+      address = [ "192.168.205.23" ];
+      gateway = [ "192.168.205.1" ];
+      dns = [ "127.0.0.1" "::1" ];
+      ntp = [
+        "1.europe.pool.ntp.org"
+        "1.lt.pool.ntp.org"
+        "2.europe.pool.ntp.org"
+      ];
+    };
   };
 
   xdg.portal.wlr = {
