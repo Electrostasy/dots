@@ -22,8 +22,6 @@ let
           })
         ] ++ homes;
 
-      forAllSystems = with prev; genAttrs (systems.supported.tier1 ++ systems.supported.tier2);
-
       nixosSystem = { system, modules, ... }@args:
         let
           # `makeOverridable` allows us to build images and run VMs with configs

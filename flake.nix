@@ -30,17 +30,26 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, nixos-wsl, impermanence, sops-nix, ... }@inputs: {
+  outputs = { self, nixpkgs, nixos-hardware, nixos-wsl, impermanence, sops-nix, ... }@inputs:
+  let
+    supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
+    forSystems = systems: f:
+      nixpkgs.lib.genAttrs systems (system:
+        f system nixpkgs.legacyPackages.${system});
+    forAllSystems = forSystems supportedSystems;
+  in
+  {
+
     lib = import ./modules/lib { inherit self; };
 
-    packages = self.lib.extended.forAllSystems (system:
-      nixpkgs.legacyPackages.${system}.callPackage ./packages { flake = self; });
+    packages = forAllSystems (system: pkgs:
+      pkgs.callPackage ./packages { });
 
     overlays.default = final: prev:
       prev.lib.recursiveUpdate
         prev
         # TODO: callPackage/self.packages just gives infinite recursion errors if used here
-        (import ./packages { inherit (prev) lib; pkgs = nixpkgs.legacyPackages.${prev.system}; flake = self; });
+        (import ./packages { inherit (prev) lib; pkgs = nixpkgs.legacyPackages.${prev.system}; });
 
     nixosModules = {
       home-manager.wayfire = import ./modules/user/wayfire;
