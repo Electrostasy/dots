@@ -22,27 +22,26 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   });
 
-  vimPlugins = lib.makeScope pkgs.newScope (self:
-    let
-      mkVimPlugin = pname:
-        pkgs.vimUtils.buildVimPlugin {
-          inherit pname;
-          src = flake.inputs.${pname};
-          version = let
-            date = flake.inputs.${pname}.lastModifiedDate;
-            year = builtins.substring 0 4 date;
-            month = builtins.substring 4 2 date;
-            day = builtins.substring 6 2 date;
-          in "unstable-${year}-${month}-${day}";
-        };
-      mkVimPlugins = pnames:
-        lib.foldl lib.recursiveUpdate { }
-        (builtins.map (pname: { ${pname} = mkVimPlugin pname; }) pnames);
-    in
-      mkVimPlugins [
-        "fzf-lua"
-        "heirline-nvim"
-        "hlargs-nvim"
-      ]
-    );
+  vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
+    heirline-nvim = pkgs.vimUtils.buildVimPlugin {
+      pname = "heirline-nvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "rebelot";
+        repo = "heirline.nvim";
+        rev = "7b4aabc2c55d50fbd4a4923e847079d6fa9a8613";
+        sha256 = "sha256-xopPEx5Ig10iBTy6QEzFLxyFwbNXdzAGYS5y6injW8o=";
+      };
+      version = "unstable-2022-05-25";
+    };
+    hlargs-nvim = pkgs.vimUtils.buildVimPlugin {
+      pname = "hlargs-nvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "m-demare";
+        repo = "hlargs.nvim";
+        rev = "e3218d790edaa138fcc27f91ddb6a7e9604f27ae";
+        sha256 = "sha256-qhOM/tm/G4WkJd6KtraFmV4z9aLrwSdYb2S80ystBOs=";
+      };
+      version = "unstable-2022-05-14";
+    };
+  });
 }

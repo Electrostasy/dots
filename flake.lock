@@ -31,38 +31,6 @@
         "type": "github"
       }
     },
-    "heirline-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1653388019,
-        "narHash": "sha256-xopPEx5Ig10iBTy6QEzFLxyFwbNXdzAGYS5y6injW8o=",
-        "owner": "rebelot",
-        "repo": "heirline.nvim",
-        "rev": "7b4aabc2c55d50fbd4a4923e847079d6fa9a8613",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rebelot",
-        "repo": "heirline.nvim",
-        "type": "github"
-      }
-    },
-    "hlargs-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1652547374,
-        "narHash": "sha256-qhOM/tm/G4WkJd6KtraFmV4z9aLrwSdYb2S80ystBOs=",
-        "owner": "m-demare",
-        "repo": "hlargs.nvim",
-        "rev": "e3218d790edaa138fcc27f91ddb6a7e9604f27ae",
-        "type": "github"
-      },
-      "original": {
-        "owner": "m-demare",
-        "repo": "hlargs.nvim",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -157,8 +125,6 @@
     },
     "root": {
       "inputs": {
-        "heirline-nvim": "heirline-nvim",
-        "hlargs-nvim": "hlargs-nvim",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "nixos-hardware": "nixos-hardware",

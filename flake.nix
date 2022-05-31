@@ -28,15 +28,6 @@
         nixpkgs-21_11.follows = "nixpkgs";
       };
     };
-
-    heirline-nvim = {
-      url = "github:rebelot/heirline.nvim";
-      flake = false;
-    };
-    hlargs-nvim = {
-      url = "github:m-demare/hlargs.nvim";
-      flake = false;
-    };
   };
 
   outputs = { self, nixpkgs, nixos-hardware, nixos-wsl, impermanence, sops-nix, ... }@inputs: {
