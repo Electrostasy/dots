@@ -66,6 +66,7 @@
     secrets = {
       rootPassword.neededForUsers = true;
       piPassword.neededForUsers = true;
+      sshHostKey = { };
     };
   };
 
