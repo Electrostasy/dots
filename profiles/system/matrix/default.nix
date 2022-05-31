@@ -23,6 +23,7 @@
   };
 
   sops.secrets.matrix_key = {
+    sopsFile = ./secrets.yaml;
     mode = "0700";
     owner = config.users.users.dendrite.name;
     inherit (config.users.users.dendrite) group;
