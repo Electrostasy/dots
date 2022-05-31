@@ -26,6 +26,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         nixpkgs-21_11.follows = "nixpkgs";
+        nixpkgs-22_05.follows = "nixpkgs";
       };
     };
   };
