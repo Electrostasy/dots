@@ -125,6 +125,10 @@
           trusted_third_party_id_servers = [ "matrix.org" "vector.im" ];
           key_validity_period = "168h0m0s";
           disable_federation = false;
+          presence = {
+            enable_inbound = true;
+            enable_outbound = true;
+          };
         };
 
         client_api.registration_disabled = true;
