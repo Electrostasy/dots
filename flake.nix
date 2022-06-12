@@ -83,6 +83,7 @@
         ] ++ forAllHomes [ "electro" ] [
           ./hosts/mars/home.nix
           ./profiles/user/fish
+          ./profiles/user/gtk
           ./profiles/user/kitty
           ./profiles/user/mpv
           ./profiles/user/neovim
@@ -129,6 +130,7 @@
         ] ++ forAllHomes [ "gediminas" ] [
           ./hosts/mercury/home.nix
           ./profiles/user/fish
+          ./profiles/user/gtk
           ./profiles/user/kitty
           ./profiles/user/neovim
           ./profiles/user/nix-index
