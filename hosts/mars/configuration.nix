@@ -57,7 +57,7 @@
     files = [ "/etc/machine-id" ];
     users.electro.directories = [
       ".cache"
-      ".config/SchildiChat"
+      ".config/Element"
       { directory = ".ssh"; mode = "0700"; }
       ".mozilla"
       "Pictures"
