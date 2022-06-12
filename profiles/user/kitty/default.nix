@@ -10,6 +10,9 @@
       enable_audio_bell = false;
       update_check_interval = 0;
       linux_display_server = "wayland";
+
+      # https://github.com/kovidgoyal/kitty/discussions/4956
+      confirm_os_window_close = 0;
     };
     extraConfig = ''
       font_family Iosevka
