@@ -1,125 +1,96 @@
-{ SDL2
-, fetchFromGitHub
-, fetchFromGitLab
-, fetchurl
-, glslang
-, lib
-, libX11
-, libXcomposite
-, libXdamage
-, libXext
-, libXi
-, libXrender
-, libXres
-, libXtst
-, libXxf86vm
-, libcap
-, libdrm
-, libinput
-, libliftoff
-, libseat
-, libuuid
-, libxkbcommon
-, makeWrapper
-, mesa
-, meson
-, ninja
-, pipewire
-, pixman
-, pkgconfig
-, stb
-, stdenv
-, vulkan-loader
-, wayland
-, wayland-protocols
-, xcbutilerrors
-, xcbutilrenderutil
-, xcbutilwm
-, xwayland
+{
+  fetchFromGitHub,
+  glslang,
+  lib,
+  libcap,
+  libinput,
+  libliftoff,
+  libseat,
+  libX11,
+  libXcomposite,
+  libXext,
+  libXi,
+  libxkbcommon,
+  libXrender,
+  libXres,
+  libXtst,
+  mesa,
+  meson,
+  ninja,
+  pipewire,
+  pixman,
+  pkgconfig,
+  SDL2,
+  stb,
+  stdenv,
+  vulkan-loader,
+  wayland,
+  wayland-protocols,
+  wlroots,
+  xcbutilerrors,
+  xcbutilwm,
+  xwayland,
 }:
 
-let
-  gamescope-src = fetchFromGitHub {
+stdenv.mkDerivation rec {
+  pname = "gamescope";
+  version = "3.11.31-beta7";
+
+  src = fetchFromGitHub {
     owner = "plagman";
     repo = "gamescope";
-    rev = "3.11.31-beta6";
-    sha256 = "sha256-VKhuVNJIUJYQYtKYnLi8Nrn30Q09xfsZD0ev4Zk4SIM=";
+    rev = version;
+    sha256 = "sha256-SiyZDtxFgRwU5iKhts4NZ3oqF61Mcp9lQzTYV7LmCFI=";
   };
-  libliftoff_2_0_0 = fetchFromGitLab {
-    domain = "gitlab.freedesktop.org";
-    owner = "emersion";
-    repo = "libliftoff";
-    rev = "378ccb4f84a2473fe73dbdc56fe35a0d2ee661cc";
-    sha256 = "sha256-mNgcZyQl78f0ZnztKyp5htw+97MTcZqE1Zm/8OapXfs=";
-  };
-  wlroots_0_15_0 = fetchFromGitLab {
-    domain = "gitlab.freedesktop.org";
-    owner = "wlroots";
-    repo = "wlroots";
-    rev = "9f41627aa10a94d9427bc315fa3d363a61b94d7c";
-    sha256 = "sha256-NhCbDsmk2Vp94qMdssGQqzrfrJZ99Dr86zeYfTnQv3E=";
-  };
-in
-
-stdenv.mkDerivation {
-  pname = "gamescope";
-  version = "3.11.31-beta6";
-
-  src = gamescope-src;
 
   postUnpack = ''
-    pushd source
+    mkdir source/subprojects/stb
+    cp -r ${stb}/include/stb source/subprojects
+    cp source/subprojects/packagefiles/stb/meson.build source/subprojects/stb
+    rm -rf source/subprojects/packagefiles source/subprojects/stb.wrap
 
-    mkdir subprojects/stb
-    cp -r ${stb}/include/stb subprojects
-    cp subprojects/packagefiles/stb/meson.build subprojects/stb
-    rm -rf subprojects/packagefiles subprojects/stb.wrap
+    rm -rf source/subprojects/libliftoff/*
+    cp -r ${libliftoff.src}/* source/subprojects/libliftoff
 
-    rm -rf subprojects/libliftoff/*
-    cp -r ${libliftoff_2_0_0}/* subprojects/libliftoff
-
-    rm -rf subprojects/wlroots/*
-    cp -r ${wlroots_0_15_0}/* subprojects/wlroots
-
-    popd
+    rm -rf source/subprojects/wlroots/*
+    cp -r ${wlroots.src}/* source/subprojects/wlroots
   '';
 
   nativeBuildInputs = [
     glslang
-    makeWrapper
     meson
     ninja
     pkgconfig
   ];
 
   buildInputs = [
-    SDL2
-    libX11
+    libcap
+    libinput
+    libseat
     libXcomposite
-    libXdamage
     libXext
     libXi
+    libxkbcommon
     libXrender
     libXres
     libXtst
-    libXxf86vm
-    libcap
-    libdrm
-    libinput
-    libliftoff
-    libseat
-    libuuid
-    libxkbcommon
     mesa
     pipewire
     pixman
+    SDL2
     vulkan-loader
     wayland
     wayland-protocols
     xcbutilerrors
-    xcbutilrenderutil
     xcbutilwm
     xwayland
   ];
-}
 
+  meta = with lib; {
+    description = "SteamOS session compositing window manager";
+    homepage = "https://github.com/Plagman/gamescope";
+    license = licenses.bsd2;
+    maintainers = [ ];
+    platforms = platforms.linux;
+  };
+}
