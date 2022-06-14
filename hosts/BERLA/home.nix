@@ -1,14 +1,17 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = with pkgs; [
     ffmpeg
+    hashcat
     imagemagick
+    john
     jq
+    libewf
+    qemu
     ripgrep
     tealdeer
-    hashcat
-    xplr # TUI scriptable file manager
+    xplr
   ];
 
   programs = {
