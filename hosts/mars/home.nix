@@ -23,18 +23,7 @@
     }
   ];
 
-  home.packages = with pkgs; let
-    iosevka-nerdfonts = nerdfonts-patch (iosevka.override {
-      privateBuildPlan = {
-        family = "Iosevka Custom";
-        spacing = "normal";
-        serifs = "sans";
-        no-cv-ss = true;
-        no-litigation = true;
-      };
-      set = "custom";
-    });
-    in [
+  home.packages = with pkgs; [
     (aspellWithDicts (ds: with ds; [ en lt ]))
     chafa # Image data terminal previewer
     cura

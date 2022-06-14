@@ -22,6 +22,17 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   });
 
+  iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
+    privateBuildPlan = {
+      family = "Iosevka Custom";
+      spacing = "normal";
+      serifs = "sans";
+      no-cv-ss = true;
+      no-litigation = true;
+    };
+    set = "custom";
+  });
+
   vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
     heirline-nvim = pkgs.vimUtils.buildVimPlugin {
       pname = "heirline-nvim";
