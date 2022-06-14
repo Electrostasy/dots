@@ -1,157 +1,184 @@
 {
   description = ''
-    NixOS systems, (home-manager) modules, packages and overlays I use
+    Personal NixOS system configurations, modules and packages
   '';
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    impermanence = {
-      url = "github:nix-community/impermanence/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+        flake-compat.follows = "home-manager/flake-compat";
+        flake-utils.follows = "home-manager/utils";
+      };
     };
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nixpkgs-21_11.follows = "nixpkgs";
-        nixpkgs-22_05.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs-21_11.follows = "nixpkgs-stable";
+        nixpkgs-22_05.follows = "nixpkgs-stable";
       };
     };
+    impermanence.url = "github:nix-community/impermanence/master";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, nixos-wsl, impermanence, sops-nix, ... }@inputs:
+  outputs = {
+    self,
+    nixpkgs-stable,
+    nixpkgs-unstable,
+    nixpkgs-lib,
+    nixos-hardware,
+    home-manager,
+    nixos-wsl,
+    sops-nix,
+    impermanence,
+  }:
   let
+    inherit (nixpkgs-lib) lib;
     supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
     forSystems = systems: f:
-      nixpkgs.lib.genAttrs systems (system:
-        f system nixpkgs.legacyPackages.${system});
+      lib.genAttrs systems (system:
+        f system nixpkgs-unstable.legacyPackages.${system});
     forAllSystems = forSystems supportedSystems;
   in
   {
-
-    lib = import ./modules/lib { inherit self; };
-
-    packages = forAllSystems (system: pkgs:
-      pkgs.callPackage ./packages { });
+    legacyPackages = forAllSystems (system: pkgs: pkgs.callPackage ./packages { });
 
     overlays.default = final: prev:
+      # TODO: There has to be a better way to generate overlays from packages
       prev.lib.recursiveUpdate
         prev
-        # TODO: callPackage/self.packages just gives infinite recursion errors if used here
-        (import ./packages { inherit (prev) lib; pkgs = nixpkgs.legacyPackages.${prev.system}; });
+        (import ./packages { inherit (prev) lib; pkgs = nixpkgs-unstable.legacyPackages.${prev.system}; });
 
     nixosModules = {
       home-manager.wayfire = import ./modules/user/wayfire;
       unfree = import ./modules/system/unfree;
     };
 
-    nixosConfigurations = with self.lib.extended; {
-      mars = nixosSystem {
+    nixosConfigurations = let
+      nixosWith = nixpkgs: import ./modules/lib { inherit nixpkgs self; };
+      nixosStable = nixosWith nixpkgs-stable;
+      nixosUnstable = nixosWith nixpkgs-unstable;
+    in {
+      mars = nixosUnstable {
         system = "x86_64-linux";
-        modules = [
-          ./hosts/mars/configuration.nix
-          ./hosts/phobos/nfs-client.nix
-          impermanence.nixosModules.impermanence
-          nixos-hardware.nixosModules.common-cpu-intel
-          nixos-hardware.nixosModules.common-pc-ssd
-          ./profiles/system/audio
-          ./profiles/system/avahi
-          ./profiles/system/common
-          ./profiles/system/dconf
-          ./profiles/system/dnscrypt-proxy2
-          ./profiles/system/flatpak
-          ./profiles/system/graphical
-          ./profiles/system/login-manager
-          ./profiles/system/ssh
-          ./profiles/system/steam
-          ./profiles/system/sudo
-          ./profiles/system/v4l2loopback
-          self.nixosModules.unfree
-          sops-nix.nixosModules.sops
-        ] ++ forAllHomes [ "electro" ] [
-          ./hosts/mars/home.nix
-          ./profiles/user/fish
-          ./profiles/user/gtk
-          ./profiles/user/kitty
-          ./profiles/user/mpv
-          ./profiles/user/neovim
-          ./profiles/user/nix-index
-          ./profiles/user/wayfire
-        ];
-        overlays = [ self.overlays.default ];
+
+        manageSecrets.enable = true;
+        manageState.enable = true;
+
+        modules = {
+          system = [
+            ./hosts/mars/configuration.nix
+            ./hosts/phobos/nfs-client.nix
+            nixos-hardware.nixosModules.common-cpu-intel
+            nixos-hardware.nixosModules.common-pc-ssd
+            ./profiles/system/audio
+            ./profiles/system/avahi
+            ./profiles/system/common
+            ./profiles/system/dconf
+            ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/flatpak
+            ./profiles/system/graphical
+            ./profiles/system/login-manager
+            ./profiles/system/ssh
+            ./profiles/system/steam
+            ./profiles/system/sudo
+            ./profiles/system/v4l2loopback
+            self.nixosModules.unfree
+          ];
+          users.electro = [
+            ./hosts/mars/home.nix
+            ./profiles/user/fish
+            ./profiles/user/gtk
+            ./profiles/user/kitty
+            ./profiles/user/mpv
+            ./profiles/user/neovim
+            ./profiles/user/nix-index
+            ./profiles/user/wayfire
+          ];
+        };
       };
 
-      phobos = nixosSystem {
+      phobos = nixosStable {
         system = "aarch64-linux";
-        modules = [
+
+        manageSecrets.enable = true;
+        manageState.enable = true;
+
+        modules.system = [
           ./hosts/phobos/configuration.nix
-          impermanence.nixosModules.impermanence
           nixos-hardware.nixosModules.raspberry-pi-4
           ./profiles/system/common
           ./profiles/system/matrix
-          sops-nix.nixosModules.sops
         ];
       };
 
-      deimos = nixosSystem {
+      deimos = nixosStable {
         system = "aarch64-linux";
-        modules = [ ./hosts/deimos/configuration.nix ];
+
+        modules.system = [
+          ./hosts/deimos/configuration.nix
+        ];
       };
 
-      mercury = nixosSystem {
+      mercury = nixosUnstable {
         system = "x86_64-linux";
-        modules = [
-          ./hosts/mercury/configuration.nix
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.common-pc-laptop-ssd
-          nixos-hardware.nixosModules.lenovo-thinkpad-t420
-          ./profiles/system/audio
-          ./profiles/system/avahi
-          ./profiles/system/common
-          ./profiles/system/dconf
-          ./profiles/system/dnscrypt-proxy2
-          ./profiles/system/graphical
-          ./profiles/system/login-manager
-          ./profiles/system/ssh
-          ./profiles/system/sudo
-          sops-nix.nixosModules.sops
-        ] ++ forAllHomes [ "gediminas" ] [
-          ./hosts/mercury/home.nix
-          ./profiles/user/fish
-          ./profiles/user/gtk
-          ./profiles/user/kitty
-          ./profiles/user/neovim
-          ./profiles/user/nix-index
-          ./profiles/user/wayfire
-        ];
-        overlays = [ self.overlays.default ];
+
+        manageSecrets.enable = true;
+
+        modules = {
+          system = [
+            ./hosts/mercury/configuration.nix
+            nixos-hardware.nixosModules.common-pc-laptop
+            nixos-hardware.nixosModules.common-pc-laptop-ssd
+            nixos-hardware.nixosModules.lenovo-thinkpad-t420
+            ./profiles/system/audio
+            ./profiles/system/avahi
+            ./profiles/system/common
+            ./profiles/system/dconf
+            ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/graphical
+            ./profiles/system/login-manager
+            ./profiles/system/ssh
+            ./profiles/system/sudo
+          ];
+          users.gediminas = [
+            ./hosts/mercury/home.nix
+            ./profiles/user/fish
+            ./profiles/user/gtk
+            ./profiles/user/kitty
+            ./profiles/user/neovim
+            ./profiles/user/nix-index
+            ./profiles/user/wayfire
+          ];
+        };
       };
 
-      BERLA = nixosSystem {
+      BERLA = nixosUnstable {
         system = "x86_64-linux";
-        modules = [
-          ./hosts/BERLA/configuration.nix
-          nixos-wsl.nixosModules.wsl
-          ./profiles/system/common
-        ] ++ forAllHomes [ "nixos" ] [
-          ./hosts/BERLA/home.nix
-          ./profiles/user/fish
-          ./profiles/user/neovim
-          ./profiles/user/nix-index
-        ];
-        overlays = [ self.overlays.default ];
+
+        modules = {
+          system = [
+            ./hosts/BERLA/configuration.nix
+            nixos-wsl.nixosModules.wsl
+            ./profiles/system/common
+          ];
+          users.nixos = [
+            ./hosts/BERLA/home.nix
+            ./profiles/user/fish
+            ./profiles/user/neovim
+            ./profiles/user/nix-index
+          ];
+        };
       };
     };
   };

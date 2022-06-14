@@ -1,11 +1,11 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, persistMount, ... }:
 
 # Reminder not to lose the matrix_key.pem file.
 # If running stateless, ensure /state/run/keys/dendrite/matrix_key.pem
 # is present and dendrite has perms to read it
 
 {
-  environment.persistence."/state" = {
+  environment.persistence.${persistMount} = {
     directories = [
       {
         directory = "/var/lib/acme";

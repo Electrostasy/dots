@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, persistMount, ... }:
 
 {
   system.stateVersion = "22.05";
@@ -51,7 +51,7 @@
     };
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.${persistMount} = {
     hideMounts = true;
     directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
     files = [ "/etc/machine-id" ];

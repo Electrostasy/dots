@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, persistMount, ... }:
 
 # For Steam Deck mode (`-gamepadui`), enter the following beta by running (native and flatpak):
 # $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.steam/root/package/beta
@@ -11,7 +11,7 @@
     options = [ "subvol=steam" "noatime" "nodiratime" "compress=zstd" "ssd" ];
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.${persistMount} = {
     hideMounts = true;
     users.electro.directories = [ ".local/share/Steam" ".steam" ];
   };

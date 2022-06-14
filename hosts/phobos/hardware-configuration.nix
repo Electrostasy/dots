@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ modulesPath, persistMount, ... }:
 
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
@@ -32,7 +32,7 @@
     };
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.${persistMount} = {
     hideMounts = true;
     directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
     files = [ "/etc/machine-id" ];

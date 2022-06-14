@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, persistMount, ... }:
 
 let
   # This cannot be made generic across all normalUsers due to a crazy infinite
@@ -21,7 +21,7 @@ let
     users.users.${user}.packages = with pkgs; [ gamescope ];
     # Run steam (steamdeck beta) using:
     # $ gamescope -W 3840 -H 2160 -e -- flatpak run com.valvesoftware.Steam -gamepadui -fulldesktopres -pipewire-dmabuf
-    environment.persistence."/nix/state" = {
+    environment.persistence.${persistMount} = {
       hideMounts = true;
       users.${user}.directories = [ ".local/share/flatpak" ".var" ];
     };

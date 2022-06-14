@@ -1,89 +1,83 @@
-{ self, ... }:
+{ nixpkgs, self }:
+
+{
+  system,
+  modules,
+  ...
+} @ args:
 
 let
-  overlay = final: prev: {
-    extended = {
-      # Turn a list of Home-manager modules into a list of NixOS modules
-      # by applying them to each user in `users`
-      forAllHomes = users: modules:
-        let
-          mkHomeModule = user: { home-manager, ... }: {
-            home-manager.users.${user}.imports = modules;
-          };
-          homes = builtins.map mkHomeModule users;
-        in [
-          self.inputs.home-manager.nixosModule
-          ({ config, ... }: {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              sharedModules = builtins.attrValues self.outputs.nixosModules.home-manager;
-            };
-          })
-        ] ++ homes;
+  inherit (nixpkgs) lib;
+  pkgs = nixpkgs.legacyPackages.${system};
 
-      nixosSystem = { system, modules, ... }@args:
-        let
-          # `makeOverridable` allows us to build images and run VMs with configs
-          # defined in `nixosConfigurations` in flake.nix:
-          # https://github.com/NixOS/nixpkgs/pull/101475
-          # https://github.com/nix-community/nixos-generators/issues/110#issuecomment-895963028
-          overridableSystem = with prev; makeOverridable nixosSystem;
-          configuration = prev.filterAttrs (n: _: n != "overlays") args // {
-            modules = [
-              # Nix/Nixpkgs common configuration
-              {
-                nixpkgs.overlays = args.overlays or [];
-                system.configurationRevision = prev.mkIf (self ? rev) self.rev;
+  keyFile = args.manageSecrets.keyFile or "/var/lib/sops-nix/keys.txt";
+  stateDir = args.manageState.default or "/state";
 
-                nix = {
-                  package = self.inputs.nixpkgs.legacyPackages.${system}.nixFlakes;
-                  extraOptions = "experimental-features = nix-command flakes";
+  systemModules = lib.singleton {
+    environment.defaultPackages = lib.mkForce [];
+    nixpkgs.overlays = builtins.attrValues self.overlays;
+    nix = {
+      package = pkgs.nixFlakes;
+      extraOptions = "experimental-features = nix-command flakes";
 
-                  # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
-                  # channel-dependent programs to use the correct nixpkgs
-                  settings.nix-path = [ "nixpkgs=${self.inputs.nixpkgs}" ];
-                  registry.nixpkgs = {
-                    from = { type = "indirect"; id = "nixpkgs"; };
-                    flake = self.inputs.nixpkgs;
-                  };
-                };
-              }
+      # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
+      # channel-dependent programs to use the correct nixpkgs
+      settings.nix-path = [ "nixpkgs=${nixpkgs}" ];
+      registry.nixpkgs = {
+        from = { type = "indirect"; id = "nixpkgs"; };
+        flake = nixpkgs;
+      };
+    };
+  } ++ modules.system;
 
-              # Secrets management
-              {
-                fileSystems."/var/lib/sops-nix" = {
-                  device = "/state/var/lib/sops-nix";
-                  fsType = "none";
-                  options = [ "bind" ];
-                  depends = [ "/state" ];
-                  neededForBoot = true;
-                };
-
-                environment = {
-                  sessionVariables.SOPS_AGE_KEY_FILE = "/var/lib/sops-nix/keys.txt";
-
-                  systemPackages =
-                    with self.inputs.nixpkgs.legacyPackages.${system};
-                    [ sops rage sequoia ];
-                };
-
-                sops = {
-                  age = {
-                    keyFile = "/var/lib/sops-nix/keys.txt";
-                    sshKeyPaths = [];
-                  };
-                  gnupg.sshKeyPaths = [];
-                };
-              }
-            ] ++ modules;
-            # Inherit extended lib and access to flake attrs
-            specialArgs = { lib = final; flake = self; } // args.specialArgs or { };
-          };
-        in overridableSystem configuration;
+  userModules = builtins.map
+    (user: { home-manager.users.${user}.imports = modules.users.${user}; })
+    (builtins.attrNames modules.users or {});
+  
+  homeManagerConfig = {
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      sharedModules = builtins.attrValues self.nixosModules.home-manager;
     };
   };
 
-in
+  sopsConfig = let
+    keyFileDirectory =
+      lib.concatStringsSep "/"
+        (lib.init (lib.splitString "/" keyFile));
+  in lib.mkIf (args.manageSecrets.enable or false) {
+    fileSystems.${keyFileDirectory} = lib.mkIf (args.manageState.enable or false) {
+      device = lib.concatStrings [ stateDir keyFileDirectory ];
+      fsType = "none";
+      options = [ "bind" ];
+      depends = [ stateDir ];
+      neededForBoot = true;
+    };
 
-self.inputs.nixpkgs.lib.extend overlay
+    environment = {
+      sessionVariables.SOPS_AGE_KEY_FILE = keyFile;
+      systemPackages = with pkgs; [ sops rage ];
+    };
+
+    sops = {
+      age = {
+        inherit keyFile;
+        sshKeyPaths = [];
+      };
+      gnupg.sshKeyPaths = [];
+    };
+  };
+in
+nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules =
+    systemModules
+    ++ lib.optionals (userModules != []) ([ self.inputs.home-manager.nixosModule homeManagerConfig ] ++ userModules)
+    ++ lib.optionals (args.manageSecrets.enable or false) [ self.inputs.sops-nix.nixosModule sopsConfig ]
+    ++ lib.optional (args.manageState.enable or false) self.inputs.impermanence.nixosModule;
+  specialArgs = {
+    persistMount = stateDir;
+    inherit lib self;
+  };
+}
