@@ -5,7 +5,6 @@ let
 in
 
 rec {
-  eww-wayland = callPackage ./eww-wayland { };
   firefox-custom = callPackage ./firefox { };
   gamescope = callPackage ./gamescope { };
   nerdfonts-patch = callPackage ./nerdfonts-patch { };
