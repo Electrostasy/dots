@@ -32,6 +32,7 @@ rec {
     };
     set = "custom";
   });
+  opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
     heirline-nvim = pkgs.vimUtils.buildVimPlugin {
