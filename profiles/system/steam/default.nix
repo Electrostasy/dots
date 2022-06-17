@@ -12,7 +12,6 @@
   };
 
   environment.persistence.${persistMount} = {
-    hideMounts = true;
     users.electro.directories = [ ".local/share/Steam" ".steam" ];
   };
 

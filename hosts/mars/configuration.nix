@@ -52,7 +52,6 @@
   };
 
   environment.persistence.${persistMount} = {
-    hideMounts = true;
     directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
     files = [ "/etc/machine-id" ];
     users.electro.directories = [

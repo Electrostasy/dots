@@ -22,7 +22,6 @@ let
     # Run steam (steamdeck beta) using:
     # $ gamescope -W 3840 -H 2160 -e -- flatpak run com.valvesoftware.Steam -gamepadui -fulldesktopres -pipewire-dmabuf
     environment.persistence.${persistMount} = {
-      hideMounts = true;
       users.${user}.directories = [ ".local/share/flatpak" ".var" ];
     };
   };
