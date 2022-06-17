@@ -20,6 +20,10 @@ in {
   networking.firewall.allowedTCPPorts = [ 2049 ];
   services.nfs.server = {
     enable = true;
+
+    extraNfsdConfig = ''
+      vers4.2=on
+    '';
     exports = let
       nfsRoot = "${fsRoot} ${client}(rw,fsid=0,insecure,no_subtree_check)";
       mkNfsMount = mount:
@@ -31,18 +35,17 @@ in {
     publish.userServices = true;
     extraServiceFiles = lib.foldl lib.recursiveUpdate { } (builtins.map (mount:
       let
-        export = lib.concatStringsSep "/" [ fsRoot mount ];
-        escapedExport = lib.removePrefix "_" (builtins.replaceStrings [ "/" "." ] [ "_" "_" ] export);
+        escapedExport = lib.removePrefix "_" (builtins.replaceStrings [ "/" "." ] [ "_" "_" ] mount);
       in {
         "${escapedExport}" = ''
           <?xml version="1.0" standalone='no'?>
           <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
           <service-group>
-            <name replace-wildcards="yes">NFS share ${export}</name>
+            <name replace-wildcards="yes">NFS share ${mount}</name>
             <service>
               <type>_nfs._tcp</type>
               <port>2049</port>
-              <txt-record>path=${export}</txt-record>
+              <txt-record>path=${mount}</txt-record>
             </service>
           </service-group>
         '';
