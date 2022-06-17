@@ -1,7 +1,8 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   xdg.enable = true;
+  fonts.fontconfig.enable = true;
 
   wayland.windowManager.wayfire.settings.plugins = [
     { plugin = "output:DP-1";
@@ -24,42 +25,39 @@
   ];
 
   home.packages = with pkgs; [
-    (aspellWithDicts (ds: with ds; [ en lt ]))
-    chafa # Image data terminal previewer
+    # 3D printing/CAD packages
     cura
-    # dfeet # graphical dbus monitor
-    du-dust
-    element-desktop
     f3d
+    freecad
+    solvespace
+    super-slicer
+
+    # Desktop programs
+    element-desktop
+    firefox-custom
+    gimp
+    (imv.override { withWindowSystem = "wayland"; })
+    keepassxc
+    (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
+    transmission-gtk
+    xdg-utils
+
+    # CLI utilities
+    chafa
+    du-dust
     ffmpeg
     fio
-    firefox-custom
-    freecad
-    gimp
-    glib # for gdbus
-    grim
     imagemagick
-    (imv.override { withWindowSystem = "wayland"; })
-    inter # UI typeface
-    iosevka-nerdfonts
-    keepassxc
-    liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-    (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
     pastel
-    slurp
-    solvespace
-    source-han-sans # Required for rendering Japanese font
-    super-slicer
-    transmission-gtk
-    wf-recorder
-    wl-clipboard
-    wlopm
-    xdg-utils
     xplr
     youtube-dl
-  ];
 
-  fonts.fontconfig.enable = true;
+    # Fonts
+    inter
+    iosevka-nerdfonts
+    liberation_ttf # Replacement fonts for TNR, Arial and Courier New
+    source-han-sans # Required for rendering Japanese font
+  ];
 
   programs = {
     zathura = {

@@ -37,6 +37,19 @@
     x11.enable = true;
   };
 
+  home.packages = with pkgs; [
+    # Wayland-specific packages
+    grim
+    slurp
+    wf-recorder
+    wl-clipboard
+    wlopm
+
+    # DBus utilities
+    # dfeet # graphical dbus monitor
+    glib # for gdbus
+  ];
+
   wayland.windowManager.wayfire = {
     enable = true;
     package = pkgs.wayfire-git;
