@@ -49,20 +49,26 @@ cmp.setup({
   },
   formatting = {
     fields = {
+      cmp.ItemField.Kind,
       cmp.ItemField.Abbr,
       cmp.ItemField.Menu,
-      cmp.ItemField.Kind,
     },
-    format = require('lspkind').cmp_format({
-      mode = 'text_symbol',
-      symbol_map = icons,
-      menu = {
-        buffer = '[Buffer]',
-        nvim_lsp = '[LSP]',
-        luasnip = '[Snippet]',
-        path = '[Path]'
-      }
-    }),
+    -- Stolen from here:
+    -- https://github.com/hrsh7th/nvim-cmp/pull/901
+    -- https://github.com/CKolkey/.config/blob/master/.config/nvim/lua/plugins/_completion.lua#L10-L17
+    format = function(entry, vim_item)
+      local kind = require('lspkind').cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
+      local strings = vim.split(kind.kind, "%s", { trimempty = true })
+      kind.kind = " " .. strings[1] .. " "
+      kind.menu = "(" .. strings[2] .. ")"
+      return kind
+    end,
+  },
+  window = {
+    completion = {
+      col_offset = -3,
+      side_padding = 0,
+    },
   },
   sorting = {
     comparators = {
