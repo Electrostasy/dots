@@ -98,6 +98,7 @@
           users.electro = [
             ./hosts/mars/home.nix
             ./profiles/user/fish
+            ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/mpv
@@ -154,6 +155,7 @@
           users.gediminas = [
             ./hosts/mercury/home.nix
             ./profiles/user/fish
+            ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/neovim
@@ -175,6 +177,7 @@
           users.nixos = [
             ./hosts/BERLA/home.nix
             ./profiles/user/fish
+            ./profiles/user/git
             ./profiles/user/neovim
             ./profiles/user/nix-index
           ];

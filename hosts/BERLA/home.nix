@@ -37,11 +37,5 @@
         };
       };
     };
-
-    git = {
-      enable = true;
-      userName = "Gediminas Valys";
-      userEmail = "steamykins@gmail.com";
-    };
   };
 }
