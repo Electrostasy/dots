@@ -118,8 +118,11 @@
         modules.system = [
           ./hosts/phobos/configuration.nix
           nixos-hardware.nixosModules.raspberry-pi-4
+          ./profiles/system/avahi
           ./profiles/system/common
           ./profiles/system/matrix
+          ./profiles/system/ssh
+          ./profiles/system/sudo
         ];
       };
 

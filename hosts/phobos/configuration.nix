@@ -35,30 +35,7 @@
 
   documentation.enable = false;
 
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-    execWheelOnly = true;
-  };
-
-  services = {
-    openssh = {
-      enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
-    };
-    avahi = {
-      enable = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        domain = true;
-      };
-      nssmdns = true;
-      interfaces = [ "eth0" ];
-    };
-  };
+  services.avahi.interfaces = [ "eth0" ];
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
