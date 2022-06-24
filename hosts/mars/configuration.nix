@@ -58,6 +58,7 @@
       ".cache"
       ".config/Element"
       { directory = ".ssh"; mode = "0700"; }
+      ".local/share/mpd"
       ".mozilla"
       "Pictures"
     ];
