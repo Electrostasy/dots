@@ -56,6 +56,7 @@
   home.file.".config/nvim/lua".source = ./lua;
 
   programs.fish.interactiveShellInit = ''
-    set EDITOR nvim
+    set -x EDITOR nvim
+    set -x MANPAGER 'nvim -c "set ft=man" +Man! -o -'
   '';
 }
