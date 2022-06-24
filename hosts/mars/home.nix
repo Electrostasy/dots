@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 {
+  home.stateVersion = "22.11";
+
   xdg.enable = true;
   fonts.fontconfig.enable = true;
 
@@ -28,7 +30,7 @@
     # 3D printing/CAD packages
     cura
     f3d
-    freecad
+    # freecad # 0.19.2 is currently broken, wait for 0.20 to land in nixos-unstable
     solvespace
     super-slicer
 
