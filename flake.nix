@@ -168,17 +168,17 @@
         };
       };
 
-      BERLA = nixosUnstable {
+      eris = nixosUnstable {
         system = "x86_64-linux";
 
         modules = {
           system = [
-            ./hosts/BERLA/configuration.nix
+            ./hosts/eris/configuration.nix
             nixos-wsl.nixosModules.wsl
             ./profiles/system/common
           ];
           users.nixos = [
-            ./hosts/BERLA/home.nix
+            ./hosts/eris/home.nix
             ./profiles/user/fish
             ./profiles/user/git
             ./profiles/user/neovim
