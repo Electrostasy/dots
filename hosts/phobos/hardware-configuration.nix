@@ -21,13 +21,13 @@
     "/nix" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
     };
 
     "/state" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
       neededForBoot = true;
     };
   };

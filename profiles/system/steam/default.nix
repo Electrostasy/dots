@@ -8,7 +8,7 @@
   fileSystems."/home/electro/games" = {
     device = "/dev/disk/by-label/games";
     fsType = "btrfs";
-    options = [ "subvol=steam" "noatime" "nodiratime" "compress=zstd" "ssd" ];
+    options = [ "subvol=steam" "noatime" "nodiratime" "compress-force=zstd:1" ];
   };
 
   environment.persistence.${persistMount} = {
