@@ -186,6 +186,31 @@
           ];
         };
       };
+
+      ceres = nixosUnstable {
+        system = "x86_64-linux";
+
+        manageSecrets.enable = true;
+        manageState.enable = true;
+
+        modules = {
+          system = [
+            ./hosts/ceres/configuration.nix
+            nixos-hardware.nixosModules.common-cpu-intel
+            ./profiles/system/common
+            ./profiles/system/graphical
+            ./profiles/system/ssh
+            ./profiles/system/sudo
+          ];
+          users.gediminas = [
+            ./hosts/ceres/home.nix
+            ./profiles/user/fish
+            ./profiles/user/git
+            ./profiles/user/neovim
+            ./profiles/user/nix-index
+          ];
+        };
+      };
     };
   };
 }
