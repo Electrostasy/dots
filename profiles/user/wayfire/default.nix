@@ -219,7 +219,7 @@
                 timeout 600 '${pkgs.fish}/bin/fish -c ${./outputs.fish} --off' \
                 resume '${pkgs.fish}/bin/fish -c ${./outputs.fish} --on'
             '';
-            outputs = "${pkgs.kanshi}/bin/kanshi";
+            wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/Pictures -type f | shuf -n1)\"";
           };
         }
         {
