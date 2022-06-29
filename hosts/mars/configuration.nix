@@ -18,6 +18,7 @@
     cpu.intel.updateMicrocode = true;
     enableRedistributableFirmware = true;
     sane.enable = true;
+    video.hidpi.enable = true;
   };
 
   zramSwap = {
