@@ -30,7 +30,7 @@
     # 3D printing/CAD packages
     cura
     f3d
-    # freecad # 0.19.2 is currently broken, wait for 0.20 to land in nixos-unstable
+    freecad
     solvespace
     super-slicer
 

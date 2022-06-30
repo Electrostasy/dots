@@ -20,14 +20,7 @@
       lspkind-nvim
       luasnip
       null-ls-nvim
-      (nvim-cmp.overrideAttrs (old: {
-        src = pkgs.fetchFromGitHub {
-          owner = "hrsh7th";
-          repo = "nvim-cmp";
-          rev = "df6734aa018d6feb4d76ba6bda94b1aeac2b378a";
-          sha256 = "sha256-vWvfa1a9FcVqs5y6qB8ugHGYxcc2vw2iceiCfq5i0UQ=";
-        };
-      }))
+      nvim-cmp
       nvim-colorizer-lua
       nvim-lspconfig
       (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars))

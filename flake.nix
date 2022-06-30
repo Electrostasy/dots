@@ -16,7 +16,6 @@
       url = "github:nix-community/NixOS-WSL/main";
       inputs = {
         nixpkgs.follows = "nixpkgs-unstable";
-        flake-compat.follows = "home-manager/flake-compat";
         flake-utils.follows = "home-manager/utils";
       };
     };
