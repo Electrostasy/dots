@@ -1,36 +1,46 @@
 # dots
-You have stumbled upon my dotfiles repository. There are no dotfiles to be
-found here, only declarative infrastructure-as-code written in
-[Nix](https://nixos.org/explore.html) to reproducibly synchronise system/user
-configuration across my various devices.
+This repository contains declarative [Nix] packages, modules, [NixOS] 
+system/user configurations and state management across my various devices. The 
+Nix experimental feature [Flakes] is required.
 
-## General requirements
-NixOS systems I use loosely follow these requirements:
-* Ephemeral root
-* Wayland compositing servers instead of X servers
-* PipeWire instead of PulseAudio
-* Declarative instead of imperative configuration
-* Self-host all the things
+[Nix]: https://nixos.org/guides/how-nix-works.html
+[NixOS]: https://nixos.org/guides/how-nix-works.html#nixos
+[Flakes]: https://nixos.wiki/wiki/Flakes
 
-## NixOS configuration
-The configuration is split across reusable and self-contained modules which
-should be relatively safe to copy, if not without minor alterations.
+## Hosts
+This section describes the devices that are managed as NixOS hosts in this 
+repository. Their configuration is mostly split across reusable and 
+self-contained modules to encourage code reuse and manage complexity. Options 
+unique to a specific host, such as configuration that is used solely on that 
+host (bootloader settings, state management, etc.), is stored in the 
+`configuration.nix` file for each host in the [hosts](./hosts) directory.
 
-Brief outline of my NixOS configurations and the devices I use them on:
+The table below lists the managed hosts and their functions:
 | Hostname | Device type | Description
 | :-- | :-- | :-- |
-| **mars** | Desktop PC | Primary (home) workstation |
-| **phobos** | Raspberry Pi 4B | Matrix homeserver & local nfs fileserver |
+| **mars** | Desktop | Home PC |
+| **phobos** | Raspberry Pi 4B | Matrix homeserver <br/> NFS fileserver |
 | **deimos** | Raspberry Pi 3B+ |  _Currently unused_ |
-| **mercury** | Lenovo ThinkPad T420 | Laptop/mobile (home) workstation |
-| **BERLA** | WSL | Windows WSL2 (work) workstation |
+| **mercury** | Lenovo ThinkPad T420 | Laptop |
+| **eris** | WSL | Primary PC at work |
+| **ceres** | Desktop | Secondary PC at work |
 
+**Cautionary notes**:
+- As these NixOS configurations are specific to my requirements and use cases, 
+  they may not be suitable to switch to without at least modifying the 
+  hardware-related configuration contained in the host directory's 
+  `configuration.nix` file to account for hardware/disk partitioning 
+  differences.
+- These configurations cannot be built and successfully activated on machines 
+  that do not have a `/var/lib/sops-nix/keys.txt` file containing the [age] 
+  private key that corresponds to an age public key in the root 
+  [.sops.yaml](./.sops.yaml) file. The age private key is used for decrypting 
+  user account passwords and other secrets encrypted with the public key. You 
+  can read more about secrets management in the [sops-nix] project page.
 
-These NixOS configurations are specific to my requirements and use cases,
-therefore they may not be suitable to switch to by others without at least
-modifying the `hardware-configuration.nix` file in the host directory to
-account for hardware/disk partitioning differences and/or the persistent state
-directories.
+[age]: https://age-encryption.org/v1
+[sops-nix]: https://github.com/Mic92/sops-nix
 
-If nothing else, I hope this will be at least as useful to others as reading
+---
+If nothing else, I hope this will be at least as useful to others as reading 
 other peoples' public NixOS configurations was for me.
