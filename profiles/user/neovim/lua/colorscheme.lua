@@ -15,7 +15,7 @@ kanagawa.setup({
     DiagnosticVirtualTextWarn = { fg = colours.roninYellow, bg = colours.winterYellow },
     DiagnosticVirtualTextInfo = { fg = colours.waveAqua1, bg = colours.winterBlue },
     DiagnosticVirtualTextHint = { fg = colours.dragonBlue, bg = colours.winterBlue },
-    TelescopeMatching = { fg = colours.roninYellow, style = 'bold' },
+    TelescopeMatching = { fg = colours.roninYellow, bold = true },
 
     -- Bless this man, idea and contribution from him:
     -- https://github.com/hrsh7th/nvim-cmp/pull/901

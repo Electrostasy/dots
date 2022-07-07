@@ -23,7 +23,6 @@
       url = "github:Mic92/sops-nix/master";
       inputs = {
         nixpkgs.follows = "nixpkgs-unstable";
-        nixpkgs-21_11.follows = "nixpkgs-stable";
         nixpkgs-22_05.follows = "nixpkgs-stable";
       };
     };
