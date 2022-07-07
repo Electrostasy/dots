@@ -75,6 +75,12 @@
     useNetworkd = true;
   };
 
+  services.timesyncd.servers = [
+    "1.europe.pool.ntp.org"
+    "1.lt.pool.ntp.org"
+    "2.europe.pool.ntp.org"
+  ];
+
   # Keeps failing, but networking works fine without it
   systemd.services."systemd-networkd-wait-online".enable = false;
   systemd.network = {
@@ -86,11 +92,6 @@
       address = [ "192.168.205.23" ];
       gateway = [ "192.168.205.1" ];
       dns = [ "127.0.0.1" "::1" ];
-      ntp = [
-        "1.europe.pool.ntp.org"
-        "1.lt.pool.ntp.org"
-        "2.europe.pool.ntp.org"
-      ];
     };
   };
 

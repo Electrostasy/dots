@@ -43,6 +43,12 @@
     useNetworkd = true;
   };
 
+  services.timesyncd.servers = [
+    "1.europe.pool.ntp.org"
+    "1.lt.pool.ntp.org"
+    "2.europe.pool.ntp.org"
+  ];
+
   # Keeps failing, but networking works fine without it
   systemd.services."systemd-networkd-wait-online".enable = false;
   systemd.network = {
@@ -65,11 +71,6 @@
         "192.168.200.10" # Try work DNS
         "127.0.0.1" "::1" # Fallback to local DNS resolver
       ];
-      ntp = [
-        "1.europe.pool.ntp.org"
-        "1.lt.pool.ntp.org"
-        "2.europe.pool.ntp.org"
-      ];
 
       dhcpV4Config.RouteMetric = 1024;
     };
@@ -80,11 +81,6 @@
 
       DHCP = "yes";
       dns = [ "127.0.0.1" "::1" ];
-      ntp = [
-        "1.europe.pool.ntp.org"
-        "1.lt.pool.ntp.org"
-        "2.europe.pool.ntp.org"
-      ];
 
       networkConfig.IgnoreCarrierLoss = "yes";
     };
@@ -96,11 +92,6 @@
 
       DHCP = "yes";
       dns = [ "127.0.0.1" "::1" ];
-      ntp = [
-        "1.europe.pool.ntp.org"
-        "1.lt.pool.ntp.org"
-        "2.europe.pool.ntp.org"
-      ];
 
       networkConfig.IgnoreCarrierLoss = "yes";
       dhcpV4Config = {
