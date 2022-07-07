@@ -11,7 +11,11 @@ let
   pkgs = nixpkgs.legacyPackages.${system};
 
   keyFile = args.manageSecrets.keyFile or "/var/lib/sops-nix/keys.txt";
-  stateDir = args.manageState.default or "/state";
+  stateDir = if args.manageState.enable or false
+    # If state is managed, use the (default) state directory
+    then (args.manageState.default or "/state")
+    # Otherwise, use an empty string (i.e. none when interpolated in paths)
+    else "";
 
   systemModules = lib.singleton {
     environment.defaultPackages = lib.mkForce [];
