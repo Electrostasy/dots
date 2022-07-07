@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./nfs.nix
+    ./media.nix
   ];
 
   system.stateVersion = "22.05";
