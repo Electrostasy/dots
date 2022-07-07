@@ -1,6 +1,8 @@
 { config, pkgs, persistMount, ... }:
 
 {
+  imports = [ ./gaming.nix ];
+
   system.stateVersion = "22.05";
 
   boot = {

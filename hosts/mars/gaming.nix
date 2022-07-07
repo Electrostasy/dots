@@ -12,11 +12,18 @@
   };
 
   environment.persistence.${persistMount} = {
-    users.electro.directories = [ ".local/share/Steam" ".steam" ];
+    users.electro.directories = [
+      # Steam
+      ".local/share/Steam" ".steam"
+
+      # Flatpak
+      ".local/share/flatpak" ".var"
+    ];
   };
 
   hardware.opengl.driSupport32Bit = true;
 
+  services.flatpak.enable = true;
   programs.steam.enable = true;
   nixpkgs.allowedUnfreePackages = with pkgs; [
     steam
@@ -34,7 +41,6 @@
   };
 
   # TODO: Remove flatpak-supplied Steam .desktop file
-  # TODO: Trap exit/shutdown somehow and instead kill gamescope?
   home-manager.users.electro = {
     programs.mangohud = {
       enable = true;

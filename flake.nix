@@ -84,11 +84,9 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/flatpak
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/ssh
-            ./profiles/system/steam
             ./profiles/system/sudo
             ./profiles/system/v4l2loopback
             self.nixosModules.unfree
