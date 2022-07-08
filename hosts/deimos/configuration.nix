@@ -1,43 +1,100 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, persistMount, ... }:
 
 {
-  networking.hostName = "deimos";
-  system.stateVersion = "21.11";
+  system.stateVersion = "22.11";
 
   boot = {
+    initrd.availableKernelModules = [ "usb_storage" "usbhid" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    tmpOnTmpfs = true;
     loader = {
-      grub.enable = false;
-      raspberryPi = {
-        enable = true;
-        version = 4;
-      };
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
     };
-    consoleLogLevel = lib.mkDefault 7;
-    kernelPackages = pkgs.linuxPackages_rpi4;
-    kernelParams = [
-      # Allow using all of the RAM
-      "cma=64M"
-      "console=tty0"
-      "console=ttyAMA0,115200"
-      "8250.nr_uarts=1"
-    ];
-    # Remove some kernel modules added for AllWinner SOCs that are not available
-    # for RPi's kernel
-    initrd.availableKernelModules = [
-      # Allows early (earlier) modesetting for the Raspberry Pi
-      "vc4" "bcm2835_dma" "i2c_bcm2835"
-    ];
   };
 
-  fileSystems = lib.mkForce {
-    # There is no U-Boot on the Pi4, firmware part needs to be mounted as /boot
+  fileSystems = {
+    "/" = {
+      device = "none";
+      fsType = "tmpfs";
+      options = [ "defaults" "size=256M" "mode=755" ];
+    };
+
+    # NOTE: Raspberry Pi 3 UEFI Firmware is located at
+    # `/dev/mmcblk0p1` or `/dev/disk/by-label/firmware`
     "/boot" = {
-      device = "/dev/disk/by-label/FIRMWARE";
+      device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
-    "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
-      fsType = "ext4";
+
+    "/nix" = {
+      device = "/dev/disk/by-label/data";
+      fsType = "btrfs";
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
+    };
+
+    "/state" = {
+      device = "/dev/disk/by-label/data";
+      fsType = "btrfs";
+      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      neededForBoot = true;
+    };
+  };
+
+  environment.persistence.${persistMount} = {
+    directories = [
+      "/etc/nixos"
+      "/etc/ssh"
+      "/var/log"
+    ];
+    files = [ "/etc/machine-id" ];
+  };
+
+  time.timeZone = "Europe/Vilnius";
+
+  networking.hostName = "deimos";
+
+  services.timesyncd.servers = [
+    "1.europe.pool.ntp.org"
+    "1.lt.pool.ntp.org"
+    "2.europe.pool.ntp.org"
+  ];
+
+  documentation.enable = false;
+
+  services.avahi.interfaces = [ "eth0" ];
+
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      rootPassword.neededForUsers = true;
+      piPassword.neededForUsers = true;
+      sshHostKey = { };
+    };
+  };
+
+  services.openssh.hostKeys = [
+    { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
+  ];
+
+  users = {
+    mutableUsers = false;
+
+    # Change password in ./secrets.yaml using
+    # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
+    users = {
+      root.passwordFile = config.sops.secrets.rootPassword.path;
+      pi = {
+        isNormalUser = true;
+        passwordFile = config.sops.secrets.piPassword.path;
+        extraGroups = [ "wheel" ];
+        shell = pkgs.fish;
+        openssh.authorizedKeys.keyFiles = [
+          ../mars/ssh_electro_ed25519_key.pub
+          ../mercury/ssh_gediminas_ed25519_key.pub
+        ];
+      };
     };
   };
 }

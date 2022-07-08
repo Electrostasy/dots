@@ -125,9 +125,23 @@
       deimos = nixosStable {
         system = "aarch64-linux";
 
-        modules.system = [
-          ./hosts/deimos/configuration.nix
-        ];
+        manageSecrets.enable = true;
+        manageState.enable = true;
+
+        modules = {
+          system = [
+            ./hosts/deimos/configuration.nix
+            ./profiles/system/avahi
+            ./profiles/system/common
+            ./profiles/system/ssh
+            ./profiles/system/sudo
+          ];
+          users.pi = [
+            ./hosts/deimos/home.nix
+            ./profiles/user/fish
+            ./profiles/user/git
+          ];
+        };
       };
 
       mercury = nixosUnstable {
