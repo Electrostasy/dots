@@ -47,4 +47,3 @@ require('colorizer').setup({
     css = false
   }
 )
-
