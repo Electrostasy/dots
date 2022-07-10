@@ -6,25 +6,14 @@
   system.stateVersion = "22.05";
 
   boot = {
-    initrd.availableKernelModules = [ "xhci_pci" "uas" ];
-    kernelParams = [
-      "8250.nr_uarts=1"
-      "console=ttyAMA0,115200"
-      "console=tty1"
-      "cma=128M"
-    ];
-    kernelPackages = pkgs.linuxPackages_rpi4;
+    initrd.availableKernelModules = [ "usb_storage" "uas" "usbhid" ];
+    kernelPackages = pkgs.linuxPackages_latest;
     tmpOnTmpfs = true;
-
     loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
     };
   };
-
-  swapDevices = [
-    { device = "/dev/disk/by-label/swap"; }
-  ];
 
   fileSystems = {
     "/" = {
@@ -33,19 +22,21 @@
       options = [ "defaults" "size=256M" "mode=755" ];
     };
 
+    # NOTE: Raspberry Pi 4 UEFI Firmware is located at
+    # `/dev/mmcblk0p1` or `/dev/disk/by-label/firmware`
     "/boot" = {
       device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
 
     "/nix" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/disk/by-label/data";
       fsType = "btrfs";
       options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
     };
 
     "/state" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/disk/by-label/data";
       fsType = "btrfs";
       options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
       neededForBoot = true;
@@ -73,7 +64,7 @@
 
   documentation.enable = false;
 
-  services.avahi.interfaces = [ "eth0" ];
+  services.avahi.interfaces = [ "enabcm6e4ei0" ];
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
@@ -92,17 +83,18 @@
   users = {
     mutableUsers = false;
 
-    # Change initialHashedPassword using
+    # Change password in ./secrets.yaml using
     # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
     users = {
       root.passwordFile = config.sops.secrets.rootPassword.path;
       pi = {
         isNormalUser = true;
-        group = "pi";
-        extraGroups = [ "wheel" ];
         passwordFile = config.sops.secrets.piPassword.path;
+        extraGroups = [ "wheel" ];
+        shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../mars/ssh_electro_ed25519_key.pub
+          ../mercury/ssh_gediminas_ed25519_key.pub
         ];
       };
     };
