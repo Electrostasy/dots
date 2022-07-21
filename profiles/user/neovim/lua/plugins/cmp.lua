@@ -1,4 +1,3 @@
-local icons = require('lsp.icons')
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 

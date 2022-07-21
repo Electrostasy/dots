@@ -5,11 +5,10 @@ require('nvim-treesitter.configs').setup({
   playground = { enable = true },
 })
 
+-- Highlight function arguments with nvim-treesitter
 require('hlargs').setup({})
-
-local hlargs_group = vim.api.nvim_create_augroup('HlargsHighlight', { clear = true })
 vim.api.nvim_create_autocmd('ColorScheme', {
-  group = hlargs_group,
+  group = vim.api.nvim_create_augroup('HlargsHighlight', { clear = true }),
   pattern = '*',
   callback = function()
     vim.api.nvim_set_hl(0, 'Hlargs', { link = 'TSParameter' })

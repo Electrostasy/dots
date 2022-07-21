@@ -1,4 +1,4 @@
-local utils = require('statusline.utils')
+local utils = require('plugins.heirline.utils')
 local kanagawa = require('kanagawa.colors').setup()
 
 local palette = utils.palette
@@ -42,33 +42,16 @@ return {
       ["!"] = "Shell",
       t = "Terminal",
     },
-    mode_colours = {
-      n = kanagawa.fujiWhite,
-      i = kanagawa.autumnYellow,
-      v = kanagawa.springBlue,
-      V = kanagawa.springBlue,
-      ["\22"] = kanagawa.springBlue,
-      c = kanagawa.surimiOrange,
-      s = kanagawa.waveBlue2,
-      S = kanagawa.waveBlue2,
-      ["\19"] = kanagawa.springBlue,
-      r = kanagawa.springGreen,
-      R = kanagawa.springGreen,
-      ["!"] = kanagawa.peachRed,
-      t = kanagawa.peachRed
-    }
   },
 
   init = function(self)
-    self.mode = vim.fn.mode()
-    self.mode_name = self.mode_names[self.mode]
-    self.mode_colour = self.mode_colours[self.mode]
+    self.mode_name = self.mode_names[vim.fn.mode()]
   end,
 
   {
     provider = ' ',
     hl = function(self)
-      return { fg = self.mode_colour }
+      return { fg = self:get_mode_colour() }
     end,
   },
   {
@@ -76,13 +59,13 @@ return {
       return ' ' .. self.mode_name .. ' '
     end,
     hl = function(self)
-      return { fg = palette.modules.bg, bg = self.mode_colour, bold = true }
+      return { fg = palette.modules.bg, bg = self:get_mode_colour(), bold = true }
     end
   },
   {
     provider = slants.lu,
     hl = function(self)
-      return { fg = palette.modules.bg, bg = self.mode_colour }
+      return { fg = palette.modules.bg, bg = self:get_mode_colour() }
     end,
   }
 }

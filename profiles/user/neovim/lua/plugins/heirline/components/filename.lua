@@ -1,5 +1,5 @@
 local conditions = require('heirline.conditions')
-local utils = require('statusline.utils')
+local utils = require('plugins.heirline.utils')
 local kanagawa = require('kanagawa.colors').setup()
 
 local slants = utils.separators.slant
@@ -18,7 +18,7 @@ return {
     self.parent_dir = vim.fn.fnamemodify(self.full_path, ":h")
 
     if not self.devicons.has_loaded() then
-      self.devicons.setup({})
+      self.devicons.setup()
     end
 
     -- Filetype icon
@@ -33,13 +33,13 @@ return {
     if self.is_readonly then
       self.fg_colour = kanagawa.autumnRed
       self.bg_colour = kanagawa.winterRed
-      self.status_icon = '  '
+      self.status_icon = '  '
     elseif self.is_modified then
       self.fg_colour = kanagawa.autumnYellow
       self.bg_colour = kanagawa.winterYellow
-      self.status_icon = ' + '
+      self.status_icon = '  '
     else
-      self.fg_colour = self.mode_colour
+      self.fg_colour = self:get_mode_colour()
       self.bg_colour = palette.modules.bg
       self.status_icon = nil -- shouldn't be accessed
     end

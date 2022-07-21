@@ -1,8 +1,6 @@
-local set = vim.opt
-
 -- Disable builtin plugins
-vim.g.loaded_matchit = 0
-vim.g.loaded_matchparen = 0
+vim.g.loaded_matchit = 1
+vim.g.loaded_matchparen = 1
 vim.g.loaded_getscript = 1
 vim.g.loaded_getscriptPlugin = 1
 vim.g.loaded_gzip = 1
@@ -22,57 +20,81 @@ vim.g.loaded_2html_plugin = 1
 
 vim.g.mapleader = ' '
 
-set.termguicolors = true
-set.hidden = true -- Allow dirty buffers in the background
-set.showmode = false -- Don't show mode in command line
+vim.opt.termguicolors = true
+vim.opt.hidden = true -- Allow dirty buffers in the background
+vim.opt.showmode = false -- Don't show mode in command line
 
-set.backspace = 'indent,eol,start'
+vim.opt.backspace = 'indent,eol,start'
 
-set.number = true -- Show current line number
-set.ruler = true -- Show cursor location in file
-set.updatetime = 300 -- Delay after user input before plugins are activated
+vim.opt.number = true -- Show current line number
+vim.opt.ruler = true -- Show cursor location in file
+vim.opt.updatetime = 300 -- Delay after user input before plugins are activated
+vim.opt.timeoutlen = 500
 
-set.cursorline = true -- Highlight line of cursor while in Insert mode
-local augroup = vim.api.nvim_create_augroup("ActiveBufferCursorline", { clear = true })
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.opt.cursorline = true -- Highlight line of cursor while in Insert mode
+local augroup = vim.api.nvim_create_augroup('ActiveBufferCursorline', { clear = true })
+vim.api.nvim_create_autocmd('BufEnter', {
   group = augroup,
-  pattern = "*",
+  pattern = '*',
   callback = function() vim.opt.cursorline = true end
 })
-vim.api.nvim_create_autocmd("BufLeave", {
+vim.api.nvim_create_autocmd('BufLeave', {
   group = augroup,
-  pattern = "*",
+  pattern = '*',
   callback = function() vim.opt.cursorline = false end
 })
 
-set.hlsearch = true -- Highlight search matches
-set.incsearch = true -- Highlight search matches while typing
-set.inccommand = 'nosplit' -- Live preview when substituting
-set.smartcase = true -- Match search pattern case only if pattern is mixed case
+vim.opt.hlsearch = true -- Highlight search matches
+vim.opt.incsearch = true -- Highlight search matches while typing
+vim.opt.inccommand = 'nosplit' -- Live preview when substituting
+vim.opt.smartcase = true -- Match search pattern case only if pattern is mixed case
 
-set.autoindent = true -- Maintain current indentation on new line
-set.expandtab = true -- Tabs are expanded into spaces
-set.shiftwidth = 2 -- Use 2 spaces for indentation
-set.tabstop = 2 -- Tabs are 2 spaces wide
+vim.opt.autoindent = true -- Maintain current indentation on new line
+vim.opt.expandtab = true -- Tabs are expanded into spaces
+vim.opt.shiftwidth = 2 -- Use 2 spaces for indentation
+vim.opt.tabstop = 2 -- Tabs are 2 spaces wide
 
-set.wrap = false -- Prevent lines from wrapping
-set.splitbelow = true -- Put new windows below current
-set.splitright = true -- Put new windows right of current
+vim.opt.wrap = false -- Prevent lines from wrapping
+vim.opt.splitbelow = true -- Put new windows below current
+vim.opt.splitright = true -- Put new windows right of current
 
 -- Show non-whitespace characters while in Insert mode
-set.listchars:append('eol:↲')
-set.listchars:append('space:·')
-set.listchars:append('tab:––>')
-set.listchars:append('nbsp:×')
-
-local augroup = vim.api.nvim_create_augroup("InsertModeListChars", { clear = true })
-vim.api.nvim_create_autocmd("InsertEnter", {
+vim.opt.listchars = {
+  eol = '↲',
+  space = '·',
+  tab = '––>',
+  nbsp = '×'
+}
+augroup = vim.api.nvim_create_augroup('InsertModeListChars', { clear = true })
+vim.api.nvim_create_autocmd('InsertEnter', {
   group = augroup,
-  pattern = "*",
+  pattern = '*',
   callback = function() vim.opt.list = true end
 })
-vim.api.nvim_create_autocmd({ "InsertLeave", "InsertLeavePre" }, {
+vim.api.nvim_create_autocmd({ 'InsertLeave', 'InsertLeavePre' }, {
   group = augroup,
-  pattern = "*",
+  pattern = '*',
   callback = function() vim.opt.list = false end
+})
+
+-- Filetypes configuration
+local filetypes = {
+  filenames = {
+    ['flake.lock'] = 'json',
+    ['cargo.lock'] = 'toml'
+  },
+  extensions = {
+    yuck = 'clojure'
+  },
+}
+
+vim.g.do_filetype_lua = 1
+vim.filetype.add({
+  filename = filetypes.filenames,
+  extension = filetypes.extensions
+})
+-- Loads filetype in telescope
+require('plenary.filetype').add_table({
+  file_name = filetypes.filenames,
+  extension = filetypes.extensions
 })

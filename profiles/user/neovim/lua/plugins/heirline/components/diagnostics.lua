@@ -1,5 +1,5 @@
 local conditions = require('heirline.conditions')
-local utils = require('statusline.utils')
+local utils = require('plugins.heirline.utils')
 local kanagawa = require('kanagawa.colors').setup()
 
 local slants = utils.separators.slant
@@ -28,25 +28,25 @@ return {
   },
   {
     provider = function(self)
-      return self.errors > 0 and (' ' .. self.error_icon .. ' ' .. self.errors .. ' ')
+      return self.errors > 0 and (self.error_icon .. ' ' .. self.errors)
     end,
     hl = { fg = kanagawa.autumnRed, bg = kanagawa.sumiInk0 },
   },
   {
     provider = function(self)
-      return self.warnings > 0 and (' ' .. self.warn_icon .. ' ' .. self.warnings .. ' ')
+      return self.warnings > 0 and (self.warn_icon .. ' ' .. self.warnings)
     end,
     hl = { fg = kanagawa.autumnYellow, bg = kanagawa.sumiInk0 },
   },
   {
     provider = function(self)
-      return self.info > 0 and (' ' .. self.info_icon .. ' ' .. self.info .. ' ')
+      return self.info > 0 and (self.info_icon .. ' ' .. self.info)
     end,
     hl = { fg = kanagawa.waveAqua1, bg = kanagawa.sumiInk0 },
   },
   {
     provider = function(self)
-      return self.hints > 0 and (' ' .. self.hint_icon .. ' ' .. self.hints .. ' ')
+      return self.hints > 0 and (self.hint_icon .. ' ' .. self.hints)
     end,
     hl = { fg = kanagawa.dragonBlue, bg = kanagawa.sumiInk0 },
   },

@@ -1,5 +1,5 @@
 local conditions = require('heirline.conditions')
-local utils = require('statusline.utils')
+local utils = require('plugins.heirline.utils')
 
 local slants = utils.separators.slant
 local palette = utils.palette
@@ -104,13 +104,13 @@ return {
     -- This component displays the currently active git branch.
     {
       provider = slants.ru,
-      hl = function(self) return { fg = palette.modules.bg, bg = self.mode_colour } end
+      hl = function(self) return { fg = palette.modules.bg, bg = self:get_mode_colour() } end
     },
     {
       provider = function(self)
         return ' ' .. self.status_dict.head .. '  '
       end,
-      hl = function(self) return { fg = palette.git.branch.fg, bg = self.mode_colour, bold = true } end
+      hl = function(self) return { fg = palette.git.branch.fg, bg = self:get_mode_colour(), bold = true } end
     },
   },
 }

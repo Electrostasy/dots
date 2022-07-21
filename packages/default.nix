@@ -34,25 +34,35 @@ rec {
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
-    heirline-nvim = pkgs.vimUtils.buildVimPlugin {
+    heirline-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
       pname = "heirline-nvim";
       src = pkgs.fetchFromGitHub {
         owner = "rebelot";
         repo = "heirline.nvim";
-        rev = "7b4aabc2c55d50fbd4a4923e847079d6fa9a8613";
-        sha256 = "sha256-xopPEx5Ig10iBTy6QEzFLxyFwbNXdzAGYS5y6injW8o=";
+        rev = "805a158b2b44b015f7966b03cd9def489984be8f";
+        sha256 = "sha256-++52rJvzOjglHzMUp7L1+1+MbcniMGq8RwUSl7TCY9s=";
       };
-      version = "unstable-2022-05-25";
+      version = "unstable-2022-07-06";
     };
-    hlargs-nvim = pkgs.vimUtils.buildVimPlugin {
+    hlargs-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
       pname = "hlargs-nvim";
       src = pkgs.fetchFromGitHub {
         owner = "m-demare";
         repo = "hlargs.nvim";
-        rev = "e3218d790edaa138fcc27f91ddb6a7e9604f27ae";
-        sha256 = "sha256-qhOM/tm/G4WkJd6KtraFmV4z9aLrwSdYb2S80ystBOs=";
+        rev = "fe513dabb5c6bae5831dd1d4941e480415521503";
+        sha256 = "sha256-6/TkM4olziwGPaiXPNYdjKwwHISM5jrHJdufzE830Ug=";
       };
-      version = "unstable-2022-05-14";
+      version = "unstable-2022-07-08";
+    };
+    nvim-surround = pkgs.vimUtils.buildVimPluginFrom2Nix {
+      pname = "nvim-surround";
+      src = pkgs.fetchFromGitHub {
+        owner = "kylechui";
+        repo = "nvim-surround";
+        rev = "78f10536d30a4f86155354636335263a0e6a7891";
+        sha256 = "sha256-lShnjQF1NcVWD6h2XK5QJyTzPLeriO6r/DcqP1Cx9RA=";
+      };
+      version = "unstable-2022-07-19";
     };
   });
 }

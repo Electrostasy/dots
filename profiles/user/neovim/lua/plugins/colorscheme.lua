@@ -1,5 +1,7 @@
 local kanagawa = require('kanagawa')
+
 local colours = require('kanagawa.colors').setup()
+local theme = require('kanagawa.themes').default(colours)
 local groups = require('kanagawa.hlgroups').setup(colours)
 
 kanagawa.setup({
@@ -17,7 +19,10 @@ kanagawa.setup({
     DiagnosticVirtualTextHint = { fg = colours.dragonBlue, bg = colours.winterBlue },
     TelescopeMatching = { fg = colours.roninYellow, bold = true },
 
-    -- Bless this man, idea and contribution from him:
+    CursorLineNr = { bg = groups.CursorLine.bg },
+    CursorLineFold = { bg = groups.CursorLine.bg },
+    CursorLineSign = { bg = groups.CursorLine.bg },
+
     -- https://github.com/hrsh7th/nvim-cmp/pull/901
     CmpItemKindVariable = { fg = groups.Pmenu.bg, bg = colours.fujiWhite },
     CmpItemKindFunction = { fg = groups.Pmenu.bg, bg = groups.Function.fg },
