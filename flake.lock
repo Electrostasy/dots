@@ -16,7 +16,28 @@
         "type": "github"
       }
     },
-    "home-manager": {
+    "hm-stable": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1656169755,
+        "narHash": "sha256-Nlnm4jeQWEGjYrE6hxi/7HYHjBSZ/E0RtjCYifnNsWk=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "4a3d01fb53f52ac83194081272795aa4612c2381",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "release-22.05",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "hm-unstable": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs-unstable"
@@ -24,11 +45,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1658751516,
-        "narHash": "sha256-Y/3dHoTjbvYBtWd+TTBQJUIgDPO9d+Gqt05C5dyR7E4=",
+        "lastModified": 1658924727,
+        "narHash": "sha256-Fhh9FK9CvuCLxG1WkWJPoendDeXKI4gHYTfezo1n2Zg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "dbed4c794d20d51027fc1107f063ec5be027dafc",
+        "rev": "0e2f7876d2f2ae98a67d89a8bef8c49332aae5af",
         "type": "github"
       },
       "original": {
@@ -74,7 +95,7 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "flake-utils": [
-          "home-manager",
+          "hm-unstable",
           "utils"
         ],
         "nixpkgs": [
@@ -146,7 +167,8 @@
     },
     "root": {
       "inputs": {
-        "home-manager": "home-manager",
+        "hm-stable": "hm-stable",
+        "hm-unstable": "hm-unstable",
         "impermanence": "impermanence",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",

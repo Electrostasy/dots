@@ -8,7 +8,11 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-lib.url = "github:nix-community/nixpkgs.lib/master";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    home-manager = {
+    hm-stable = {
+      url = "github:nix-community/home-manager/release-22.05";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    hm-unstable = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
@@ -16,7 +20,7 @@
       url = "github:nix-community/NixOS-WSL/main";
       inputs = {
         nixpkgs.follows = "nixpkgs-unstable";
-        flake-utils.follows = "home-manager/utils";
+        flake-utils.follows = "hm-unstable/utils";
       };
     };
     sops-nix = {
@@ -35,7 +39,8 @@
     nixpkgs-unstable,
     nixpkgs-lib,
     nixos-hardware,
-    home-manager,
+    hm-stable,
+    hm-unstable,
     nixos-wsl,
     sops-nix,
     impermanence,
@@ -63,9 +68,10 @@
     };
 
     nixosConfigurations = let
-      nixosWith = nixpkgs: import ./modules/lib { inherit nixpkgs self; };
-      nixosStable = nixosWith nixpkgs-stable;
-      nixosUnstable = nixosWith nixpkgs-unstable;
+      nixosWith = nixpkgs: home-manager:
+        import ./modules/lib { inherit nixpkgs home-manager self; };
+      nixosStable = nixosWith nixpkgs-stable hm-stable;
+      nixosUnstable = nixosWith nixpkgs-unstable hm-unstable;
     in {
       mars = nixosUnstable {
         system = "x86_64-linux";

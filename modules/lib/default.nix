@@ -1,4 +1,4 @@
-{ nixpkgs, self }:
+{ nixpkgs, home-manager, self }:
 
 {
   system,
@@ -77,7 +77,7 @@ nixpkgs.lib.nixosSystem {
   inherit system;
   modules =
     systemModules
-    ++ lib.optionals (userModules != []) ([ self.inputs.home-manager.nixosModule homeManagerConfig ] ++ userModules)
+    ++ lib.optionals (userModules != []) ([ home-manager.nixosModule homeManagerConfig ] ++ userModules)
     ++ lib.optionals (args.manageSecrets.enable or false) [ self.inputs.sops-nix.nixosModule sopsConfig ]
     ++ lib.optional (args.manageState.enable or false) self.inputs.impermanence.nixosModule;
   specialArgs = {
