@@ -94,7 +94,6 @@
             ./profiles/system/login-manager
             ./profiles/system/ssh
             ./profiles/system/sudo
-            ./profiles/system/v4l2loopback
             self.nixosModules.unfree
           ];
           users.electro = [

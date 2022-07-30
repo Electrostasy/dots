@@ -184,18 +184,6 @@
         };
       };
     };
-
-    fish.functions = {
-      share-screen = {
-        description = "Share a selected screen using v4l2";
-        body = ''
-          set -l intro 'Select a display to begin sharing to /dev/video0.\nOnce selected, "mpv --demuxer-lavf-format=video4linux2 av://v4l2:/dev/video0" to preview.'
-          set -l command "echo $intro; wf-recorder --muxer=v4l2 --file=/dev/video0 -c rawvideo -o (slurp -o -f \"%o\") -x yuyv422"
-
-          kitty fish -c "$command"
-        '';
-      };
-    };
   };
 }
 
