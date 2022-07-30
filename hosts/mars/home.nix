@@ -29,8 +29,9 @@
   home.packages = with pkgs; [
     # 3D printing/CAD packages
     cura
-    f3d
+    f3d # 3D file viewer (doesn't support *.stl)
     freecad
+    fstl # 3D file viewer (specifically for *.stl)
     solvespace
     super-slicer
 
