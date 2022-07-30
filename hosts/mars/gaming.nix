@@ -18,6 +18,9 @@
 
       # Flatpak
       ".local/share/flatpak" ".var"
+
+      # PS2 emulator
+      ".config/PCSX2"
     ];
   };
 
@@ -42,6 +45,10 @@
 
   # TODO: Remove flatpak-supplied Steam .desktop file
   home-manager.users.electro = {
+    home.packages = with pkgs; [
+      pcsx2
+    ];
+
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
