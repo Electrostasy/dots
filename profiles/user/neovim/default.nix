@@ -20,6 +20,7 @@
       jq-vim
       kanagawa-nvim
       lspkind-nvim
+      lsp_lines-nvim
       nvim-colorizer-lua
       (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars))
       nvim-web-devicons

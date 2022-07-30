@@ -94,11 +94,14 @@ for server, config in pairs(servers) do
   lspconfig[server].setup(vim.tbl_deep_extend('force', config, common))
 end
 
+-- Show diagnostics as a tree in virtual lines
+require('lsp_lines').setup()
+
 vim.diagnostic.config({
-  virtual_text = true,
+  virtual_text = false,
   signs = true,
   underline = true,
-  update_in_insert = false,
+  update_in_insert = true,
   severity_sort = true
 })
 
