@@ -25,7 +25,9 @@
       settings = {
         snapshot_dir = ".snapshots";
         snapshot_preserve = "3d 2w";
+        snapshot_preserve_min = "1w";
         target_preserve = "3w 2m";
+        target_preserve_min = "2w";
         preserve_day_of_week = "monday";
 
         volume."/mnt/media" = {
