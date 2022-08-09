@@ -189,6 +189,41 @@
         };
       };
 
+      venus = nixosUnstable {
+        system = "x86_64-linux";
+
+        manageSecrets.enable = true;
+        manageState.enable = true;
+
+        modules = {
+          system = [
+            ./hosts/venus/configuration.nix
+            nixos-hardware.nixosModules.common-pc-laptop
+            nixos-hardware.nixosModules.common-pc-laptop-ssd
+            nixos-hardware.nixosModules.lenovo-thinkpad-x220
+            ./profiles/system/audio
+            ./profiles/system/avahi
+            ./profiles/system/common
+            ./profiles/system/dconf
+            ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/graphical
+            ./profiles/system/login-manager
+            ./profiles/system/ssh
+            ./profiles/system/sudo
+          ];
+          users.electro = [
+            ./hosts/venus/home.nix
+            ./profiles/user/fish
+            ./profiles/user/git
+            ./profiles/user/gtk
+            ./profiles/user/kitty
+            ./profiles/user/neovim
+            ./profiles/user/nix-index
+            ./profiles/user/wayfire
+          ];
+        };
+      };
+
       eris = nixosUnstable {
         system = "x86_64-linux";
 

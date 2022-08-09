@@ -22,6 +22,7 @@ The table below lists the managed hosts and their functions:
 | **phobos** | Raspberry Pi 4B | Matrix homeserver <br/> NFS fileserver |
 | **deimos** | Raspberry Pi 3B+ |  _Currently unused_ |
 | **jupiter** | Lenovo ThinkPad T420 | Laptop |
+| **venus** | Lenovo ThinkPad X220 Tablet | Laptop |
 | **eris** | WSL | Primary PC at work |
 | **ceres** | Desktop | Secondary PC at work |
 
