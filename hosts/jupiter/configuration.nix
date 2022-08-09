@@ -16,7 +16,7 @@
   time.timeZone = "Europe/Vilnius";
 
   networking = {
-    hostName = "mercury";
+    hostName = "jupiter";
 
     # To connect to a wireless network using `iwd`, use `iwctl`:
     # $ iwctl station wlan0 connect L19A3A

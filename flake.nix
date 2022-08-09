@@ -155,14 +155,14 @@
         };
       };
 
-      mercury = nixosUnstable {
+      jupiter = nixosUnstable {
         system = "x86_64-linux";
 
         manageSecrets.enable = true;
 
         modules = {
           system = [
-            ./hosts/mercury/configuration.nix
+            ./hosts/jupiter/configuration.nix
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-t420
@@ -177,7 +177,7 @@
             ./profiles/system/sudo
           ];
           users.gediminas = [
-            ./hosts/mercury/home.nix
+            ./hosts/jupiter/home.nix
             ./profiles/user/fish
             ./profiles/user/git
             ./profiles/user/gtk

@@ -94,7 +94,7 @@
         shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../terra/ssh_electro_ed25519_key.pub
-          ../mercury/ssh_gediminas_ed25519_key.pub
+          ../jupiter/ssh_gediminas_ed25519_key.pub
         ];
       };
     };
