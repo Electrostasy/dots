@@ -6,8 +6,13 @@ let
   cfg = config.wayland.windowManager.wayfire;
 
   allowedTypes = with types;
-    either str (either int (either bool (either float (listOf (either float int)))));
+    oneOf [ str int bool float (listOf (oneOf [ float int ])) ];
 
+  # NOTE: Consumers of this module may use `lib.mkOrder 0` for plugin
+  # configuration defined in multiple modules to control order of
+  # `lib.types.listOf` merge (list concatenation) behaviour. Plugin
+  # configuration sharing a common `plugin` attribute will be merged.
+  # TODO: Allow using `lib.mkOverride` on specific settings values
   plugin = types.submodule {
     options = {
       package = mkOption {
@@ -94,12 +99,12 @@ in {
   };
 
   config = let
-    # Plugins defined in other modules overlap previous definitions
-    # in the final plugins list, so we explicitly merge them
-    plugins = let
-      mergeFn = foldl recursiveUpdate { };
-      list = attrValues (groupBy (x: x.plugin) cfg.settings.plugins);
-    in map mergeFn list;
+    # Merge plugin config if defined multiple times
+    mergedPlugins = builtins.attrValues (
+      mapAttrs
+        (_: foldl (a: b: recursiveUpdate b a) { })
+        (groupBy (x: x.plugin) cfg.settings.plugins)
+    );
 
     # Convert lists to strings for generators.toINI
     listToString = list:
@@ -110,7 +115,7 @@ in {
         name = p.plugin;
         content = mapAttrs (_: v: if isList v then listToString v else v) p.settings;
       in nameValuePair name content;
-      pluginsWithSettings = filter (p: p.settings != { }) plugins;
+      pluginsWithSettings = filter (p: p.settings != { }) mergedPlugins;
     in listToAttrs (map mkSettings pluginsWithSettings);
 
     # Configuration not part of any plugins goes into the `core` attrset,
@@ -122,15 +127,16 @@ in {
         plugins = let
           filterFn = p: let
             notInput = p.plugin != "input";
-            notOutput = (builtins.match "output:(.*)" p.plugin) == null;
-          in if notInput || notOutput then p.plugin else "";
-        in listToString (map filterFn plugins);
+            notInputDevice = (builtins.match "(input-device:.*)" p.plugin) == null;
+            notOutput = (builtins.match "(output:.*)" p.plugin) == null;
+          in if notInput && notInputDevice && notOutput then p.plugin else "";
+        in listToString (map filterFn mergedPlugins);
       };
     };
 
     finalPackage = pkgs.callPackage ./wrapper.nix {
       wayfire = cfg.package;
-      plugins = remove null (catAttrs "package" plugins);
+      plugins = remove null (catAttrs "package" mergedPlugins);
       inherit (cfg) extraSessionCommands withGtkWrapper;
     };
 
