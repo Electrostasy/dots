@@ -64,13 +64,17 @@
       { directory = ".ssh"; mode = "0700"; }
       ".local/share/mpd"
       ".mozilla"
-      "Pictures"
+      "documents"
+      "downloads"
+      "music"
+      "pictures"
+      "videos"
     ];
   };
 
   time.timeZone = "Europe/Vilnius";
   networking = {
-    hostName = "mars";
+    hostName = "terra";
 
     dhcpcd.enable = false;
     useDHCP = false;
@@ -111,6 +115,7 @@
   programs.ssh.knownHosts = {
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
     mercury.publicKeyFile = ../mercury/ssh_root_ed25519_key.pub;
+    deimos.publicKeyFile = ../deimos/ssh_root_ed25519_key.pub;
   };
 
   sops = {

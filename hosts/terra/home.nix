@@ -3,7 +3,21 @@
 {
   home.stateVersion = "22.11";
 
-  xdg.enable = true;
+  xdg = {
+    enable = true;
+    userDirs = {
+      enable = true;
+      desktop = "/dev/null";
+      documents = "$HOME/documents";
+      download = "$HOME/downloads";
+      music = "$HOME/music";
+      pictures = "$HOME/pictures";
+      publicShare = "/dev/null";
+      templates = "/dev/null";
+      videos = "$HOME/videos";
+    };
+  };
+
   fonts.fontconfig.enable = true;
 
   wayland.windowManager.wayfire.settings.plugins = [

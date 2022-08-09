@@ -18,7 +18,7 @@ host (bootloader settings, state management, etc.), is stored in the
 The table below lists the managed hosts and their functions:
 | Hostname | Device type | Description
 | :-- | :-- | :-- |
-| **mars** | Desktop | Home PC |
+| **terra** | Desktop | Home PC |
 | **phobos** | Raspberry Pi 4B | Matrix homeserver <br/> NFS fileserver |
 | **deimos** | Raspberry Pi 3B+ |  _Currently unused_ |
 | **mercury** | Lenovo ThinkPad T420 | Laptop |

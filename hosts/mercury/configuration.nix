@@ -147,7 +147,7 @@
 
   programs.ssh.knownHosts = {
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
-    mars.publicKeyFile = ../mars/ssh_root_ed25519_key.pub;
+    terra.publicKeyFile = ../terra/ssh_root_ed25519_key.pub;
   };
 
   sops = {

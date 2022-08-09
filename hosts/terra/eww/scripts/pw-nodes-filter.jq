@@ -33,4 +33,4 @@ foreach (inputs, null) as $entry
         ]
     else . end
   )
-  | .nodes
+  | .nodes | sort_by(.name)

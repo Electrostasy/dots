@@ -93,7 +93,7 @@
         extraGroups = [ "wheel" ];
         shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
-          ../mars/ssh_electro_ed25519_key.pub
+          ../terra/ssh_electro_ed25519_key.pub
           ../mercury/ssh_gediminas_ed25519_key.pub
         ];
       };

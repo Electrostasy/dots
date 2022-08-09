@@ -73,7 +73,7 @@
       nixosStable = nixosWith nixpkgs-stable hm-stable;
       nixosUnstable = nixosWith nixpkgs-unstable hm-unstable;
     in {
-      mars = nixosUnstable {
+      terra = nixosUnstable {
         system = "x86_64-linux";
 
         manageSecrets.enable = true;
@@ -81,7 +81,7 @@
 
         modules = {
           system = [
-            ./hosts/mars/configuration.nix
+            ./hosts/terra/configuration.nix
             ./hosts/phobos/media-remote.nix
             nixos-hardware.nixosModules.common-cpu-intel
             nixos-hardware.nixosModules.common-pc-ssd
@@ -97,7 +97,7 @@
             self.nixosModules.unfree
           ];
           users.electro = [
-            ./hosts/mars/home.nix
+            ./hosts/terra/home.nix
             ./profiles/user/fish
             ./profiles/user/git
             ./profiles/user/gtk

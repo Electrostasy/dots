@@ -1,9 +1,7 @@
-; vim: set filetype=clojure:
-
 (deflisten DATE "./scripts/clock.fish -d")
 (deflisten TIME "./scripts/clock.fish -t")
 
-(defwindow clock :monitor 1
+(defwindow clock :monitor 0
                  :geometry (geometry :y "-24px"
                                      :height "24px"
                                      :anchor "top center")
