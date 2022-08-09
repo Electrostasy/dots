@@ -19,10 +19,7 @@ let
 
   systemModules = lib.singleton {
     environment.defaultPackages = lib.mkForce [];
-    nixpkgs = {
-      hostPlatform = lib.mkDefault system;
-      overlays = builtins.attrValues self.overlays;
-    };
+    nixpkgs.overlays = builtins.attrValues self.overlays;
     nix = {
       package = pkgs.nixFlakes;
       extraOptions = "experimental-features = nix-command flakes";
