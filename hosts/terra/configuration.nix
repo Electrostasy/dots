@@ -1,7 +1,10 @@
 { config, pkgs, persistMount, ... }:
 
 {
-  imports = [ ./gaming.nix ];
+  imports = [
+    ./build-machine.nix
+    ./gaming.nix
+  ];
 
   system.stateVersion = "22.05";
 

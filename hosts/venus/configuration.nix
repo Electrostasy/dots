@@ -1,6 +1,8 @@
 { config, pkgs, lib, persistMount, ... }:
 
 {
+  imports = [ ./remote-build-machines.nix ];
+
   system.stateVersion = "22.11";
 
   boot = {
