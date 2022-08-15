@@ -75,7 +75,7 @@
 
     # Fonts
     inter
-    iosevka-nerdfonts
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     source-han-sans # Required for rendering Japanese font
   ];

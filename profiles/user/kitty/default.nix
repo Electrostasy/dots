@@ -14,11 +14,12 @@
       # https://github.com/kovidgoyal/kitty/discussions/4956
       confirm_os_window_close = 0;
     };
+    # kitty list-fonts | rg 'Iosevka'
     extraConfig = ''
-      font_family Iosevka
-      bold_font Iosevka Bold
-      italic_font Iosevka Italic
-      bold_italic_font Iosevka Bold Italic
+      font_family Iosevka Term
+      bold_font Iosevka Term Bold Nerd Font Complete Mono
+      italic_font Iosevka Term Italic Nerd Font Complete Mono
+      bold_italic_font Iosevka Term Bold Italic Nerd Font Complete Mono
       font_size 11
       mouse_map ctrl+left press ungrabbed,grabbed mouse_click_url
 

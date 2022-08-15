@@ -6,7 +6,6 @@ in
 
 rec {
   firefox-custom = callPackage ./firefox { };
-  gamescope = callPackage ./gamescope { };
   nerdfonts-patch = callPackage ./nerdfonts-patch { };
   simp1e-cursor-theme = callPackage ./simp1e-cursor-theme { };
   umc = callPackage ./umc { };
@@ -21,16 +20,18 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   });
 
-  iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
-    privateBuildPlan = {
-      family = "Iosevka Custom";
-      spacing = "normal";
-      serifs = "sans";
-      no-cv-ss = true;
-      no-litigation = true;
-    };
-    set = "custom";
-  });
+  # Iosevka is currently broken:
+  # https://github.com/NixOS/nixpkgs/issues/185633
+  # iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
+  #   privateBuildPlan = {
+  #     family = "Iosevka Custom";
+  #     spacing = "normal";
+  #     serifs = "sans";
+  #     no-cv-ss = true;
+  #     no-litigation = true;
+  #   };
+  #   set = "custom";
+  # });
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = lib.makeScope pkgs.newScope (self: with self; {

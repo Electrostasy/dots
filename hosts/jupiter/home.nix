@@ -7,7 +7,7 @@
 
   home.packages = with pkgs; [
     firefox-custom
-    iosevka-nerdfonts
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     (libreoffice.overrideAttrs (old: { langs = [ "en-US" "lt" ]; }))
     source-han-sans # Japanese OpenType/CFF fonts
