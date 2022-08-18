@@ -77,7 +77,6 @@
   };
 
   environment.persistence.${persistMount} = {
-    hideMounts = true;
     directories = [
       "/etc/nixos"
       "/etc/ssh"
@@ -93,7 +92,20 @@
   time.timeZone = "Europe/Vilnius";
   networking = {
     hostName = "venus";
-    useDHCP = true;
+
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+    wireless.iwd = {
+      enable = true;
+
+      settings = {
+        Settings.AutoConnect = true;
+        General.EnableNetworkConfiguration = false;
+        Network.EnableIPv6 = false;
+        Scan.DisablePeriodicScan = true;
+      };
+    };
   };
 
   services.timesyncd.servers = [
@@ -101,6 +113,61 @@
     "1.lt.pool.ntp.org"
     "2.europe.pool.ntp.org"
   ];
+
+  systemd.network = {
+    enable = true;
+    wait-online.anyInterface = true;
+
+    networks = {
+      "40-wired" = {
+        name = "eno0";
+
+        DHCP = "yes";
+        dns = [ "127.0.0.1" "::1" ];
+
+        networkConfig.LinkLocalAddressing = "no";
+        dhcpV4Config.RouteMetric = 10;
+      };
+
+      "40-wireless" = {
+        name = "wlan0";
+
+        DHCP = "yes";
+        dns = [ "127.0.0.1" "::1" ];
+
+        networkConfig = {
+          IgnoreCarrierLoss = "yes";
+          LinkLocalAddressing = "no";
+        };
+
+        dhcpV4Config = {
+          Anonymize = true;
+          RouteMetric = 20;
+        };
+      };
+
+      # NOTE: Only works if the wifi card is powered down:
+      # $ sudo networkctl down wlan0
+      "40-tethered" = {
+        name = "enp0s2[69]u1u[12]";
+
+        DHCP = "yes";
+        dns = [ "127.0.0.1" "::1" ];
+
+        networkConfig = {
+          IgnoreCarrierLoss = "yes";
+          LinkLocalAddressing = "no";
+        };
+
+        dhcpV4Config.RouteMetric = 30;
+      };
+    };
+
+    links."40-wireless-random-mac" = {
+      matchConfig.Type = "wlan0";
+      linkConfig.MACAddressPolicy = "random";
+    };
+  };
 
   services.avahi.interfaces = [ "eno0" ];
 
