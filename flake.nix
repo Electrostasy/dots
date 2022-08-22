@@ -102,6 +102,7 @@
             ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
+            ./profiles/user/lsd
             ./profiles/user/mpv
             ./profiles/user/neovim
             ./profiles/user/nix-index
@@ -182,6 +183,7 @@
             ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
+            ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
             ./profiles/user/wayfire
@@ -217,6 +219,7 @@
             ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
+            ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
             ./profiles/user/wayfire
@@ -237,6 +240,7 @@
             ./hosts/eris/home.nix
             ./profiles/user/fish
             ./profiles/user/git
+            ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
           ];
@@ -262,6 +266,7 @@
             ./hosts/ceres/home.nix
             ./profiles/user/fish
             ./profiles/user/git
+            ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
           ];
