@@ -17,7 +17,6 @@
     libewf
     ripgrep
     stegseek
-    tealdeer
     unixtools.xxd
     wget
     xplr

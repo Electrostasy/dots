@@ -106,6 +106,7 @@
             ./profiles/user/mpv
             ./profiles/user/neovim
             ./profiles/user/nix-index
+            ./profiles/user/tealdeer
             ./profiles/user/wayfire
           ];
         };
@@ -186,6 +187,7 @@
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
+            ./profiles/user/tealdeer
             ./profiles/user/wayfire
           ];
         };
@@ -222,6 +224,7 @@
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
+            ./profiles/user/tealdeer
             ./profiles/user/wayfire
           ];
         };
@@ -243,6 +246,7 @@
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
+            ./profiles/user/tealdeer
           ];
         };
       };
@@ -269,6 +273,7 @@
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
+            ./profiles/user/tealdeer
           ];
         };
       };
