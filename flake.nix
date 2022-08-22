@@ -108,6 +108,7 @@
             ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
+            ./profiles/user/zathura
           ];
         };
       };
@@ -189,6 +190,7 @@
             ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
+            ./profiles/user/zathura
           ];
         };
       };
@@ -226,6 +228,7 @@
             ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
+            ./profiles/user/zathura
           ];
         };
       };
