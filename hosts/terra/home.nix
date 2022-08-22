@@ -38,6 +38,9 @@
         transform = 270;
       };
     }
+    { plugin = "autostart";
+      settings.wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/pictures -type f | shuf -n1)\"";
+    }
   ];
 
   home.packages = with pkgs; [
@@ -141,18 +144,6 @@
         default-bg = "#1F1F28";
         default-fg = "#DCD7BA";
         recolor = true;
-      };
-    };
-
-    rofi = {
-      enable = true;
-      package = pkgs.rofi-wayland;
-
-      terminal = "${pkgs.kitty}/bin/kitty";
-      extraConfig = {
-        modi = "drun,run";
-        kb-primary-paste = "Control+V";
-        kb-secondary-paste = "Control+v";
       };
     };
 

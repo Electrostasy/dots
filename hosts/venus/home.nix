@@ -26,19 +26,4 @@
       settings.toggle = "<super> KEY_TAB | KEY_CYCLEWINDOWS";
     }
   ];
-
-  programs = {
-    rofi = {
-      enable = true;
-
-      package = pkgs.rofi-wayland;
-      plugins = [ ];
-      terminal = "${pkgs.kitty}/bin/kitty";
-      extraConfig = {
-        modi = "drun,run";
-        kb-primary-paste = "Control+V";
-        kb-secondary-paste = "Control+v";
-      };
-    };
-  };
 }

@@ -50,6 +50,18 @@
     glib # for gdbus
   ];
 
+  programs.rofi = {
+    enable = true;
+    package = pkgs.rofi-wayland;
+
+    terminal = "${pkgs.kitty}/bin/kitty";
+    extraConfig = {
+      modi = "drun,run";
+      kb-primary-paste = "Control+V";
+      kb-secondary-paste = "Control+v";
+    };
+  };
+
   wayland.windowManager.wayfire = {
     enable = true;
     package = pkgs.wayfire-git;
@@ -80,8 +92,7 @@
         { plugin = "resize"; settings.activate = "<super> BTN_RIGHT"; }
         { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
 
-        {
-          package = pkgs.wayfirePlugins.shadows;
+        { package = pkgs.wayfirePlugins.shadows;
           plugin = "winshadows";
           settings = {
             clip_shadow_inside = false;
@@ -92,8 +103,7 @@
             vertical_offset = 8;
           };
         }
-        {
-          package = pkgs.wayfirePlugins.firedecor;
+        { package = pkgs.wayfirePlugins.firedecor;
           plugin = "firedecor";
           settings = {
             active_border = [ 0.121569 0.121569 0.156863 1.000000 ];
@@ -106,8 +116,7 @@
             outline_size = 4;
           };
         }
-        {
-          plugin = "switcher";
+        { plugin = "switcher";
           settings = {
             next_view = "<alt> KEY_TAB";
             prev_view = "<alt> <shift> KEY_TAB";
@@ -115,8 +124,7 @@
             view_thumbnail_scale = 1.0;
           };
         }
-        {
-          plugin = "vswitch";
+        { plugin = "vswitch";
           settings = let
             workspaces = builtins.genList (x: x + 1) 9;
             mkBinding = lprefix: rprefix:
@@ -149,8 +157,7 @@
             send_win_right = "";
           } // workspacesAttrs;
         }
-        {
-          plugin = "scale";
+        { plugin = "scale";
           settings = {
             toggle = "<super> KEY_TAB";
             toggle_all = "<super> <shift> KEY_TAB";
@@ -167,8 +174,7 @@
             text_color = [ 0.8 0.8 0.8 1.0 ];
           };
         }
-        {
-          plugin = "expo";
+        { plugin = "expo";
           settings = let
             workspaces = builtins.genList (x: x + 1) 9;
             bindings = builtins.map (a: {
@@ -177,8 +183,7 @@
             workspacesAttrs = lib.foldl (a: b: a // b) {} bindings;
           in { toggle = "<super> <shift>"; } // workspacesAttrs;
         }
-        {
-          plugin = "grid";
+        { plugin = "grid";
           settings = {
             duration = 250;
             type = "crossfade";
@@ -194,8 +199,7 @@
             slot_br = "<super> KEY_E";
           };
         }
-        {
-          plugin = "animate";
+        { plugin = "animate";
           settings = {
             close_animation = "zoom";
             open_animation = "zoom";
@@ -204,8 +208,7 @@
             zoom_enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
           };
         }
-        {
-          plugin = "autostart";
+        { plugin = "autostart";
           settings = {
             importEnv = ''
               systemctl --user import-environment DISPLAY WAYLAND_DISPLAY \
@@ -219,11 +222,9 @@
                 timeout 600 '${pkgs.fish}/bin/fish -c ${./outputs.fish} --off' \
                 resume '${pkgs.fish}/bin/fish -c ${./outputs.fish} --on'
             '';
-            wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/Pictures -type f | shuf -n1)\"";
           };
         }
-        {
-          plugin = "command";
+        { plugin = "command";
           settings = {
             binding_terminal = "<super> KEY_ENTER";
             command_terminal = "${pkgs.kitty}/bin/kitty";
@@ -239,8 +240,7 @@
             ''}/bin/screenshot";
           };
         }
-        {
-          plugin = "input";
+        { plugin = "input";
           settings = {
             mouse_accel_profile = "flat";
             xkb_layout = "us,lt";

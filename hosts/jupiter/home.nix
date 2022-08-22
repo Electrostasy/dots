@@ -18,19 +18,6 @@
 
   programs = {
     zathura.enable = true;
-
-    rofi = {
-      enable = true;
-
-      package = pkgs.rofi-wayland;
-      plugins = [ ];
-      terminal = "${pkgs.kitty}/bin/kitty";
-      extraConfig = {
-        modi = "drun,run";
-        kb-primary-paste = "Control+V";
-        kb-secondary-paste = "Control+v";
-      };
-    };
   };
 }
 
