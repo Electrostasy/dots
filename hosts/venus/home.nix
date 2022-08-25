@@ -5,7 +5,7 @@
 
   home.packages = with pkgs; [
     firefox-custom
-    (nerdfonts.override { fonts = [ "Iosevka" ]; })
+    iosevka-nerdfonts
     rnote
   ];
 

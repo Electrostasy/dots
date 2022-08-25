@@ -20,18 +20,16 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   });
 
-  # Iosevka is currently broken:
-  # https://github.com/NixOS/nixpkgs/issues/185633
-  # iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
-  #   privateBuildPlan = {
-  #     family = "Iosevka Custom";
-  #     spacing = "normal";
-  #     serifs = "sans";
-  #     no-cv-ss = true;
-  #     no-litigation = true;
-  #   };
-  #   set = "custom";
-  # });
+  iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
+    privateBuildPlan = {
+      family = "Iosevka Custom";
+      spacing = "normal";
+      serifs = "sans";
+      no-cv-ss = true;
+      no-litigation = true;
+    };
+    set = "custom";
+  });
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
