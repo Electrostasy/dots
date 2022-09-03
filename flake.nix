@@ -280,6 +280,18 @@
           ];
         };
       };
+
+      kepler = nixosStable {
+        system = "x86_64-linux";
+
+        manageSecrets.enable = true;
+
+        modules.system = [
+          ./hosts/kepler/configuration.nix
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
+      };
     };
   };
 }
