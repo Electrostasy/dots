@@ -22,6 +22,24 @@
     enableRedistributableFirmware = true;
   };
 
+  services.tlp = {
+    enable = true;
+
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_SCALING_GOVERNOR_ON_AC = "ondemand";
+
+      # Prevent battery from charging fully to preserve lifetime
+      # `tlp fullcharge` will override
+      START_CHARGE_THRESH_BAT0 = 85;
+      STOP_CHARGE_THRESH_BAT0 = 90;
+
+      # Limit CPU speed to reduce heat and increase battery
+      CPU_MAX_PERF_ON_AC = "100";
+      CPU_MAX_PERF_ON_BAT = "60";
+    };
+  };
+
   services.acpid = {
     enable = true;
 
