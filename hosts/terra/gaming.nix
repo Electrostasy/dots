@@ -1,8 +1,4 @@
-{ config, pkgs, lib, persistMount, ... }:
-
-# For Steam Deck mode (`-gamepadui`), enter the following beta by running (native and flatpak):
-# $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.steam/root/package/beta
-# $ echo "steampal_stable_9a24a2bf68596b860cb6710d9ea307a76c29a04d" > ~/.var/app/com.valvesoftware.Steam/data/Steam/package/beta
+{ pkgs, persistMount, ... }:
 
 {
   fileSystems."/home/electro/games" = {
@@ -11,31 +7,45 @@
     options = [ "subvol=steam" "noatime" "nodiratime" "compress-force=zstd:1" ];
   };
 
-  environment.persistence.${persistMount} = {
-    users.electro.directories = [
-      # Steam
-      ".local/share/Steam" ".steam"
+  environment.sessionVariables = {
+    # Flatpak doesn't seem to be aware of its actual configuration directory
+    FLATPAK_CONFIG_DIR = "/etc/flatpak/";
 
-      # Flatpak
-      ".local/share/flatpak" ".var"
-
-      # PS2 emulator
-      ".config/PCSX2"
-    ];
+    # and the .desktop files aren't detected by default in my testing
+    XDG_DATA_DIRS = [ "/home/electro/games/flatpak/exports/share" ];
   };
 
-  hardware.opengl.driSupport32Bit = true;
+  # Setup a new installation directory for flatpak:
+  # $ man flatpak-installation.5
+  environment.etc."flatpak/installations.d/steam.conf".text = ''
+    [Installation "steam"]
+    Path=/home/electro/games/flatpak/
+    DisplayName=Steam Games Installation
+  '';
 
+  # The following commands install the necessary programs next to the games library:
+  # $ flatpak --installation=steam remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+  # $ flatpak --installation=steam install com.valvesoftware.Steam
+  # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton
+  # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton-Exp
+  # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton-GE
+  # $ flatpak --installation=steam install com.valvesoftware.Steam.Utility.gamescope
+  # $ flatpak override --filesystem=/home/electro/games/SteamLibrary com.valvesoftware.Steam
+  # Install MangoHud and use system config for it:
+  # $ flatpak --installation=steam install org.freedesktop.Platform.VulkanLayer.Mangohud
+  # $ flatpak override --filesystem=xdg-config/MangoHud:ro com.valvesoftware.Steam
   services.flatpak.enable = true;
-  programs.steam.enable = true;
-  nixpkgs.allowedUnfreePackages = with pkgs; [
-    steam
-    steam-run
-    steamPackages.steam
-    steamPackages.steam-runtime
+
+  users.users.electro.packages = with pkgs; [ pcsx2 ];
+  environment.persistence.${persistMount}.users.electro.directories = [
+    # FIXME: Steam flatpak is basically hardcoded to this path, no success in overriding yet:
+    # https://github.com/flathub/com.valvesoftware.Steam/blob/master/com.valvesoftware.Steam.yml#L62
+    ".var/app/com.valvesoftware.Steam"
+
+    ".config/PCSX2"
   ];
 
-  # Allow gamescope to re-nice itself and use realtime priority compute
+  # NOTE: Consider only using flatpak-supplied gamescope
   security.wrappers.gamescope = {
     owner = "root";
     group = "root";
@@ -43,17 +53,13 @@
     capabilities = "cap_sys_nice=ep";
   };
 
-  # TODO: Remove flatpak-supplied Steam .desktop file
   home-manager.users.electro = {
-    home.packages = with pkgs; [
-      pcsx2
-    ];
-
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
 
       settings = {
+        # FIXME: Font doesn't seem to be detected in flatpak
         font_file = "${pkgs.inter}/share/fonts/opentype/Inter-Regular.otf";
         font_scale = 1.5;
         gpu_temp = true;
@@ -62,44 +68,6 @@
         ram = true;
         no_display = true;
         toggle_hud = "Shift_L+F12";
-      };
-    };
-
-    xdg.desktopEntries = let
-      gamescopeCmd = "${config.security.wrapperDir}/gamescope -w 3840 -h 2160 -r 120 -f -e";
-
-      env = lib.concatMapStringsSep " " (x: "env ${x}") [
-        # Enable mangohud for supported programs
-        "MANGOHUD=1"
-        # Steam will be unstable and/or crash if set to `wayland`
-        "SDL_VIDEODRIVER=x11"
-      ];
-
-      # `capsh --noamb` lets gamescope run with CAP_SYS_NICE, but not propagate that
-      # capability to child processes like Steam, which the nixpkgs fhsenv wrapper
-      # by bwrap would otherwise complain about
-      mkSteamCmd = steamBin:
-        "${env} capsh --noamb -- ${steamBin} -gamepadui -fulldesktopres -pipewire-dmabuf steam://open/games";
-
-      mkSteamDesktopEntry = { type, exec, icon }: {
-        name = "Steam (${type})";
-        genericName = "Steam";
-        inherit exec icon;
-        terminal = false;
-        categories = [ "Network" "FileTransfer" "Game" ];
-        mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
-      };
-    in {
-      steam = mkSteamDesktopEntry {
-        type = "native";
-        exec = "${gamescopeCmd} -- ${mkSteamCmd "${pkgs.steam}/bin/steam"}";
-        icon = "steam";
-      };
-
-      steamFlatpak = mkSteamDesktopEntry {
-        type = "flatpak";
-        exec = "${gamescopeCmd} -- ${mkSteamCmd "${pkgs.flatpak}/bin/flatpak run com.valvesoftware.Steam"}";
-        icon = "com.valvesoftware.Steam";
       };
     };
   };
