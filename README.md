@@ -25,7 +25,7 @@ The table below lists the managed hosts and their functions:
 | **venus** | Lenovo ThinkPad X220 Tablet | Laptop |
 | **eris** | WSL | Primary PC at work |
 | **ceres** | Desktop | Secondary PC at work |
-| **kepler** | VPS | _Currently unused_ |
+| **kepler** | VPS | Wireguard VPN |
 
 **Cautionary notes**:
 - As these NixOS configurations are specific to my requirements and use cases, 

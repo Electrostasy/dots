@@ -82,6 +82,7 @@
         modules = {
           system = [
             ./hosts/terra/configuration.nix
+            ./hosts/kepler/wireguard.nix
             ./hosts/phobos/media-remote.nix
             nixos-hardware.nixosModules.common-cpu-intel
             nixos-hardware.nixosModules.common-pc-ssd
@@ -122,6 +123,7 @@
         modules = {
           system = [
             ./hosts/phobos/configuration.nix
+            ./hosts/kepler/wireguard.nix
             ./profiles/system/avahi
             ./profiles/system/common
             ./profiles/system/matrix
@@ -166,6 +168,7 @@
         modules = {
           system = [
             ./hosts/jupiter/configuration.nix
+            ./hosts/kepler/wireguard.nix
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-t420
@@ -204,6 +207,7 @@
         modules = {
           system = [
             ./hosts/venus/configuration.nix
+            ./hosts/kepler/wireguard.nix
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-x220
@@ -288,6 +292,7 @@
 
         modules.system = [
           ./hosts/kepler/configuration.nix
+          ./hosts/kepler/wireguard.nix
           ./profiles/system/ssh
           ./profiles/system/sudo
         ];

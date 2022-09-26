@@ -70,28 +70,28 @@
 
   fileSystems = {
     "/" = {
-        device = "none";
-        fsType = "tmpfs";
-        options = [ "defaults" "size=1G" "mode=755" ];
-      };
+      device = "none";
+      fsType = "tmpfs";
+      options = [ "defaults" "size=1G" "mode=755" ];
+    };
 
     "/boot" = {
-        device = "/dev/disk/by-label/boot";
-        fsType = "ext4";
-      };
+      device = "/dev/disk/by-label/boot";
+      fsType = "ext4";
+    };
 
     "/nix" = {
-        device = "/dev/disk/by-label/data";
-        fsType = "btrfs";
-        options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
-      };
+      device = "/dev/disk/by-label/data";
+      fsType = "btrfs";
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
+    };
 
     "/state" = {
-        device = "/dev/disk/by-label/data";
-        fsType = "btrfs";
-        options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
-        neededForBoot = true;
-      };
+      device = "/dev/disk/by-label/data";
+      fsType = "btrfs";
+      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      neededForBoot = true;
+    };
   };
 
   environment.persistence.${persistMount} = {
@@ -199,6 +199,10 @@
     };
   };
 
+  services.openssh.hostKeys = [
+    { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
+  ];
+
   users = {
     mutableUsers = false;
 
@@ -209,6 +213,9 @@
         passwordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         shell = pkgs.fish;
+        openssh.authorizedKeys.keyFiles = [
+          ../terra/ssh_electro_ed25519_key.pub
+        ];
       };
     };
   };
