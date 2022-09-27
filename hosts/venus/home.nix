@@ -20,7 +20,19 @@
       settings = {
         binding_orientation = "KEY_ROTATE_DISPLAY";
         command_orientation = builtins.toString ./rotate_screen.sh;
+        binding_showvk = "swipe up 2";
+        command_showvk = "${pkgs.util-linux}/bin/kill -s USR2 wvkbd-mobintl";
+        binding_hidevk = "swipe down 2";
+        command_hidevk = "${pkgs.util-linux}/bin/kill -s USR1 wvkbd-mobintl";
       };
+    }
+    { plugin = "autostart";
+      settings.virtual_keyboard = ''
+        ${pkgs.wvkbd}/bin/wvkbd-mobintl \
+          --bg 16161d --fg 223249 --fg-sp 223249 \
+          --press 2d4f67 --press-sp 2d4f67 \
+          -l simple --hidden
+      '';
     }
     { plugin = "scale";
       settings.toggle = "<super> KEY_TAB | KEY_CYCLEWINDOWS";
