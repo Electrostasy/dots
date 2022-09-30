@@ -21,7 +21,7 @@ let
     environment.defaultPackages = lib.mkForce [];
     nixpkgs.overlays = builtins.attrValues self.overlays;
     nix = {
-      package = pkgs.nixFlakes;
+      package = pkgs.nixVersions.unstable;
       extraOptions = "experimental-features = nix-command flakes";
 
       # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other

@@ -81,9 +81,9 @@
 
         modules = {
           system = [
-            ./hosts/terra/configuration.nix
             ./hosts/kepler/wireguard.nix
             ./hosts/phobos/media-remote.nix
+            ./hosts/terra/configuration.nix
             nixos-hardware.nixosModules.common-cpu-intel
             nixos-hardware.nixosModules.common-pc-ssd
             ./profiles/system/audio
@@ -122,8 +122,8 @@
 
         modules = {
           system = [
-            ./hosts/phobos/configuration.nix
             ./hosts/kepler/wireguard.nix
+            ./hosts/phobos/configuration.nix
             ./profiles/system/avahi
             ./profiles/system/common
             ./profiles/system/matrix
@@ -206,8 +206,8 @@
 
         modules = {
           system = [
-            ./hosts/venus/configuration.nix
             ./hosts/kepler/wireguard.nix
+            ./hosts/venus/configuration.nix
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-x220
@@ -228,6 +228,7 @@
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
+            ./profiles/user/mpv
             ./profiles/user/neovim
             ./profiles/user/nix-index
             ./profiles/user/tealdeer
@@ -294,7 +295,6 @@
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard.nix
           ./profiles/system/ssh
-          ./profiles/system/sudo
         ];
       };
     };

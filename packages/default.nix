@@ -38,30 +38,20 @@ rec {
       src = pkgs.fetchFromGitHub {
         owner = "rebelot";
         repo = "heirline.nvim";
-        rev = "805a158b2b44b015f7966b03cd9def489984be8f";
-        sha256 = "sha256-++52rJvzOjglHzMUp7L1+1+MbcniMGq8RwUSl7TCY9s=";
+        rev = "9179b71d9967057814e5920ecb3c8322073825ea";
+        sha256 = "sha256-5IkZ+NfecFomQbDlz71YpbxNB2v9Y+i8Kkjyv4Mhr3Y=";
       };
-      version = "unstable-2022-07-06";
+      version = "unstable-2022-09-22";
     };
     hlargs-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
       pname = "hlargs-nvim";
       src = pkgs.fetchFromGitHub {
         owner = "m-demare";
         repo = "hlargs.nvim";
-        rev = "fe513dabb5c6bae5831dd1d4941e480415521503";
-        sha256 = "sha256-6/TkM4olziwGPaiXPNYdjKwwHISM5jrHJdufzE830Ug=";
+        rev = "f674e11304be45e4d1cae103af5275c0b2ea7b4c";
+        sha256 = "sha256-8TbtM6nyMziBGJy/T4xjQbYq9i/kYizwB12POA4CUuw=";
       };
-      version = "unstable-2022-07-08";
-    };
-    nvim-surround = pkgs.vimUtils.buildVimPluginFrom2Nix {
-      pname = "nvim-surround";
-      src = pkgs.fetchFromGitHub {
-        owner = "kylechui";
-        repo = "nvim-surround";
-        rev = "78f10536d30a4f86155354636335263a0e6a7891";
-        sha256 = "sha256-lShnjQF1NcVWD6h2XK5QJyTzPLeriO6r/DcqP1Cx9RA=";
-      };
-      version = "unstable-2022-07-19";
+      version = "unstable-2022-09-29";
     };
   });
 }

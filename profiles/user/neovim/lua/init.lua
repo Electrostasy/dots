@@ -10,7 +10,13 @@ require('plugins.treesitter')
 require('plugins.null-ls')
 require('plugins.lspconfig')
 
-require('nvim-surround').setup({ delimiters = { HTML = false, aliases = false } })
+require('nvim-surround').setup({ surrounds = { HTML = false, aliases = false } })
 require('gitsigns').setup()
 require('nvim-web-devicons').setup()
-require('colorizer').setup({ '*', 'nix', 'html', 'javascript', css = { css = true } })
+require('colorizer').setup({
+  filetypes = {
+    '*',
+    css = true,
+  },
+  user_default_options = { names = false, },
+})
