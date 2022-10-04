@@ -42,7 +42,7 @@ let
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
-      sharedModules = builtins.attrValues self.nixosModules.home-manager;
+      sharedModules = builtins.attrValues self.homeManagerModules;
     };
   };
 

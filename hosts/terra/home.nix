@@ -56,9 +56,9 @@
     element-desktop
     firefox-custom
     gimp
-    (imv.override { withWindowSystem = "wayland"; })
+    imv
     keepassxc
-    (libreoffice.overrideAttrs (_: { langs = [ "en-US" "lt" ]; }))
+    libreoffice
     transmission-gtk
     xdg-utils
 

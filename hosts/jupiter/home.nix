@@ -9,7 +9,7 @@
     firefox-custom
     iosevka-nerdfonts
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-    (libreoffice.overrideAttrs (old: { langs = [ "en-US" "lt" ]; }))
+    libreoffice
     source-han-sans # Japanese OpenType/CFF fonts
     xplr
   ];

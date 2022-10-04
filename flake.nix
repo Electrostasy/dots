@@ -47,24 +47,35 @@
   }:
   let
     inherit (nixpkgs-lib) lib;
-    supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
-    forSystems = systems: f:
-      lib.genAttrs systems (system:
-        f system nixpkgs-unstable.legacyPackages.${system});
-    forAllSystems = forSystems supportedSystems;
+    forAllSystems = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
   in
   {
-    legacyPackages = forAllSystems (system: pkgs: pkgs.callPackage ./packages { });
+    legacyPackages = forAllSystems (system:
+      lib.fix
+        (lib.composeManyExtensions (builtins.attrValues self.overlays))
+        nixpkgs-unstable.legacyPackages.${system});
 
-    overlays.default = final: prev:
-      # TODO: There has to be a better way to generate overlays from packages
-      prev.lib.recursiveUpdate
-        prev
-        (import ./packages { inherit (prev) lib; pkgs = nixpkgs-unstable.legacyPackages.${prev.system}; });
+    overlays = {
+      additions = import ./packages;
+
+      customisations = final: prev: {
+        libewf = prev.libewf.overrideAttrs (_: {
+          # `ewfmount` depends on `fuse` to mount *.E01 forensic images
+          buildInputs = [ prev.fuse ];
+        });
+
+        libreoffice = prev.libreoffice.overrideAttrs (_: {
+          langs = [ "en-US" "lt" ];
+        });
+      };
+    };
 
     nixosModules = {
-      home-manager.wayfire = import ./modules/user/wayfire;
       unfree = import ./modules/system/unfree;
+    };
+
+    homeManagerModules = {
+      wayfire = import ./modules/user/wayfire;
     };
 
     nixosConfigurations = let

@@ -1,7 +1,7 @@
-{ pkgs, lib }:
+final: prev:
 
 let
-  inherit (pkgs) callPackage;
+  inherit (prev) callPackage;
 in
 
 rec {
@@ -13,14 +13,14 @@ rec {
   wlr-spanbg = callPackage ./wlr-spanbg { };
 
   wayfire-git = callPackage ./wayfire { };
-  wayfirePlugins = lib.makeScope pkgs.newScope (self: with self; {
+  wayfirePlugins = prev.wayfirePlugins // {
     dbus-interface = callPackage ./wayfire/wayfirePlugins/wayfire-dbus { wayfire = wayfire-git; };
     firedecor = callPackage ./wayfire/wayfirePlugins/firedecor { wayfire = wayfire-git; };
     plugins-extra = callPackage ./wayfire/wayfirePlugins/wayfire-plugins-extra { wayfire = wayfire-git; };
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
-  });
+  };
 
-  iosevka-nerdfonts = nerdfonts-patch (pkgs.iosevka.override {
+  iosevka-nerdfonts = nerdfonts-patch (prev.iosevka.override {
     privateBuildPlan = {
       family = "Iosevka Custom";
       spacing = "normal";
@@ -32,10 +32,10 @@ rec {
   });
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
-  vimPlugins = lib.makeScope pkgs.newScope (self: with self; {
-    heirline-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+  vimPlugins = prev.vimPlugins // {
+    heirline-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
       pname = "heirline-nvim";
-      src = pkgs.fetchFromGitHub {
+      src = prev.fetchFromGitHub {
         owner = "rebelot";
         repo = "heirline.nvim";
         rev = "9179b71d9967057814e5920ecb3c8322073825ea";
@@ -43,9 +43,9 @@ rec {
       };
       version = "unstable-2022-09-22";
     };
-    hlargs-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    hlargs-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
       pname = "hlargs-nvim";
-      src = pkgs.fetchFromGitHub {
+      src = prev.fetchFromGitHub {
         owner = "m-demare";
         repo = "hlargs.nvim";
         rev = "f674e11304be45e4d1cae103af5275c0b2ea7b4c";
@@ -53,5 +53,5 @@ rec {
       };
       version = "unstable-2022-09-29";
     };
-  });
+  };
 }
