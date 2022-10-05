@@ -35,7 +35,16 @@ let
   } ++ modules.system;
 
   userModules = builtins.map
-    (user: { home-manager.users.${user}.imports = modules.users.${user}; })
+    (user: {
+      home-manager.users.${user} = {
+        imports = modules.users.${user};
+
+        # Manual adds a dependency on `nmd`, which breaks `nix flake check`
+        # when checking NixOS configurations of other architectures, e.g.
+        # running `nix flake check` on x86_64-linux for aarch64-linux
+        manual.manpages.enable = false;
+      };
+    })
     (builtins.attrNames modules.users or {});
   
   homeManagerConfig = {

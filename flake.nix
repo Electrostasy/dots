@@ -10,7 +10,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     hm-stable = {
       url = "github:nix-community/home-manager/release-22.05";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
     hm-unstable = {
       url = "github:nix-community/home-manager/master";
