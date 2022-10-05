@@ -3,6 +3,7 @@
 {
   programs.kitty = {
     enable = true;
+
     settings = {
       cursor_shape = "beam";
       disable_ligatures = "always";
@@ -14,17 +15,15 @@
       # https://github.com/kovidgoyal/kitty/discussions/4956
       confirm_os_window_close = 0;
     };
-    # kitty list-fonts | rg 'Iosevka'
+
     extraConfig = ''
-      font_family Iosevka Term
-      bold_font Iosevka Term Bold Nerd Font Complete Mono
-      italic_font Iosevka Term Italic Nerd Font Complete Mono
-      bold_italic_font Iosevka Term Bold Italic Nerd Font Complete Mono
+      font_family Iosevka Custom
       font_size 11
       mouse_map ctrl+left press ungrabbed,grabbed mouse_click_url
 
       include ${pkgs.vimPlugins.kanagawa-nvim}/extras/kanagawa.conf
     '';
+
     keybindings = {
       "ctrl+shift+c" = "copy_to_clipboard";
       "ctrl+shift+v" = "paste_from_clipboard";

@@ -20,7 +20,7 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   };
 
-  iosevka-nerdfonts = nerdfonts-patch (prev.iosevka.override {
+  iosevka-custom = prev.iosevka.override {
     privateBuildPlan = {
       family = "Iosevka Custom";
       spacing = "normal";
@@ -29,7 +29,9 @@ rec {
       no-litigation = true;
     };
     set = "custom";
-  });
+  };
+  iosevka-nerdfonts = nerdfonts-patch iosevka-custom;
+
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = prev.vimPlugins // {
