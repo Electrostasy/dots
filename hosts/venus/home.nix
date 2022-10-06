@@ -5,7 +5,6 @@
 
   home.packages = with pkgs; [
     firefox-custom
-    iosevka-nerdfonts
     rnote
   ];
 

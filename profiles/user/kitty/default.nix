@@ -1,6 +1,30 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
+  fonts.fontconfig.enable = true;
+
+  # Prefer custom build of Iosevka and have missing glyphs fallback to nerdfonts.
+  # We can't fallback to the complete nerdfonts unpatched font because Iosevka
+  # is more narrow and so the glyphs are bigger and can get cut off
+  xdg.configFile."fontconfig/conf.d/20-iosevka-nerdfonts.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+    <fontconfig>
+      <alias>
+        <family>Iosevka Custom</family>
+        <prefer>
+          <family>Iosevka Custom</family>
+          <family>Iosevka Nerd Font</family>
+        </prefer>
+      </alias>
+    </fontconfig>
+  '';
+
+  home.packages = with pkgs; [
+    iosevka-custom
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
+  ];
+
   programs.kitty = {
     enable = true;
 
