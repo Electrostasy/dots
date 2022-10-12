@@ -54,15 +54,13 @@
         vers4.1=y
         vers4.2=y
       '';
-      # TODO: Hostname `mars.local` can't be resolved when the host is offline,
-      # so nfs services will fail until the hostname is resolvable. In the
-      # meantime, ssh into phobos.local and restart them on demand
+      # Export these directories over the Wireguard VPN
       exports = ''
-        /mnt/media mars.local(rw,fsid=0,insecure,no_subtree_check)
-        /mnt/media/anime mars.local(rw,root_squash,nohide,insecure,no_subtree_check)
-        /mnt/media/movies mars.local(rw,root_squash,nohide,insecure,no_subtree_check)
-        /mnt/media/music mars.local(rw,root_squash,nohide,insecure,no_subtree_check)
-        /mnt/media/shows mars.local(rw,root_squash,nohide,insecure,no_subtree_check)
+        /mnt/media 10.10.1.0/24(rw,fsid=0,insecure,no_subtree_check)
+        /mnt/media/anime 10.10.1.0/24(rw,root_squash,nohide,insecure,no_subtree_check)
+        /mnt/media/movies 10.10.1.0/24(rw,root_squash,nohide,insecure,no_subtree_check)
+        /mnt/media/music 10.10.1.0/24(rw,root_squash,nohide,insecure,no_subtree_check)
+        /mnt/media/shows 10.10.1.0/24(rw,root_squash,nohide,insecure,no_subtree_check)
       '';
     };
 

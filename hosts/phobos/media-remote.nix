@@ -1,8 +1,14 @@
 let
   nfsMediaMount = export: {
-    device = "phobos.local:/${export}";
+    device = "10.10.1.5:/${export}";
     fsType = "nfs";
-    options = [ "nfsvers=4.2" ];
+    options = [
+      "nfsvers=4.2"
+      "_netdev"
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=1800"
+    ];
   };
 in
 {
