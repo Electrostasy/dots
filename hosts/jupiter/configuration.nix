@@ -85,43 +85,7 @@
     };
   };
 
-  services = {
-    avahi.interfaces = [ "enp0s25" ];
-
-    samba = {
-      enable = true;
-      openFirewall = true;
-
-      extraConfig = ''
-        map to guest = bad user
-        load printers = no
-        printcap name = /dev/null
-
-        # Limit samba to lan interface
-        interfaces = enp0s25 lo
-        bind interfaces only = yes
-
-        log file = /var/log/samba/client.%I
-        log level = 2
-      '';
-
-      shares."Visiems" = {
-        path = "/mnt/Visiems";
-        browseable = true;
-        writable = true;
-        public = true;
-
-        # Allow everyone to add/remove/modify files/directories
-        "guest ok" = "yes";
-        "force user" = "nobody";
-        "force group" = "nogroup";
-
-        # Default permissions for files/directories
-        "create mask" = 0666;
-        "directory mask" = 0777;
-      };
-    };
-  };
+  services.avahi.interfaces = [ "enp0s25" ];
 
   programs.ssh.knownHosts = {
     phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
