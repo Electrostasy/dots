@@ -18,15 +18,6 @@
   networking = {
     hostName = "jupiter";
 
-    # To connect to a wireless network using `iwd`, use `iwctl`:
-    # $ iwctl station wlan0 connect L19A3A
-
-    # To scan and list wireless networks:
-    # $ iwctl station wlan0 scan
-    # $ iwctl station wlan0 get-networks
-
-    # To disconnect from a wireless network:
-    # $ iwctl station wlan0 disconnect
     wireless.iwd = {
       enable = true;
 
@@ -49,58 +40,45 @@
     "2.europe.pool.ntp.org"
   ];
 
-  # Keeps failing, but networking works fine without it
-  systemd.services."systemd-networkd-wait-online".enable = false;
   systemd.network = {
     enable = true;
 
-    # Wired network configuration to be used at work and at home, depending
-    # on where a connection can be established
-    networks."40-wired-work-or-home" = {
-      name = "enp0s25";
+    wait-online.timeout = 0;
 
-      address = [
-        "192.168.200.26" # Try work IP
-        "192.168.205.56" # Fallback to home IP
-      ];
-      gateway = [
-        "192.168.200.1" # Try work gateway
-        "192.168.205.1" # Fallback to home gateway
-      ];
-      dns = [
-        "192.168.200.10" # Try work DNS
-        "127.0.0.1" "::1" # Fallback to local DNS resolver
-      ];
+    networks = {
+      "40-wired" = {
+        name = "enp0s25";
 
-      dhcpV4Config.RouteMetric = 1024;
-    };
+        address = [ "192.168.205.56" ];
+        gateway = [ "192.168.205.1" ];
+        dns = [ "127.0.0.1" "::1" ];
 
-    # Wired network configuration for USB tethering network from phone
-    networks."40-usb-tethering" = {
-      name = "enp0s*u1u*";
+        dhcpV4Config.RouteMetric = 1024;
+      };
 
-      DHCP = "yes";
-      dns = [ "127.0.0.1" "::1" ];
+      "40-usb-tethering" = {
+        name = "enp0s*u1u*";
 
-      networkConfig.IgnoreCarrierLoss = "yes";
-    };
+        DHCP = "yes";
+        dns = [ "127.0.0.1" "::1" ];
 
-    # Wireless network configuration to be used wherever, taking public
-    # networks into accouont
-    networks."40-wireless" = {
-      name = "wlan*";
+        networkConfig.IgnoreCarrierLoss = "yes";
+      };
 
-      DHCP = "yes";
-      dns = [ "127.0.0.1" "::1" ];
+      "40-wireless" = {
+        name = "wlan*";
 
-      networkConfig.IgnoreCarrierLoss = "yes";
-      dhcpV4Config = {
-        Anonymize = true;
-        RouteMetric = 2048;
+        DHCP = "yes";
+        dns = [ "127.0.0.1" "::1" ];
+
+        networkConfig.IgnoreCarrierLoss = "yes";
+        dhcpV4Config = {
+          Anonymize = true;
+          RouteMetric = 2048;
+        };
       };
     };
 
-    # Randomize the wireless interface MAC Address each time the device appears
     links."40-wireless-random-mac" = {
       matchConfig.Type = "wlan*";
       linkConfig.MACAddressPolicy = "random";
