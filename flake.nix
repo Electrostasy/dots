@@ -104,6 +104,7 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/graphical
             ./profiles/system/login-manager
+            ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
             self.nixosModules.unfree
@@ -190,6 +191,7 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/graphical
             ./profiles/system/login-manager
+            ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
@@ -229,6 +231,7 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/graphical
             ./profiles/system/login-manager
+            ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
