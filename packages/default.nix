@@ -11,6 +11,7 @@ rec {
   umc = callPackage ./umc { };
   wlopm = callPackage ./wlopm { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
+  git-credential-keepassxc = callPackage ./git-credential-keepassxc { };
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {

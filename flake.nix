@@ -102,6 +102,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/git
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -112,7 +113,6 @@
           users.electro = [
             ./hosts/terra/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
@@ -138,6 +138,7 @@
             ./hosts/phobos/configuration.nix
             ./profiles/system/avahi
             ./profiles/system/common
+            ./profiles/system/git
             ./profiles/system/matrix
             ./profiles/system/ssh
             ./profiles/system/sudo
@@ -145,7 +146,6 @@
           users.pi = [
             ./hosts/phobos/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
           ];
         };
       };
@@ -161,13 +161,13 @@
             ./hosts/deimos/configuration.nix
             ./profiles/system/avahi
             ./profiles/system/common
+            ./profiles/system/git
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
           users.pi = [
             ./hosts/deimos/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
           ];
         };
       };
@@ -189,6 +189,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/git
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -198,7 +199,6 @@
           users.gediminas = [
             ./hosts/jupiter/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
@@ -229,6 +229,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
+            ./profiles/system/git
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -238,7 +239,6 @@
           users.electro = [
             ./hosts/venus/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
             ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
@@ -260,11 +260,11 @@
             ./hosts/eris/configuration.nix
             nixos-wsl.nixosModules.wsl
             ./profiles/system/common
+            ./profiles/system/git
           ];
           users.nixos = [
             ./hosts/eris/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
@@ -284,6 +284,7 @@
             ./hosts/ceres/configuration.nix
             nixos-hardware.nixosModules.common-cpu-intel
             ./profiles/system/common
+            ./profiles/system/git
             ./profiles/system/graphical
             ./profiles/system/ssh
             ./profiles/system/sudo
@@ -291,7 +292,6 @@
           users.gediminas = [
             ./hosts/ceres/home.nix
             ./profiles/user/fish
-            ./profiles/user/git
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/nix-index
@@ -308,6 +308,7 @@
         modules.system = [
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard.nix
+          ./profiles/system/git
           ./profiles/system/ssh
         ];
       };
