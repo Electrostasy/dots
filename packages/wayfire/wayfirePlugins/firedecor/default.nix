@@ -21,13 +21,13 @@
 
 stdenv.mkDerivation {
   pname = "wayfire-firedecor";
-  version = "unstable-2022-03-29";
+  version = "unstable-2022-07-24";
 
   src = fetchFromGitHub {
     owner = "AhoyISki";
-    repo = "wayfire-firedecor";
-    rev = "bb776aca20f627f02b6e2fb0ea7d573eae181166";
-    sha256 = "sha256-zhk0ypOuf8hfO2aPSwN2X1HNiPn2b5bj2NP1eJcfNYE=";
+    repo = "Firedecor";
+    rev = "3c6777dc64bc2e62ea495a8c99a712dee8c20edb";
+    sha256 = "sha256-9GMB9aMyak/D58yw0V4dyzr+cDZ0xmx+a19+Hdn4xHg=";
   };
 
   nativeBuildInputs = [
