@@ -187,7 +187,7 @@
       tracker.enable = false;
 
       # Core shell
-      chrome-gnome-shell.enable = false;
+      gnome-browser-connector.enable = false;
       gnome-initial-setup.enable = false;
       gnome-remote-desktop.enable = false;
       gnome-user-share.enable = false;
