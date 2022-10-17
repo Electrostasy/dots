@@ -14,14 +14,14 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "wayfire-firedecor";
-  version = "unstable-2022-03-29";
+  pname = "wayfire-shadows";
+  version = "unstable-2022-09-08";
 
   src = fetchFromGitHub {
     owner = "timgott";
     repo = "wayfire-shadows";
-    rev = "b8b170f2af4cb281e8adc95c585df617816c65cc";
-    sha256 = "sha256-Fz7cUPG0ldFjcMKN0pdhnxWJF4P/0mKTgncCDnLPoqM=";
+    rev = "8840202b867b04814e22df01b85518b4afe30f11";
+    sha256 = "sha256-/G4bRseEhoIt92qLG2UmPThndF5fZxPdQFBA5jlknxs=";
   };
 
   nativeBuildInputs = [
