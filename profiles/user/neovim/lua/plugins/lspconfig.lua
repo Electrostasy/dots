@@ -63,7 +63,7 @@ local servers = {
     }
   end,
   pyright = {},
-  rnix = {},
+  nil_ls = {},
   sumneko_lua = function()
     local runtime_path = vim.split(package.path, ';')
     table.insert(runtime_path, "lua/?.lua")

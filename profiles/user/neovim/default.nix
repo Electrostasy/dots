@@ -3,6 +3,7 @@
 {
   programs.neovim = {
     enable = true;
+
     plugins = with pkgs.vimPlugins; [
       # Completion plugins
       cmp-buffer
@@ -39,15 +40,17 @@
     ] ++ builtins.map (plugin: { inherit plugin; optional = true; }) [
       playground
     ];
+
     extraPackages = with pkgs; [
       luajitPackages.luacheck
-      rnix-lsp
+      nil
       rust-analyzer
       statix
       stylua
       sumneko-lua-language-server
       tree-sitter
     ];
+
     withRuby = false;
     withPython3 = false;
     extraConfig = "lua require('init')";
