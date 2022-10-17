@@ -17,19 +17,20 @@
       # Load external subtitles with similar name to file
       sub-auto = "fuzzy";
       sub-bold = "yes";
-      # Make coloured subtitles gray
       sub-gray = "yes";
-      # Overwriting .srt subtitle settings
+      # Overriding embedded media `ass` subtitles
+      sub-ass = "no";
       sub-font = "Iosevka";
       sub-font-size = 24;
-      sub-blur = 0.2;
+      sub-blur = 0.15;
       sub-border-color = "0.0/0.0/0.0/0.0";
-      sub-border-size = 3.0;
+      sub-border-size = 2.0;
+      sub-pos = 100;
       sub-color = "1.0/1.0/1.0/1.0";
-      sub-margin-x = 100;
-      sub-margin-y = 50;
-      sub-shadow-color = "0.0/0.0/0.0/0.25";
-      sub-shadow-offset = 0;
+      sub-margin-x = 0;
+      sub-margin-y = 56;
+      sub-shadow-color = "0.0/0.0/0.0/0.85";
+      sub-shadow-offset = 0.75;
       # Load high quality default OpenGL options
       profile = "gpu-hq";
       deband = "yes";
