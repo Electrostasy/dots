@@ -2,7 +2,8 @@
 
 {
   home.pointerCursor = {
-    package = pkgs.simp1e-cursor-theme.override {
+    package = pkgs.simp1e.override {
+      withPreviews = false;
       theme = {
         name = "Simp1e Kanagawa";
         shadow_opacity = 0.35;

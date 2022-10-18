@@ -7,7 +7,7 @@ in
 rec {
   firefox-custom = callPackage ./firefox { };
   nerdfonts-patch = callPackage ./nerdfonts-patch { };
-  simp1e-cursor-theme = callPackage ./simp1e-cursor-theme { };
+  simp1e = callPackage ./simp1e { };
   umc = callPackage ./umc { };
   wlopm = callPackage ./wlopm { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
