@@ -118,7 +118,6 @@
             ./profiles/user/lsd
             ./profiles/user/mpv
             ./profiles/user/neovim
-            ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
             ./profiles/user/zathura
@@ -203,7 +202,6 @@
             ./profiles/user/kitty
             ./profiles/user/lsd
             ./profiles/user/neovim
-            ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
             ./profiles/user/zathura
@@ -244,7 +242,6 @@
             ./profiles/user/lsd
             ./profiles/user/mpv
             ./profiles/user/neovim
-            ./profiles/user/nix-index
             ./profiles/user/tealdeer
             ./profiles/user/wayfire
             ./profiles/user/zathura
@@ -267,7 +264,6 @@
             ./profiles/user/fish
             ./profiles/user/lsd
             ./profiles/user/neovim
-            ./profiles/user/nix-index
             ./profiles/user/tealdeer
           ];
         };
@@ -294,7 +290,6 @@
             ./profiles/user/fish
             ./profiles/user/lsd
             ./profiles/user/neovim
-            ./profiles/user/nix-index
             ./profiles/user/tealdeer
           ];
         };
