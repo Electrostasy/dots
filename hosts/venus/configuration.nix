@@ -6,9 +6,25 @@
   system.stateVersion = "22.11";
 
   boot = {
-    initrd.availableKernelModules = [ "ehci_pci" "ahci" "usb_storage" "sd_mod" "sdhci_pci" ];
+    initrd.availableKernelModules = [
+      "ahci"
+      "ehci_pci"
+      "sdhci_pci"
+      "sd_mod"
+      "usb_storage"
+    ];
+
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "acpi.ec_no_wakeup=1"
+      "i915.disable_power_well=1"
+      "i915.enable_fbc=1"
+      "i915.enable_psr=1"
+      "iwlwifi.power_save=1"
+      "thinkpad_acpi.fan_control=1"
+    ];
+
     tmpOnTmpfs = true;
     loader.grub = {
       enable = true;
@@ -17,22 +33,66 @@
     };
   };
 
-  hardware = {
-    cpu.intel.updateMicrocode = true;
-    enableRedistributableFirmware = true;
+  hardware.cpu.intel.updateMicrocode = true;
+
+  services.thermald.enable = true;
+
+  services.thinkfan = {
+    enable = true;
+
+    sensors = [
+      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp3_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp1_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp2_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp3_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp4_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp5_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp6_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp7_input"; }
+      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp8_input"; }
+      { type = "hwmon"; query = "/sys/devices/virtual/thermal/thermal_zone0/temp"; }
+    ];
+
+    fans = [
+      { type = "tpacpi"; query = "/proc/acpi/ibm/fan"; }
+    ];
+
+    levels = [
+      [ 0 0 55 ]
+      [ 1 48 60 ]
+      [ 2 50 61 ]
+      [ 3 52 63 ]
+      [ 4 56 65 ]
+      [ 5 59 66 ]
+      [ 7 63 80 ]
+      [ "level auto" 80 32767 ]
+    ];
   };
 
   services.tlp = {
     enable = true;
 
     settings = {
+      # When no power supply is detected, force battery mode by default
+      TLP_DEFAULT_MODE = "BAT";
+      TLP_PERSISTENT_DEFAULT = 1;
+
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_SCALING_GOVERNOR_ON_AC = "ondemand";
 
+      # Enable runtime power management for PCI(e) bus devices while on AC
+      RUNTIME_PM_ON_AC = "auto";
+
       # Prevent battery from charging fully to preserve lifetime
       # `tlp fullcharge` will override
-      START_CHARGE_THRESH_BAT0 = 85;
-      STOP_CHARGE_THRESH_BAT0 = 90;
+      # Check by how much battery life has been reduced (fish):
+      # $ set -l current (cat /sys/class/power_supply/BAT0/charge_full)
+      # $ set -l factory (cat /sys/class/power_supply/BAT0/charge_full_design)
+      # $ math "100-$current/$factory*100"
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0 = 80;
 
       # Limit CPU speed to reduce heat and increase battery
       CPU_MAX_PERF_ON_AC = "100";
