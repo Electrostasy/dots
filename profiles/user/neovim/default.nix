@@ -58,8 +58,8 @@
 
   home.file.".config/nvim/lua".source = ./lua;
 
-  programs.fish.interactiveShellInit = ''
-    set -x EDITOR nvim
-    set -x MANPAGER 'nvim -c "set ft=man nos nobk shada='NONE' ro" +Man! -o -'
-  '';
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    MANPAGER = "nvim -c 'set ft=man bt=nowrite noswapfile nobk shada=\\\"NONE\\\" ro noma' +Man! -o -";
+  };
 }
