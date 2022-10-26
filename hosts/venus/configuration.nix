@@ -22,7 +22,6 @@
       "i915.enable_fbc=1"
       "i915.enable_psr=1"
       "iwlwifi.power_save=1"
-      "thinkpad_acpi.fan_control=1"
     ];
 
     tmpOnTmpfs = true;
@@ -41,18 +40,7 @@
     enable = true;
 
     sensors = [
-      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp3_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp1_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp2_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp3_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp4_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp5_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp6_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp7_input"; }
-      { type = "hwmon"; query = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon3/temp8_input"; }
-      { type = "hwmon"; query = "/sys/devices/virtual/thermal/thermal_zone0/temp"; }
+      { type = "tpacpi"; query = "/proc/acpi/ibm/thermal"; indices = [ 0 ]; }
     ];
 
     fans = [
