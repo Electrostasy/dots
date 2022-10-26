@@ -70,8 +70,8 @@ wrapFirefox firefox-unwrapped {
       arkenfox = fetchFromGitHub {
         owner = "arkenfox";
         repo = "user.js";
-        rev = "104.0";
-        sha256 = "sha256-NyP/kJlV1Ai7os3gMqukKMdRSQ78GAjPCJkZDZtDdeo=";
+        rev = "105.0";
+        sha256 = "sha256-XUjX+Tno3EU/3IXR/WCn4M5gVR+sKjCzpKcV31dqzWA=";
       };
     in
       lib.singleton "${arkenfox}/user.js";
