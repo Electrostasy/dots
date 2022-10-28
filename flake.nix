@@ -102,7 +102,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git
+            ./profiles/system/git-headed
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -137,7 +137,7 @@
             ./hosts/phobos/configuration.nix
             ./profiles/system/avahi
             ./profiles/system/common
-            ./profiles/system/git
+            ./profiles/system/git-headless
             ./profiles/system/matrix
             ./profiles/system/ssh
             ./profiles/system/sudo
@@ -160,7 +160,7 @@
             ./hosts/deimos/configuration.nix
             ./profiles/system/avahi
             ./profiles/system/common
-            ./profiles/system/git
+            ./profiles/system/git-headless
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
@@ -188,7 +188,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git
+            ./profiles/system/git-headed
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -227,7 +227,7 @@
             ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git
+            ./profiles/system/git-headed
             ./profiles/system/graphical
             ./profiles/system/login-manager
             ./profiles/system/mullvad
@@ -257,7 +257,7 @@
             ./hosts/eris/configuration.nix
             nixos-wsl.nixosModules.wsl
             ./profiles/system/common
-            ./profiles/system/git
+            ./profiles/system/git-headless
           ];
           users.nixos = [
             ./hosts/eris/home.nix
@@ -280,7 +280,7 @@
             ./hosts/ceres/configuration.nix
             nixos-hardware.nixosModules.common-cpu-intel
             ./profiles/system/common
-            ./profiles/system/git
+            ./profiles/system/git-headless
             ./profiles/system/graphical
             ./profiles/system/ssh
             ./profiles/system/sudo
@@ -303,7 +303,7 @@
         modules.system = [
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard.nix
-          ./profiles/system/git
+          ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
       };

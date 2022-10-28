@@ -1,5 +1,3 @@
-{ pkgs, ... }:
-
 {
   programs.git = {
     enable = true;
@@ -17,10 +15,6 @@
       user = {
         name = "Gediminas Valys";
         email = "steamykins@gmail.com";
-      };
-
-      credential."https://github.com/electrostasy/dots.git" = {
-        helper = "${pkgs.git-credential-keepassxc}/bin/git-credential-keepassxc";
       };
     };
   };
