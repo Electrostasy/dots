@@ -407,29 +407,28 @@ local Indents_Component = {
 }
 
 local Searchcount_Component = {
-  condition = function()
-    local highlight_searches = vim.v.hlsearch == 0
-    local show_in_cmdline = vim.opt.shortmess:get().S or false
-    return not highlight_searches or not show_in_cmdline
-  end,
+  condition = function() return vim.v.hlsearch == 1 end,
   init = function(self)
     local ok, count = pcall(vim.fn.searchcount, { recompute = true })
     if not ok or count.current == nil or count.total == 0 then
       self.count = ''
+      return
     end
 
+    local icon = '  '
     if count.incomplete == 1 then
-      self.count = '?/?'
+      self.count = icon .. '?/?'
+      return
     end
 
     local too_many = ('>%d'):format(count.maxcount)
     local current = count.current > count.maxcount and too_many or count.current
     local total = count.total > count.maxcount and too_many or count.total
-    self.count = ('%s/%s'):format(current, total)
+    self.count = (icon .. '%s/%s'):format(current, total)
   end,
-  provider = function(self)
-    return '  ' .. self.count
-  end
+  -- Search count component is seemingly always shown, unless we put
+  -- vim.fn.searchcount into the condition and work up from there...
+  provider = function(self) return self.count end
 }
 
 local shared_static = {
