@@ -1,12 +1,11 @@
 local kanagawa = require('kanagawa')
 
 local colours = require('kanagawa.colors').setup()
-local theme = require('kanagawa.themes').default(colours)
 local groups = require('kanagawa.hlgroups').setup(colours)
 
 kanagawa.setup({
   globalStatus = true,
-  dimInactive = true,
+  -- dimInactive = true,
 
   overrides = {
     StatusLine = { bg = colours.sumiInk0 },
@@ -17,7 +16,13 @@ kanagawa.setup({
     DiagnosticVirtualTextWarn = { fg = colours.roninYellow, bg = colours.winterYellow },
     DiagnosticVirtualTextInfo = { fg = colours.waveAqua1, bg = colours.winterBlue },
     DiagnosticVirtualTextHint = { fg = colours.dragonBlue, bg = colours.winterBlue },
+    TelescopeBorder = { fg = colours.waveBlue2, bg = colours.waveBlue1 },
     TelescopeMatching = { fg = colours.roninYellow, bold = true },
+    TelescopeNormal = { bg = colours.waveBlue1 },
+    TelescopePreviewNormal = { bg = colours.sumiInk1 },
+    TelescopePromptCounter = { fg = colours.oldWhite, },
+    TelescopeSelection = { bg = colours.waveBlue2 },
+    TelescopeTitle = { fg = colours.fujiWhite, bg = colours.waveBlue1 },
 
     CursorLineNr = { bg = groups.CursorLine.bg },
     CursorLineFold = { bg = groups.CursorLine.bg },

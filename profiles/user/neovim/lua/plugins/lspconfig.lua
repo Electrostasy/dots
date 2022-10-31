@@ -54,13 +54,11 @@ local common = {
 }
 
 local servers = {
-  ccls = function()
-    return {
-      init_options = {
-        filetypes = { 'c', 'cpp', 'cxx', 'cppm', 'cxxm', 'h', 'hpp', 'hxx' }
-      },
-    }
-  end,
+  ccls = {
+    init_options = {
+      filetypes = { 'c', 'cpp', 'cxx', 'cppm', 'cxxm', 'h', 'hpp', 'hxx' }
+    },
+  },
   pyright = {},
   nil_ls = {},
   sumneko_lua = function()

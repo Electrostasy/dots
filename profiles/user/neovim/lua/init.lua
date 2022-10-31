@@ -16,7 +16,7 @@ require('nvim-web-devicons').setup()
 require('colorizer').setup({
   filetypes = {
     '*',
-    css = true,
+    ['css'] = { css = true }
   },
-  user_default_options = { names = false, },
+  user_default_options = { names = false },
 })

@@ -27,7 +27,6 @@ vim.opt.showmode = false -- Don't show mode in command line
 vim.opt.backspace = 'indent,eol,start'
 
 vim.opt.number = true -- Show current line number
-vim.opt.ruler = true -- Show cursor location in file
 vim.opt.updatetime = 300 -- Delay after user input before plugins are activated
 vim.opt.timeoutlen = 500
 
@@ -60,7 +59,7 @@ vim.opt.splitright = true -- Put new windows right of current
 
 -- Show non-whitespace characters while in Insert mode
 vim.opt.listchars = {
-  eol = '↲',
+  eol = '',
   space = '·',
   tab = '––>',
   nbsp = '×'
