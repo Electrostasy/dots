@@ -60,7 +60,7 @@
     imv
     keepassxc
     libreoffice
-    transmission-gtk
+    transmission-qt
     xdg-utils
 
     # Music

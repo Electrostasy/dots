@@ -91,7 +91,6 @@
             ./hosts/terra/configuration.nix
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
@@ -99,12 +98,12 @@
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
+            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.electro.imports = [
             ./hosts/terra/home.nix
             ./profiles/user/fish
-            ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
             ./profiles/user/mpv
@@ -190,7 +189,6 @@
             ./hosts/kepler/wireguard.nix
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
@@ -198,12 +196,12 @@
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
+            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.gediminas.imports = [
             ./hosts/jupiter/home.nix
             ./profiles/user/fish
-            ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
             ./profiles/user/neovim
@@ -235,7 +233,6 @@
             ./hosts/venus/configuration.nix
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
@@ -243,12 +240,12 @@
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
+            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.electro.imports = [
             ./hosts/venus/home.nix
             ./profiles/user/fish
-            ./profiles/user/gtk
             ./profiles/user/kitty
             ./profiles/user/lsd
             ./profiles/user/mpv
