@@ -1,4 +1,4 @@
-{ config, pkgs, lib, persistMount, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [ ./remote-build-machines.nix ];
@@ -142,15 +142,10 @@
     };
   };
 
-  environment.persistence.${persistMount} = {
-    directories = [
-      "/etc/nixos"
-      "/etc/ssh"
-      "/var/log"
-    ];
-    files = [ "/etc/machine-id" ];
+  environment.persistence."/state" = {
     users.electro.directories = [
       ".cache"
+      ".mozilla"
       { directory = ".ssh"; mode = "0700"; }
     ];
   };

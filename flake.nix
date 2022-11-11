@@ -4,30 +4,24 @@
   '';
 
   inputs = {
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-22.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    hm-stable = {
-      url = "github:nix-community/home-manager/release-22.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-    };
-    hm-unstable = {
+    home-manager = {
       url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        flake-utils.follows = "hm-unstable/utils";
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "home-manager/utils";
       };
     };
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
       inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixpkgs-22_05.follows = "nixpkgs-stable";
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-22_05.follows = "nixpkgs";
       };
     };
     impermanence.url = "github:nix-community/impermanence/master";
@@ -35,25 +29,22 @@
 
   outputs = {
     self,
-    nixpkgs-stable,
-    nixpkgs-unstable,
-    nixpkgs-lib,
+    nixpkgs,
     nixos-hardware,
-    hm-stable,
-    hm-unstable,
+    home-manager,
     nixos-wsl,
     sops-nix,
     impermanence,
   }:
   let
-    inherit (nixpkgs-lib) lib;
-    forAllSystems = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
+    inherit (nixpkgs) lib;
   in
   {
-    legacyPackages = forAllSystems (system:
-      lib.fix
-        (lib.composeManyExtensions (builtins.attrValues self.overlays))
-        nixpkgs-unstable.legacyPackages.${system});
+    legacyPackages =
+      lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+        lib.fix
+          (lib.composeManyExtensions (builtins.attrValues self.overlays))
+          nixpkgs.legacyPackages.${system});
 
     overlays = {
       additions = import ./packages;
@@ -78,28 +69,28 @@
       wayfire = import ./modules/user/wayfire;
     };
 
-    nixosConfigurations = let
-      nixosWith = nixpkgs: home-manager:
-        import ./modules/lib { inherit nixpkgs home-manager self; };
-      nixosStable = nixosWith nixpkgs-stable hm-stable;
-      nixosUnstable = nixosWith nixpkgs-unstable hm-unstable;
-    in {
-      terra = nixosUnstable {
+    nixosConfigurations = {
+      terra = lib.nixosSystem {
         system = "x86_64-linux";
 
-        manageSecrets.enable = true;
-        manageState.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
+        modules = [{
+          imports = [
+            nixos-hardware.nixosModules.common-cpu-intel
+            nixos-hardware.nixosModules.common-gpu-amd
+            nixos-hardware.nixosModules.common-pc-ssd
+
+            home-manager.nixosModule
+            impermanence.nixosModule
+            sops-nix.nixosModule
+            ./profiles/system/common
+
             ./hosts/kepler/wireguard.nix
             ./hosts/phobos/media-remote.nix
             ./hosts/terra/configuration.nix
-            nixos-hardware.nixosModules.common-cpu-intel
-            nixos-hardware.nixosModules.common-pc-ssd
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
@@ -108,9 +99,9 @@
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
-            self.nixosModules.unfree
           ];
-          users.electro = [
+
+          home-manager.users.electro.imports = [
             ./hosts/terra/home.nix
             ./profiles/user/fish
             ./profiles/user/gtk
@@ -122,70 +113,83 @@
             ./profiles/user/wayfire
             ./profiles/user/zathura
           ];
-        };
+        }];
       };
 
-      phobos = nixosStable {
+      phobos = lib.nixosSystem {
         system = "aarch64-linux";
 
-        manageSecrets.enable = true;
-        manageState.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
+        modules = [{
+          imports = [
+            home-manager.nixosModule
+            impermanence.nixosModule
+            sops-nix.nixosModule
+            ./profiles/system/common
+
             ./hosts/kepler/wireguard.nix
             ./hosts/phobos/configuration.nix
             ./profiles/system/avahi
-            ./profiles/system/common
             ./profiles/system/git-headless
             ./profiles/system/matrix
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
-          users.pi = [
+
+          home-manager.users.pi.imports = [
             ./hosts/phobos/home.nix
             ./profiles/user/fish
           ];
-        };
+        }];
       };
 
-      deimos = nixosStable {
+      deimos = lib.nixosSystem {
         system = "aarch64-linux";
 
-        manageSecrets.enable = true;
-        manageState.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
+        modules = [{
+          imports = [
+            home-manager.nixosModule
+            impermanence.nixosModule
+            sops-nix.nixosModule
+            ./profiles/system/common
+
             ./hosts/deimos/configuration.nix
             ./profiles/system/avahi
-            ./profiles/system/common
             ./profiles/system/git-headless
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
-          users.pi = [
+
+          home-manager.users.pi.imports = [
             ./hosts/deimos/home.nix
             ./profiles/user/fish
           ];
-        };
+        }];
       };
 
-      jupiter = nixosUnstable {
+      jupiter = lib.nixosSystem {
         system = "x86_64-linux";
 
-        manageSecrets.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
-            ./hosts/jupiter/configuration.nix
-            ./hosts/kepler/wireguard.nix
+        modules = [{
+          imports = [
+            nixos-hardware.nixosModules.common-gpu-intel
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-t420
+
+            home-manager.nixosModule
+            sops-nix.nixosModule
+            ./profiles/system/common
+
+            ./hosts/jupiter/configuration.nix
+            ./hosts/kepler/wireguard.nix
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
@@ -195,7 +199,8 @@
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
-          users.gediminas = [
+
+          home-manager.users.gediminas.imports = [
             ./hosts/jupiter/home.nix
             ./profiles/user/fish
             ./profiles/user/gtk
@@ -206,25 +211,30 @@
             ./profiles/user/wayfire
             ./profiles/user/zathura
           ];
-        };
+        }];
       };
 
-      venus = nixosUnstable {
+      venus = lib.nixosSystem {
         system = "x86_64-linux";
 
-        manageSecrets.enable = true;
-        manageState.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
-            ./hosts/kepler/wireguard.nix
-            ./hosts/venus/configuration.nix
+        modules = [{
+          imports = [
+            nixos-hardware.nixosModules.common-gpu-intel
             nixos-hardware.nixosModules.common-pc-laptop
             nixos-hardware.nixosModules.common-pc-laptop-ssd
             nixos-hardware.nixosModules.lenovo-thinkpad-x220
+
+            home-manager.nixosModule
+            impermanence.nixosModule
+            sops-nix.nixosModule
+            ./profiles/system/common
+
+            ./hosts/kepler/wireguard.nix
+            ./hosts/venus/configuration.nix
             ./profiles/system/audio
             ./profiles/system/avahi
-            ./profiles/system/common
             ./profiles/system/dconf
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
@@ -234,7 +244,8 @@
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
-          users.electro = [
+
+          home-manager.users.electro.imports = [
             ./hosts/venus/home.nix
             ./profiles/user/fish
             ./profiles/user/gtk
@@ -246,61 +257,74 @@
             ./profiles/user/wayfire
             ./profiles/user/zathura
           ];
-        };
+        }];
       };
 
-      eris = nixosUnstable {
+      eris = lib.nixosSystem {
         system = "x86_64-linux";
 
-        modules = {
-          system = [
-            ./hosts/eris/configuration.nix
+        specialArgs = { inherit self; };
+
+        modules = [{
+          imports = [
+            home-manager.nixosModule
             nixos-wsl.nixosModules.wsl
             ./profiles/system/common
+
+            ./hosts/eris/configuration.nix
             ./profiles/system/git-headless
           ];
-          users.nixos = [
+
+          home-manager.users.nixos.imports = [
             ./hosts/eris/home.nix
             ./profiles/user/fish
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/tealdeer
           ];
-        };
+        }];
       };
 
-      ceres = nixosUnstable {
+      ceres = lib.nixosSystem {
         system = "x86_64-linux";
 
-        manageSecrets.enable = true;
-        manageState.enable = true;
+        specialArgs = { inherit self; };
 
-        modules = {
-          system = [
-            ./hosts/ceres/configuration.nix
+        modules = [{
+          imports = [
             nixos-hardware.nixosModules.common-cpu-intel
+
+            home-manager.nixosModule
+            impermanence.nixosModule
+            sops-nix.nixosModule
             ./profiles/system/common
+
+            ./hosts/ceres/configuration.nix
             ./profiles/system/git-headless
             ./profiles/system/graphical
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];
-          users.gediminas = [
+
+          home-manager.users.gediminas.imports = [
             ./hosts/ceres/home.nix
             ./profiles/user/fish
             ./profiles/user/lsd
             ./profiles/user/neovim
             ./profiles/user/tealdeer
           ];
-        };
+        }];
       };
 
-      kepler = nixosStable {
+      kepler = lib.nixosSystem {
         system = "x86_64-linux";
 
-        manageSecrets.enable = true;
+        specialArgs = { inherit self; };
 
-        modules.system = [
+        modules = [
+          sops-nix.nixosModule
+          ./profiles/system/common
+
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard.nix
           ./profiles/system/git-headless

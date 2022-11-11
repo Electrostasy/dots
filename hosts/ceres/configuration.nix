@@ -1,4 +1,4 @@
-{ config, pkgs, lib, persistMount, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   system.stateVersion = "22.05";
@@ -55,14 +55,8 @@
     };
   };
 
-  environment.persistence.${persistMount} = {
+  environment.persistence."/state" = {
     hideMounts = true;
-    directories = [
-      "/etc/nixos"
-      "/etc/ssh"
-      "/var/log"
-    ];
-    files = [ "/etc/machine-id" ];
     users.gediminas.directories = [
       ".cache"
       { directory = ".ssh"; mode = "0700"; }

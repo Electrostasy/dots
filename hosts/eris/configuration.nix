@@ -5,11 +5,11 @@
 
   wsl = {
     enable = true;
-    automountPath = "/mnt";
     defaultUser = "nixos";
     startMenuLaunchers = false;
 
     wslConf = {
+      automount.root = "/mnt";
       network = {
         hostname = config.networking.hostName;
         generateHosts = false;

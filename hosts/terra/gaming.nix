@@ -1,4 +1,4 @@
-{ pkgs, persistMount, ... }:
+{ pkgs, ... }:
 
 {
   fileSystems."/home/electro/games" = {
@@ -37,7 +37,7 @@
   services.flatpak.enable = true;
 
   users.users.electro.packages = with pkgs; [ pcsx2 ];
-  environment.persistence.${persistMount}.users.electro.directories = [
+  environment.persistence."/state".users.electro.directories = [
     # FIXME: Steam flatpak is basically hardcoded to this path, no success in overriding yet:
     # https://github.com/flathub/com.valvesoftware.Steam/blob/master/com.valvesoftware.Steam.yml#L62
     ".var/app/com.valvesoftware.Steam"

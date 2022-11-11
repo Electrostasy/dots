@@ -1,4 +1,4 @@
-{ config, pkgs, lib, persistMount, ... }:
+{ config, pkgs, lib, ... }:
 
 # Ensure that all internet traffic (domain name lookups) are not routed through
 # the ISP:
@@ -26,7 +26,7 @@
           "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
           "https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md"
         ];
-        cache_file = "${persistMount}/var/lib/dnscrypt-proxy2/public-resolvers.md";
+        cache_file = "/var/lib/dnscrypt-proxy2/public-resolvers.md";
         # Update PK from `https://github.com/DNSCrypt/dnscrypt-resolvers`
         minisign_key = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
       };

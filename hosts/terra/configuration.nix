@@ -1,4 +1,4 @@
-{ config, pkgs, persistMount, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -58,9 +58,7 @@
     };
   };
 
-  environment.persistence.${persistMount} = {
-    directories = [ "/etc/nixos" "/etc/ssh" "/var/log" ];
-    files = [ "/etc/machine-id" ];
+  environment.persistence."/state" = {
     users.electro.directories = [
       ".cache"
       ".config/Element"

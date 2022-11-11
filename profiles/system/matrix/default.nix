@@ -1,27 +1,10 @@
-{ config, pkgs, lib, persistMount, ... }:
+{ config, pkgs, lib, ... }:
 
 # Reminder not to lose the matrix_key.pem file.
 # If running stateless, ensure /state/run/keys/dendrite/matrix_key.pem
 # is present and dendrite has perms to read it
 
 {
-  environment.persistence.${persistMount} = {
-    directories = [
-      {
-        directory = "/var/lib/acme";
-        user = "acme";
-        group = "acme";
-        mode = "u=rwx,g=rx,o=x";
-      }
-      {
-        directory = "/var/lib/postgresql";
-        user = "postgres";
-        group = "postgres";
-        mode = "u=rwx,g=rx,o=x";
-      }
-    ];
-  };
-
   sops.secrets.matrix_key = {
     sopsFile = ./secrets.yaml;
     mode = "0700";

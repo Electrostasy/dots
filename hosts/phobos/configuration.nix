@@ -1,4 +1,4 @@
-{ config, pkgs, persistMount, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [ ./media.nix ];
@@ -41,15 +41,6 @@
       options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
       neededForBoot = true;
     };
-  };
-
-  environment.persistence.${persistMount} = {
-    directories = [
-      "/etc/nixos"
-      "/etc/ssh"
-      "/var/log"
-    ];
-    files = [ "/etc/machine-id" ];
   };
 
   time.timeZone = "Europe/Vilnius";
