@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   fileSystems."/home/electro/games" = {
@@ -23,17 +23,29 @@
     DisplayName=Steam Games Installation
   '';
 
-  # The following commands install the necessary programs next to the games library:
+  # Override paths accessible to Steam in $FLATPAK_SYSTEM_DIR/overrides
+  systemd.tmpfiles.rules =
+    let
+      path = "/var/lib/flatpak/overrides/com.valvesoftware.Steam";
+      content = builtins.replaceStrings [ "\n" ] [ "\\n" ] ''
+        [Context]
+        filesystems=${lib.concatMapStrings (x: x + ";") [
+          # Allow Steam flatpak access to ~/.config/MangoHud outside of flatpak
+          "xdg-config/MangoHud:ro"
+          # Allow Steam flatpak access to external games library
+          "/home/electro/games/SteamLibrary"
+        ]}
+      '';
+    in
+      [ "f+ ${path} 0644 root root - ${content}" ];
+
   # $ flatpak --installation=steam remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
   # $ flatpak --installation=steam install com.valvesoftware.Steam
   # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton
   # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton-Exp
   # $ flatpak --installation=steam install com.valvesoftware.Steam.CompatibilityTool.Proton-GE
   # $ flatpak --installation=steam install com.valvesoftware.Steam.Utility.gamescope
-  # $ flatpak override --filesystem=/home/electro/games/SteamLibrary com.valvesoftware.Steam
-  # Install MangoHud and use system config for it:
   # $ flatpak --installation=steam install org.freedesktop.Platform.VulkanLayer.Mangohud
-  # $ flatpak override --filesystem=xdg-config/MangoHud:ro com.valvesoftware.Steam
   services.flatpak.enable = true;
 
   users.users.electro.packages = with pkgs; [ pcsx2 ];
