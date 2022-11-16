@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [ ./session.nix ];
+
   home.pointerCursor = {
     package = pkgs.simp1e.override {
       withPreviews = false;
@@ -39,42 +41,19 @@
   };
 
   home.packages = with pkgs; [
-    # Wayland-specific packages
-    grim
-    slurp
     wf-recorder
     wl-clipboard
-    wlopm
-
-    # DBus utilities
-    # dfeet # graphical dbus monitor
-    glib # for gdbus
   ];
-
-  programs.rofi = {
-    enable = true;
-    package = pkgs.rofi-wayland;
-
-    terminal = "${pkgs.kitty}/bin/kitty";
-    extraConfig = {
-      modi = "drun,run";
-      kb-primary-paste = "Control+V";
-      kb-secondary-paste = "Control+v";
-    };
-  };
 
   wayland.windowManager.wayfire = {
     enable = true;
     package = pkgs.wayfire-git;
 
-    withGtkWrapper = true;
     extraSessionCommands = [
+      "export _JAVA_AWT_WM_NONREPARENTING=1"
+      "export MOZ_ENABLE_WAYLAND=1"
       "export NIXOS_OZONE_WL=1"
-
-      # Make Wayfire aware of gsettings schemas
-      "export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:$XDG_DATA_DIRS"
-      # Add gsettings schema from dbus-interface plugin
-      "export XDG_DATA_DIRS=${pkgs.wayfirePlugins.dbus-interface}/share/gsettings-schemas/${pkgs.wayfirePlugins.dbus-interface.name}:$XDG_DATA_DIRS"
+      "export SDL_VIDEODRIVER=wayland"
     ];
 
     settings = {
@@ -85,38 +64,35 @@
       vwidth = 3;
 
       plugins = [
-        { package = pkgs.wayfirePlugins.dbus-interface; plugin = "dbus_interface"; }
-        { package = pkgs.wayfirePlugins.plugins-extra; plugin = "glib-main-loop"; }
-
         { plugin = "move"; settings.activate = "<super> BTN_LEFT"; }
         { plugin = "place"; settings.mode = "cascade"; }
         { plugin = "resize"; settings.activate = "<super> BTN_RIGHT"; }
         { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
+        { plugin = "window-rules";
+          settings = {
+            ff_webrtc = "on created if title is \"Firefox - Sharing Indicator\" then minimize";
+          };
+        }
 
         { package = pkgs.wayfirePlugins.shadows;
           plugin = "winshadows";
           settings = {
-            clip_shadow_inside = false;
-            horizontal_offset = 8;
             include_undecorated_views = true;
-            shadow_color = "#000000FF";
-            shadow_radius = 64;
-            vertical_offset = 8;
+            shadow_color = "\\#000000FF";
+            shadow_radius = 20;
+            glow_color = "\\#2D4F6733";
+            glow_radius = 40;
           };
         }
-        { package = pkgs.wayfirePlugins.firedecor;
-          plugin = "firedecor";
+        { plugin = "decoration";
           settings = {
-            active_border = [ 0.121569 0.121569 0.156863 1.000000 ];
-            active_outline = [ 0.176471 0.309804 0.403922 1.000000 ];
-            border_size = 8;
-            corner_radius = 8;
-            inactive_border = [ 0.121569 0.121569 0.156863 1.000000 ];
-            inactive_outline = [ 0.133333 0.196078 0.286275 1.000000 ];
-            layout = "-";
-            outline_size = 4;
+            active_color = "\\#2D4F67FF";
+            inactive_color = "\\#223249FF";
+            border_size = 4;
+            title_height = 0;
           };
         }
+
         { plugin = "switcher";
           settings = {
             next_view = "<alt> KEY_TAB";
@@ -161,18 +137,15 @@
         { plugin = "scale";
           settings = {
             toggle = "<super> KEY_TAB";
-            toggle_all = "<super> <shift> KEY_TAB";
-            animation_transition_time = 350;
-            interact = false;
-            allow_zoom = false;
+            animation_transition_time = 150;
             middle_click_close = true;
-            spacing = 50;
+            spacing = 32;
             inactive_alpha = 0.8;
             title_overlay = "mouse";
             title_font_size = 12;
             title_position = "bottom";
-            bg_color = [ 0.1 0.1 0.1 0.9 ];
-            text_color = [ 0.8 0.8 0.8 1.0 ];
+            bg_color = [ 0.086 0.086 0.114 1.0 ];
+            text_color = [ 0.863 0.843 0.729 1.0 ];
           };
         }
         { plugin = "expo";
@@ -182,7 +155,10 @@
               "select_workspace_${toString a}" = "KEY_${toString a}";
             }) workspaces;
             workspacesAttrs = lib.foldl (a: b: a // b) {} bindings;
-          in { toggle = "<super> <shift>"; } // workspacesAttrs;
+          in {
+            toggle = "<super> <shift>";
+            background = [ 0.086 0.086 0.114 1.0 ];
+          } // workspacesAttrs;
         }
         { plugin = "grid";
           settings = {
@@ -202,48 +178,63 @@
         }
         { plugin = "animate";
           settings = {
+            enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
+            zoom_enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
             close_animation = "zoom";
             open_animation = "zoom";
             zoom_duration = 250;
-            enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
-            zoom_enabled_for = "(role is \"TOPLEVEL\") | (role is \"DESKTOP_ENVIRONMENT\")";
-          };
-        }
-        { plugin = "autostart";
-          settings = {
-            importEnv = ''
-              systemctl --user import-environment DISPLAY WAYLAND_DISPLAY \
-              hash dbus-update-activation-environment @>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY
-            '';
-            screenshare = ''
-              sleep 1 && (XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=sway ${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal --replace & ${pkgs.xdg-desktop-portal-wlr}/libexec/xdg-desktop-portal-wlr)
-            '';
-            idle = ''
-              ${pkgs.swayidle}/bin/swayidle -w \
-                timeout 600 '${pkgs.fish}/bin/fish -c ${./outputs.fish} --off' \
-                resume '${pkgs.fish}/bin/fish -c ${./outputs.fish} --on'
-            '';
           };
         }
         { plugin = "command";
           settings = {
             binding_terminal = "<super> KEY_ENTER";
-            command_terminal = "${pkgs.kitty}/bin/kitty";
+            command_terminal = "${config.programs.kitty.package}/bin/kitty";
+
+            # Program/command launcher.
             binding_launcher = "<super> KEY_SPACE";
-            command_launcher = ''
-              ${config.programs.rofi.finalPackage}/bin/rofi -show drun -config ${./rofi-drun.rasi}
-            '';
+            command_launcher = let
+              opts = {
+                border-width = 4;
+                border-radius = 0;
+                border-color = "2d4f67ff";
+                background-color = "223249ff";
+                text-color = "dcd7baff";
+                match-color = "ff9e3bff";
+                selection-color = "2d4f67ff";
+                selection-text-color = "dcd7baff";
+                selection-match-color = "ff9e3bff";
+                horizontal-pad = 0;
+                vertical-pad = 0;
+                width = 80;
+                font = "\'Iosevka Custom\'";
+                prompt = "";
+              };
+              args = lib.concatMapStringsSep
+                " " (s: "--" + s)
+                (lib.mapAttrsToList (n: v: "${n}=${toString v}") opts);
+              in "${pkgs.fuzzel}/bin/fuzzel ${args}";
+
+            # This monstrosity of a screenshot command trims the region selected
+            # by slurp so that the region borders are not captured by grim. For
+            # some arcane reason, it must be called from a file or else it does
+            # not execute.
             binding_screenshot = "<super> <shift> KEY_S";
-            command_screenshot = "${pkgs.writeShellScriptBin "screenshot" ''
-              # For some reason, if this command is not wrapped in a script, the command
-              # silently fails when runs specifically from Wayfire and I have no idea why
-              ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp -d -b '#16161daa' -c '#dcd7baff' -s '#00000000' -w 1)" - | ${pkgs.wl-clipboard}/bin/wl-copy -t image/png
-            ''}/bin/screenshot";
+            command_screenshot =
+              let
+                contents = ''
+                  ${pkgs.gawk}/bin/awk -F'[, x]' -v B=4 '{printf("%d,%d %dx%d",$1+B/2,$2+B/2,$3-B,$4-B)}' \
+                    <<<$(${pkgs.slurp}/bin/slurp -d -b \#16161daa -c \#dcd7baff -s \#00000000 -w 4) | \
+                    ${pkgs.grim}/bin/grim -g - - | ${pkgs.wl-clipboard}/bin/wl-copy
+                '';
+              in
+                "${pkgs.writers.writeBash "screenshot" contents}";
           };
         }
         { plugin = "input";
           settings = {
             mouse_accel_profile = "flat";
+
+            # Enable switching between keyboard layouts/languages.
             xkb_layout = "us,lt";
             xkb_model = "pc105";
             xkb_options = "grp:alt_shift_toggle";
