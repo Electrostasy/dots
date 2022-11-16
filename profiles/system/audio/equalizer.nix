@@ -6,15 +6,15 @@
   # generated JSON object anymore, and PipeWire can't create the graph:
   # https://github.com/werman/noise-suppression-for-voice/issues/62
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1526
-  systemd.user.services.pipewire-game-one-equalizer = {
+  systemd.user.services.pipewire-hifiman-sundara-eq = {
     enable = true;
-    description = "PipeWire Sennheiser Game ONE Equalized sink";
+    description = "PipeWire HIFIMAN Sundara Equalized sink";
     after = [ "pipewire.service" ];
     bindsTo = [ "pipewire.service" ];
     wantedBy = [ "pipewire.service" ];
     serviceConfig = {
       ExecStart = "${pkgs.pipewire}/bin/pipewire -c ${
-        pkgs.writeText "pipewire-game-one-eq.conf" (builtins.readFile ./equalizer.conf)
+        pkgs.writeText "pipewire-sundara-eq.conf" (builtins.readFile ./equalizer.conf)
       }";
     };
   };
