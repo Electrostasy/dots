@@ -3,6 +3,7 @@
 {
   imports = [
     ./build-machine.nix
+    ./equalizer.nix
     ./gaming.nix
   ];
 
