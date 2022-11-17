@@ -4,8 +4,14 @@
   home.stateVersion = "22.11";
 
   home.packages = with pkgs; [
+    element-desktop
     firefox-custom
-    rnote
+    imv
+    keepassxc
+    liberation_ttf # Replacement fonts for TNR, Arial and Courier New
+    libreoffice
+    mepo
+    xournalpp
   ];
 
   wayland.windowManager.wayfire.settings.plugins = lib.mkOrder 0 [
