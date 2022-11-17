@@ -116,6 +116,11 @@
     };
   };
 
+  # Tablet stylus calibration
+  services.udev.extraRules = ''
+    ATTRS{name}=="Wacom ISDv4 E6 Pen", ENV{LIBINPUT_CALIBRATION_MATRIX}="1.0053974484789008 0.0 -0.004538763493621176 0.0 1.0087565674255692 -0.011602451838879166"
+  '';
+
   fileSystems = {
     "/" = {
       device = "none";
