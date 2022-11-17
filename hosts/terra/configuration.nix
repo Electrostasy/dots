@@ -105,13 +105,6 @@
 
   services.avahi.interfaces = [ "enp0s31f6" "enp5s0" ];
 
-  programs.ssh.knownHosts = {
-    deimos.publicKeyFile = ../deimos/ssh_root_ed25519_key.pub;
-    jupiter.publicKeyFile = ../jupiter/ssh_root_ed25519_key.pub;
-    kepler.publicKeyFile = ../kepler/ssh_root_ed25519_key.pub;
-    phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
-  };
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 

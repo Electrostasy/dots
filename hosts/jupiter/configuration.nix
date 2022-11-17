@@ -87,11 +87,6 @@
 
   services.avahi.interfaces = [ "enp0s25" ];
 
-  programs.ssh.knownHosts = {
-    phobos.publicKeyFile = ../phobos/ssh_root_ed25519_key.pub;
-    terra.publicKeyFile = ../terra/ssh_root_ed25519_key.pub;
-  };
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 
