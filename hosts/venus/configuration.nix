@@ -1,7 +1,10 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports = [ ./remote-build-machines.nix ];
+  imports = [
+    ./eid.nix
+    ./remote-build-machines.nix
+  ];
 
   system.stateVersion = "22.11";
 

@@ -1,8 +1,12 @@
-{ pkgs, lib, ... }:
+{ pkgs,
+  lib,
+  extraPolicies ? {}
+}:
 
 with pkgs;
 
 wrapFirefox firefox-unwrapped {
+  # extraNativeMessagingHosts = [ pkgs.dokobit-plugin ];
   extraPolicies = {
     # Instead of installing extensions with Nix, we declare what extensions we
     # want and have them downloaded automatically. Nix extensions appear to use
@@ -57,13 +61,8 @@ wrapFirefox firefox-unwrapped {
         ];
       };
     };
-
-    SearchEngines = {
-      Default = "DuckDuckGo";
-      PreventInstalls = true;
-      Remove = [ "Amazon.com" "Bing" "Wikipedia (en)" ];
-    };
-  };
+  }
+  // extraPolicies;
 
   extraPrefsFiles =
     let
@@ -78,7 +77,6 @@ wrapFirefox firefox-unwrapped {
 
   extraPrefs = ''
     user_pref("general.autoScroll", true);
-    user_pref("extensions.activeThemeID", "firefox-compact-dark@mozilla.org");
 
     // Arkenfox user.js overrides
     user_pref("app.update.auto", false);
