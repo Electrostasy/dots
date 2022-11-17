@@ -12,6 +12,7 @@ rec {
   wlopm = callPackage ./wlopm { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   git-credential-keepassxc = callPackage ./git-credential-keepassxc { };
+  dokobit-plugin = callPackage ./dokobit-plugin { };
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
