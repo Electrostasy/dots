@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ osConfig, pkgs, lib, ... }:
 
 let
   variables = lib.concatStringsSep " " [
@@ -12,6 +12,12 @@ let
   systemctl = "exec ${pkgs.systemd}/bin/systemctl --user";
 in
 {
+  assertions = [
+    { assertion = osConfig.services.dbus.enable;
+      message = "services.dbus.enable must be set to true in NixOS config.";
+    }
+  ];
+
   wayland.windowManager.wayfire = {
     extraSessionCommands = [
       # Programs may use this for WM/DE specific behavior.

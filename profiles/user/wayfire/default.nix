@@ -1,6 +1,12 @@
-{ config, pkgs, lib, ... }:
+{ osConfig, config, pkgs, lib, ... }:
 
 {
+  assertions = [
+    { assertion = osConfig.hardware.opengl.enable;
+      message = "hardware.opengl.enable must be set to true in NixOS config.";
+    }
+  ];
+
   imports = [ ./session.nix ];
 
   home.pointerCursor = {
