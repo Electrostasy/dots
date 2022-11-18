@@ -94,11 +94,9 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
-            ./profiles/system/login-manager
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
-            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.electro.imports = [
@@ -192,11 +190,9 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
-            ./profiles/system/login-manager
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
-            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.gediminas.imports = [
@@ -236,11 +232,9 @@
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
-            ./profiles/system/login-manager
             ./profiles/system/mullvad
             ./profiles/system/ssh
             ./profiles/system/sudo
-            ./profiles/system/wl-screensharing
           ];
 
           home-manager.users.electro.imports = [
