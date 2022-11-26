@@ -3,7 +3,7 @@
 {
   imports = [
     ./build-machine.nix
-    ./equalizer.nix
+    ./audio.nix
     ./gaming.nix
   ];
 
