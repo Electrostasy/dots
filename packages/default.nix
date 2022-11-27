@@ -21,6 +21,10 @@ rec {
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = wayfire-git; };
   };
 
+  mpvScripts = prev.mpvScripts // {
+    uosc = callPackage ./mpv/scripts/uosc { };
+  };
+
   iosevka-custom = prev.iosevka.override {
     privateBuildPlan = {
       family = "Iosevka Custom";
