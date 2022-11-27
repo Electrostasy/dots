@@ -1,94 +1,122 @@
-{ cairo,
+{
+  stdenv,
+  fetchFromGitHub,
+  wf-config,
   cmake,
   doctest,
-  fetchFromGitHub,
-  glslang,
-  libdrm,
-  libevdev,
-  libexecinfo,
-  libinput,
-  libjpeg,
-  libxcb,
-  libxkbcommon,
-  libxml2,
-  mesa,
   meson,
   ninja,
-  pango,
   pkg-config,
-  seatd,
-  stdenv,
-  vulkan-headers,
-  vulkan-loader,
+
   wayland,
   wayland-protocols,
-  wf-config,
-  wlroots,
-  xcbproto,
-  xcbutil,
-  xcbutilerrors,
-  xcbutilrenderutil,
+  cairo,
+  pango,
+  libdrm,
+  libGL,
+  glm,
+  libinput,
+  pixman,
+  libxkbcommon,
+  wlroots_0_16,
+
   xcbutilwm,
-  xwayland
+
+  lib,
+
+  enableXWayland ? true,
+  xwayland,
+
+  enableImageIO ? true,
+  libpng,
+  libjpeg,
+
+  enableDebugIPC ? false,
+  libevdev,
+  nlohmann_json,
 }:
+
+let
+  wf-config-unstable = wf-config.overrideAttrs (_: {
+    version = "0.8.0";
+    src = fetchFromGitHub {
+      owner = "WayfireWM";
+      repo = "wf-config";
+      rev = "578b0bf3c81ef8f94e5e9b4f427720846bc7a5c5";
+      sha256 = "sha256-v3QjYEpaxZNnFEQ9wPvds/lmLJwo8kUD07GENI7mlJk=";
+    };
+  });
+  wf-utils-unstable = fetchFromGitHub {
+    owner = "WayfireWM";
+    repo = "wf-utils";
+    rev = "25ed62f35c0b7810beee2009c6a419847f8f89fe";
+    sha256 = "sha256-GBmEoqUbqeAbyllAeNILh0OQWHb6oyavc5hjkbzSfJY=";
+  };
+  wf-touch-unstable = fetchFromGitHub {
+    owner = "WayfireWM";
+    repo = "wf-touch";
+    rev = "8974eb0f6a65464b63dd03b842795cb441fb6403";
+    sha256 = "sha256-MjsYeKWL16vMKETtKM5xWXszlYUOEk3ghwYI85Lv4SE=";
+  };
+in
 
 stdenv.mkDerivation {
   pname = "wayfire";
-  version = "0.8.0";
+  version = "unstable-2022-11-25";
 
   src = fetchFromGitHub {
-    fetchSubmodules = true;
     owner = "WayfireWM";
     repo = "wayfire";
-    rev = "9458f58959512222f3f154b40b0a48584033ca24";
-    sha256 = "sha256-qSBK5kkSykAXNSYA/CpPu2EbA3qHm09KnvcbPGsnrnM=";
+    rev = "c3b1edf11e377778f5e267c7ad7cf93d22078903";
+    sha256 = "sha256-29RtjsGpJDPVPixiH5m661KDeUIsVr12Lr1fFeXaG/g=";
   };
 
+  postUnpack = ''
+    # Complains about there not being a meson.build file in the submodules otherwise
+    rm -rf ./source/subprojects/{wf-utils,wf-touch}
+    ln -s ${wf-utils-unstable}/ ./source/subprojects/wf-utils
+    ln -s ${wf-touch-unstable}/ ./source/subprojects/wf-touch
+  '';
+
+  dontUseCmakeConfigure = true;
   nativeBuildInputs = [
     cmake
+    doctest
     meson
     ninja
     pkg-config
-    wayland
   ];
 
   buildInputs = [
-    cairo
-    doctest
-    glslang
-    libdrm
-    libevdev
-    libexecinfo
-    libinput
-    libjpeg
-    libxcb
-    libxkbcommon
-    libxml2
-    mesa
-    pango
-    seatd
-    vulkan-headers
-    vulkan-loader
+    # wayfire
     wayland
     wayland-protocols
-    wf-config
-    wlroots
-    xcbproto
-    xcbutil
-    xcbutilerrors
-    xcbutilrenderutil
+    cairo
+    pango
+    libdrm
+    libGL
+    glm
+    libinput
+    pixman
+    libxkbcommon
+    wlroots_0_16
+    wf-config-unstable
+
+    # wf-touch
     xcbutilwm
-    xwayland
-  ];
+  ]
+  ++ lib.optional enableXWayland xwayland
+  ++ lib.optionals enableImageIO [ libpng libjpeg ]
+  ++ lib.optionals enableDebugIPC [ libevdev nlohmann_json ];
 
-  # CMake is just used for finding doctest.
-  dontUseCmakeConfigure = true;
+  mesonFlags = []
+    ++ lib.optional (!enableXWayland) "-Dxwayland=disabled"
+    ++ lib.optional (!enableDebugIPC) "-Ddebug_ipc=false";
 
-  mesonFlags = [
-    "--sysconfdir" "/etc"
-    # Without these meson throws errors about wfconfig submodule not overriding the variable,
-    # and missing link arguments -lc++fs, -lc++experimental
-    "-Duse_system_wlroots=disabled"
-    "-Duse_system_wfconfig=disabled"
-  ];
+  meta = with lib; {
+    website = "https://wayfire.org";
+    description = "A modular and extensible wayland compositor";
+    license = licenses.mit;
+    platforms = platforms.unix;
+  };
 }
