@@ -23,6 +23,7 @@ rec {
 
   mpvScripts = prev.mpvScripts // {
     uosc = callPackage ./mpv/scripts/uosc { };
+    thumbfast = callPackage ./mpv/scripts/thumbfast { };
   };
 
   iosevka-custom = prev.iosevka.override {
