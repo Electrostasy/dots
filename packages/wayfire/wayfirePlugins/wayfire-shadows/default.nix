@@ -1,45 +1,55 @@
 {
-  cairo,
+  stdenv,
   fetchFromGitHub,
-  libxkbcommon,
   meson,
   ninja,
-  pango,
   pkg-config,
-  stdenv,
+
   wayfire,
+  cairo,
+  pango,
   wayland,
+  libxkbcommon,
+  wlroots_0_16,
   wf-config,
-  wlroots,
+  
+  lib,
 }:
 
 stdenv.mkDerivation {
   pname = "wayfire-shadows";
-  version = "unstable-2022-09-08";
+  version = "unstable-2022-11-21";
 
   src = fetchFromGitHub {
     owner = "timgott";
     repo = "wayfire-shadows";
-    rev = "8840202b867b04814e22df01b85518b4afe30f11";
-    sha256 = "sha256-/G4bRseEhoIt92qLG2UmPThndF5fZxPdQFBA5jlknxs=";
+    rev = "32eeb5f8b772c0cd123b6688bcbbeebc9c99c1c9";
+    sha256 = "sha256-IvmbfZK4Z1HOIxGiFyjK1OCXy1fkdwA0L7jfrJtgQWk=";
   };
 
   nativeBuildInputs = [
     meson
     ninja
     pkg-config
-    wayland
   ];
 
   buildInputs = [
-    cairo
-    libxkbcommon
-    pango
     wayfire
+    cairo
+    pango
+    wayland
+    libxkbcommon
+    wlroots_0_16
     wf-config
-    wlroots
   ];
 
   PKG_CONFIG_WAYFIRE_LIBDIR = "lib";
   PKG_CONFIG_WAYFIRE_METADATADIR = "share/wayfire/metadata";
+
+  meta = with lib; {
+    website = "https://github.com/timgott/wayfire-shadows";
+    description = "Wayfire plugin that adds window shadows";
+    license = licenses.mit;
+    platforms = platforms.unix;
+  };
 }
