@@ -164,6 +164,7 @@
         isNormalUser = true;
         passwordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
+        uid = 1000;
         shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../venus/ssh_electro_ed25519_key.pub

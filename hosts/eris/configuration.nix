@@ -20,8 +20,9 @@
   networking.hostName = "eris";
 
   users.users.${config.wsl.defaultUser} = {
-    shell = pkgs.fish;
     extraGroups = [ "wheel" ];
+    uid = 1000;
+    shell = pkgs.fish;
   };
 
   # CUDA support

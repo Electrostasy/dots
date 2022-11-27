@@ -82,6 +82,7 @@
         isNormalUser = true;
         passwordFile = config.sops.secrets.piPassword.path;
         extraGroups = [ "wheel" ];
+        uid = 1000;
         shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../jupiter/ssh_gediminas_ed25519_key.pub

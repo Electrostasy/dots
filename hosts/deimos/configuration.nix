@@ -80,6 +80,7 @@
         isNormalUser = true;
         passwordFile = config.sops.secrets.piPassword.path;
         extraGroups = [ "wheel" ];
+        uid = 1000;
         shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../terra/ssh_electro_ed25519_key.pub
