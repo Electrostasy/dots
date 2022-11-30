@@ -7,7 +7,10 @@
     }
   ];
 
-  imports = [ ./session.nix ];
+  imports = [
+    ./dpms.nix
+    ./session.nix
+  ];
 
   home.pointerCursor = {
     package = pkgs.simp1e.override {
