@@ -12,6 +12,7 @@ rec {
   wlopm = callPackage ./wlopm { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };
+  lswt = callPackage ./lswt { };
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
