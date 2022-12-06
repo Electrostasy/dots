@@ -9,7 +9,6 @@ rec {
   nerdfonts-patch = callPackage ./nerdfonts-patch { };
   simp1e = callPackage ./simp1e { };
   umc = callPackage ./umc { };
-  wlopm = callPackage ./wlopm { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };
   lswt = callPackage ./lswt { };
