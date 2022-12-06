@@ -6,7 +6,6 @@ in
 
 rec {
   firefox-custom = callPackage ./firefox { };
-  nerdfonts-patch = callPackage ./nerdfonts-patch { };
   simp1e = callPackage ./simp1e { };
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
@@ -37,7 +36,6 @@ rec {
     };
     set = "custom";
   };
-  iosevka-nerdfonts = nerdfonts-patch iosevka-custom;
 
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 

@@ -113,8 +113,6 @@
     };
   };
 
-  fonts.fonts = [ pkgs.iosevka-nerdfonts ];
-
   virtualisation.libvirtd = {
     enable = true;
     qemu.package = pkgs.qemu_kvm;
