@@ -6,7 +6,7 @@ in
 
 rec {
   firefox-custom = callPackage ./firefox { };
-  simp1e = callPackage ./simp1e { };
+  simp1e-cursors = callPackage ./simp1e-cursors { };
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };

@@ -13,7 +13,7 @@
   ];
 
   home.pointerCursor = {
-    package = pkgs.simp1e.override {
+    package = pkgs.simp1e-cursors.override {
       withPreviews = false;
       theme = {
         name = "Simp1e Kanagawa";

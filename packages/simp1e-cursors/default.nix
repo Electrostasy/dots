@@ -1,11 +1,11 @@
 {
   fetchFromGitLab,
   lib,
-  librsvg,
-  makeFontsConf,
-  python3Packages,
   stdenvNoCC,
+  librsvg,
+  python3,
   xcursorgen,
+  makeFontsConf,
 
   # Add your own theme by overriding the `theme` argument:
   # theme = {
@@ -59,15 +59,15 @@ let
   '';
 in
 
-stdenvNoCC.mkDerivation {
-  pname = "simp1e";
-  version = "unstable-2022-10-17";
+stdenvNoCC.mkDerivation rec {
+  pname = "simp1e-cursors";
+  version = "20221103.2";
 
   src = fetchFromGitLab {
     owner = "cursors";
     repo = "simp1e";
-    rev = "6cee39b75902998e375590810a952b8771bb3bf1";
-    hash = "sha256-AAN56mnjl5gAzVF8yI7e/b1xanAo9TtHrR4CKqaEfhY=";
+    rev = version;
+    hash = "sha256-UTbkqDsigJR/aRlW4yYs5nifdVuGPwIWgdalrvm9vJg=";
   };
 
   dontConfigure = true;
@@ -75,7 +75,7 @@ stdenvNoCC.mkDerivation {
 
   nativeBuildInputs = [
     librsvg
-    python3Packages.pillow
+    (python3.withPackages (ps: with ps; [ pillow ]))
     xcursorgen
   ];
 
@@ -83,6 +83,7 @@ stdenvNoCC.mkDerivation {
   FONTCONFIG_FILE = makeFontsConf { fontDirectories = [ ]; };
 
   buildPhase = ''
+    runHook preBuild
     ${lib.optionalString (builtins.isAttrs theme) buildCustomTheme}
 
     # Resolves the warning "Fontconfig error: No writable cache directories"
@@ -94,17 +95,20 @@ stdenvNoCC.mkDerivation {
     patchShebangs ./build.sh ./cursor-generator/generator.sh ./cursor-generator/make.py
 
     ./build.sh ${lib.optionalString withPreviews "-p"}
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
     mkdir -p "$out/share/icons"
     find ./built_themes -mindepth 1 -maxdepth 1 -type d -exec cp -r {} $out/share/icons/ \;
+    runHook postInstall
   '';
 
   meta = with lib; {
     description = "An aesthetic cursor theme for Linux desktops";
     homepage = "https://gitlab.com/cursors/simp1e";
-    platforms = platforms.unix;
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
+    platforms = platforms.linux;
   };
 }
