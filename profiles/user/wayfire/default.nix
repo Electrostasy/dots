@@ -224,19 +224,23 @@
               in "${pkgs.fuzzel}/bin/fuzzel ${args}";
 
             # This monstrosity of a screenshot command trims the region selected
-            # by slurp so that the region borders are not captured by grim. For
-            # some arcane reason, it must be called from a file or else it does
-            # not execute.
-            binding_screenshot = "<super> <shift> KEY_S";
-            command_screenshot =
-              let
-                contents = ''
-                  ${pkgs.gawk}/bin/awk -F'[, x]' -v B=4 '{printf("%d,%d %dx%d",$1+B/2,$2+B/2,$3-B,$4-B)}' \
-                    <<<$(${pkgs.slurp}/bin/slurp -d -b \#16161daa -c \#dcd7baff -s \#00000000 -w 4) | \
-                    ${pkgs.grim}/bin/grim -g - - | ${pkgs.wl-clipboard}/bin/wl-copy
-                '';
-              in
-                "${pkgs.writers.writeBash "screenshot" contents}";
+            # by slurp so that the region borders are not captured by grim.
+            binding_screenshot_interactive = "<super> <shift> KEY_S";
+            command_screenshot_interactive = lib.getExe (pkgs.writeShellApplication {
+              name = "screenshot";
+              runtimeInputs = with pkgs; [
+                slurp
+                gawk
+                grim
+                wl-clipboard
+              ];
+              text = ''
+                slurp -d -b \#16161daa -c \#dcd7baff -s \#00000000 -w 4 \
+                | awk -F'[, x]' -v B=4 '{printf("%d,%d %dx%d",$1+B/2,$2+B/2,$3-B,$4-B)}' \
+                | grim -g - - \
+                | wl-copy
+              '';
+            });
           };
         }
         { plugin = "input";
