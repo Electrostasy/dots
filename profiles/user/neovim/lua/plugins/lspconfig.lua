@@ -56,6 +56,9 @@ local common = {
 local servers = {
   ccls = {
     init_options = {
+      -- For build directories containing a compile_commands.json for the
+      -- commands executed to compile a compilation unit.
+      compilationDatabaseDirectory = './out/',
       filetypes = { 'c', 'cpp', 'cxx', 'cppm', 'cxxm', 'h', 'hpp', 'hxx' }
     },
   },
