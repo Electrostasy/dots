@@ -44,6 +44,7 @@
     extraPackages = with pkgs; [
       luajitPackages.luacheck
       nil
+      ripgrep
       rust-analyzer
       statix
       stylua
