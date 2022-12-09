@@ -3,6 +3,8 @@
 {
   system.stateVersion = "22.11";
 
+  nixpkgs.hostPlatform = "aarch64-linux";
+
   boot = {
     initrd.availableKernelModules = [ "usb_storage" "usbhid" ];
     kernelPackages = pkgs.linuxPackages_latest;

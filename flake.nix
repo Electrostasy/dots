@@ -71,8 +71,6 @@
 
     nixosConfigurations = {
       terra = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -114,8 +112,6 @@
       };
 
       phobos = lib.nixosSystem {
-        system = "aarch64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -142,8 +138,6 @@
       };
 
       deimos = lib.nixosSystem {
-        system = "aarch64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -168,8 +162,6 @@
       };
 
       jupiter = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -209,8 +201,6 @@
       };
 
       venus = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -252,8 +242,6 @@
       };
 
       eris = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -277,8 +265,6 @@
       };
 
       ceres = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [{
@@ -308,8 +294,6 @@
       };
 
       kepler = lib.nixosSystem {
-        system = "x86_64-linux";
-
         specialArgs = { inherit self; };
 
         modules = [

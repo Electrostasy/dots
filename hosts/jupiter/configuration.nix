@@ -3,6 +3,8 @@
 {
   imports = [ ./hardware-configuration.nix ];
 
+  nixpkgs.hostPlatform = "x86_64-linux";
+
   system.stateVersion = "21.11";
 
   boot = {
