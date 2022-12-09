@@ -136,13 +136,6 @@
       ];
     };
 
-    eww = {
-      enable = true;
-      package = pkgs.eww-wayland;
-
-      configDir = ./eww;
-    };
-
     bottom = {
       enable = true;
 
