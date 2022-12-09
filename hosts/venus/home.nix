@@ -24,7 +24,14 @@
     { plugin = "command";
       settings = {
         binding_orientation = "KEY_ROTATE_DISPLAY";
-        command_orientation = builtins.toString ./rotate_screen.sh;
+        command_orientation = lib.getExe (pkgs.writeShellApplication {
+          name = "rotate-screen";
+          runtimeInputs = with pkgs; [
+            wlr-randr
+            gawk
+          ];
+          text = "wlr-randr | awk -f ${./rotate_screen.awk}";
+        });
         binding_showvk = "swipe up 2";
         command_showvk = "${pkgs.util-linux}/bin/kill -s USR2 wvkbd-mobintl";
         binding_hidevk = "swipe down 2";
