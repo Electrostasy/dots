@@ -66,6 +66,7 @@
     };
 
     homeManagerModules = {
+      fuzzel = import ./modules/user/fuzzel;
       wayfire = import ./modules/user/wayfire;
     };
 
