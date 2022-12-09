@@ -21,7 +21,7 @@
       url = "github:Mic92/sops-nix/master";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-22_05.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs";
       };
     };
     impermanence.url = "github:nix-community/impermanence/master";
