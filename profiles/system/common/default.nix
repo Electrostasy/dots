@@ -24,7 +24,13 @@ let
 
     nix = {
       package = pkgs.nixVersions.unstable;
-      extraOptions = "experimental-features = nix-command flakes";
+      extraOptions = ''
+        experimental-features = nix-command flakes
+        flake-registry = ${pkgs.writeText "flake-registry.json" (builtins.toJSON {
+          flakes = [];
+          version = 2;
+        })}
+      '';
 
       # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
       # channel-dependent programs to use the correct nixpkgs
