@@ -49,6 +49,36 @@
     x11.enable = true;
   };
 
+  programs.fuzzel = {
+    enable = true;
+
+    settings = {
+      main = {
+        font = "Iosevka Custom";
+        fuzzy = "yes";
+        horizontal-pad = 0;
+        prompt = "\'\'"; # Empty prompt
+        vertical-pad = 0;
+        width = 80;
+      };
+
+      colors = {
+        background = "223249ff";
+        border = "2d4f67ff";
+        match = "ff9e3bff";
+        selection = "2d4f67ff";
+        selection-match = "ff9e3bff";
+        selection-text = "dcd7baff";
+        text = "dcd7baff";
+      };
+
+      border = {
+        radius = 0;
+        width = 4;
+      };
+    };
+  };
+
   home.packages = with pkgs; [
     wf-recorder
     wl-clipboard
@@ -201,27 +231,7 @@
 
             # Program/command launcher.
             binding_launcher = "<super> KEY_SPACE";
-            command_launcher = let
-              opts = {
-                border-width = 4;
-                border-radius = 0;
-                border-color = "2d4f67ff";
-                background-color = "223249ff";
-                text-color = "dcd7baff";
-                match-color = "ff9e3bff";
-                selection-color = "2d4f67ff";
-                selection-text-color = "dcd7baff";
-                selection-match-color = "ff9e3bff";
-                horizontal-pad = 0;
-                vertical-pad = 0;
-                width = 80;
-                font = "\'Iosevka Custom\'";
-                prompt = "";
-              };
-              args = lib.concatMapStringsSep
-                " " (s: "--" + s)
-                (lib.mapAttrsToList (n: v: "${n}=${toString v}") opts);
-              in "${pkgs.fuzzel}/bin/fuzzel ${args}";
+            command_launcher = "${config.programs.fuzzel.package}/bin/fuzzel";
 
             # This monstrosity of a screenshot command trims the region selected
             # by slurp so that the region borders are not captured by grim.
