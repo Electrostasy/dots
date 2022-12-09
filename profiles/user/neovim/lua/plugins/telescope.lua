@@ -14,7 +14,18 @@ local config = {
       results = { '', '', '', '', '', '', '', '' },
       preview = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
     },
-    -- borderchars = { preview = { '┌', '┐', '', '│', '└', '┘' } },
+    mappings = {
+      i = {
+        ['<CR>'] = actions.select_default,
+        ['<C-h>'] = actions.select_horizontal,
+        ['<C-v>'] = actions.select_vertical,
+      },
+      n = {
+        ['<CR>'] = actions.select_default,
+        ['<C-h>'] = actions.select_horizontal,
+        ['<C-v>'] = actions.select_vertical,
+      },
+    },
   },
   pickers = {
     buffers = {
