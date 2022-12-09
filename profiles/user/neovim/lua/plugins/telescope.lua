@@ -40,7 +40,14 @@ telescope.setup(config)
 telescope.load_extension('fzf')
 
 vim.keymap.set('n', '<leader>b', builtin.buffers, { silent = true })
-vim.keymap.set('n', '<leader>e', builtin.find_files, { silent = true })
+vim.keymap.set('n', '<leader>e', function()
+  local ret = os.execute('git rev-parse --is-inside-work-tree')
+  if ret == 0 then
+    builtin.git_files()
+  else
+    builtin.find_files()
+  end
+end, { silent = true })
 vim.keymap.set('n', '<leader>g', builtin.live_grep, { silent = true })
 vim.keymap.set('n', '<leader>r', builtin.lsp_references, { silent = true })
 vim.keymap.set('n', '<leader>d', builtin.lsp_definitions, { silent = true })
