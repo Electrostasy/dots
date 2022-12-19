@@ -13,6 +13,7 @@ let
   # Core system configuration, common across all NixOS hosts
   modules.core = {
     nixpkgs.overlays = builtins.attrValues self.overlays;
+    nixpkgs.config.allowAliases = false;
 
     environment.defaultPackages = lib.mkForce [];
     environment.systemPackages = with pkgs; [
