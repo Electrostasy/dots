@@ -18,8 +18,7 @@ let
     environment.systemPackages = with pkgs; [
       file
       parted
-      unzip
-      zip
+      p7zip
     ];
 
     nix = {
