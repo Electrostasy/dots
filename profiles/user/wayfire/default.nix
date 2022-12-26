@@ -109,7 +109,7 @@
         { plugin = "wm-actions"; settings.toggle_fullscreen = "<super> KEY_F11"; }
         { plugin = "window-rules";
           settings = {
-            ff_webrtc = "on created if title is \"Firefox - Sharing Indicator\" then minimize";
+            ff_webrtc = "on created if title is \"Firefox — Sharing Indicator\" then minimize";
           };
         }
 
