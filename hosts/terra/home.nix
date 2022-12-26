@@ -39,9 +39,6 @@
         scale = 1.5;
       };
     }
-    { plugin = "output:DP-2";
-      settings.mode = "off";
-    }
     { plugin = "output:HDMI-A-1";
       settings = {
         mode = "1920x1080@74973";
@@ -50,21 +47,22 @@
       };
     }
     { plugin = "autostart";
-      settings.wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg \"$(find ~/pictures -type f | shuf -n1)\"";
+      settings = {
+        wallpapers = ''
+          ${pkgs.wlr-spanbg}/bin/wlr-spanbg "$(find ~/pictures/wallpapers -type f | shuf -n1)"
+        '';
+      };
     }
   ];
 
   home.packages = with pkgs; [
-    # 3D printing/CAD packages
     cura
-    f3d # 3D file viewer (doesn't support *.stl)
-    freecad
-    fstl # 3D file viewer (specifically for *.stl)
-    solvespace
+    prusa-slicer
     super-slicer
+    f3d
+    fstl
+    solvespace
 
-    # Desktop programs
-    element-desktop
     firefox-custom
     gimp
     imv
@@ -73,21 +71,13 @@
     transmission-qt
     xdg-utils
 
-    # Music
-    mpc-cli
-    projectm
-
-    # CLI utilities
     chafa
-    du-dust
-    ffmpeg
     fio
-    imagemagick
     pastel
+    vimv-rs
     xplr
     youtube-dl
 
-    # Fonts
     liberation_ttf # Replacement fonts for TNR, Arial and Courier New
     source-han-sans # Required for rendering Japanese font
   ];
