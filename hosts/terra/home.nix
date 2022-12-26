@@ -3,20 +3,17 @@
 {
   home.stateVersion = "22.11";
 
-  xdg = {
+  xdg.userDirs = {
     enable = true;
 
-    userDirs = {
-      enable = true;
-      desktop = "/dev/null";
-      documents = "$HOME/documents";
-      download = "$HOME/downloads";
-      music = "$HOME/music";
-      pictures = "$HOME/pictures";
-      publicShare = "/dev/null";
-      templates = "/dev/null";
-      videos = "$HOME/videos";
-    };
+    desktop = null; # unused
+    documents = "${config.home.homeDirectory}/documents";
+    download = "${config.home.homeDirectory}/downloads";
+    music = "${config.home.homeDirectory}/music";
+    pictures = "${config.home.homeDirectory}/pictures";
+    publicShare = null; # unused
+    templates = null; # unused
+    videos = "${config.home.homeDirectory}/videos";
   };
 
   fonts.fontconfig.enable = true;
