@@ -16,6 +16,19 @@
     videos = "${config.home.homeDirectory}/videos";
   };
 
+  xdg.mimeApps = {
+    enable = true;
+
+    # Removed/added associations are not respected for some arcane reason,
+    # set default applications instead.
+    defaultApplications = {
+      "image/gif" = "imv.desktop";
+      "image/jpeg" = "imv.desktop";
+      "image/png" = "imv.desktop";
+      "image/webp" = "imv.desktop";
+    };
+  };
+
   fonts.fontconfig.enable = true;
 
   wayland.windowManager.wayfire.settings.plugins = [
