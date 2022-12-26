@@ -89,7 +89,6 @@
             ./hosts/phobos/media-remote.nix
             ./hosts/terra/configuration.nix
             ./profiles/system/audio
-            ./profiles/system/avahi
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
@@ -124,7 +123,6 @@
 
             ./hosts/kepler/wireguard.nix
             ./hosts/phobos/configuration.nix
-            ./profiles/system/avahi
             ./profiles/system/git-headless
             ./profiles/system/matrix
             ./profiles/system/ssh
@@ -149,7 +147,6 @@
             ./profiles/system/common
 
             ./hosts/deimos/configuration.nix
-            ./profiles/system/avahi
             ./profiles/system/git-headless
             ./profiles/system/ssh
             ./profiles/system/sudo
@@ -179,7 +176,6 @@
             ./hosts/jupiter/configuration.nix
             ./hosts/kepler/wireguard.nix
             ./profiles/system/audio
-            ./profiles/system/avahi
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical
@@ -219,7 +215,6 @@
             ./hosts/kepler/wireguard.nix
             ./hosts/venus/configuration.nix
             ./profiles/system/audio
-            ./profiles/system/avahi
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
             ./profiles/system/graphical

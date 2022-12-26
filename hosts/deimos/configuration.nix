@@ -55,8 +55,6 @@
 
   documentation.enable = false;
 
-  services.avahi.interfaces = [ "eth0" ];
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 

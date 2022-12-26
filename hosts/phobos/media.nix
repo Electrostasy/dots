@@ -63,29 +63,6 @@
         /mnt/media/shows 10.10.1.0/24(rw,root_squash,nohide,insecure,no_subtree_check)
       '';
     };
-
-    avahi = {
-      publish.userServices = true;
-      extraServiceFiles = let
-        nfsService = mount: ''
-          <?xml version="1.0" standalone='no'?>
-          <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
-          <service-group>
-            <name replace-wildcards="yes">NFS share /mnt/media/${mount}</name>
-            <service>
-              <type>_nfs._tcp</type>
-              <port>2049</port>
-              <txt-record>path=/mnt/media/${mount}</txt-record>
-            </service>
-          </service-group>
-        '';
-      in {
-        "mnt-media-anime" = nfsService "anime";
-        "mnt-media-movies" = nfsService "movies";
-        "mnt-media-music" = nfsService "music";
-        "mnt-media-shows" = nfsService "shows";
-      };
-    };
   };
 
   # Not required for nfs v4

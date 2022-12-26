@@ -139,8 +139,6 @@
     };
   };
 
-  services.avahi.interfaces = [ "enp0s31f6" "enp5s0" ];
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 
