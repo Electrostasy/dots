@@ -92,65 +92,10 @@
     source-han-sans # Required for rendering Japanese font
   ];
 
-  services.mpd = {
+  programs.bottom = {
     enable = true;
 
-    package = pkgs.mpdWithFeatures {
-      features = [
-        "audiofile" "dbus" "faad" "ffmpeg" "flac" "icu" "id3tag" "io_uring"
-        "libsamplerate" "mad" "mpg123" "opus" "pcre" "alsa" "systemd" "vorbis"
-      ];
-    };
-    musicDirectory = "/mnt/media/music";
-    network.startWhenNeeded = true;
-  };
-
-  programs = {
-    ncmpcpp = {
-      enable = true;
-
-      mpdMusicDir = config.services.mpd.musicDirectory;
-      settings = {
-        mpd_host = "127.0.0.1";
-        mpd_port = config.services.mpd.network.port;
-        display_bitrate = "yes";
-        media_library_primary_tag = "album_artist";
-        media_library_albums_split_by_date = "yes";
-        progressbar_look = "━━";
-        user_interface = "alternative";
-        alternative_header_first_line_format = "$6$b$r{ %t }$/b$/r$9";
-        alternative_header_second_line_format = "{%a}|{%A} - {%y} - {%b}";
-        song_columns_list_format = "(6f)[green]{n} {a} (16)[cyan]{b} (32)[white]{t} (7f)[magenta]{l}";
-
-        selected_item_prefix = "$3$r";
-        selected_item_suffix = "$/r$9";
-        current_item_prefix = "$6$b$r";
-        current_item_suffix = "$/r$/b$9";
-      };
-      bindings = [
-        { key = "p"; command = "pause"; }
-        { key = "s"; command = "stop"; }
-        { key = "h"; command = "seek_backward"; }
-        { key = "l"; command = "seek_forward"; }
-        { key = "shift-h"; command = "previous"; }
-        { key = "shift-l"; command = "next"; }
-        { key = "r"; command = "toggle_repeat"; }
-        { key = "shift-r"; command = "toggle_random"; }
-        { key = "ctrl-a"; command = "add_item_to_playlist"; }
-        { key = "ctrl-d"; command = "delete_playlist_items"; }
-        { key = "space"; command = "select_item"; }
-        { key = "/"; command = "find_item_forward"; }
-        { key = "?"; command = "find_item_backward"; }
-        { key = "shift-n"; command = "previous_found_item"; }
-        { key = "n"; command = "next_found_item"; }
-      ];
-    };
-
-    bottom = {
-      enable = true;
-
-      settings.flags.tree = true;
-    };
+    settings.flags.tree = true;
   };
 }
 
