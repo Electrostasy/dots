@@ -1,61 +1,54 @@
-#!/run/current-system/sw/bin/awk
-
 /^\w/ { out = $1 }
-/(current)/ { res = $1 }
+/Physical size/ { phys = $3 }
+/current/ { res = $1 }
 /Position:/ { pos = $2 }
 /Transform:/ { transform = $2 }
-/Scale:/ { outputs[out] = res ":" pos ":" transform ":" $2 }
+/Scale:/ { outputs[out] = phys ":" res ":" pos ":" transform ":" $2 }
 END {
   for (output in outputs) {
     split(outputs[output], fields, ":")
-    if (fields[4] > max_scale) {
-      max_scale = fields[4]
-      max_scale_output = output
-    }
-  }
 
-  for (output in outputs) {
-    split(outputs[output], fields, ":")
-    split(fields[1], resolution, "x")
-    split(fields[2], position, ",")
+    split(fields[2], resolution, "x")
+    w = resolution[1]
+    h = resolution[2]
 
-    if (output != max_scale_output) {
-      resolution[1] *= max_scale
-      resolution[2] *= max_scale
+    split(fields[3], position, ",")
+    x = position[1]
+    y = position[2]
 
-      if (fields[3] == "normal") {
-        position[2] *= max_scale
-      } else {
-        position[1] *= max_scale
-
-        temp = resolution[2]
-        resolution[2] = resolution[1]
-        resolution[1] = temp
-      }
+    transform = fields[4]
+    switch (transform) {
+      case "normal":
+        break;
+      case 90:
+      case 270:
+        t = h
+        h = w
+        w = t
+        break
     }
 
-    # Get the maximum size of the background
-    x = position[1] + resolution[1]
-    y = position[2] + resolution[2]
-    if (x > bg_res[1]) bg_res[1] = x
-    if (y > bg_res[2]) bg_res[2] = y
+    # TODO: Currently, scaling makes a 3840p screen with 1.5 scaling use a
+    # 1440p background. Need to figure out a way to use the native res. At
+    # least it's aligned now.
+    scale = fields[5]
+    w = w / scale
+    h = h / scale
 
-    crop_cmds[output] = sprintf("\\( mpr:bg -crop %ix%i+%i+%i +write /tmp/spanbg_%s.jpg \\)", resolution[1], resolution[2], position[1], position[2], output)
+    crop_cmds[output] = sprintf("\\( mpr:bg -crop %ix%i+%i+%i +write /tmp/spanbg_%s.jpg \\)", w, h, x, y, output)
     setbg_cmds[output] = sprintf("-o %s -i /tmp/spanbg_%s.jpg", output, output)
   }
 
-  # Generate crop command for background
-  crop_cmd = sprintf("convert %s -resize %ix%i -write mpr:bg +delete -respect-parentheses", bg, bg_res[1], bg_res[2])
-  for (output in crop_cmds) {
+  crop_cmd = sprintf("magick %s -write mpr:bg +delete", bg)
+  for (output in outputs) {
     crop_cmd = crop_cmd " " crop_cmds[output]
   }
+  crop_cmd = crop_cmd " null:"
   system(crop_cmd)
 
-  # Generate set backgrounds command
   setbg_cmd = "swaybg"
   for (output in setbg_cmds) {
     setbg_cmd = setbg_cmd " " setbg_cmds[output]
   }
   system(setbg_cmd)
 }
-
