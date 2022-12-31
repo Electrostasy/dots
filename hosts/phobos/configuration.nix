@@ -8,6 +8,8 @@
   system.stateVersion = "22.05";
 
   boot = {
+    kernel.sysctl."kernel.hostname" = "phobos";
+
     initrd.availableKernelModules = [ "usb_storage" "uas" "usbhid" ];
     kernelPackages = pkgs.linuxPackages_latest;
     tmpOnTmpfs = true;
@@ -46,8 +48,6 @@
   };
 
   time.timeZone = "Europe/Vilnius";
-
-  networking.hostName = "phobos";
 
   services.timesyncd.servers = [
     "1.europe.pool.ntp.org"

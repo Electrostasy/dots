@@ -6,6 +6,8 @@
   nixpkgs.hostPlatform = "aarch64-linux";
 
   boot = {
+    kernel.sysctl."kernel.hostname" = "deimos";
+
     initrd.availableKernelModules = [ "usb_storage" "usbhid" ];
     kernelPackages = pkgs.linuxPackages_latest;
     tmpOnTmpfs = true;
@@ -44,8 +46,6 @@
   };
 
   time.timeZone = "Europe/Vilnius";
-
-  networking.hostName = "deimos";
 
   services.timesyncd.servers = [
     "1.europe.pool.ntp.org"

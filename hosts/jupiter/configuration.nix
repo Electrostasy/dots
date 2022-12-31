@@ -8,6 +8,8 @@
   system.stateVersion = "21.11";
 
   boot = {
+    kernel.sysctl."kernel.hostname" = "jupiter";
+
     kernelPackages = pkgs.linuxPackages_latest;
     loader = {
       systemd-boot.enable = true;
@@ -18,8 +20,6 @@
   time.timeZone = "Europe/Vilnius";
 
   networking = {
-    hostName = "jupiter";
-
     wireless.iwd = {
       enable = true;
 

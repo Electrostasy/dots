@@ -40,6 +40,10 @@ let
         flake = self.inputs.nixpkgs;
       };
     };
+
+    # Empty hostname to be set using boot.kernel.sysctl."kernel.hostname" or DHCP
+    # by default.
+    networking.hostName = lib.mkDefault "";
   };
 
   # Optional home-manager user configuration, may not necessarily be enabled.
