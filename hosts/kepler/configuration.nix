@@ -41,6 +41,9 @@
   time.timeZone = "Europe/Vilnius";
 
   networking = {
+    hostName = "0x6776";
+    domain = "lt";
+
     dhcpcd.enable = false;
     useDHCP = false;
     enableIPv6 = false;

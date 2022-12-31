@@ -1,8 +1,4 @@
-{ config, pkgs, lib, ... }:
-
-# Reminder not to lose the matrix_key.pem file.
-# If running stateless, ensure /state/run/keys/dendrite/matrix_key.pem
-# is present and dendrite has perms to read it
+{ config, pkgs, ... }:
 
 {
   sops.secrets.matrix_key = {
@@ -14,15 +10,13 @@
 
   networking.firewall = {
     enable = true;
+
     allowedTCPPorts = [ 80 443 ];
   };
 
   security.acme = {
     acceptTerms = true;
     defaults.email = "steamykins@gmail.com";
-    certs."${config.services.dendrite.settings.global.server_name}".postRun = ''
-      systemctl reload nginx.service; systemctl restart dendrite.service
-    '';
   };
 
   # dendrite.service has a dynamic user, but we need it to exist before service
@@ -43,102 +37,87 @@
     serviceConfig.SupplementaryGroups = [ config.users.groups.keys.name ];
   };
 
-  services = let
-    server_name = "0x6776.lt";
-    dbNames = [
-      "app_service_api__database"
-      "federation_api__database"
-      "key_server__database"
-      "media_api__database"
-      "room_server__database"
-      "sync_api__database"
-      "user_api__account_database"
-      "mscs__database"
-    ];
-    mergeAttrs = lib.foldl lib.recursiveUpdate { };
-    dbAttrs = mergeAttrs (builtins.map (db:
-      lib.setAttrByPath (lib.splitString "__" db) {
-        connection_string =
-          "postgres://dendrite@/dendrite_${db}?host=/run/postgresql";
-      }) dbNames);
-    dbPerms = mergeAttrs
-      (builtins.map (db: { "DATABASE dendrite_${db}" = "ALL PRIVILEGES"; })
-        dbNames);
-    psqlInitScript = pkgs.writeText "postgresql-initScript" ''
-      CREATE USER dendrite;
-      ${lib.concatStringsSep "\n" (builtins.map (db: ''
-        CREATE DATABASE dendrite_${db};
-        GRANT ALL PRIVILEGES ON DATABASE dendrite_${db} TO dendrite;
-      '') dbNames)}
-    '';
-  in {
-    nginx = {
-      enable = true;
+  services.nginx = {
+    enable = true;
 
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
-      recommendedProxySettings = true;
-      recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
 
-      virtualHosts.${server_name} = {
-        enableACME = true;
-        forceSSL = true;
-        locations = {
-          "/_matrix".proxyPass = "http://127.0.0.1:8008";
+    virtualHosts.${config.networking.fqdn} = {
+      enableACME = true;
+      forceSSL = true;
+      locations = {
+        "/_matrix".proxyPass = "http://127.0.0.1:8008";
 
-          "/.well-known/matrix/server".return = ''
-            200 '{ "m.server": "${server_name}:443" }'
-          '';
+        "/.well-known/matrix/server".return = ''
+          200 '{ "m.server": "${config.networking.fqdn}:443" }'
+        '';
 
-          "/.well-known/matrix/client".return = ''
-            200 '{ "m.homeserver": { "base_url": "https://${server_name}" } }'
-          '';
-        };
+        "/.well-known/matrix/client".return = ''
+          200 '{ "m.homeserver": { "base_url": "https://${config.networking.fqdn}" } }'
+        '';
       };
     };
+  };
 
-    dendrite = {
-      enable = true;
+  services.dendrite = {
+    enable = true;
 
-      settings = dbAttrs // {
-        global = {
-          inherit server_name;
-          # Generate a private_key using:
-          # $ nix shell nixpkgs#dendrite --command generate-keys --private-key matrix_key.pem
-          private_key = config.sops.secrets.matrix_key.path;
-          trusted_third_party_id_servers = [ "matrix.org" "vector.im" ];
-          key_validity_period = "168h0m0s";
-          disable_federation = false;
-          presence = {
-            enable_inbound = true;
-            enable_outbound = true;
-          };
+    settings = {
+      global = {
+        # Generate a private_key using:
+        # $ nix shell nixpkgs#dendrite --command generate-keys --private-key matrix_key.pem
+        private_key = config.sops.secrets.matrix_key.path;
+        server_name = config.networking.fqdn;
+        database.connection_string = "postgres://dendrite@/dendrite?host=/run/postgresql&sslmode=disable";
+        trusted_third_party_id_servers = [ "matrix.org" "vector.im" ];
+        key_validity_period = "168h0m0s";
+        disable_federation = false;
+
+        presence = {
+          enable_inbound = true;
+          enable_outbound = true;
         };
+      };
 
-        client_api.registration_disabled = true;
+      sync_api.search = {
+        enabled = true;
+        index_path = "/var/lib/dendrite/searchindex";
+        language = "en";
+      };
 
-        logging = [{
-          type = "std";
+      # Add new users using:
+      # $ nix shell nixpkgs#dendrite --command create-account -config /run/dendrite/dendrite.yaml -username electro
+      client_api.registration_disabled = true;
+
+      logging = [
+        { type = "std";
           level = "error";
-        }];
-      };
+        }
+      ];
     };
+  };
 
-    postgresql = {
-      enable = true;
-      package = pkgs.postgresql_14;
-      dataDir = "/var/lib/postgresql";
+  services.postgresql = {
+    enable = true;
 
-      initialScript = psqlInitScript;
-      ensureDatabases = dbNames;
-      ensureUsers = [{
-        name = "dendrite";
-        ensurePermissions = dbPerms;
-      }];
+    package = pkgs.postgresql_15;
+    dataDir = "/var/lib/postgresql";
 
-      # Allow local connections via UNIX socket by user 'dendrite'
-      authentication = lib.concatStringsSep "\n"
-        (builtins.map (db: "local dendrite_${db} dendrite peer") dbNames);
-    };
+    ensureDatabases = [ "dendrite" ];
+    ensureUsers = [
+      { name = "dendrite";
+        ensurePermissions = {
+          "DATABASE \"dendrite\"" = "ALL PRIVILEGES";
+        };
+      }
+    ];
+
+    # Allow local connections via UNIX socket by user 'dendrite'
+    authentication = ''
+      local dendrite dendrite peer
+    '';
   };
 }
