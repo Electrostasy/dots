@@ -76,8 +76,6 @@
 
         modules = [{
           imports = [
-            nixos-hardware.nixosModules.common-cpu-intel
-            nixos-hardware.nixosModules.common-gpu-amd
             nixos-hardware.nixosModules.common-pc-ssd
 
             home-manager.nixosModule
@@ -85,7 +83,6 @@
             sops-nix.nixosModule
             ./profiles/system/common
 
-            ./hosts/kepler/wireguard.nix
             ./hosts/phobos/media-remote.nix
             ./hosts/terra/configuration.nix
             ./profiles/system/audio
@@ -121,7 +118,7 @@
             sops-nix.nixosModule
             ./profiles/system/common
 
-            ./hosts/kepler/wireguard.nix
+            # ./hosts/kepler/wireguard.nix
             ./hosts/phobos/configuration.nix
             ./profiles/system/git-headless
             ./profiles/system/ssh
@@ -173,7 +170,7 @@
             ./profiles/system/common
 
             ./hosts/jupiter/configuration.nix
-            ./hosts/kepler/wireguard.nix
+            # ./hosts/kepler/wireguard.nix
             ./profiles/system/audio
             ./profiles/system/dnscrypt-proxy2
             ./profiles/system/git-headed
@@ -211,7 +208,7 @@
             sops-nix.nixosModule
             ./profiles/system/common
 
-            ./hosts/kepler/wireguard.nix
+            # ./hosts/kepler/wireguard.nix
             ./hosts/venus/configuration.nix
             ./profiles/system/audio
             ./profiles/system/dnscrypt-proxy2
@@ -296,7 +293,7 @@
           ./profiles/system/common
 
           ./hosts/kepler/configuration.nix
-          ./hosts/kepler/wireguard.nix
+          # ./hosts/kepler/wireguard.nix
           ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
