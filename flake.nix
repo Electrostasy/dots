@@ -124,7 +124,6 @@
             ./hosts/kepler/wireguard.nix
             ./hosts/phobos/configuration.nix
             ./profiles/system/git-headless
-            ./profiles/system/matrix
             ./profiles/system/ssh
             ./profiles/system/sudo
           ];

@@ -19,13 +19,13 @@ The table below lists the managed hosts and their functions:
 | Hostname | Device type | Description
 | :-- | :-- | :-- |
 | **terra** | Desktop | Home PC |
-| **phobos** | Raspberry Pi 4B | Matrix homeserver <br/> NFS fileserver |
+| **phobos** | Raspberry Pi 4B | NFS fileserver |
 | **deimos** | Raspberry Pi 3B+ |  _Currently unused_ |
 | **jupiter** | Lenovo ThinkPad T420 | Laptop |
 | **venus** | Lenovo ThinkPad X220 Tablet | Laptop |
 | **eris** | WSL | Primary PC at work |
 | **ceres** | Desktop | Secondary PC at work |
-| **kepler** | VPS | Wireguard VPN |
+| **kepler** | VPS | Matrix homeserver <br/> Wireguard VPN |
 
 **Cautionary notes**:
 - As these NixOS configurations are specific to my requirements and use cases, 
