@@ -1,5 +1,9 @@
 { config, pkgs, ... }:
 
+let
+  fqdn = "0x6776.lt";
+in
+
 {
   sops.secrets.matrix_key = {
     sopsFile = ./secrets.yaml;
@@ -45,18 +49,18 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    virtualHosts.${config.networking.fqdn} = {
+    virtualHosts.${fqdn} = {
       enableACME = true;
       forceSSL = true;
       locations = {
         "/_matrix".proxyPass = "http://127.0.0.1:8008";
 
         "/.well-known/matrix/server".return = ''
-          200 '{ "m.server": "${config.networking.fqdn}:443" }'
+          200 '{ "m.server": "${fqdn}:443" }'
         '';
 
         "/.well-known/matrix/client".return = ''
-          200 '{ "m.homeserver": { "base_url": "https://${config.networking.fqdn}" } }'
+          200 '{ "m.homeserver": { "base_url": "https://${fqdn}" } }'
         '';
       };
     };
@@ -70,7 +74,7 @@
         # Generate a private_key using:
         # $ nix shell nixpkgs#dendrite --command generate-keys --private-key matrix_key.pem
         private_key = config.sops.secrets.matrix_key.path;
-        server_name = config.networking.fqdn;
+        server_name = fqdn;
         database.connection_string = "postgres://dendrite@/dendrite?host=/run/postgresql&sslmode=disable";
         trusted_third_party_id_servers = [ "matrix.org" "vector.im" ];
         key_validity_period = "168h0m0s";

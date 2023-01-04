@@ -6,8 +6,6 @@
   nixpkgs.hostPlatform = "x86_64-linux";
 
   boot = {
-    kernel.sysctl."kernel.hostname" = "ceres";
-
     initrd.availableKernelModules = [
       "ahci"
       "ehci_pci"
@@ -71,6 +69,8 @@
   time.timeZone = "Europe/Vilnius";
 
   networking = {
+    hostName = "ceres";
+
     dhcpcd.enable = false;
     useDHCP = false;
 

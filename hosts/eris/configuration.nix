@@ -5,8 +5,6 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  boot.kernel.sysctl."kernel.hostname" = "eris";
-
   wsl = {
     enable = true;
     defaultUser = "nixos";
@@ -20,6 +18,8 @@
       };
     };
   };
+
+  networking.hostName = "eris";
 
   users.users.${config.wsl.defaultUser} = {
     extraGroups = [ "wheel" ];

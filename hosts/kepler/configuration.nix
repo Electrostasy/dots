@@ -11,8 +11,6 @@
   system.stateVersion = "22.05";
 
   boot = {
-    kernel.sysctl."kernel.hostname" = "kepler";
-
     initrd = {
       availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "xen_blkfront" ];
       kernelModules = [ "nvme" ];
@@ -41,8 +39,7 @@
   time.timeZone = "Europe/Vilnius";
 
   networking = {
-    hostName = "0x6776";
-    domain = "lt";
+    hostName = "kepler";
 
     dhcpcd.enable = false;
     useDHCP = false;

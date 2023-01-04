@@ -8,8 +8,6 @@
   system.stateVersion = "22.11";
 
   boot = {
-    kernel.sysctl."kernel.hostname" = "venus";
-
     initrd.availableKernelModules = [
       "ahci"
       "ehci_pci"
@@ -156,6 +154,8 @@
 
   time.timeZone = "Europe/Vilnius";
   networking = {
+    hostName = "venus";
+
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;

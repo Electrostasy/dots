@@ -12,8 +12,6 @@
   system.stateVersion = "22.05";
 
   boot = {
-    kernel.sysctl."kernel.hostname" = "terra";
-
     initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -114,6 +112,8 @@
 
   time.timeZone = "Europe/Vilnius";
   networking = {
+    hostName = "terra";
+
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;
