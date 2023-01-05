@@ -12,7 +12,14 @@
 
   boot = {
     initrd = {
-      availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "xen_blkfront" ];
+      availableKernelModules = [
+        "ata_piix"
+        "sd_mod"
+        "uhci_hcd"
+        "virtio_pci"
+        "virtio_scsi"
+        "xen_blkfront"
+      ];
       kernelModules = [ "nvme" ];
     };
     kernelPackages = pkgs.linuxPackages_latest;
