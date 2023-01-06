@@ -62,13 +62,13 @@ in
 
 stdenv.mkDerivation {
   pname = "wayfire";
-  version = "unstable-2022-11-25";
+  version = "unstable-2023-01-04";
 
   src = fetchFromGitHub {
     owner = "WayfireWM";
     repo = "wayfire";
-    rev = "c3b1edf11e377778f5e267c7ad7cf93d22078903";
-    sha256 = "sha256-29RtjsGpJDPVPixiH5m661KDeUIsVr12Lr1fFeXaG/g=";
+    rev = "8d7b4cf36d6ad245580fd473c8faa3c0fab15561";
+    sha256 = "sha256-2iP5jgYY4+vLHgq6BPjhA0elcJRBEt72VLkH6PXiMwE=";
   };
 
   postUnpack = ''
