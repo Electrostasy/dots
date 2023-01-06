@@ -113,16 +113,18 @@
           };
         }
 
-        { package = pkgs.wayfirePlugins.shadows;
-          plugin = "winshadows";
-          settings = {
-            include_undecorated_views = true;
-            shadow_color = "\\#000000FF";
-            shadow_radius = 20;
-            glow_color = "\\#2D4F6733";
-            glow_radius = 40;
-          };
-        }
+        # Can't compile until changes in wayfire-git are caught up with, turn
+        # off for now.
+        # { package = pkgs.wayfirePlugins.shadows;
+        #   plugin = "winshadows";
+        #   settings = {
+        #     include_undecorated_views = true;
+        #     shadow_color = "\\#000000FF";
+        #     shadow_radius = 20;
+        #     glow_color = "\\#2D4F6733";
+        #     glow_radius = 40;
+        #   };
+        # }
         { plugin = "decoration";
           settings = {
             active_color = "\\#2D4F67FF";

@@ -18,13 +18,13 @@
 
 stdenv.mkDerivation {
   pname = "wayfire-shadows";
-  version = "unstable-2022-11-21";
+  version = "unstable-2022-12-21";
 
   src = fetchFromGitHub {
     owner = "timgott";
     repo = "wayfire-shadows";
-    rev = "32eeb5f8b772c0cd123b6688bcbbeebc9c99c1c9";
-    sha256 = "sha256-IvmbfZK4Z1HOIxGiFyjK1OCXy1fkdwA0L7jfrJtgQWk=";
+    rev = "0dad0f75f5c1b659a9caea5d13717f3064730dcf";
+    sha256 = "sha256-+PVWcC+pzGhzA2Z+kPgp9s2f+k73q0pFyZ/dJbmS61I=";
   };
 
   nativeBuildInputs = [
@@ -51,5 +51,8 @@ stdenv.mkDerivation {
     description = "Wayfire plugin that adds window shadows";
     license = licenses.mit;
     platforms = platforms.unix;
+
+    # Can't compile until changes in wayfire-git are caught up with
+    broken = true;
   };
 }
