@@ -38,6 +38,7 @@ in
   # Restore toplevels to their original positions, geometry and z-order after
   # DPMS if outputs are temporarily disconnected.
   wayland.windowManager.wayfire.settings.plugins = [
-    { plugin = "preserve-output"; }
+    # Crashes Wayfire on startup if enabled on newer versions. Bug?
+    # { plugin = "preserve-output"; }
   ];
 }

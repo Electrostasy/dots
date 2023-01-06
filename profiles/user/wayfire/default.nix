@@ -134,14 +134,6 @@
           };
         }
 
-        { plugin = "switcher";
-          settings = {
-            next_view = "<alt> KEY_TAB";
-            prev_view = "<alt> <shift> KEY_TAB";
-            speed = 350;
-            view_thumbnail_scale = 1.0;
-          };
-        }
         { plugin = "vswitch";
           settings = let
             workspaces = builtins.genList (x: x + 1) 9;
