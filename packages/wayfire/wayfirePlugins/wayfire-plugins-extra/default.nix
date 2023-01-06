@@ -16,13 +16,13 @@
 
 stdenv.mkDerivation {
   pname = "wayfire-plugins-extra";
-  version = "unstable-2022-04-23";
+  version = "unstable-2022-12-18";
 
   src = fetchFromGitHub {
     owner = "WayfireWM";
     repo = "wayfire-plugins-extra";
-    rev = "bcadd22d282709a8ee12ebfe5fd9f4fa17d469d2";
-    sha256 = "sha256-e4R5AVVtAFct1pCxSgLHEzV2xA+MCYoxHrZ12OksEkE=";
+    rev = "ac7b7ed57f66793695f8725939b7df93cd10a27a";
+    sha256 = "sha256-ZEsV17A9HxaaWDghSFoziwhEV1P6P+1IfswM3dpXI/M=";
   };
 
   dontUseCmakeConfigure = true;
