@@ -10,12 +10,16 @@ let
     };
 in
 {
-  environment.systemPackages = [ pkgs.wireguard-tools ];
+  environment.systemPackages = with pkgs; [
+    wireguard-tools
+  ];
 
   networking.firewall.allowedUDPPorts = [ common.port ];
 
   sops = let
-    # systemd.netdev(5) manual entry (PrivateKeyFile)
+    # In systemd.netdev(5) it is specified that secrets accessed by
+    # systemd-networkd should have the following permissions (entry
+    # for PrivateKeyFile).
     secretConfig = {
       mode = "0640";
       owner = config.users.users.root.name;
@@ -36,7 +40,6 @@ in
 
     networks."20-wg0" = {
       name = "wg0";
-
       address = common.nodes.kepler.AllowedIPs;
       routes = [
         { routeConfig = {

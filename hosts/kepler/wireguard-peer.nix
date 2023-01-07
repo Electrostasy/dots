@@ -10,8 +10,14 @@ let
       (lib.stringToCharacters peer);
 in
 {
-  # systemd.netdev(5) manual entry (PrivateKeyFile)
+  environment.systemPackages = with pkgs; [
+    wireguard-tools
+  ];
+
   sops.secrets = let
+    # In systemd.netdev(5) it is specified that secrets accessed by
+    # systemd-networkd should have the following permissions (entry
+    # for PrivateKeyFile).
     secretConfig = {
       mode = "0640";
       owner = config.users.users.root.name;
@@ -30,9 +36,7 @@ in
 
     networks."20-wg0" = {
       name = "wg0";
-
       address = common.nodes.${peer}.AllowedIPs;
-
       routes = [
         { routeConfig = {
             Gateway = "10.10.1.1";
@@ -56,12 +60,10 @@ in
 
       wireguardPeers = [
         { wireguardPeerConfig = {
+            inherit (common.nodes.kepler) PublicKey;
             Endpoint = "${common.server}:${builtins.toString common.port}";
             PresharedKeyFile = config.sops.secrets.wgPresharedKey.path;
             PersistentKeepalive = 25;
-            inherit (common.nodes.kepler) PublicKey;
-
-            # Allow access to other clients in this specified subnet
             AllowedIPs = [ "10.10.1.0/24" ];
           };
         }
