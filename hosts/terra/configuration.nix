@@ -50,13 +50,13 @@
     "/nix" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:1" ];
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:1" "discard=async" ];
     };
 
     "/state" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:1" ];
+      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:1" "discard=async" ];
       neededForBoot = true;
     };
   };

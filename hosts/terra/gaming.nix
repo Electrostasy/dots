@@ -4,7 +4,7 @@
   fileSystems."/home/electro/games" = {
     device = "/dev/disk/by-label/games";
     fsType = "btrfs";
-    options = [ "subvol=steam" "noatime" "nodiratime" "compress-force=zstd:1" ];
+    options = [ "subvol=steam" "noatime" "nodiratime" "compress-force=zstd:1" "discard=async" ];
   };
 
   environment.sessionVariables = {

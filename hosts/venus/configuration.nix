@@ -133,13 +133,13 @@
     "/nix" = {
       device = "/dev/disk/by-label/data";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" "discard=async" ];
     };
 
     "/state" = {
       device = "/dev/disk/by-label/data";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" "discard=async" ];
       neededForBoot = true;
     };
   };

@@ -75,8 +75,6 @@
         specialArgs = { inherit self; };
 
         modules = [
-          nixos-hardware.nixosModules.common-pc-ssd
-
           home-manager.nixosModule
           impermanence.nixosModule
           sops-nix.nixosModule
@@ -180,7 +178,6 @@
         modules = [
           nixos-hardware.nixosModules.common-gpu-intel
           nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-x220
 
           home-manager.nixosModule
