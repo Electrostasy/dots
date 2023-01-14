@@ -58,9 +58,8 @@
       }
       { plugin = "autostart";
         settings = {
-          wallpapers = ''
-            ${pkgs.wlr-spanbg}/bin/wlr-spanbg "$(find ~/pictures/wallpapers -type f | shuf -n1)"
-          '';
+          wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg $(find ~/pictures/wallpapers -type f | shuf -n1)";
+          volume = "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 100%";
         };
       }
     ];
