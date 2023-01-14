@@ -85,7 +85,6 @@
 
           # Shared profiles.
           ./profiles/system/audio
-          ./profiles/system/dnscrypt-proxy2
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
@@ -159,7 +158,6 @@
 
           # Shared profiles.
           ./profiles/system/audio
-          ./profiles/system/dnscrypt-proxy2
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad

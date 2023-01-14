@@ -53,7 +53,7 @@
 
         address = [ "192.168.205.56" ];
         gateway = [ "192.168.205.1" ];
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         dhcpV4Config.RouteMetric = 1024;
       };
@@ -62,7 +62,7 @@
         name = "enp0s*u1u*";
 
         DHCP = "yes";
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         networkConfig.IgnoreCarrierLoss = "yes";
       };
@@ -71,7 +71,7 @@
         name = "wlan*";
 
         DHCP = "yes";
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         networkConfig.IgnoreCarrierLoss = "yes";
         dhcpV4Config = {

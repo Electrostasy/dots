@@ -186,7 +186,7 @@
         name = "eno0";
 
         DHCP = "yes";
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         networkConfig.LinkLocalAddressing = "no";
         dhcpV4Config.RouteMetric = 10;
@@ -196,7 +196,7 @@
         name = "wlan0";
 
         DHCP = "yes";
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         networkConfig = {
           IgnoreCarrierLoss = "yes";
@@ -215,7 +215,7 @@
         name = "enp0s2[69]u1u[12]";
 
         DHCP = "yes";
-        dns = [ "127.0.0.1" "::1" ];
+        dns = [ "9.9.9.9" ];
 
         networkConfig = {
           IgnoreCarrierLoss = "yes";
