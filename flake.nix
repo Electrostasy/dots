@@ -61,10 +61,6 @@
       };
     };
 
-    nixosModules = {
-      unfree = import ./modules/system/unfree;
-    };
-
     homeManagerModules = {
       fuzzel = import ./modules/user/fuzzel;
       wayfire = import ./modules/user/wayfire;
