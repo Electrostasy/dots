@@ -12,8 +12,30 @@ let
 
   # Core system configuration, common across all NixOS hosts
   modules.core = {
-    nixpkgs.overlays = builtins.attrValues self.overlays;
-    nixpkgs.config.allowAliases = false;
+    i18n = {
+      defaultLocale = "en_US.UTF-8";
+
+      # Necessary to support different encodings of e.g. file names. Without
+      # ja_JP, Japanese symbols in filenames will not be displayed correctly.
+      supportedLocales = [
+        "en_US.UTF-8/UTF-8"
+        "ja_JP.UTF-8/UTF-8"
+        "lt_LT.UTF-8/UTF-8"
+
+        # Needed for LC_TIME.
+        "en_DK.UTF-8/UTF-8"
+      ];
+
+      extraLocaleSettings = {
+        # en_DK follows the ISO-8601 standard and time is formatted sanely.
+        LC_TIME = "en_DK.UTF-8";
+      };
+    };
+
+    nixpkgs = {
+      overlays = builtins.attrValues self.overlays;
+      config.allowAliases = false;
+    };
 
     environment.defaultPackages = lib.mkForce [];
     environment.systemPackages = with pkgs; [
