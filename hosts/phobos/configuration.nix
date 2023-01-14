@@ -49,12 +49,6 @@
 
   networking.hostName = "phobos";
 
-  services.timesyncd.servers = [
-    "1.europe.pool.ntp.org"
-    "1.lt.pool.ntp.org"
-    "2.europe.pool.ntp.org"
-  ];
-
   documentation.enable = false;
 
   sops = {

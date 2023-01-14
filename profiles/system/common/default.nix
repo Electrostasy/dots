@@ -22,6 +22,12 @@ let
       p7zip
     ];
 
+    services.timesyncd.servers = [
+      "1.europe.pool.ntp.org"
+      "1.lt.pool.ntp.org"
+      "2.europe.pool.ntp.org"
+    ];
+
     nix = {
       package = pkgs.nixVersions.unstable;
       extraOptions = ''
