@@ -10,7 +10,6 @@ rec {
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };
-  lswt = callPackage ./lswt { };
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
