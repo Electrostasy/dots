@@ -64,48 +64,19 @@
   environment.persistence."/state" = {
     users.electro = {
       files = [
-        # Fish shell command history.
-        ".local/share/fish/fish_history"
-
-        # nix-index database for nix-locate and command not found.
-        ".cache/nix-index/files"
-
-        # Last active/opened databases.
-        ".cache/keepassxc/keepassxc.ini"
-
-        # Keepassxc config, KeeShare private keys etc.
-        ".config/keepassxc/keepassxc.ini"
-
-        # Git credential helper connection to Keepassxc.
         ".config/git-credential-keepassxc"
-
-        # Keepassxc Firefox browser extension connection to Keepassxc.
         ".mozilla/native-messaging-hosts/org.keepassxc.keepassxc_browser.json"
       ];
 
       directories = [
-        # tldr pages cached by tealdeer.
-        ".cache/tealdeer/tldr-pages"
-
-        # Nix evaluation and fetcher cache.
-        ".cache/nix"
-
-        # Looks important.
-        ".cache/flatpak"
-
-        # Font cache.
-        ".cache/fontconfig"
-
-        # Firefox profiles and state.
-        ".mozilla/firefox"
-
-        # SSH private/public keys and known_hosts/
-        { directory = ".ssh"; mode = "0700"; }
-
-        # XDG base directories.
+        ".cache"
+        ".config/keepassxc"
         "documents"
         "downloads"
+        ".local/share/fish"
+        ".mozilla/firefox"
         "pictures"
+        { directory = ".ssh"; mode = "0700"; }
       ];
     };
   };
