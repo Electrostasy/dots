@@ -150,7 +150,17 @@ let
           user = config.systemd.services.postgresql.serviceConfig.User;
           group = config.systemd.services.postgresql.serviceConfig.Group;
           mode = "u=rwx,g=rx,o=x";
-        };
+        }
+
+      # On systems without a RTC (e.g. a Raspberry Pi), the clock file can be
+      # crucial for startup, for e.g. DNSSEC keys cannot be validated correctly
+      # if the clock is wrong.
+      ++ lib.optional
+        (config.services.timesyncd.enable || config.services.chrony.enable)
+        # /var/lib/systemd/timesync/clock mutates, which can cause issues when
+        # it is a bind mount, so we persist its parent directory instead.
+        "/var/lib/systemd/timesync";
+
 
       files = [
         # This file contains the unique machine ID of the local system,
@@ -158,13 +168,6 @@ let
         # the host with a globally unique ID in the network.
         "/etc/machine-id"
       ]
-
-      # On systems without a RTC (e.g. a Raspberry Pi), the clock file can be
-      # crucial for startup, for e.g. DNSSEC keys cannot be validated correctly
-      # if the clock is wrong.
-      ++ lib.optional
-        (config.services.timesyncd.enable || config.services.chrony.enable)
-        "/var/lib/systemd/timesync/clock"
 
       # Contains the device-specific rotated Wireguard private key. If this is
       # not persistent, new devices from the associated Mullvad account have to

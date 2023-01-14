@@ -1,18 +1,28 @@
-{ pkgs, ... }:
-
 {
-  home.stateVersion = "22.11";
+  home-manager.users.gediminas = { config, pkgs, ... }: {
+    imports = [
+      ../../profiles/user/fish
+      ../../profiles/user/kitty
+      ../../profiles/user/lsd
+      ../../profiles/user/neovim
+      ../../profiles/user/tealdeer
+      ../../profiles/user/wayfire
+      ../../profiles/user/zathura
+    ];
 
-  xdg.enable = true;
+    home.stateVersion = "22.11";
 
-  home.packages = with pkgs; [
-    firefox-custom
-    liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-    libreoffice
-    source-han-sans # Japanese OpenType/CFF fonts
-    xplr
-  ];
+    xdg.enable = true;
 
-  fonts.fontconfig.enable = true;
+    home.packages = with pkgs; [
+      firefox-custom
+      liberation_ttf # Replacement fonts for TNR, Arial and Courier New
+      libreoffice
+      source-han-sans # Japanese OpenType/CFF fonts
+      xplr
+    ];
+
+    fonts.fontconfig.enable = true;
+  };
 }
 

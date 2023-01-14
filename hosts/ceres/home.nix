@@ -1,20 +1,27 @@
-{ pkgs, ... }:
-
 {
-  home.stateVersion = "22.11";
+  home-manager.users.gediminas = { pkgs, ... }: {
+    imports = [
+      ../../profiles/user/fish
+      ../../profiles/user/lsd
+      ../../profiles/user/neovim
+      ../../profiles/user/tealdeer
+    ];
 
-  home.packages = with pkgs; [
-    du-dust
-    fio
-    libewf
-    virt-manager
-  ];
+    home.stateVersion = "22.11";
 
-  programs = {
-    bottom = {
-      enable = true;
+    home.packages = with pkgs; [
+      du-dust
+      fio
+      libewf
+      virt-manager
+    ];
 
-      settings.flags.tree = true;
+    programs = {
+      bottom = {
+        enable = true;
+
+        settings.flags.tree = true;
+      };
     };
   };
 }

@@ -74,216 +74,175 @@
       terra = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            nixos-hardware.nixosModules.common-pc-ssd
+        modules = [
+          nixos-hardware.nixosModules.common-pc-ssd
 
-            home-manager.nixosModule
-            impermanence.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+          home-manager.nixosModule
+          impermanence.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/kepler/wireguard-peer.nix
-            ./hosts/phobos/media-remote.nix
-            ./hosts/terra/configuration.nix
-            ./profiles/system/audio
-            ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git-headed
-            ./profiles/system/graphical
-            ./profiles/system/mullvad
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Make host accessible via Wireguard VPN.
+          ./hosts/kepler/wireguard-peer.nix
 
-          home-manager.users.electro.imports = [
-            ./hosts/terra/home.nix
-            ./profiles/user/fish
-            ./profiles/user/kitty
-            ./profiles/user/lsd
-            ./profiles/user/mpv
-            ./profiles/user/neovim
-            ./profiles/user/tealdeer
-            ./profiles/user/wayfire
-            ./profiles/user/zathura
-          ];
-        }];
+          # Host system and home configurations.
+          ./hosts/terra/configuration.nix
+          ./hosts/terra/home.nix
+
+          # Shared profiles.
+          ./profiles/system/audio
+          ./profiles/system/dnscrypt-proxy2
+          ./profiles/system/git-headed
+          ./profiles/system/graphical
+          ./profiles/system/mullvad
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       phobos = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            home-manager.nixosModule
-            impermanence.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+        modules = [
+          home-manager.nixosModule
+          impermanence.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/kepler/wireguard-peer.nix
-            ./hosts/phobos/configuration.nix
-            ./profiles/system/git-headless
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Make host accessible via Wireguard VPN.
+          ./hosts/kepler/wireguard-peer.nix
 
-          home-manager.users.pi.imports = [
-            ./hosts/phobos/home.nix
-            ./profiles/user/fish
-          ];
-        }];
+          # Host system and home configurations.
+          ./hosts/phobos/configuration.nix
+          ./hosts/phobos/home.nix
+
+          # Shared profiles.
+          ./profiles/system/git-headless
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       deimos = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            home-manager.nixosModule
-            impermanence.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+        modules = [
+          home-manager.nixosModule
+          impermanence.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/deimos/configuration.nix
-            ./profiles/system/git-headless
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Host system and home configurations.
+          ./hosts/deimos/configuration.nix
+          ./hosts/deimos/home.nix
 
-          home-manager.users.pi.imports = [
-            ./hosts/deimos/home.nix
-            ./profiles/user/fish
-          ];
-        }];
+          # Shared profiles.
+          ./profiles/system/git-headless
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       jupiter = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            nixos-hardware.nixosModules.common-gpu-intel
-            nixos-hardware.nixosModules.common-pc-laptop
-            nixos-hardware.nixosModules.common-pc-laptop-ssd
-            nixos-hardware.nixosModules.lenovo-thinkpad-t420
+        modules = [
+          nixos-hardware.nixosModules.common-gpu-intel
+          nixos-hardware.nixosModules.common-pc-laptop
+          nixos-hardware.nixosModules.common-pc-laptop-ssd
+          nixos-hardware.nixosModules.lenovo-thinkpad-t420
 
-            home-manager.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+          home-manager.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/jupiter/configuration.nix
-            ./hosts/kepler/wireguard-peer.nix
-            ./profiles/system/audio
-            ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git-headed
-            ./profiles/system/graphical
-            ./profiles/system/mullvad
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Make host accessible via Wireguard VPN.
+          ./hosts/kepler/wireguard-peer.nix
 
-          home-manager.users.gediminas.imports = [
-            ./hosts/jupiter/home.nix
-            ./profiles/user/fish
-            ./profiles/user/kitty
-            ./profiles/user/lsd
-            ./profiles/user/neovim
-            ./profiles/user/tealdeer
-            ./profiles/user/wayfire
-            ./profiles/user/zathura
-          ];
-        }];
+          # Host system and home configurations.
+          ./hosts/jupiter/configuration.nix
+          ./hosts/jupiter/home.nix
+
+          # Shared profiles.
+          ./profiles/system/audio
+          ./profiles/system/dnscrypt-proxy2
+          ./profiles/system/git-headed
+          ./profiles/system/graphical
+          ./profiles/system/mullvad
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       venus = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            nixos-hardware.nixosModules.common-gpu-intel
-            nixos-hardware.nixosModules.common-pc-laptop
-            nixos-hardware.nixosModules.common-pc-laptop-ssd
-            nixos-hardware.nixosModules.lenovo-thinkpad-x220
+        modules = [
+          nixos-hardware.nixosModules.common-gpu-intel
+          nixos-hardware.nixosModules.common-pc-laptop
+          nixos-hardware.nixosModules.common-pc-laptop-ssd
+          nixos-hardware.nixosModules.lenovo-thinkpad-x220
 
-            home-manager.nixosModule
-            impermanence.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+          home-manager.nixosModule
+          impermanence.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/kepler/wireguard-peer.nix
-            ./hosts/venus/configuration.nix
-            ./profiles/system/audio
-            ./profiles/system/dnscrypt-proxy2
-            ./profiles/system/git-headed
-            ./profiles/system/graphical
-            ./profiles/system/mullvad
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Make host accessible via Wireguard VPN.
+          ./hosts/kepler/wireguard-peer.nix
 
-          home-manager.users.electro.imports = [
-            ./hosts/venus/home.nix
-            ./profiles/user/fish
-            ./profiles/user/kitty
-            ./profiles/user/lsd
-            ./profiles/user/mpv
-            ./profiles/user/neovim
-            ./profiles/user/tealdeer
-            ./profiles/user/wayfire
-            ./profiles/user/zathura
-          ];
-        }];
+          # Host system and home configurations.
+          ./hosts/venus/configuration.nix
+          ./hosts/venus/home.nix
+
+          # Shared profiles.
+          ./profiles/system/audio
+          ./profiles/system/git-headed
+          ./profiles/system/graphical
+          ./profiles/system/mullvad
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       eris = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            home-manager.nixosModule
-            nixos-wsl.nixosModules.wsl
-            ./profiles/system/common
+        modules = [
+          home-manager.nixosModule
+          nixos-wsl.nixosModules.wsl
+          ./profiles/system/common
 
-            ./hosts/eris/configuration.nix
-            ./profiles/system/git-headless
-          ];
+          # Host system and home configurations.
+          ./hosts/eris/configuration.nix
+          ./hosts/eris/home.nix
 
-          home-manager.users.nixos.imports = [
-            ./hosts/eris/home.nix
-            ./profiles/user/fish
-            ./profiles/user/lsd
-            ./profiles/user/neovim
-            ./profiles/user/tealdeer
-          ];
-        }];
+          # Shared profiles.
+          ./profiles/system/git-headless
+        ];
       };
 
       ceres = lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules = [{
-          imports = [
-            nixos-hardware.nixosModules.common-cpu-intel
+        modules = [
+          nixos-hardware.nixosModules.common-cpu-intel
 
-            home-manager.nixosModule
-            impermanence.nixosModule
-            sops-nix.nixosModule
-            ./profiles/system/common
+          home-manager.nixosModule
+          impermanence.nixosModule
+          sops-nix.nixosModule
+          ./profiles/system/common
 
-            ./hosts/ceres/configuration.nix
-            ./profiles/system/git-headless
-            ./profiles/system/graphical
-            ./profiles/system/ssh
-            ./profiles/system/sudo
-          ];
+          # Host system and home configurations.
+          ./hosts/ceres/configuration.nix
+          ./hosts/ceres/home.nix
 
-          home-manager.users.gediminas.imports = [
-            ./hosts/ceres/home.nix
-            ./profiles/user/fish
-            ./profiles/user/lsd
-            ./profiles/user/neovim
-            ./profiles/user/tealdeer
-          ];
-        }];
+          # Shared profiles.
+          ./profiles/system/git-headless
+          ./profiles/system/graphical
+          ./profiles/system/ssh
+          ./profiles/system/sudo
+        ];
       };
 
       kepler = lib.nixosSystem {
@@ -293,8 +252,13 @@
           sops-nix.nixosModule
           ./profiles/system/common
 
-          ./hosts/kepler/configuration.nix
+          # Make host accessible via Wireguard VPN (server).
           ./hosts/kepler/wireguard-server.nix
+
+          # Host system configuration.
+          ./hosts/kepler/configuration.nix
+
+          # Shared profiles.
           ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
