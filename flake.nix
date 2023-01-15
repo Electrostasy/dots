@@ -51,7 +51,7 @@
 
       customisations = final: prev: {
         libewf = prev.libewf.overrideAttrs (_: {
-          # `ewfmount` depends on `fuse` to mount *.E01 forensic images
+          # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
           buildInputs = [ prev.fuse ];
         });
 
@@ -61,8 +61,25 @@
       };
     };
 
+    nixosModules = {
+      # Module to create a steam-install@ templated service that installs game
+      # (server) files from Steam using steamcmd by app id. We could fetch the
+      # game files from the Steam depot directly, but this is more in line with
+      # how games auto-update on Steam and it's easier to maintain.
+      # Credit: https://kevincox.ca/2022/12/09/valheim-server-nixos-v2/
+      steam-install = import ./modules/system/steam-install;
+
+      # Module for starting the Project Zomboid video game server, managed by
+      # Steam and depends on the steam-install module.
+      pz-server = import ./modules/system/pz-server;
+    };
+
     homeManagerModules = {
+      # Module for customizing the Wayland-native application launcher Fuzzel.
       fuzzel = import ./modules/user/fuzzel;
+
+      # Module for customizing the modular and extensible Wayland compositor
+      # Wayfire.
       wayfire = import ./modules/user/wayfire;
     };
 
@@ -75,6 +92,8 @@
           impermanence.nixosModule
           sops-nix.nixosModule
           ./profiles/system/common
+
+          self.nixosModules.pz-server
 
           # Make host accessible via Wireguard VPN.
           ./hosts/kepler/wireguard-peer.nix

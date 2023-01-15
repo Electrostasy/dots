@@ -5,6 +5,7 @@
     ./build-machine.nix
     ./audio.nix
     ./gaming.nix
+    ./pz-server.nix
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
