@@ -111,7 +111,7 @@
   };
 
   services.openssh = {
-    permitRootLogin = lib.mkForce "prohibit-password";
+    settings.PermitRootLogin = lib.mkForce "prohibit-password";
     hostKeys = [
       { type = "ed25519"; inherit (config.sops.secrets.sshHostKeyEd25519) path; }
       { type = "rsa"; inherit (config.sops.secrets.sshHostKeyRsa) path; }
@@ -126,8 +126,9 @@
     users.root = {
       passwordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
-        ../terra/ssh_electro_ed25519_key.pub
         ../jupiter/ssh_gediminas_ed25519_key.pub
+        ../terra/ssh_electro_ed25519_key.pub
+        ../venus/ssh_electro_ed25519_key.pub
       ];
     };
   };

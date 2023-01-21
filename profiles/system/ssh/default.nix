@@ -4,9 +4,11 @@
   services.openssh = {
     enable = true;
 
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-    kbdInteractiveAuthentication = false;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
   };
 
   # Ensure that all other hosts know each other when connecting by ssh.
