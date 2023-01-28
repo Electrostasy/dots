@@ -59,14 +59,6 @@
           langs = [ "en-US" "lt" ];
         });
       };
-
-      fixes = final: prev: {
-        # Remove when https://github.com/NixOS/nixpkgs/pull/211469 hits
-        # nixos-unstable.
-        mullvad = prev.mullvad.overrideAttrs (old: {
-          nativeBuildInputs = old.nativeBuildInputs ++ [ prev.git ];
-        });
-      };
     };
 
     homeManagerModules = {

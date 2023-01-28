@@ -76,20 +76,24 @@
       gimp
       imv
       keepassxc
-      libreoffice
+      # Wait for https://github.com/NixOS/nixpkgs/pull/212583
+      # to hit nixos-unstable, broken build.
+      # libreoffice
       qpwgraph
-      transmission-qt
+      spek
       xdg-utils
 
+      aria2
       bitwise
+      detox
       dua
-      fio
       e2fsprogs # badblocks
-      smartmontools # smartctl
-      hdparm
+      fio
       magic-wormhole
       neo
+      nix-prefetch
       pastel
+      smartmontools # smartctl
       vimv-rs
       xplr
       youtube-dl
