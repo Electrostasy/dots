@@ -38,13 +38,6 @@
 
       # https://github.com/kovidgoyal/kitty/discussions/4956
       confirm_os_window_close = 0;
-
-      # Should be fixed when 0.26.3+ lands:
-      # https://github.com/kovidgoyal/kitty/issues/5467
-      # https://sw.kovidgoyal.net/kitty/changelog/#id3
-      remember_window_size = "no";
-      initial_window_width = 850;
-      initial_window_height = 540;
     };
 
     extraConfig = ''
