@@ -76,9 +76,7 @@
       gimp
       imv
       keepassxc
-      # Wait for https://github.com/NixOS/nixpkgs/pull/212583
-      # to hit nixos-unstable, broken build.
-      # libreoffice
+      libreoffice
       qpwgraph
       spek
       xdg-utils

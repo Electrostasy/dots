@@ -19,9 +19,7 @@
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-      # Wait for https://github.com/NixOS/nixpkgs/pull/212583
-      # to hit nixos-unstable, broken build.
-      # libreoffice
+      libreoffice
       mepo
       xournalpp
     ];
