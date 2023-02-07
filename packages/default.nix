@@ -39,7 +39,7 @@ rec {
 
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
-  vimPlugins = prev.vimPlugins // {
+  vimPlugins = prev.vimPlugins.extend (final': prev': {
     heirline-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
       pname = "heirline-nvim";
       src = prev.fetchFromGitHub {
@@ -60,5 +60,5 @@ rec {
       };
       version = "unstable-2022-09-29";
     };
-  };
+  });
 }
