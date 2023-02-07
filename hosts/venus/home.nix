@@ -16,6 +16,7 @@
     home.packages = with pkgs; [
       element-desktop
       firefox-custom
+      freerdp # wlfreerdp
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New

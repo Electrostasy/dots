@@ -26,12 +26,21 @@ in
   # and private key in sops. Generate keys using the following command:
   # $ wg genkey | tee wg-private.key | wg pubkey > wg-public.key
   nodes =
-    # The Wireguard server needs a hardcoded IP, we ensure that by specifying
-    # it separately here, and assigning the rest of the peers incrementally
-    # higher IPs, starting with 10.10.1.2/32.
-    { kepler = {
+    { # The Wireguard server needs a hardcoded IP, we ensure that by specifying
+      # it separately here, and assigning the rest of the peers incrementally
+      # higher IPs, starting with 10.10.1.2/32.
+      kepler = {
         PublicKey = "K9+2GqQVcDHziXuRH0b+0qa/h4hSiHT+Yucvw8nzHiw=";
         AllowedIPs = [ "10.10.1.1/32" ];
+      };
+
+      # Work PC on Windows, used for remote desktop connections. As this host is
+      # completely unmanaged by Nix, a higher IP is deliberately chosen to not
+      # cause conflicts with the managed hosts.
+      # TODO: Investigate RDP via WSL2 over Wireguard.
+      BERLA = {
+        PublicKey = "/fwDjhWaUHnJTKlKt38waNYsSIdnkZ8Ve2fFaJJrNQs=";
+        AllowedIPs = [ "10.10.1.80/32" ];
       };
     }
     // incrementIPs

@@ -87,6 +87,7 @@
       dua
       e2fsprogs # badblocks
       fio
+      freerdp # wlfreerdp
       magic-wormhole
       neo
       nix-prefetch
