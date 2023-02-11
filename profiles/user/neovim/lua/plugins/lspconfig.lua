@@ -1,31 +1,31 @@
 local completion_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local icons = {
-  Text = "",
-  Method = "",
-  Function = "",
-  Constructor = "",
-  Field = "ﰠ",
-  Variable = "",
-  Class = "ﴯ",
-  Interface = "",
-  Module = "",
-  Property = "ﰠ",
-  Unit = "塞",
-  Value = "",
-  Enum = "",
-  Keyword = "",
-  Snippet = "",
-  Color = "",
-  File = "",
-  Reference = "",
-  Folder = "",
-  EnumMember = "",
-  Constant = "",
-  Struct = "פּ",
-  Event = "",
-  Operator = "",
-  TypeParameter = "⌬"
+  Text = '',
+  Method = '',
+  Function = '',
+  Constructor = '',
+  Field = 'ﰠ',
+  Variable = '',
+  Class = 'ﴯ',
+  Interface = '',
+  Module = '',
+  Property = 'ﰠ',
+  Unit = '塞',
+  Value = '',
+  Enum = '',
+  Keyword = '',
+  Snippet = '',
+  Color = '',
+  File = '',
+  Reference = '',
+  Folder = '',
+  EnumMember = '',
+  Constant = '',
+  Struct = 'פּ',
+  Event = '',
+  Operator = '',
+  TypeParameter = '⌬'
 }
 
 local common = {
@@ -66,8 +66,8 @@ local servers = {
   nil_ls = {},
   sumneko_lua = function()
     local runtime_path = vim.split(package.path, ';')
-    table.insert(runtime_path, "lua/?.lua")
-    table.insert(runtime_path, "lua/?/init.lua")
+    table.insert(runtime_path, 'lua/?.lua')
+    table.insert(runtime_path, 'lua/?/init.lua')
 
     return {
       settings = {
@@ -77,8 +77,10 @@ local servers = {
             path = runtime_path,
           },
           diagnostics = { globals = { 'vim' } },
-          workspace = { library = vim.api.nvim_get_runtime_file("", true) },
-          telemetry = { enable = false },
+          workspace = {
+            library = vim.api.nvim_get_runtime_file('', true),
+            checkThirdParty = false,
+          },
         },
       },
     }
@@ -106,7 +108,7 @@ vim.diagnostic.config({
 })
 
 -- Highlight line number instead of having icons in sign columns
-vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticSignError" })
-vim.fn.sign_define("DiagnosticSignWarning", { text = "", numhl = "DiagnosticSignWarning" })
-vim.fn.sign_define("DiagnosticSignInformation", { text = "", numhl = "DiagnosticSignInformation" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticSignHint" })
+vim.fn.sign_define('DiagnosticSignError', { text = '', numhl = 'DiagnosticSignError' })
+vim.fn.sign_define('DiagnosticSignWarning', { text = '', numhl = 'DiagnosticSignWarning' })
+vim.fn.sign_define('DiagnosticSignInformation', { text = '', numhl = 'DiagnosticSignInformation' })
+vim.fn.sign_define('DiagnosticSignHint', { text = '', numhl = 'DiagnosticSignHint' })

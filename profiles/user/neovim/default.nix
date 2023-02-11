@@ -48,7 +48,7 @@
       rust-analyzer
       statix
       stylua
-      sumneko-lua-language-server
+      lua-language-server
       tree-sitter
     ];
 
