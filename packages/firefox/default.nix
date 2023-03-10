@@ -36,6 +36,16 @@ wrapFirefox firefox-unwrapped {
     # we can declare what configuration we want for them.
     "3rdparty".Extensions = {
       "uBlock0@raymondhill.net".adminSettings = {
+        userSettings = {
+          externalLists = lib.concatStringsSep "\n" [
+            "https://filters.adtidy.org/extension/ublock/filters/3.txt"
+            "https://github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+          ];
+          importedLists = [
+            "https://filters.adtidy.org/extension/ublock/filters/3.txt"
+            "https://github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+          ];
+        };
         selectedFilterLists = [
           "adguard-annoyance"
           "adguard-social"
@@ -43,6 +53,7 @@ wrapFirefox firefox-unwrapped {
           "adguard-spyware-url"
           "easylist"
           "easyprivacy"
+          "https://github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
           "LTU-0"
           "plowe-0"
           "RUS-0"
@@ -57,12 +68,6 @@ wrapFirefox firefox-unwrapped {
         ];
       };
     };
-
-    SearchEngines = {
-      Default = "DuckDuckGo";
-      PreventInstalls = true;
-      Remove = [ "Amazon.com" "Bing" "Wikipedia (en)" ];
-    };
   };
 
   extraPrefsFiles =
@@ -70,8 +75,8 @@ wrapFirefox firefox-unwrapped {
       arkenfox = fetchFromGitHub {
         owner = "arkenfox";
         repo = "user.js";
-        rev = "105.0";
-        sha256 = "sha256-XUjX+Tno3EU/3IXR/WCn4M5gVR+sKjCzpKcV31dqzWA=";
+        rev = "109.0";
+        sha256 = "sha256-ebSx6DaXoGKcCoK6UcDnWvdAW6J2X6pJRPD1Pw7UNOw=";
       };
     in
       lib.singleton "${arkenfox}/user.js";
@@ -79,37 +84,19 @@ wrapFirefox firefox-unwrapped {
   extraPrefs = ''
     user_pref("general.autoScroll", true);
     user_pref("extensions.activeThemeID", "firefox-compact-dark@mozilla.org");
+    user_pref("browser.tabs.insertAfterCurrent", true);
 
-    // Arkenfox user.js overrides
-    user_pref("app.update.auto", false);
-    user_pref("browser.eme.ui.enabled", false);
-    user_pref("browser.search.update", false);
-    user_pref("browser.urlbar.autoFill", false);
-    user_pref("browser.urlbar.maxRichResults", 0);
+    // Arkenfox user.js overrides.
+    user_pref("browser.download.useDownloadDir", true);
+    user_pref("browser.startup.page", 3);
     user_pref("browser.urlbar.suggest.bookmark", false);
     user_pref("browser.urlbar.suggest.history", false);
     user_pref("browser.urlbar.suggest.openpage", false);
-    user_pref("browser.urlbar.suggest.topsites", false)
-    user_pref("dom.security.https_only_mode_pbm", true);
-    user_pref("dom.security.https_only_mode.upgrade_local", true);
-    user_pref("extensions.formautofill.addresses.enabled", false);
-    user_pref("extensions.formautofill.creditCards.enabled", false);
-    user_pref("extensions.formautofill.heuristics.enabled", false);
-    user_pref("extensions.pocket.enabled", false);
-    user_pref("extensions.screenshots.disabled", true);
+    user_pref("browser.urlbar.suggest.topsites", false);
+    user_pref("dom.popup_allowed_events", "click dblclick mousedown pointerdown");
     user_pref("extensions.webextensions.restrictedDomains", "");
-    user_pref("identity.fxaccounts.enabled", false);
-    user_pref("layout.spellcheckDefault", 2);
-    user_pref("media.autoplay.blocking_policy", 2);
-    user_pref("media.autoplay.default", 5);
     user_pref("permissions.default.shortcuts", 2);
     user_pref("permissions.memory_only", true);
-    user_pref("reader.parse-on-load.enabled", false);
     user_pref("signon.rememberSignons", false);
-    user_pref("startup.homepage_override_url", "");
-    user_pref("startup.homepage_welcome_url", "");
-    user_pref("startup.homepage_welcome_url.additional", "");
-    user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-    user_pref("ui.systemUsesDarkTheme", 1);
   '';
 }
