@@ -12,19 +12,19 @@
   libxkbcommon,
   wlroots_0_16,
   wf-config,
-  
+
   lib,
 }:
 
 stdenv.mkDerivation {
   pname = "wayfire-shadows";
-  version = "unstable-2022-12-21";
+  version = "unstable-2023-03-09";
 
   src = fetchFromGitHub {
     owner = "timgott";
     repo = "wayfire-shadows";
-    rev = "0dad0f75f5c1b659a9caea5d13717f3064730dcf";
-    sha256 = "sha256-+PVWcC+pzGhzA2Z+kPgp9s2f+k73q0pFyZ/dJbmS61I=";
+    rev = "dbcd78989631aa712f7b716a8b3a82256f1e2559";
+    sha256 = "sha256-ct5SqP/LcDh/Ff72Enf461fB1u0O3LoGLTuLZx8IPOc=";
   };
 
   nativeBuildInputs = [
@@ -51,8 +51,5 @@ stdenv.mkDerivation {
     description = "Wayfire plugin that adds window shadows";
     license = licenses.mit;
     platforms = platforms.unix;
-
-    # Can't compile until changes in wayfire-git are caught up with
-    broken = true;
   };
 }
