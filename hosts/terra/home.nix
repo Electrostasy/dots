@@ -105,11 +105,8 @@
     ];
 
     home.packages = with pkgs; [
-      cura
-      prusa-slicer
-      super-slicer
       f3d
-      fstl
+      prusa-slicer
       solvespace
 
       firefox-custom
