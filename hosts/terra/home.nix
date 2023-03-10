@@ -56,6 +56,25 @@
           transform = 270;
         };
       }
+      { plugin = "command";
+        settings = {
+          # Switch between scaled and unscaled, shifting the position of the
+          # outputs accordingly.
+          binding_toggle_scale = "<super> <alt> KEY_GRAVE";
+          command_toggle_scale = toString (pkgs.writeScript "toggle_scale.sh" ''
+            file="$XDG_RUNTIME_DIR/toggle_scale"
+            if [[ -e "$file" ]]; then
+              ${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --pos 0,250 --scale 1.5
+              ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 2560,0
+              rm "$file"
+            else
+              ${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --pos 0,0 --scale 1.0
+              ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 3840,120
+              touch "$file"
+            fi
+          '');
+        };
+      }
       { plugin = "autostart";
         settings = {
           wallpapers = "${pkgs.wlr-spanbg}/bin/wlr-spanbg $(find ~/pictures/wallpapers -type f | shuf -n1)";
