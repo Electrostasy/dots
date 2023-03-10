@@ -62,14 +62,21 @@ in
 
 stdenv.mkDerivation {
   pname = "wayfire";
-  version = "unstable-2023-01-04";
+  version = "unstable-2023-03-05";
 
   src = fetchFromGitHub {
     owner = "WayfireWM";
     repo = "wayfire";
-    rev = "8d7b4cf36d6ad245580fd473c8faa3c0fab15561";
-    sha256 = "sha256-2iP5jgYY4+vLHgq6BPjhA0elcJRBEt72VLkH6PXiMwE=";
+    rev = "90c370fa988c165853bc18e9e955269580b03a55";
+    sha256 = "sha256-xTU6IyYb2sddCbK6cAIlhnQEKnVzbvX3fCRYpb8BMxQ=";
   };
+
+  patches = [
+    # https://github.com/WayfireWM/wayfire/issues/1482
+    # Prevents crashing when dragging windows between outputs, but not ideal
+    # solution.
+    ./window-drag-crash.patch
+  ];
 
   postUnpack = ''
     # Complains about there not being a meson.build file in the submodules otherwise
