@@ -76,6 +76,10 @@ stdenv.mkDerivation {
     # Prevents crashing when dragging windows between outputs, but not ideal
     # solution.
     ./window-drag-crash.patch
+
+    # https://github.com/WayfireWM/wayfire/issues/1750
+    # Prevents windows from being transformed without taking into account scale.
+    ./view-transform-scale.patch
   ];
 
   postUnpack = ''
