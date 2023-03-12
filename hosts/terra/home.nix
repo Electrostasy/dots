@@ -110,6 +110,7 @@
       pastel
       smartmontools # smartctl
       vimv-rs
+      weathercrab
       xplr
       youtube-dl
 
@@ -122,6 +123,30 @@
 
       settings.flags.tree = true;
     };
+
+    xdg.configFile."weathercrab/wthrr.ron".text = ''
+      (
+        address: "Vilnius,LT",
+        language: "en_US",
+        forecast: [day, week],
+        units: (
+          temperature: celsius,
+          speed: kmh,
+          time: military,
+          precipitation: mm,
+        ),
+        gui: (
+          border: single,
+          color: default,
+          graph: (
+            style: lines(solid),
+            rowspan: double,
+            time_indicator: true,
+          ),
+          greeting: false,
+        ),
+      )
+    '';
   };
 }
 
