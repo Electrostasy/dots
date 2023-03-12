@@ -10,6 +10,7 @@ in
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };
+  weathercrab = callPackage ./weathercrab { };
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
