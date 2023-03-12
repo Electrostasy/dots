@@ -7,14 +7,50 @@
   # https://github.com/werman/noise-suppression-for-voice/issues/62
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1526
   systemd.user.services.pipewire-hifiman-sundara-eq = {
-    enable = true;
-
     description = "PipeWire HIFIMAN Sundara Equalized sink";
     after = [ "pipewire.service" ];
-    bindsTo = [ "pipewire.service" ];
-    wantedBy = [ "pipewire.service" ];
+    wantedBy = [ "graphical-session-pre.target" ];
 
     serviceConfig.ExecStart = "${pkgs.pipewire}/bin/pipewire -c ${./equalizer.conf}";
+  };
+
+  systemd.user.services.wireplumber-volume = {
+    description = "PipeWire set default volume to 100%";
+    after = [
+      "wireplumber.service"
+      "pipewire-hifiman-sundara-eq.service"
+      "pipewire-rnnoise.service"
+      "wireplumber-default-nodes.service"
+    ];
+    wantedBy = [ "graphical-session-pre.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.wireplumber}/bin/wpexec ${./volume.lua}";
+    };
+  };
+
+  systemd.user.services.wireplumber-default-nodes = {
+    description = "PipeWire set default audio sink, source";
+    after = [
+      "wireplumber.service"
+      "pipewire-hifiman-sundara-eq.service"
+      "pipewire-rnnoise.service"
+    ];
+    wantedBy = [ "graphical-session-pre.target" ];
+
+    serviceConfig.Type = "oneshot";
+    script = ''
+      status="$(${pkgs.wireplumber}/bin/wpctl status)"
+
+      # Set default sink/source to the correct nodes.
+      # Note that it would be more correct to match between 'Sinks: and
+      # 'Sink endpoints:' lines, but it seems to work fine for now.
+      sink="$(echo "$status" | ${pkgs.gnused}/bin/sed -n 's/[ │*]\+\([0-9]\+\)\. HIFIMAN Sundara (Equalized).*/\1/p')"
+      source=$(echo "$status" | ${pkgs.gnused}/bin/sed -n 's/[ │*]\+\([0-9]\+\)\. Noise Cancelling source.*/\1/p')
+      ${pkgs.wireplumber}/bin/wpctl set-default "$sink"
+      ${pkgs.wireplumber}/bin/wpctl set-default "$source"
+    '';
   };
 
   environment.etc."wireplumber/main.lua.d/51-gpu-audio.lua".text = ''
@@ -24,6 +60,18 @@
       },
       apply_properties = {
         ["device.disabled"] = true,
+      },
+    })
+  '';
+
+  environment.etc."wireplumber/main.lua.d/51-usb-audio.lua".text = ''
+    -- USB audio interfaces can take a while to wake up from suspending.
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        {{ "node.name", "matches", "alsa_*.usb-*" }}
+      },
+      apply_properties = {
+        ["session.suspend-timeout-seconds"] = 0,
       },
     })
   '';

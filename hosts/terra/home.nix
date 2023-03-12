@@ -76,31 +76,10 @@
         };
       }
       { plugin = "autostart";
-        settings = {
-          wallpaper = toString (pkgs.writeScript "pick_wallpaper.sh" ''
-            wallpaper="$(find ~/pictures/wallpapers -type f | shuf -n 1)"
-            ${pkgs.wlr-spanbg}/bin/wlr-spanbg "$wallpaper"
-          '');
-
-          # The default audio sink on startup is the microphone. Why?
-          # The default audio source should also be the noise cancellation node.
-          audio_default_sink_source = toString (pkgs.writeScript "set_default_sink.sh" ''
-            status="$(wpctl status)"
-            # Note that it would be more correct to match between 'Sinks: and
-            # 'Sink endpoints:' lines, but it seems to work fine for now.
-            sink="$(echo "$status" | sed -n 's/[ │*]\+\([0-9]\+\)\. HIFIMAN Sundara (Equalized).*/\1/p')"
-            source=$(echo "$status" | sed -n 's/[ │*]\+\([0-9]\+\)\. Noise Cancelling source.*/\1/p')
-            wpctl set-default "$sink"
-            wpctl set-default "$source"
-          '');
-
-          # DAC and microphone have a default volume on startup of 40%. Why?
-          audio_volume = toString (pkgs.writeScript "set_max_volume.sh" ''
-            for sink in $(wpctl status | sed -n '/ ├─ Sinks:$/,$!d; / │  $/q; s/[ │*]\+\([0-9]\+\).*/\1/p'); do
-              wpctl set-volume "$sink" 1
-            done
-          '');
-        };
+        settings.wallpaper = toString (pkgs.writeShellScript "pick_wallpaper.sh" ''
+          wallpaper="$(find ~/pictures/wallpapers -type f | shuf -n 1)"
+          ${pkgs.wlr-spanbg}/bin/wlr-spanbg "$wallpaper"
+        '');
       }
     ];
 
