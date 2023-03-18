@@ -5,59 +5,70 @@
     enable = true;
 
     plugins = with pkgs.vimPlugins; [
-      # Completion plugins
+      # Completion engine and sources.
       cmp-buffer
       cmp_luasnip
       cmp-nvim-lsp
       cmp-nvim-lua
       cmp-path
       cmp-under-comparator
+      luasnip
       nvim-cmp
 
-      # Eyecandy, syntax highlighting
-      heirline-nvim
+      # Visual improvements.
       hlargs-nvim
       indent-blankline-nvim
-      jq-vim
-      kanagawa-nvim
-      lspkind-nvim
       lsp_lines-nvim
       nvim-colorizer-lua
-      (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars))
+      nvim-treesitter.withAllGrammars
       nvim-web-devicons
 
-      # Additional functionality
+      # Functionality.
       comment-nvim
       gitsigns-nvim
-      luasnip
       nvim-surround
       telescope-fzf-native-nvim
       telescope-nvim
-
-      # LSP
-      null-ls-nvim
-      nvim-lspconfig
+      treesj
     ] ++ builtins.map (plugin: { inherit plugin; optional = true; }) [
+      # Tree-sitter AST inspection.
       playground
     ];
 
     extraPackages = with pkgs; [
-      luajitPackages.luacheck
-      nil
-      ripgrep
-      rust-analyzer
-      statix
-      stylua
+      # Lua LSP & linter
       lua-language-server
-      tree-sitter
+      # selene
+
+      # Nix doc searcher, LSP & linter
+      # manix
+      nil
+      # statix
+
+      # Python LSP, formatter & linter
+      python311Packages.jedi-language-server
+      # ruff
+
+      # Rust linter, LSP & formatter
+      # clippy
+      rust-analyzer
+      # rustfmt
+
+      # C/C++ LSP & formatter
+      clang-tools
+
+      # Plugin dependencies
+      ripgrep
     ];
 
     withRuby = false;
     withPython3 = false;
-    extraConfig = "lua require('init')";
+    withNodeJs = false;
   };
 
-  home.file.".config/nvim/lua".source = ./lua;
+  # Configuration is written in lua, copy it to the Nix store and symlink it
+  # to ~/.config/nvim.
+  home.file.".config/nvim".source = ./nvim;
 
   home.sessionVariables = {
     EDITOR = "nvim";

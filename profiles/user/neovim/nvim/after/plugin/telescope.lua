@@ -2,17 +2,21 @@ local telescope = require('telescope')
 local actions = require('telescope.actions')
 local builtin = require('telescope.builtin')
 
-local config = {
+telescope.setup({
   defaults = {
+    -- Prevent creating telescope history/cache files
+    history = false,
+    cache_picker = false,
+
     layout_config = { prompt_position = 'top' },
     sorting_strategy = 'ascending',
     prompt_prefix = ' ',
     dynamic_preview_title = true,
     selection_caret = '▶ ',
     borderchars = {
-      prompt = { '', '', '', '', '', '', '', '' },
-      results = { '', '', '', '', '', '', '', '' },
-      preview = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
+      prompt = { '▔', '▕', ' ', '▏', '🭽', '🭾', '▕', '▏' },
+      results = { '▔', '▕', '▁', '▏', '🭽', '🭾', '🭿', '🭼' },
+      preview = { '▔', '▕', '▁', '▏', '🭽', '🭾', '🭿', '🭼' },
     },
     mappings = {
       i = {
@@ -45,9 +49,7 @@ local config = {
       case_mode = 'smart_case',
     },
   }
-}
-
-telescope.setup(config)
+})
 telescope.load_extension('fzf')
 
 vim.keymap.set('n', '<leader>b', builtin.buffers, { silent = true })

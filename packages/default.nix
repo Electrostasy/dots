@@ -41,25 +41,16 @@ in
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = prev.vimPlugins.extend (final': prev': {
-    heirline-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
-      pname = "heirline-nvim";
-      src = prev.fetchFromGitHub {
-        owner = "rebelot";
-        repo = "heirline.nvim";
-        rev = "9179b71d9967057814e5920ecb3c8322073825ea";
-        sha256 = "sha256-5IkZ+NfecFomQbDlz71YpbxNB2v9Y+i8Kkjyv4Mhr3Y=";
-      };
-      version = "unstable-2022-09-22";
-    };
-    hlargs-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
+    hlargs-nvim = prev.vimUtils.buildVimPlugin {
       pname = "hlargs-nvim";
+      version = "unstable-2023-03-06";
+
       src = prev.fetchFromGitHub {
         owner = "m-demare";
         repo = "hlargs.nvim";
-        rev = "f674e11304be45e4d1cae103af5275c0b2ea7b4c";
-        sha256 = "sha256-8TbtM6nyMziBGJy/T4xjQbYq9i/kYizwB12POA4CUuw=";
+        rev = "a7ad6ed8d6e27ea4dd13fda63fa732e9196ba4ea";
+        sha256 = "sha256-9kCQs1IFt48Y3IWClFlwdT/Kbgv93gPEdhGi75k04qU=";
       };
-      version = "unstable-2022-09-29";
     };
   });
 }
