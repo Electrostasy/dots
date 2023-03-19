@@ -204,6 +204,34 @@ vim.api.nvim_create_autocmd('User', {
   end
 })
 
+-- Set a variable containing the file size.
+-- Based on the implementation in lualine filesize.lua component.
+vim.api.nvim_create_autocmd({ 'BufWinEnter', 'BufWrite' }, {
+  pattern = '*',
+  group = 'StatusLine',
+  callback = function()
+    local file = vim.api.nvim_buf_get_name(0)
+    if file == nil or #file == 0 then
+      return
+    end
+
+    local size = vim.fn.getfsize(file)
+    if size <= 0 then
+      return
+    end
+
+    local suffixes = { 'B', 'KB', 'MB', 'GB', 'TB' }
+
+    local i = 1
+    while size > 1000 and i < #suffixes do
+      size = size / 1000
+      i = i + 1
+    end
+
+    vim.b.stl_filesize = { number = size, units = suffixes[i] }
+  end
+})
+
 function __StatusLine(current)
   local win = vim.api.nvim_get_current_win()
   local win_nr = vim.api.nvim_win_get_number(win)
@@ -261,6 +289,11 @@ function __StatusLine(current)
       format = '%l:%c'
     end
     table.insert(groups, (' %s'):format(format))
+  end
+
+  local size = vim.b.stl_filesize
+  if size then
+    table.insert(groups, (' %.2f %s'):format(size.number, size.units))
   end
 
   local encoding = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc
