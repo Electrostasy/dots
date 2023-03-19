@@ -3,6 +3,10 @@ if not devicons.has_loaded() then
   devicons.setup()
 end
 
+-- Override the default quickfix ftplugin, that modifies the statusline.
+-- :h ft-qf-plugin
+vim.g.qf_disable_statusline = 1
+
 vim.api.nvim_create_augroup('StatusLine', { clear = true })
 
 local mode_map = {
@@ -231,10 +235,16 @@ function __StatusLine(current)
     table.insert(groups, ('%%#%s# %s %%*'):format(mode_hl, mode))
   end
 
-  local name = buffer_name()
-  local ext = vim.fn.fnamemodify(name, ':e')
-  local icon, icon_group = devicons.get_icon(name, ext, { default = true })
-  table.insert(groups, ('%%#Normal# %s %%#%s#%s %%*'):format(name, icon_group, icon))
+  local quickfix = vim.w.quickfix_title
+  if quickfix then
+    -- Display the command that produced the qf list.
+    table.insert(groups, ('%%#Normal# %s %%*'):format(quickfix))
+  else
+    local name = buffer_name()
+    local ext = vim.fn.fnamemodify(name, ':e')
+    local icon, icon_group = devicons.get_icon(name, ext, { default = true })
+    table.insert(groups, ('%%#Normal# %s %%#%s#%s %%*'):format(name, icon_group, icon))
+  end
 
   local modifiable = vim.bo.modifiable
   local modified = vim.bo.modified
@@ -276,7 +286,7 @@ function __StatusLine(current)
         local too_many = ('>%d'):format(count.maxcount)
         local current_count = count.current > count.maxcount and too_many or count.current
         local total_count = count.total > count.maxcount and too_many or count.total
-        table.insert(groups, (icon .. '%s/%s'):format(current_count, total_count))
+        table.insert(groups, (search_icon .. '%s/%s'):format(current_count, total_count))
       end
     end
   end
