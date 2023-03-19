@@ -36,28 +36,31 @@
     ];
 
     extraPackages = with pkgs; [
-      # Lua LSP & linter
+      # Lua LSP & linter.
       lua-language-server
       # selene
 
-      # Nix doc searcher, LSP & linter
+      # Nix doc searcher, LSP & linter.
       # manix
       nil
       # statix
 
-      # Python LSP, formatter & linter
+      # Python LSP, formatter & linter.
       python311Packages.jedi-language-server
       # ruff
 
-      # Rust linter, LSP & formatter
+      # Rust linter, LSP & formatter.
       # clippy
       rust-analyzer
       # rustfmt
 
-      # C/C++ LSP & formatter
+      # C/C++ LSP & formatter.
       clang-tools
 
-      # Plugin dependencies
+      # Zig LSP.
+      zls
+
+      # Plugin dependencies.
       ripgrep
     ];
 
