@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # Can't include the .conf contents into the NixOS format,
@@ -53,15 +53,31 @@
     '';
   };
 
-  environment.etc."wireplumber/main.lua.d/51-gpu-audio.lua".text = ''
-    table.insert(alsa_monitor.rules, {
+  environment.etc."wireplumber/main.lua.d/51-disable-devices-nodes.lua".text = ''
+    local disable_devices = {
       matches = {
-        {{ "device.name", "equals", "alsa_card.pci-0000_03_00.1" }}
+        -- GPU HDMI audio.
+        {{ "device.name", "equals", "alsa_card.pci-0000_03_00.1" }},
       },
       apply_properties = {
         ["device.disabled"] = true,
       },
-    })
+    }
+
+    local disable_nodes = {
+      matches = {
+        -- Microphone.
+        -- In recent updates, even though this isn't the default device, audio
+        -- is routed from headphones to microphone instead of the DAC. Why?
+        {{ "node.name", "equals", "alsa_output.usb-FIFINE_Microphones_Fifine_K658_Microphone_REV1.0-00.analog-stereo" }},
+      },
+      apply_properties = {
+        ["node.disabled"] = true,
+      },
+    }
+
+    table.insert(alsa_monitor.rules, disable_devices)
+    table.insert(alsa_monitor.rules, disable_nodes)
   '';
 
   environment.etc."wireplumber/main.lua.d/51-usb-audio.lua".text = ''
