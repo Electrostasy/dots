@@ -41,6 +41,7 @@ vim.opt.backspace = 'indent,eol,start'
 vim.opt.number = true
 vim.opt.updatetime = 300 -- Delay after user input before plugins are activated.
 vim.opt.timeoutlen = 500
+vim.opt.ruler = true
 
 -- Hide search count from message area, it is shown in the statusline.
 vim.opt.shortmess:append('S')
