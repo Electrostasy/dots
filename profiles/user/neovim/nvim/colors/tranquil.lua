@@ -145,14 +145,10 @@ local groups = {
   DiagnosticUnderlineWarn = { sp = accent[5], underline = true },
   DiagnosticUnderlineInfo = { sp = accent[4], underdotted = true },
   DiagnosticUnderlineHint = { sp = accent[3], underdashed = true },
-  DiagnosticVirtualTextError = { fg = accent[7] },
-  DiagnosticVirtualTextWarn = { fg = accent[5] },
-  DiagnosticVirtualTextInfo = { fg = accent[4] },
-  DiagnosticVirtualTextHint = { fg = accent[3] },
-  DiagnosticSignError = { link = 'DiagnosticVirtualTextError' },
-  DiagnosticSignWarn = { link = 'DiagnosticVirtualTextWarn' },
-  DiagnosticSignInfo = { link = 'DiagnosticVirtualTextInfo' },
-  DiagnosticSignHint = { link = 'DiagnosticVirtualTextHint' },
+  DiagnosticError = { fg = accent[7] },
+  DiagnosticWarn = { fg = accent[5] },
+  DiagnosticInfo = { fg = accent[4] },
+  DiagnosticHint = { fg = accent[3] },
 
   -- Depends on the telescope configuration borders for the border highlights
   -- to make sense.
