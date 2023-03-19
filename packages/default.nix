@@ -27,17 +27,6 @@ in
     mfpbar = callPackage ./mpv/scripts/mfpbar { };
   };
 
-  iosevka-custom = prev.iosevka.override {
-    privateBuildPlan = {
-      family = "Iosevka Custom";
-      spacing = "normal";
-      serifs = "sans";
-      no-cv-ss = true;
-      no-litigation = true;
-    };
-    set = "custom";
-  };
-
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
 
   vimPlugins = prev.vimPlugins.extend (final': prev': {

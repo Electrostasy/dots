@@ -104,7 +104,7 @@
 
         [org.gnome.desktop.interface]
         color-scheme='prefer-dark'
-        monospace-font-name='Iosevka Custom Medium Extended 11'
+        monospace-font-name='Recursive Mono Linear Static 11'
       '';
     };
   };

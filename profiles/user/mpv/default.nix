@@ -68,7 +68,7 @@ in
       osc = "no";
       osd-bar = "no";
       border = "no";
-      osd-font = "Iosevka";
+      osd-font = "Recursive Sans Linear Light";
 
       # PipeWire backend is selected automatically if detected, set it anyway
       ao = "pipewire";
@@ -78,13 +78,13 @@ in
 
       # Load external subtitles with similar name to file
       sub-auto = "fuzzy";
-      sub-bold = "yes";
+      sub-bold = "no";
       sub-gray = "yes";
 
       # Overriding embedded media `ass` subtitles
       sub-ass = "no";
-      sub-font = "Iosevka";
-      sub-font-size = 24;
+      sub-font = "Recursive Sans Linear Light";
+      sub-font-size = 28;
       sub-blur = 0.15;
       sub-border-color = "0.0/0.0/0.0/0.0";
       sub-border-size = 2.0;

@@ -54,7 +54,7 @@
 
     settings = {
       main = {
-        font = "Iosevka Custom";
+        font = "Recursive";
         fuzzy = "yes";
         horizontal-pad = 0;
         prompt = "\'\'"; # Empty prompt
