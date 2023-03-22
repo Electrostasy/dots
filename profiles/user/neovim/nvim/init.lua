@@ -16,6 +16,14 @@ vim.g.loaded_matchit = 1
 vim.g.loaded_matchparen = 1
 vim.g.loaded_2html_plugin = 1
 
+-- Add a blinking cursor in certain modes.
+vim.opt.guicursor = {
+  'n-c-v:block',
+  'i-ci-ve-r-o:blinkwait250-blinkon250-blinkoff250',
+  'i-ci-ve:ver25',
+  'r-cr-o:hor20'
+}
+
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 vim.cmd.colorscheme('tranquil')
