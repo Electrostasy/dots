@@ -250,7 +250,7 @@ function __StatusLine(current)
   --   end
   -- end
 
-  -- Max line number.
+  -- Max line number in gutter.
   local show_linenr = vim.opt.number:get() or vim.opt.relativenumber:get()
   if show_linenr then
     local buf_length_digits = int_len(vim.api.nvim_buf_line_count(buf))
@@ -259,19 +259,20 @@ function __StatusLine(current)
 
   -- Mode indicator.
   local mode, mode_hl = unpack(mode_map[vim.api.nvim_get_mode().mode:sub(1, 1)])
-  if current == 0 then
+  if current == 0 and not vim.opt.showmode:get() then
     table.insert(groups, ('%%#%s# %s %%*'):format(mode_hl, mode))
   end
 
-  local quickfix = vim.w.quickfix_title
-  if quickfix then
-    -- Display the command that produced the qf list.
-    table.insert(groups, ('%%#Normal# %s %%*'):format(quickfix))
-  else
-    local name = buffer_name()
-    local ext = vim.fn.fnamemodify(name, ':e')
-    local icon, icon_group = devicons.get_icon(name, ext, { default = true })
-    table.insert(groups, ('%%#Normal# %s %%#%s#%s %%*'):format(name, icon_group, icon))
+  local buftype = vim.bo[buf].buftype
+  if buftype == '' then
+    -- Show the file name/path.
+    local bufname = buffer_name()
+    local bufext = vim.fn.fnamemodify(bufname, ':e')
+    local icon, icon_group = devicons.get_icon(bufname, bufext, { default = true })
+    table.insert(groups, ('%%#Normal# %s %%#%s#%s %%*'):format(bufname, icon_group, icon))
+  elseif buftype == 'quickfix' then
+    -- Display the command that produced the quickfix list.
+    table.insert(groups, ('%%#Normal# %s %%*'):format(vim.w.quickfix_title))
   end
 
   local modifiable = vim.bo.modifiable
@@ -282,7 +283,7 @@ function __StatusLine(current)
     table.insert(groups, (' %s'):format('󰦝'))
   end
 
-  local ruler = vim.opt_local.ruler:get()
+  local ruler = vim.opt.ruler:get()
   if ruler then
     local format = vim.opt.rulerformat:get()
     if format == '' then
@@ -302,11 +303,10 @@ function __StatusLine(current)
   end
 
   -- Indentation.
-  local indent = vim.o.tabstop
-  local indent_by = vim.o.shiftwidth
-  local tabs_or_spaces = indent .. ' ' .. (vim.o.expandtab and 'spaces' or 'tabs')
-  local indent_increase = indent ~= indent_by and 'sw=' .. indent_by or ''
-  table.insert(groups, (' %s %s'):format(tabs_or_spaces, indent_increase))
+  local spaces = vim.o.expandtab
+  local tab_size = vim.o.softtabstop ~= 0 and vim.o.softtabstop or vim.o.tabstop
+  local indent = (' %s%s'):format(spaces and vim.o.shiftwidth or tab_size, spaces and ' spaces' or '-wide tabs')
+  table.insert(groups, indent)
 
   -- Show incremental search count.
   if vim.opt.shortmess:get().S and vim.v.hlsearch == 1 then

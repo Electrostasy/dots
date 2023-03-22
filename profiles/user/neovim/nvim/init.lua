@@ -40,7 +40,6 @@ require('nvim-treesitter.configs').setup({
 
 require('hlargs').setup()
 require('gitsigns').setup()
-require('nvim-web-devicons').setup()
 
 vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
 vim.opt.hidden = true -- Allow dirty buffers in the background.
