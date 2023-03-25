@@ -71,9 +71,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           impermanence.nixosModule
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Make host accessible via Wireguard VPN.
@@ -97,9 +97,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           impermanence.nixosModule
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Make host accessible via Wireguard VPN.
@@ -120,9 +120,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           impermanence.nixosModule
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Host system and home configurations.
@@ -145,8 +145,8 @@
           nixos-hardware.nixosModules.common-pc-laptop-ssd
           nixos-hardware.nixosModules.lenovo-thinkpad-t420
 
-          home-manager.nixosModule
-          sops-nix.nixosModule
+          home-manager.nixosModules.default
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Make host accessible via Wireguard VPN.
@@ -174,9 +174,9 @@
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.lenovo-thinkpad-x220
 
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           impermanence.nixosModule
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Make host accessible via Wireguard VPN.
@@ -200,7 +200,7 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           nixos-wsl.nixosModules.wsl
           ./profiles/system/common
 
@@ -219,9 +219,9 @@
         modules = [
           nixos-hardware.nixosModules.common-cpu-intel
 
-          home-manager.nixosModule
+          home-manager.nixosModules.default
           impermanence.nixosModule
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Host system and home configurations.
@@ -240,7 +240,7 @@
         specialArgs = { inherit self; };
 
         modules = [
-          sops-nix.nixosModule
+          sops-nix.nixosModules.default
           ./profiles/system/common
 
           # Make host accessible via Wireguard VPN (server).
