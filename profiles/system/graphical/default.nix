@@ -22,6 +22,9 @@
     '';
   };
 
+  # Polkit is required for privilege escalation, which seatd uses.
+  security.polkit.enable = true;
+
   hardware.opengl = {
     enable = true;
     driSupport = true;

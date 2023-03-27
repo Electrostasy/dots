@@ -84,31 +84,6 @@
     ];
   };
 
-  services.xserver = {
-    enable = true;
-    excludePackages = [ pkgs.xterm ];
-
-    displayManager.gdm = {
-      enable = true;
-      autoSuspend = false;
-    };
-
-    desktopManager.gnome = {
-      enable = true;
-      extraGSettingsOverrides = ''
-        [org.gnome.desktop.session]
-        idle-delay=0
-
-        [org.gnome.desktop.media-handling]
-        automount=false
-
-        [org.gnome.desktop.interface]
-        color-scheme='prefer-dark'
-        monospace-font-name='Recursive Mono Linear Static 11'
-      '';
-    };
-  };
-
   virtualisation.libvirtd = {
     enable = true;
     qemu.package = pkgs.qemu_kvm;
@@ -138,81 +113,33 @@
     };
   };
 
-  environment.gnome.excludePackages = with pkgs.gnome; [
-    cheese
-    eog
-    epiphany
-    geary
-    gnome-backgrounds
-    gnome-bluetooth
-    gnome-characters
-    gnome-color-manager
-    gnome-contacts
-    gnome-font-viewer
-    gnome-logs
-    gnome-maps
-    gnome-music
-    gnome-software
-    gnome-system-monitor
-    gnome-weather
-    pkgs.gnome-photos
-    pkgs.gnome-text-editor
-    pkgs.gnome-tour
-    pkgs.gnome-user-docs
-    pkgs.orca
-    seahorse
-    simple-scan
-    totem
-    yelp
-  ];
+  services.samba = {
+    enable = true;
+    openFirewall = true;
 
-  services = {
-    gnome = {
-      # Core OS services
-      evolution-data-server.enable = lib.mkForce false;
-      gnome-online-accounts.enable = false;
-      gnome-online-miners.enable = lib.mkForce false;
-      tracker-miners.enable = false;
-      tracker.enable = false;
+    extraConfig = ''
+      map to guest = bad user
+      load printers = no
+      printcap name = /dev/null
 
-      # Core shell
-      gnome-browser-connector.enable = false;
-      gnome-initial-setup.enable = false;
-      gnome-remote-desktop.enable = false;
-      gnome-user-share.enable = false;
-      rygel.enable = false;
-    };
+      log file = /var/log/samba/client.%I
+      log level = 2
+    '';
 
-    avahi.enable = false;
+    shares."Visiems" = {
+      path = "/home/gediminas/Visiems";
+      browseable = true;
+      writable = true;
+      public = true;
 
-    samba = {
-      enable = true;
-      openFirewall = true;
+      # Allow everyone to add/remove/modify files/directories
+      "guest ok" = "yes";
+      "force user" = "nobody";
+      "force group" = "nogroup";
 
-      extraConfig = ''
-        map to guest = bad user
-        load printers = no
-        printcap name = /dev/null
-
-        log file = /var/log/samba/client.%I
-        log level = 2
-      '';
-
-      shares."Visiems" = {
-        path = "/home/gediminas/Visiems";
-        browseable = true;
-        writable = true;
-        public = true;
-
-        # Allow everyone to add/remove/modify files/directories
-        "guest ok" = "yes";
-        "force user" = "nobody";
-        "force group" = "nogroup";
-
-        # Default permissions for files/directories
-        "create mask" = 0666;
-        "directory mask" = 0777;
-      };
+      # Default permissions for files/directories
+      "create mask" = 0666;
+      "directory mask" = 0777;
     };
   };
 }
