@@ -240,6 +240,9 @@
     { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
   ];
 
+  # Required for vendor shell completions.
+  programs.fish.enable = true;
+
   users = {
     mutableUsers = false;
 

@@ -14,16 +14,20 @@
     home.stateVersion = "22.11";
 
     home.packages = with pkgs; [
-      element-desktop
       firefox-custom
       freerdp # wlfreerdp
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
       libreoffice
+      magic-wormhole-rs
       mepo
       xournalpp
     ];
+
+    programs.fish.shellAliases = {
+      wormhole = "wormhole-rs";
+    };
 
     wayland.windowManager.wayfire.settings.plugins = lib.mkOrder 0 [
       # Digitizer to display mappings for rotation
