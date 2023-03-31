@@ -14,6 +14,7 @@
     home.stateVersion = "22.11";
 
     home.packages = with pkgs; [
+      erdtree
       firefox-custom
       freerdp # wlfreerdp
       imv
@@ -27,6 +28,7 @@
 
     programs.fish.shellAliases = {
       wormhole = "wormhole-rs";
+      tree = "et --dirs-first --size-left --prefix si --hidden --icons";
     };
 
     wayland.windowManager.wayfire.settings.plugins = lib.mkOrder 0 [

@@ -102,6 +102,7 @@
       detox
       dua
       e2fsprogs # badblocks
+      erdtree
       fio
       freerdp # wlfreerdp
       magic-wormhole-rs
@@ -126,6 +127,7 @@
 
     programs.fish.shellAliases = {
       wormhole = "wormhole-rs";
+      tree = "et --dirs-first --size-left --prefix si --hidden --icons";
     };
 
     xdg.configFile."weathercrab/wthrr.ron".text = ''
