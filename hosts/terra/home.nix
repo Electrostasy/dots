@@ -124,12 +124,8 @@
       settings.flags.tree = true;
     };
 
-    # Add fish shell completion for "wormhole" alias.
-    programs.fish = {
-      shellAliases.wormhole = "wormhole-rs";
-      interactiveShellInit = ''
-        complete --command wormhole --wraps wormhole-rs
-      '';
+    programs.fish.shellAliases = {
+      wormhole = "wormhole-rs";
     };
 
     xdg.configFile."weathercrab/wthrr.ron".text = ''
