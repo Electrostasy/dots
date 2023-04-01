@@ -8,13 +8,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "wthrr-the-weathercrab";
-  version = "1.0.0-rc";
+  version = "1.0.1";
 
   src = fetchFromGitHub {
     owner = "tobealive";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-6zVp6JlGAGQY8HNk2qVtkTQGC9AFaQ9kpD15c2v2Jk0=";
+    sha256 = "sha256-u8d3bX0jRe8N7LIhENMVI9MyR5HF2a8kyuMYw8s+PSc=";
   };
 
   cargoLock.lockFile = "${src}/Cargo.lock";
