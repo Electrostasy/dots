@@ -5,7 +5,6 @@ let
 in
 
 {
-  firefox-custom = callPackage ./firefox { };
   simp1e-cursors = callPackage ./simp1e-cursors { };
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };

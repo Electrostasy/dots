@@ -15,7 +15,6 @@
 
     home.packages = with pkgs; [
       erdtree
-      firefox-custom
       freerdp # wlfreerdp
       imv
       keepassxc

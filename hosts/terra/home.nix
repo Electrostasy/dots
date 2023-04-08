@@ -61,7 +61,7 @@
           # Switch between scaled and unscaled, shifting the position of the
           # outputs accordingly.
           binding_toggle_scale = "<super> <alt> KEY_GRAVE";
-          command_toggle_scale = toString (pkgs.writeScript "toggle_scale.sh" ''
+          command_toggle_scale = toString (pkgs.writeShellScript "toggle_scale.sh" ''
             file="$XDG_RUNTIME_DIR/toggle_scale"
             if [[ -e "$file" ]]; then
               ${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --pos 0,250 --scale 1.5
@@ -88,7 +88,6 @@
       prusa-slicer
       solvespace
 
-      firefox-custom
       gimp
       imv
       keepassxc

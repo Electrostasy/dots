@@ -15,7 +15,6 @@
     xdg.enable = true;
 
     home.packages = with pkgs; [
-      firefox-custom
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
       libreoffice
       source-han-sans # Japanese OpenType/CFF fonts

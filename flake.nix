@@ -85,6 +85,7 @@
 
           # Shared profiles.
           ./profiles/system/audio
+          ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
@@ -158,6 +159,7 @@
 
           # Shared profiles.
           ./profiles/system/audio
+          ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
@@ -188,6 +190,7 @@
 
           # Shared profiles.
           ./profiles/system/audio
+          ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
@@ -229,6 +232,7 @@
           ./hosts/ceres/home.nix
 
           # Shared profiles.
+          ./profiles/system/firefox
           ./profiles/system/git-headless
           ./profiles/system/graphical
           ./profiles/system/ssh
