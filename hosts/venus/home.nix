@@ -19,7 +19,7 @@
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-      libreoffice
+      libreoffice-fresh
       magic-wormhole-rs
       mepo
       xournalpp

@@ -54,10 +54,6 @@
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images
           buildInputs = [ prev.fuse ];
         });
-
-        libreoffice = prev.libreoffice.overrideAttrs (_: {
-          langs = [ "en-US" "lt" ];
-        });
       };
     };
 

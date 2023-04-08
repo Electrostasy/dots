@@ -16,7 +16,7 @@
 
     home.packages = with pkgs; [
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
-      libreoffice
+      libreoffice-fresh
       source-han-sans # Japanese OpenType/CFF fonts
       xplr
     ];

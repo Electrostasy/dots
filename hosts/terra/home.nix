@@ -91,7 +91,7 @@
       gimp
       imv
       keepassxc
-      libreoffice
+      libreoffice-fresh
       qpwgraph
       spek
       xdg-utils
