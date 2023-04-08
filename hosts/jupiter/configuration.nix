@@ -45,11 +45,8 @@
       "40-wired" = {
         name = "enp0s25";
 
-        address = [ "192.168.205.56" ];
-        gateway = [ "192.168.205.1" ];
+        DHCP = "yes";
         dns = [ "9.9.9.9" ];
-
-        dhcpV4Config.RouteMetric = 1024;
       };
 
       "40-usb-tethering" = {

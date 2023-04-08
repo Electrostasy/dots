@@ -96,10 +96,9 @@
     wait-online.timeout = 0;
 
     networks."40-wired" = {
-      name = "enp5s0";
+      name = "enp*";
 
-      address = [ "192.168.205.23" ];
-      gateway = [ "192.168.205.1" ];
+      DHCP = "yes";
       dns = [ "9.9.9.9" ];
     };
   };
