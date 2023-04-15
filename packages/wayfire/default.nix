@@ -72,7 +72,7 @@ stdenv.mkDerivation {
   };
 
   patches = [
-    # https://github.com/WayfireWM/wayfire/issues/1482
+    # https://github.com/WayfireWM/wayfire/issues/1695
     # Prevents crashing when dragging windows between outputs, but not ideal
     # solution.
     ./window-drag-crash.patch
@@ -83,7 +83,7 @@ stdenv.mkDerivation {
   ];
 
   postUnpack = ''
-    # Complains about there not being a meson.build file in the submodules otherwise
+    # Complains about there not being a meson.build file in the submodules otherwise.
     rm -rf ./source/subprojects/{wf-utils,wf-touch}
     ln -s ${wf-utils-unstable}/ ./source/subprojects/wf-utils
     ln -s ${wf-touch-unstable}/ ./source/subprojects/wf-touch
