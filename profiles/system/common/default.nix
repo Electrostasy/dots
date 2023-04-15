@@ -37,11 +37,10 @@ let
       config.allowAliases = false;
     };
 
-    environment.defaultPackages = lib.mkForce [];
-    environment.systemPackages = with pkgs; [
+    environment.defaultPackages = with pkgs; lib.mkForce [
       file
+      ouch
       parted
-      p7zip
     ];
 
     services.timesyncd.servers = [
