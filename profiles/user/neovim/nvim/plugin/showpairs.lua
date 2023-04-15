@@ -14,7 +14,11 @@ local function place_highlights(lang_query)
   -- the first line in the buffer and there is no node there. Conversely, if we
   -- don't reduce cursor_row by 1, we have the same problem on the last row of
   -- the buffer.
-  local ok, node = pcall(vim.treesitter.get_node_at_pos, 0, cursor_row - 1, cursor_col)
+  local ok, node = pcall(vim.treesitter.get_node, {
+    bufnr = 0,
+    pos = { cursor_row - 1, cursor_col }
+  })
+
   if not ok then
     clear_highlights()
     return
@@ -84,7 +88,7 @@ local function on_buf_leave(bufnr)
 end
 
 local function on_cursor_moved(bufnr, lang)
-  local lang_query = vim.treesitter.get_query(lang, 'showpairs')
+  local lang_query = vim.treesitter.query.get(lang, 'showpairs')
   return {
     group = augroup,
     buffer = bufnr,
@@ -97,7 +101,7 @@ end
 require('nvim-treesitter').define_modules({
   showpairs = {
     is_supported = function(lang)
-      return vim.treesitter.get_query(lang, 'showpairs')
+      return vim.treesitter.query.get(lang, 'showpairs')
     end,
     attach = function(bufnr, lang)
       vim.api.nvim_create_augroup(augroup, { clear = false })

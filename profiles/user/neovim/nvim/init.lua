@@ -154,16 +154,16 @@ require('plenary.filetype').add_table({
 -- Keymaps when an LSP is attached to the buffer.
 local lsp_lines = require('lsp_lines')
 local lsp_mappings = {
-  { 'n', 'gD', vim.lsp.buf.declaration },
-  { 'n', 'gd', vim.lsp.buf.definition },
-  { 'n', 'K', vim.lsp.buf.hover },
-  { 'n', 'gi', vim.lsp.buf.implementation },
-  { 'n', '<C-k>', vim.lsp.buf.signature_help },
-  { 'n', '<Leader>D', vim.lsp.buf.type_definition },
-  { 'n', '<Leader>rn', vim.lsp.buf.rename },
-  { 'n', '<Leader>C', vim.lsp.buf.code_action },
-  { 'n', '<Leader>R', vim.lsp.buf.references },
-  { 'n', '<Leader>F', vim.lsp.buf.formatting },
+  { 'n', 'gD', vim.lsp.buf.declaration, { silent = true, buffer = true } },
+  { 'n', 'gd', vim.lsp.buf.definition, { silent = true, buffer = true } },
+  { 'n', 'K', vim.lsp.buf.hover, { silent = true, buffer = true } },
+  { 'n', 'gi', vim.lsp.buf.implementation, { silent = true, buffer = true } },
+  { 'n', '<C-k>', vim.lsp.buf.signature_help, { silent = true, buffer = true } },
+  { 'n', '<Leader>D', vim.lsp.buf.type_definition, { silent = true, buffer = true } },
+  { 'n', '<Leader>rn', vim.lsp.buf.rename, { silent = true, buffer = true } },
+  { 'n', '<Leader>C', vim.lsp.buf.code_action, { silent = true, buffer = true } },
+  { 'n', '<Leader>R', vim.lsp.buf.references, { silent = true, buffer = true } },
+  { 'n', '<Leader>F', vim.lsp.buf.format, { silent = true, buffer = true } },
   { 'n', '<Leader>d', function()
     local virt_text = vim.diagnostic.config().virtual_text
     vim.diagnostic.config({
@@ -180,10 +180,7 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
   callback = function(args)
     if args.event == 'LspAttach' then
       for _, mapping in ipairs(lsp_mappings) do
-        vim.keymap.set(unpack(vim.tbl_extend('keep', mapping, {
-          silent = true,
-          buffer = 0,
-        })))
+        vim.keymap.set(unpack(mapping))
       end
 
       -- Show virtual lines by default.
