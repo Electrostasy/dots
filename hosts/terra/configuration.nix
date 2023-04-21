@@ -70,11 +70,12 @@
 
       directories = [
         ".cache"
+        ".config/PrusaSlicer"
         ".config/keepassxc"
-        "documents"
-        "downloads"
         ".local/share/fish"
         ".mozilla/firefox"
+        "documents"
+        "downloads"
         "pictures"
         { directory = ".ssh"; mode = "0700"; }
       ];
