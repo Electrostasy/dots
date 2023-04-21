@@ -15,7 +15,7 @@
     initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    tmpOnTmpfs = true;
+    tmp.useTmpfs = true;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

@@ -10,7 +10,7 @@
   boot = {
     initrd.availableKernelModules = [ "usb_storage" "uas" "usbhid" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    tmpOnTmpfs = true;
+    tmp.useTmpfs = true;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

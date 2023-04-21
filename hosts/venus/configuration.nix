@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [ ./remote-build-machines.nix ];
@@ -26,7 +26,7 @@
       "iwlwifi.power_save=1"
     ];
 
-    tmpOnTmpfs = true;
+    tmp.useTmpfs = true;
     loader.grub = {
       enable = true;
       version = 2;

@@ -23,7 +23,7 @@
       kernelModules = [ "nvme" ];
     };
     kernelPackages = pkgs.linuxPackages_latest;
-    tmpOnTmpfs = true;
+    tmp.useTmpfs = true;
 
     loader.grub = {
       enable = true;

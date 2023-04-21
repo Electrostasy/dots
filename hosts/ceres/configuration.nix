@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   system.stateVersion = "22.05";
@@ -17,7 +17,7 @@
     ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    tmpOnTmpfs = true;
+    tmp.useTmpfs = true;
 
     loader.grub = {
       enable = true;
