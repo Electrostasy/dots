@@ -32,6 +32,9 @@ let
       };
     };
 
+    # LC_TIME is apparently not respected by `ls` and `lsd`, but `date` works.
+    environment.sessionVariables.TIME_STYLE = "long-iso";
+
     nixpkgs = {
       overlays = builtins.attrValues self.overlays;
       config.allowAliases = false;
