@@ -185,7 +185,6 @@
           ./profiles/system/audio
           ./profiles/system/firefox
           ./profiles/system/git-headed
-          ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
           ./profiles/system/sudo

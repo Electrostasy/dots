@@ -1,7 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./remote-build-machines.nix ];
+  imports = [
+    ./gnome.nix
+    ./remote-build-machines.nix
+  ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
@@ -87,34 +90,6 @@
       # Limit CPU speed to reduce heat and increase battery
       CPU_MAX_PERF_ON_AC = "100";
       CPU_MAX_PERF_ON_BAT = "60";
-    };
-  };
-
-  services.acpid = {
-    enable = true;
-
-    # The uevent for attribute "hotkey_tablet_mode" never fires even if its sysfs value
-    # at /devices/platform/thinkpad_acpi mutates, so we can't use udev to handle this
-    handlers.tabletMode = {
-      event = "video/tabletmode TBLT 0000008A 0000000[01]";
-      action = ''
-        IFS=" " read -r -a ARGV <<< "$@"
-        mapfile -t SESSIONS < <(${pkgs.systemd}/bin/loginctl list-sessions -o json | ${pkgs.jq}/bin/jq -cM '.[].uid')
-        for SESSION in "''${SESSIONS[@]}"; do
-          # Ensure the login session has an active Wayland server
-          GFX_SESSION=$(${pkgs.findutils}/bin/find "/run/user/$SESSION" -maxdepth 1 -name 'wayland-[0-9]')
-          if [[ -z "$GFX_SESSION" ]]; then
-            continue
-          fi
-          XDG_RUNTIME_DIR="$(dirname "$GFX_SESSION")"
-          WAYLAND_DISPLAY="$(basename "$GFX_SESSION")"
-          export XDG_RUNTIME_DIR
-          export WAYLAND_DISPLAY
-
-          TRANSFORM=$([ "''${ARGV[3]:0-1}" = "1" ] && echo "180" || echo "normal")
-          ${pkgs.wlr-randr}/bin/wlr-randr --output LVDS-1 --transform "$TRANSFORM"
-        done
-      '';
     };
   };
 

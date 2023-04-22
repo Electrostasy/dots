@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   arkenfox-src = pkgs.fetchFromGitHub {
@@ -129,7 +129,9 @@ in
     pref("general.autoScroll", true);
 
     // Disable the GTK client side decorations.
-    pref("browser.tabs.inTitlebar", 0);
+    pref("browser.tabs.inTitlebar", ${
+      if config.services.xserver.desktopManager.gnome.enable then "1" else "0"
+    });
 
     // Disable PIP.
     pref("media.videocontrols.picture-in-picture.enabled", false);
