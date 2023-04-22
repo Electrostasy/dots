@@ -37,7 +37,12 @@
     };
   };
 
-  hardware.cpu.intel.updateMicrocode = true;
+  hardware = {
+    cpu.intel.updateMicrocode = true;
+
+    # Required for Intel AX210 WiFi.
+    enableRedistributableFirmware = true;
+  };
 
   services.thermald.enable = true;
 
