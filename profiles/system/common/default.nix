@@ -54,17 +54,28 @@ let
 
     nix = {
       package = pkgs.nixVersions.unstable;
-      extraOptions = ''
-        experimental-features = nix-command flakes
-        flake-registry = ${pkgs.writeText "flake-registry.json" (builtins.toJSON {
+
+      settings = {
+        # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
+        # channel-dependent programs to use the correct nixpkgs.
+        nix-path = [ "nixpkgs=${pkgs.path}" ];
+        experimental-features = [
+          # Enable `nix` subcommands.
+          "nix-command"
+          # Enable flakes.
+          "flakes"
+          # Allow Nix to execute builds inside cgroups.
+          "cgroups"
+        ];
+        use-cgroups = true;
+        flake-registry = pkgs.writeText "flake-registry.json" (builtins.toJSON {
           flakes = [];
           version = 2;
-        })}
-      '';
+        });
+        # Don't clutter $HOME.
+        use-xdg-base-directories = true;
+      };
 
-      # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
-      # channel-dependent programs to use the correct nixpkgs
-      settings.nix-path = [ "nixpkgs=${pkgs.path}" ];
       registry.nixpkgs = {
         from = { type = "indirect"; id = "nixpkgs"; };
         flake = self.inputs.nixpkgs;
