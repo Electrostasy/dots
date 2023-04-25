@@ -62,13 +62,13 @@ in
 
 stdenv.mkDerivation {
   pname = "wayfire";
-  version = "unstable-2023-03-05";
+  version = "unstable-20230421";
 
   src = fetchFromGitHub {
     owner = "WayfireWM";
     repo = "wayfire";
-    rev = "90c370fa988c165853bc18e9e955269580b03a55";
-    sha256 = "sha256-xTU6IyYb2sddCbK6cAIlhnQEKnVzbvX3fCRYpb8BMxQ=";
+    rev = "076dc76f179a5bbb67095a165b29d8d7a5a1dc27";
+    sha256 = "sha256-oXYuQ/aM8+zBDeEmVNWPkqL9UxGRrcu4tIxs8OsqCVg=";
   };
 
   patches = [
@@ -76,10 +76,6 @@ stdenv.mkDerivation {
     # Prevents crashing when dragging windows between outputs, but not ideal
     # solution.
     ./window-drag-crash.patch
-
-    # https://github.com/WayfireWM/wayfire/issues/1750
-    # Prevents windows from being transformed without taking into account scale.
-    ./view-transform-scale.patch
   ];
 
   postUnpack = ''
