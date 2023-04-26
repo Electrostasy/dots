@@ -19,7 +19,6 @@ in
   };
 
   mpvScripts = prev.mpvScripts // {
-    uosc = callPackage ./mpv/scripts/uosc { };
     thumbfast = callPackage ./mpv/scripts/thumbfast { };
     osc-tethys = callPackage ./mpv/scripts/osc-tethys { };
     mfpbar = callPackage ./mpv/scripts/mfpbar { };
