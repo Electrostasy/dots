@@ -110,7 +110,7 @@
       pastel
       smartmontools # smartctl
       vimv-rs
-      weathercrab
+      wthrr
       xplr
       youtube-dl
 
