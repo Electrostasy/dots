@@ -19,7 +19,7 @@ The table below lists the managed hosts and their functions:
 | Hostname | Device type | Description
 | :-- | :-- | :-- |
 | **terra** | Desktop | Home PC |
-| **phobos** | Raspberry Pi 4B | NFS fileserver |
+| **phobos** | Raspberry Pi 4B | OctoPrint |
 | **deimos** | Raspberry Pi 3B+ |  _Currently unused_ |
 | **jupiter** | Lenovo ThinkPad T420 | Laptop |
 | **venus** | Lenovo ThinkPad X220 Tablet | Laptop |

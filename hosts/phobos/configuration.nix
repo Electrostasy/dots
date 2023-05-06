@@ -11,8 +11,7 @@
     tmp.useTmpfs = true;
     loader = {
       systemd-boot.enable = true;
-      # EFI variables are read-only with Tow-Boot.
-      efi.canTouchEfiVariables = false;
+      efi.canTouchEfiVariables = true;
     };
   };
 
@@ -56,9 +55,37 @@
     };
   };
 
+  # TODO: Move to declarative configuration.
+  environment.persistence."/state".directories = [ "/home/octoprint" ];
+  services.octoprint = {
+    enable = true;
+
+    openFirewall = true;
+    stateDir = "/home/octoprint";
+    plugins = plugins: with plugins; [
+      bedlevelvisualizer
+    ];
+  };
+
   time.timeZone = "Europe/Vilnius";
 
-  networking.hostName = "phobos";
+  networking = {
+    hostName = "phobos";
+
+    dhcpcd.enable = false;
+    useDHCP = false;
+  };
+
+  systemd.network = {
+    enable = true;
+
+    networks."40-wired" = {
+      name = "en*";
+
+      DHCP = "yes";
+      dns = [ "9.9.9.9" ];
+    };
+  };
 
   documentation.enable = false;
 
@@ -78,19 +105,17 @@
   # Required for vendor shell completions.
   programs.fish.enable = true;
 
-  users = {
-    mutableUsers = false;
-    users.pi = {
-      isNormalUser = true;
-      passwordFile = config.sops.secrets.piPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      shell = pkgs.fish;
-      openssh.authorizedKeys.keyFiles = [
-        ../jupiter/ssh_gediminas_ed25519_key.pub
-        ../terra/ssh_electro_ed25519_key.pub
-        ../venus/ssh_electro_ed25519_key.pub
-      ];
-    };
+  users.mutableUsers = false;
+  users.users.pi = {
+    isNormalUser = true;
+    passwordFile = config.sops.secrets.piPassword.path;
+    extraGroups = [ "wheel" ];
+    uid = 1000;
+    shell = pkgs.fish;
+    openssh.authorizedKeys.keyFiles = [
+      ../jupiter/ssh_gediminas_ed25519_key.pub
+      ../terra/ssh_electro_ed25519_key.pub
+      ../venus/ssh_electro_ed25519_key.pub
+    ];
   };
 }
