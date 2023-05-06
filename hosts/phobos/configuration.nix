@@ -1,19 +1,18 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./media.nix ];
-
   nixpkgs.hostPlatform = "aarch64-linux";
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "23.05";
 
   boot = {
-    initrd.availableKernelModules = [ "usb_storage" "uas" "usbhid" ];
+    initrd.availableKernelModules = [ "usbhid" ];
     kernelPackages = pkgs.linuxPackages_latest;
     tmp.useTmpfs = true;
     loader = {
       systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
+      # EFI variables are read-only with Tow-Boot.
+      efi.canTouchEfiVariables = false;
     };
   };
 
@@ -21,26 +20,38 @@
     "/" = {
       device = "none";
       fsType = "tmpfs";
-      options = [ "defaults" "size=256M" "mode=755" ];
+      options = [
+        "defaults"
+        "size=256M"
+        "mode=755"
+      ];
     };
 
-    # NOTE: Raspberry Pi 4 UEFI Firmware is located at
-    # `/dev/mmcblk0p1` or `/dev/disk/by-label/firmware`
     "/boot" = {
       device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
 
     "/nix" = {
-      device = "/dev/disk/by-label/data";
+      device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      options = [
+        "subvol=nix"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:3"
+      ];
     };
 
     "/state" = {
-      device = "/dev/disk/by-label/data";
+      device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" ];
+      options = [
+        "subvol=state"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:3"
+      ];
       neededForBoot = true;
     };
   };
@@ -55,7 +66,6 @@
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
-      rootPassword.neededForUsers = true;
       piPassword.neededForUsers = true;
       sshHostKey = { };
     };
@@ -65,25 +75,22 @@
     { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
   ];
 
+  # Required for vendor shell completions.
+  programs.fish.enable = true;
+
   users = {
     mutableUsers = false;
-
-    # Change password in ./secrets.yaml using
-    # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
-    users = {
-      root.passwordFile = config.sops.secrets.rootPassword.path;
-      pi = {
-        isNormalUser = true;
-        passwordFile = config.sops.secrets.piPassword.path;
-        extraGroups = [ "wheel" ];
-        uid = 1000;
-        shell = pkgs.fish;
-        openssh.authorizedKeys.keyFiles = [
-          ../jupiter/ssh_gediminas_ed25519_key.pub
-          ../terra/ssh_electro_ed25519_key.pub
-          ../venus/ssh_electro_ed25519_key.pub
-        ];
-      };
+    users.pi = {
+      isNormalUser = true;
+      passwordFile = config.sops.secrets.piPassword.path;
+      extraGroups = [ "wheel" ];
+      uid = 1000;
+      shell = pkgs.fish;
+      openssh.authorizedKeys.keyFiles = [
+        ../jupiter/ssh_gediminas_ed25519_key.pub
+        ../terra/ssh_electro_ed25519_key.pub
+        ../venus/ssh_electro_ed25519_key.pub
+      ];
     };
   };
 }

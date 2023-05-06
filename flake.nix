@@ -91,7 +91,6 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModules.default
           impermanence.nixosModule
           sops-nix.nixosModules.default
           ./profiles/system/common
@@ -99,9 +98,8 @@
           # Make host accessible via Wireguard VPN.
           ./hosts/kepler/wireguard-peer.nix
 
-          # Host system and home configurations.
+          # Host system configuration.
           ./hosts/phobos/configuration.nix
-          ./hosts/phobos/home.nix
 
           # Shared profiles.
           ./profiles/system/git-headless
