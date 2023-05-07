@@ -330,8 +330,8 @@ function __StatusLine(current)
   local _, lsp = next(vim.lsp.buf_get_clients(buf))
   if lsp ~= nil then
     if lsp_has_messages(buf) then
-      local message = lsp.messages.progress[table.maxn(lsp.messages.progress)].title
-      table.insert(groups, (' %s %s'):format(message, progress_frames[vim.b[buf].lsp_progress_idx]))
+      local _, message = next(lsp.messages.progress)
+      table.insert(groups, (' %s %s'):format(message.title, progress_frames[vim.b[buf].lsp_progress_idx]))
     end
 
     local function diagnostic_format(kind)
