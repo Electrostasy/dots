@@ -108,6 +108,9 @@ in
     // Arkenfox disables DRM already, but the DRM prompt/banner remains.
     lockPref("browser.eme.ui.enabled", false);
 
+    // WebGL is useful for previewing 3D model meshes.
+    lockPref("webgl.disabled", false);
+
     ${builtins.replaceStrings [ "user_pref" ] [ "pref" ] arkenfox}
 
     /// Personal pref overrides.
