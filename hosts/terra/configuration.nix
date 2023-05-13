@@ -15,7 +15,12 @@
     initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    tmp.useTmpfs = true;
+    tmp = {
+      useTmpfs = true;
+      # Use a higher than default (50%) upper limit for /tmp to not run out of
+      # space compiling programs.
+      tmpfsSize = "75%";
+    };
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -27,12 +32,6 @@
     enableRedistributableFirmware = true;
     sane.enable = true;
     video.hidpi.enable = true;
-  };
-
-  zramSwap = {
-    enable = true;
-    memoryPercent = 50;
-    algorithm = "zstd";
   };
 
   fileSystems = {
