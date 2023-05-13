@@ -62,6 +62,9 @@
 
       # Plugin dependencies.
       ripgrep
+
+      # Clipboard support on Wayland.
+      wl-clipboard
     ];
 
     withRuby = false;
@@ -69,7 +72,7 @@
     withNodeJs = false;
   };
 
-  # Configuration is written in lua, copy it to the Nix store and symlink it
+  # Configuration is written in Lua, copy it to the Nix store and symlink it
   # to ~/.config/nvim.
   home.file.".config/nvim".source = ./nvim;
 
