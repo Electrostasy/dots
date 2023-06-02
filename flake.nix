@@ -28,10 +28,7 @@
     self,
     nixpkgs,
     nixos-hardware,
-    home-manager,
-    nixos-wsl,
-    sops-nix,
-    impermanence,
+    ...
   }:
   let
     inherit (nixpkgs) lib;
@@ -48,7 +45,7 @@
 
       customisations = final: prev: {
         libewf = prev.libewf.overrideAttrs (_: {
-          # `ewfmount` depends on `fuse` to mount *.E01 forensic images
+          # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
           buildInputs = [ prev.fuse ];
         });
       };
@@ -63,20 +60,11 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModules.default
-          impermanence.nixosModule
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Make host accessible via Wireguard VPN.
           ./hosts/kepler/wireguard-peer.nix
-
-          # Host system and home configurations.
           ./hosts/terra/configuration.nix
           ./hosts/terra/home.nix
-
-          # Shared profiles.
           ./profiles/system/audio
+          ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/graphical
@@ -90,17 +78,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          impermanence.nixosModule
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Make host accessible via Wireguard VPN.
           ./hosts/kepler/wireguard-peer.nix
-
-          # Host system configuration.
           ./hosts/phobos/configuration.nix
-
-          # Shared profiles.
+          ./profiles/system/common
           ./profiles/system/git-headless
           ./profiles/system/ssh
           ./profiles/system/sudo
@@ -111,16 +91,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModules.default
-          impermanence.nixosModule
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Host system and home configurations.
           ./hosts/deimos/configuration.nix
           ./hosts/deimos/home.nix
-
-          # Shared profiles.
+          ./profiles/system/common
           ./profiles/system/git-headless
           ./profiles/system/ssh
           ./profiles/system/sudo
@@ -131,30 +104,21 @@
         specialArgs = { inherit self; };
 
         modules = [
-          nixos-hardware.nixosModules.common-gpu-intel
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.common-pc-laptop-ssd
-          nixos-hardware.nixosModules.lenovo-thinkpad-t420
-
-          home-manager.nixosModules.default
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Make host accessible via Wireguard VPN.
-          ./hosts/kepler/wireguard-peer.nix
-
-          # Host system and home configurations.
           ./hosts/jupiter/configuration.nix
           ./hosts/jupiter/home.nix
-
-          # Shared profiles.
+          ./hosts/kepler/wireguard-peer.nix
           ./profiles/system/audio
+          ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
           ./profiles/system/sudo
+          nixos-hardware.nixosModules.common-gpu-intel
+          nixos-hardware.nixosModules.common-pc-laptop
+          nixos-hardware.nixosModules.common-pc-laptop-ssd
+          nixos-hardware.nixosModules.lenovo-thinkpad-t420
         ];
       };
 
@@ -162,29 +126,19 @@
         specialArgs = { inherit self; };
 
         modules = [
-          nixos-hardware.nixosModules.common-gpu-intel
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.lenovo-thinkpad-x220
-
-          home-manager.nixosModules.default
-          impermanence.nixosModule
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Make host accessible via Wireguard VPN.
           ./hosts/kepler/wireguard-peer.nix
-
-          # Host system and home configurations.
           ./hosts/venus/configuration.nix
           ./hosts/venus/home.nix
-
-          # Shared profiles.
           ./profiles/system/audio
+          ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/git-headed
           ./profiles/system/mullvad
           ./profiles/system/ssh
           ./profiles/system/sudo
+          nixos-hardware.nixosModules.common-gpu-intel
+          nixos-hardware.nixosModules.common-pc-laptop
+          nixos-hardware.nixosModules.lenovo-thinkpad-x220
         ];
       };
 
@@ -192,15 +146,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          home-manager.nixosModules.default
-          nixos-wsl.nixosModules.wsl
-          ./profiles/system/common
-
-          # Host system and home configurations.
           ./hosts/eris/configuration.nix
           ./hosts/eris/home.nix
-
-          # Shared profiles.
+          ./profiles/system/common
           ./profiles/system/git-headless
         ];
       };
@@ -209,23 +157,15 @@
         specialArgs = { inherit self; };
 
         modules = [
-          nixos-hardware.nixosModules.common-cpu-intel
-
-          home-manager.nixosModules.default
-          impermanence.nixosModule
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Host system and home configurations.
           ./hosts/ceres/configuration.nix
           ./hosts/ceres/home.nix
-
-          # Shared profiles.
+          ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/git-headless
           ./profiles/system/graphical
           ./profiles/system/ssh
           ./profiles/system/sudo
+          nixos-hardware.nixosModules.common-cpu-intel
         ];
       };
 
@@ -233,16 +173,9 @@
         specialArgs = { inherit self; };
 
         modules = [
-          sops-nix.nixosModules.default
-          ./profiles/system/common
-
-          # Make host accessible via Wireguard VPN (server).
-          ./hosts/kepler/wireguard-server.nix
-
-          # Host system configuration.
           ./hosts/kepler/configuration.nix
-
-          # Shared profiles.
+          ./hosts/kepler/wireguard-server.nix
+          ./profiles/system/common
           ./profiles/system/git-headless
           ./profiles/system/ssh
         ];

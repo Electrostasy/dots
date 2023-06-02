@@ -15,8 +15,6 @@
     };
   };
 
-  time.timeZone = "Europe/Vilnius";
-
   networking = {
     hostName = "jupiter";
 

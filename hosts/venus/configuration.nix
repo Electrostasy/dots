@@ -124,6 +124,8 @@
   };
 
   environment.persistence."/state" = {
+    enable = true;
+
     users.electro.directories = [
       ".cache"
       ".mozilla"
@@ -131,7 +133,6 @@
     ];
   };
 
-  time.timeZone = "Europe/Vilnius";
   networking = {
     hostName = "venus";
 

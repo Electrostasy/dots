@@ -43,7 +43,7 @@
     };
   };
 
-  time.timeZone = "Europe/Vilnius";
+  environment.persistence."/state".enable = true;
 
   networking.hostName = "deimos";
 

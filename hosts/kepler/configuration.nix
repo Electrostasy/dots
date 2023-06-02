@@ -42,8 +42,6 @@
     fsType = "ext4";
   };
 
-  time.timeZone = "Europe/Vilnius";
-
   networking = {
     hostName = "kepler";
 

@@ -57,15 +57,14 @@
   };
 
   environment.persistence."/state" = {
-    hideMounts = true;
+    enable = true;
+
     users.gediminas.directories = [
       ".cache"
       { directory = ".ssh"; mode = "0700"; }
       "Visiems"
     ];
   };
-
-  time.timeZone = "Europe/Vilnius";
 
   networking = {
     hostName = "ceres";

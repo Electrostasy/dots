@@ -56,7 +56,10 @@
   };
 
   # TODO: Move to declarative configuration.
-  environment.persistence."/state".directories = [ "/home/octoprint" ];
+  environment.persistence."/state" = {
+    enable = true;
+    directories = [ "/home/octoprint" ];
+  };
   services.octoprint = {
     enable = true;
 
@@ -66,8 +69,6 @@
       bedlevelvisualizer
     ];
   };
-
-  time.timeZone = "Europe/Vilnius";
 
   networking = {
     hostName = "phobos";

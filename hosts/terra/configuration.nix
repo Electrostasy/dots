@@ -30,8 +30,6 @@
   hardware = {
     cpu.intel.updateMicrocode = true;
     enableRedistributableFirmware = true;
-    sane.enable = true;
-    video.hidpi.enable = true;
   };
 
   fileSystems = {
@@ -61,6 +59,8 @@
   };
 
   environment.persistence."/state" = {
+    enable = true;
+
     users.electro = {
       files = [
         ".config/git-credential-keepassxc"
@@ -81,7 +81,6 @@
     };
   };
 
-  time.timeZone = "Europe/Vilnius";
   networking = {
     hostName = "terra";
 
