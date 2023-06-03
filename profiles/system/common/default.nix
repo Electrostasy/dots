@@ -139,7 +139,7 @@ in
   # Persist the age private key if sops-nix is used for secrets management.
   # Does not work with impermanence, as it is not mounted early enough in the
   # boot process.
-  fileSystems.${keyFileDir} = lib.mkIf (config.environment.persistence."/state" != { }) {
+  fileSystems.${keyFileDir} = lib.mkIf (config.environment.persistence."/state".enable) {
     device = "/state" + keyFileDir;
     fsType = "none";
     options = [ "bind" ];
