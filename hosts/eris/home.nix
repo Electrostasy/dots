@@ -14,6 +14,7 @@
       bintools-unwrapped
       binwalk
       dos2unix
+      evtx # evtx-dump
       exiftool
       ffmpeg
       file
