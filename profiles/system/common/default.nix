@@ -93,6 +93,14 @@ in
     };
   };
 
+  security.sudo = {
+    # Only enable sudo by default if we have at least 1 non-system user.
+    enable = lib.mkDefault
+      (lib.filterAttrs (_: user: user.isNormalUser) config.users.users != { });
+
+    wheelNeedsPassword = false;
+  };
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;

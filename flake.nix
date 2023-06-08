@@ -70,7 +70,6 @@
           ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
-          ./profiles/system/sudo
         ];
       };
 
@@ -83,7 +82,6 @@
           ./profiles/system/common
           ./profiles/system/git-headless
           ./profiles/system/ssh
-          ./profiles/system/sudo
         ];
       };
 
@@ -96,7 +94,6 @@
           ./profiles/system/common
           ./profiles/system/git-headless
           ./profiles/system/ssh
-          ./profiles/system/sudo
         ];
       };
 
@@ -114,7 +111,6 @@
           ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
-          ./profiles/system/sudo
           nixos-hardware.nixosModules.common-gpu-intel
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.common-pc-laptop-ssd
@@ -135,7 +131,6 @@
           ./profiles/system/git-headed
           ./profiles/system/mullvad
           ./profiles/system/ssh
-          ./profiles/system/sudo
           nixos-hardware.nixosModules.common-gpu-intel
           nixos-hardware.nixosModules.common-pc-laptop
           nixos-hardware.nixosModules.lenovo-thinkpad-x220
@@ -164,7 +159,6 @@
           ./profiles/system/git-headless
           ./profiles/system/graphical
           ./profiles/system/ssh
-          ./profiles/system/sudo
           nixos-hardware.nixosModules.common-cpu-intel
         ];
       };
