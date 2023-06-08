@@ -66,7 +66,6 @@
           ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
-          ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
@@ -80,7 +79,6 @@
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/phobos/configuration.nix
           ./profiles/system/common
-          ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
       };
@@ -92,7 +90,6 @@
           ./hosts/deimos/configuration.nix
           ./hosts/deimos/home.nix
           ./profiles/system/common
-          ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
       };
@@ -107,7 +104,6 @@
           ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
-          ./profiles/system/git-headed
           ./profiles/system/graphical
           ./profiles/system/mullvad
           ./profiles/system/ssh
@@ -128,7 +124,6 @@
           ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
-          ./profiles/system/git-headed
           ./profiles/system/mullvad
           ./profiles/system/ssh
           nixos-hardware.nixosModules.common-gpu-intel
@@ -144,7 +139,6 @@
           ./hosts/eris/configuration.nix
           ./hosts/eris/home.nix
           ./profiles/system/common
-          ./profiles/system/git-headless
         ];
       };
 
@@ -156,7 +150,6 @@
           ./hosts/ceres/home.nix
           ./profiles/system/common
           ./profiles/system/firefox
-          ./profiles/system/git-headless
           ./profiles/system/graphical
           ./profiles/system/ssh
           nixos-hardware.nixosModules.common-cpu-intel
@@ -170,7 +163,6 @@
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard-server.nix
           ./profiles/system/common
-          ./profiles/system/git-headless
           ./profiles/system/ssh
         ];
       };

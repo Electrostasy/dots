@@ -57,6 +57,35 @@ in
     parted
   ];
 
+  programs.git = {
+    enable = true;
+
+    config = {
+      # https://github.com/NixOS/nixpkgs/issues/169193#issuecomment-1103816735
+      safe.directory = "/etc/nixos";
+
+      url = {
+        "https://github.com/".insteadOf = [ "gh:" "github:" ];
+        "https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
+        "https://sr.ht/".insteadOf = [ "srht:" "sourcehut:" ];
+      };
+
+      # On condition that a graphical environment is running, as presumed by the
+      # presence of OpenGL or Vulkan, configure for Keepassxc password manager
+      # support. Will not work on WSL without also installing Keepassxc, and running
+      # it from WSL, but that's fine.
+      credential.helper =
+        lib.mkIf
+          (with config.hardware; opengl.enable or opengl.driSupport)
+          "${pkgs.git-credential-keepassxc}/bin/git-credential-keepassxc --git-groups";
+
+      user = {
+        name = "Gediminas Valys";
+        email = "steamykins@gmail.com";
+      };
+    };
+  };
+
   services.timesyncd.servers = [
     "1.europe.pool.ntp.org"
     "1.lt.pool.ntp.org"
