@@ -79,7 +79,7 @@
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/phobos/configuration.nix
           ./profiles/system/common
-          ./profiles/system/ssh
+          nixos-hardware.nixosModules.raspberry-pi-4
         ];
       };
 
