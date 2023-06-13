@@ -21,6 +21,24 @@ in
     sops-nix.nixosModules.default
   ];
 
+  # Guard against tmpfs root issues, namely lack of state management. Does not
+  # apply for WSL, as it does not have a NixOS defined root filesystem per the
+  # wsl module.
+  warnings =
+    if
+      !config.wsl.enable
+      && config.fileSystems."/".device == "none"
+      && config.fileSystems."/".fsType == "tmpfs"
+      && !config.environment.persistence."/state".enable
+    then [ ''
+      You have a root on tmpfs configuration without persistence enabled on "/state"
+      for host "${config.networking.hostName}".
+
+      This is possibly unintentional, check the option:
+
+        environment.persistence."/state".enable
+    '' ] else [];
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
 

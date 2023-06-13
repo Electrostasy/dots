@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   nixpkgs.hostPlatform = "aarch64-linux";
@@ -65,6 +65,7 @@
   # with local network router ("DNSSEC validation failed: signature-expired").
   services.timesyncd.servers = lib.mkForce [ "192.168.205.1" ];
 
+  environment.persistence."/state".enable = true;
   environment.systemPackages = with pkgs; [
     libgpiod
     libraspberrypi
