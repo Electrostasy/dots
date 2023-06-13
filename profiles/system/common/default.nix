@@ -86,21 +86,24 @@
       # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
       # channel-dependent programs to use the correct nixpkgs.
       nix-path = [ "nixpkgs=${pkgs.path}" ];
+
       experimental-features = [
-        # Enable `nix` subcommands.
-        "nix-command"
-        # Enable flakes.
-        "flakes"
-        # Allow Nix to execute builds inside cgroups.
-        "cgroups"
+        "auto-allocate-uids" # Don't create `nixbld*` user accounts for builds.
+        "cgroups" # Allow Nix to execute builds inside cgroups.
+        "flakes" # Enable flakes.
+        "nix-command" # Enable `nix {build,repl,shell,develop,...}` subcommands.
+        "no-url-literals" # Disallow unquoted URLs in Nix language syntax.
+        "repl-flake" # Allow passing installables to `nix repl`.
       ];
+      auto-allocate-uids = true;
       use-cgroups = true;
+
+      allow-import-from-derivation = false; # Disable IFD by default.
       flake-registry = pkgs.writeText "flake-registry.json" (builtins.toJSON {
         flakes = [];
         version = 2;
       });
-      # Don't clutter $HOME.
-      use-xdg-base-directories = true;
+      use-xdg-base-directories = true; # Don't clutter $HOME.
     };
 
     registry.nixpkgs = {
