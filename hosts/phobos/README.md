@@ -1,158 +1,89 @@
-# Bootstrapping
-## Preparing the Hydra image for headless install over SSH
+# Installation with Tow-Boot (Shared Storage strategy)
 
-Download the latest [Hydra built images](https://hydra.nixos.org/build/164013075)
-from CI, and then copy over your SSH public key for headless login and flash it
-to an SD card. The default pre-built images have OpenSSH enabled out of the box,
-but login is not configured.
-
-Steps to accomplish this:
+## SD Preparation
+Download [Tow-Boot](https://github.com/Tow-Boot/Tow-Boot/releases) latest release
+for Raspberry Pi and flash it to an SD card:
 ```bash
-unzstd nixos-sd-image-21.11.335143.9acedfd7ef3-aarch64-linux.img.zst
-# Sector size * Start sector = Mount offset
-# 512         * 77824        = 39845888 
-fdisk -l nixos-sd-image-21.11.335143.9acedfd7ef3-aarch64-linux.img
+wget https://github.com/Tow-Boot/Tow-Boot/releases/download/release-2021.10-005/raspberryPi-aarch64-2021.10-005.tar.xz
+tar xf raspberryPi-aarch64-2021.10-005.tar.xz
+sudo dd if=raspberryPi-aarch64-2021.10-005/shared.disk-image.img of=/dev/sda bs=1M oflag=direct,sync status=progress
+sudo sgdisk -g /dev/sda
+```
+
+## NixOS Image Preparation
+Download an `sd_image` built from [Hydra](https://hydra.nixos.org/job/nixos/trunk-combined/nixos.sd_image.aarch64-linux):
+```bash
+wget https://hydra.nixos.org/build/224097540/download/1/nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img.zst
+unzstd nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img.zst
+```
+
+If you don't have a screen and keyboard to connect to the Pi, add your SSH public
+key to the image (and optionally any secrets, for e.g. `age` private key):
+```bash
+fdisk -l nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img
+# Disk nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img: 2.55 GiB, 2736295936 bytes, 5344328 sectors
+# Units: sectors of 1 * 512 = 512 bytes
+# Sector size (logical/physical): 512 bytes / 512 bytes
+# I/O size (minimum/optimal): 512 bytes / 512 bytes
+# Disklabel type: dos
+# Disk identifier: 0x2178694e
+# 
+# Device                                                       Boot Start     End Sectors  Size Id Type
+# nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img1      16384   77823   61440   30M  b W95 FAT32
+# nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img2 *    77824 5344327 5266504  2.5G 83 Linux
+
+# We need root access for these commands.
+sudo -i
 
 mkdir raw
-sudo mount -o loop,offset=39845888 nixos-sd-image-21.11.335143.9acedfd7ef3-aarch64-linux.img raw
-mkdir -p raw/home/nixos/.ssh/authorized_keys
-cat ~/.ssh/id_rsa.pub >> raw/home/nixos/.ssh/authorized_keys
-sudo umount raw
-rm -r raw
+mount -o loop,offset=$((512*77824)) nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img raw
 
-sudo dd if=nixos-sd-image-21.11.335143.9acedfd7ef3-aarch64-linux.img of=/dev/sdg bs=1M status=progress
+mkdir -p raw/{home/nixos/.ssh,var/lib/sops-nix}
+cat ~/.ssh/id_ed25519.pub > raw/home/nixos/.ssh/authorized_keys
+cat /var/lib/sops-nix/keys.txt > raw/var/lib/sops-nix/keys.txt
+
+umount raw
+rmdir raw
 ```
 
-The Pi should boot without any issues, and you can SSH into it using `ssh nixos@$IP`.
-Now setup the partitions, filesystems and configuration - I use a
-[btrfs](https://mt-caret.github.io/blog/posts/2020-06-29-optin-state.html)+
-[tmpfs](https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/) root
-configuration (inspired by [this](https://grahamc.com/blog/erase-your-darlings)),
-where my stateful directories are stored on the SSD, and everything else is on tmpfs.
-
-It is assumed that every command is run as root: `sudo -i`.
-
-Create partitions for `/boot`, swap and data:
+Write NixOS image to a USB flash drive:
 ```bash
-wipefs -af /dev/sda
-parted /dev/sda -- mklabel gpt
-parted /dev/sda -- mkpart ESP fat32 1MiB 512MiB
-parted /dev/sda -- set 1 esp on
-parted /dev/sda -- mkpart primary linux-swap 512MiB 16GiB
-parted /dev/sda -- mkpart primary 16GiB 100%
+dd if=nixos-sd-image-23.11pre494015.0eeebd64de8-aarch64-linux.img of=/dev/sdb bs=1M status=progress
 ```
 
-Create filesystems:
+## Installing NixOS
+Boot the Pi from the USB with no SD card inserted, after the shell is reached
+(can be up to 1 minute) insert the SD card and **continue** (don't destroy the
+current partition table made with the Tow-Boot shared storage strategy):
 ```bash
-mkfs.vfat -F 32 -n boot /dev/sda1
-mkswap -L swap /dev/sda2
-swapon /dev/sda2
-mkfs.btrfs -L nixos /dev/sda3
-```
+sudo -i
+parted /dev/mmcblk1 -- mkpart ESP fat32 32MiB 546MiB
+parted /dev/mmcblk1 -- set 2 esp on
+parted /dev/mmcblk1 -- mkpart primary 546MiB 100%
 
-Setup btrfs subvolumes:
-```bash
-mount -t btrfs -o noatime,nodiratime,compress=zstd,ssd /dev/sda3 /mnt
+mkfs.vfat -F 32 -n boot /dev/mmcblk1p2
+mkfs.btrfs -L nixos /dev/mmcblk1p3
+mount -t btrfs -o noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt
 btrfs subvolume create /mnt/nix
 btrfs subvolume create /mnt/state
-mkdir -p /mnt/state/{etc/nixos,var/log}
 umount /mnt
-```
 
-Setup root filesystem on tmpfs:
-```bash
 mount -t tmpfs none /mnt
-mkdir -p /mnt/{boot,nix,state,etc/nixos,var/log}
-mount /dev/sda1 /mnt/boot
-mount -t btrfs -o subvol=nix,noatime,nodiratime,compress=zstd,ssd /dev/sda3 /mnt/nix
-mount -t btrfs -o subvol=state,noatime,nodiratime,compress=zstd,ssd /dev/sda3 /mnt/state
-mount -o bind /mnt/state/etc/nixos /mnt/etc/nixos
-mount -o bind /mnt/state/var/log /mnt/var/log
+mkdir -p /mnt/{boot,nix,state}
+mount /dev/mmcblk1p2 /mnt/boot
+mount -t btrfs -o subvol=nix,noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/nix
+mount -t btrfs -o subvol=state,noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/state
+mkdir -p /mnt/{state/,}/var/lib/sops-nix
+# Persist secrets key file.
+cp /var/lib/sops-nix/keys.txt /mnt/state/var/lib/sops-nix
+# Use it for activation during the initial installation.
+cp /var/lib/sops-nix/keys.txt /mnt/var/lib/sops-nix
+
+nixos-install --flake github:Electrostasy/dots#phobos --no-root-passwd
+nixos-enter --root /mnt
+mkdir -p /state/etc/nixos
+cd /state/etc/nixos
+git clone github:Electrostasy/dots .
+exit
+reboot
 ```
-
-Now you can either build a configuration from a flake, or make your own.
-Building from flake, ensure Nix 2.4 and flakes are enabled in your `configuration.nix`:
-```nix
-{
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
-}
-```
-
-Rebuild to apply changes, and run the following in your shell:
-```bash
-sudo nixos-rebuild switch --flake github:electrostasy/dots#phobos
-```
-This will set up the Raspberry Pi exactly as defined in the configuration for the
-`phobos` host in this flake.
-
-Alternatively, if you want to build it yourself, I took the steps outlined below.
-
-Generate an initial configuration:
-```bash
-nixos-generate-config --root /mnt
-```
-
-`nixos-generate-config` won't detect your configuration perfectly accurately,
-there are some adjustments to be made to `hardware-configuration.nix` first:
-```nix
-{
-  fileSystems."/".options = [ "defaults" "size=2G" "mode=755" ];
-}
-```
-In my case, the btrfs mount options (and SSD) were not detected either, and I
-had to add them manually:
-```nix
-{
-  fileSystems."/nix".options = [ "subvol=nix" "noatime" "nodiratime" "compress=zstd" "ssd" ];
-  fileSystems."/state".options = [ "subvol=state" "noatime" "nodiratime" "compress=zstd" "ssd" ];
-}
-```
-The bind mount paths were detected incorrectly, and I had to change
-them from `device = "/state/state/etc/nixos";` to `device = "/state/etc/nixos";`
-for both `/etc/nixos` and `/var/log` bind mounts.
-
-You may also need to add `neededForBoot = true;` to the `/var/log` and `/state`
-mounts, in my case the Pi would not be able to mount `/var/log` without both of them
-set to that and would just be stuck in the stage 1 load waiting for the mount or
-user input to override.
-
-Optionally, I use `depends = [ "/state" ];` for the `/var/log` bind mount as well,
-to ensure its dependency is mounted first, but it's probably unnecessary.
-
-In the `configuration.nix`, I recommend setting these:
-```nix
-{
-  boot.kernelPackages = pkgs.linuxPackages_rpi4;
-  boot.kernelParams = [
-    "8250.nr_uarts=1"
-    "console=ttyAMA0,115200"
-    "console=tty1"
-    "cma=128M"
-  ];
-  boot.loader.raspberryPi = {
-    enable = true;
-    version = 4;
-  };
-  users.mutableUsers = false;
-}
-```
-You will need to set up your users with an `initialHashedPassword` as well.
-
-After setting these options, run:
-```bash
-nixos-install --no-root-passwd
-```
-
-Before rebooting, I would [update my firmware](https://nix.dev/tutorials/installing-nixos-on-a-raspberry-pi#updating-firmware)
-and set `program_USB_boot_mode=1` in `config.txt` in the `/boot` partition
-to enable booting from USB (you can do this after rebooting too, if it doesn't boot again).
-Ensure that the `/boot` partition actually contains the firmware needed to boot!
-
-Execute `shutdown now` - take out the SD card, boot again from SSD, it should work.
-
-See the [hardware-configuration.nix](./hardware-configuration.nix) for more details.
