@@ -2,6 +2,12 @@ final: prev:
 
 let
   inherit (prev) callPackage;
+  libcamera-rpi = prev.libcamera.overrideAttrs (old: {
+    mesonFlags = old.mesonFlags ++ [
+      "-Dipas=raspberrypi"
+      "-Dpipelines=raspberrypi"
+    ];
+  });
 in
 
 {
@@ -9,6 +15,8 @@ in
   umc = callPackage ./umc { };
   wlr-spanbg = callPackage ./wlr-spanbg { };
   bgrep = callPackage ./bgrep { };
+  libcamera-apps = callPackage ./libcamera-apps { libcamera = libcamera-rpi; };
+  inherit libcamera-rpi;
 
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
