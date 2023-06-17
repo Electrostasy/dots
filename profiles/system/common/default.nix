@@ -98,7 +98,8 @@
       auto-allocate-uids = true;
       use-cgroups = true;
 
-      allow-import-from-derivation = false; # Disable IFD by default.
+      # TODO: Make configuration buildable with IFD disabled.
+      # allow-import-from-derivation = false; # Disable IFD by default.
       flake-registry = pkgs.writeText "flake-registry.json" (builtins.toJSON {
         flakes = [];
         version = 2;
