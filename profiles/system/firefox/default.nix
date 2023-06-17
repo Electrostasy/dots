@@ -1,13 +1,23 @@
 { config, pkgs, lib, ... }:
 
 let
-  arkenfox-src = pkgs.fetchFromGitHub {
-    owner = "arkenfox";
-    repo = "user.js";
-    rev = "111.0";
-    sha256 = "sha256-EutseXvFnDkYq95GWiGrTFqI4fqybvsPQlVV0Wy5tFU=";
-  };
-  arkenfox = builtins.readFile (arkenfox-src + "/user.js");
+  arkenfox = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
+    pname = "arkenfox";
+    version = "112.0";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "arkenfox";
+      repo = "user.js";
+      rev = finalAttrs.version;
+      hash = "sha256-k4PF8FWN6U+//UmZX4UxzBWbfAgEwQznLVsaFV/fVKo=";
+    };
+
+    installPhase = ''
+      mkdir $out
+      cp user.js $out/
+      sed -i "s/user_pref/pref/" $out/user.js
+    '';
+  });
 
   # To add new extensions in Firefox:
   # 1. Add the extension to Firefox.
@@ -111,7 +121,8 @@ in
     // WebGL is useful for previewing 3D model meshes.
     lockPref("webgl.disabled", false);
 
-    ${builtins.replaceStrings [ "user_pref" ] [ "pref" ] arkenfox}
+    // NOTE: This uses IFD (import-from-derivation).
+    ${builtins.readFile "${arkenfox}/user.js"}
 
     /// Personal pref overrides.
     // Insert new tabs after current tab.
