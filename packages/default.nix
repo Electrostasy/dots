@@ -11,13 +11,14 @@ let
 in
 
 {
-  simp1e-cursors = callPackage ./simp1e-cursors { };
-  umc = callPackage ./umc { };
+  # Own scripts, self-packaged.
   wlr-spanbg = callPackage ./wlr-spanbg { };
-  bgrep = callPackage ./bgrep { };
-  libcamera-apps = callPackage ./libcamera-apps { libcamera = libcamera-rpi; };
-  inherit libcamera-rpi;
+  qr = callPackage ./qr { };
 
+  # Shadows upstream.
+  simp1e-cursors = callPackage ./simp1e-cursors { };
+
+  # New packages, remove if they make it into nixpkgs.
   wayfire-git = callPackage ./wayfire { };
   wayfirePlugins = prev.wayfirePlugins // {
     dbus-interface = callPackage ./wayfire/wayfirePlugins/wayfire-dbus { wayfire = final.wayfire-git; };
@@ -25,14 +26,15 @@ in
     plugins-extra = callPackage ./wayfire/wayfirePlugins/wayfire-plugins-extra { wayfire = final.wayfire-git; };
     shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = final.wayfire-git; };
   };
-
+  umc = callPackage ./umc { };
+  bgrep = callPackage ./bgrep { };
+  libcamera-apps = callPackage ./libcamera-apps { libcamera = libcamera-rpi; };
+  inherit libcamera-rpi;
   mpvScripts = prev.mpvScripts // {
     osc-tethys = callPackage ./mpv/scripts/osc-tethys { };
     mfpbar = callPackage ./mpv/scripts/mfpbar { };
   };
-
   opensmtpd-filter-senderscore = callPackage ./opensmtpd-senderscore { };
-
   vimPlugins = prev.vimPlugins.extend (final': prev': {
     hlargs-nvim = prev.vimUtils.buildVimPlugin {
       pname = "hlargs-nvim";

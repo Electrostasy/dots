@@ -1,7 +1,6 @@
 {
   home-manager.users.electro = { config, pkgs, ... }: {
     imports = [
-      ../../profiles/user/fish
       ../../profiles/user/kitty
       ../../profiles/user/lsd
       ../../profiles/user/mpv
@@ -108,6 +107,7 @@
       neo
       nix-prefetch
       pastel
+      qr
       smartmontools # smartctl
       vimv-rs
       wthrr

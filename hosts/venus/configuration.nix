@@ -220,9 +220,6 @@
     { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
   ];
 
-  # Required for vendor shell completions.
-  programs.fish.enable = true;
-
   users = {
     mutableUsers = false;
 
@@ -233,7 +230,6 @@
         passwordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         uid = 1000;
-        shell = pkgs.fish;
         openssh.authorizedKeys.keyFiles = [
           ../terra/ssh_electro_ed25519_key.pub
         ];

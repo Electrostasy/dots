@@ -194,16 +194,12 @@
     { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
   ];
 
-  # Required for vendor shell completions.
-  programs.fish.enable = true;
-
   users.mutableUsers = false;
   users.users.pi = {
     isNormalUser = true;
     passwordFile = config.sops.secrets.piPassword.path;
     extraGroups = [ "wheel" ];
     uid = 1000;
-    shell = pkgs.fish;
     openssh.authorizedKeys.keyFiles = [
       ../jupiter/ssh_gediminas_ed25519_key.pub
       ../terra/ssh_electro_ed25519_key.pub

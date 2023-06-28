@@ -24,7 +24,6 @@
   users.users.${config.wsl.defaultUser} = {
     extraGroups = [ "wheel" ];
     uid = 1000;
-    shell = pkgs.fish;
   };
 
   # CUDA support

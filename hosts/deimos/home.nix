@@ -1,7 +1,6 @@
 {
   home-manager.users.pi = { config, pkgs, ... }: {
     imports = [
-      ../../profiles/user/fish
       ../../profiles/user/lsd
     ];
 

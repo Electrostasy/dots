@@ -68,6 +68,7 @@
           ./profiles/system/firefox
           ./profiles/system/graphical
           ./profiles/system/mullvad
+          ./profiles/system/shell
           ./profiles/system/ssh
         ];
       };
@@ -79,6 +80,7 @@
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/phobos/configuration.nix
           ./profiles/system/common
+          ./profiles/system/shell
           ./profiles/system/ssh
         ];
       };
@@ -90,6 +92,7 @@
           ./hosts/deimos/configuration.nix
           ./hosts/deimos/home.nix
           ./profiles/system/common
+          ./profiles/system/shell
           ./profiles/system/ssh
         ];
       };
@@ -106,6 +109,7 @@
           ./profiles/system/firefox
           ./profiles/system/graphical
           ./profiles/system/mullvad
+          ./profiles/system/shell
           ./profiles/system/ssh
           nixos-hardware.nixosModules.common-gpu-intel
           nixos-hardware.nixosModules.common-pc-laptop
@@ -125,6 +129,7 @@
           ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/mullvad
+          ./profiles/system/shell
           ./profiles/system/ssh
           nixos-hardware.nixosModules.common-gpu-intel
           nixos-hardware.nixosModules.common-pc-laptop
@@ -139,6 +144,7 @@
           ./hosts/eris/configuration.nix
           ./hosts/eris/home.nix
           ./profiles/system/common
+          ./profiles/system/shell
         ];
       };
 
@@ -151,6 +157,7 @@
           ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/graphical
+          ./profiles/system/shell
           ./profiles/system/ssh
           nixos-hardware.nixosModules.common-cpu-intel
         ];
@@ -163,6 +170,7 @@
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard-server.nix
           ./profiles/system/common
+          ./profiles/system/shell
           ./profiles/system/ssh
         ];
       };

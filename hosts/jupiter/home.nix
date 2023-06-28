@@ -1,7 +1,6 @@
 {
   home-manager.users.gediminas = { config, pkgs, ... }: {
     imports = [
-      ../../profiles/user/fish
       ../../profiles/user/kitty
       ../../profiles/user/lsd
       ../../profiles/user/neovim

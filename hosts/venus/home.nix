@@ -1,7 +1,6 @@
 {
   home-manager.users.electro = { pkgs, lib, ... }: {
     imports = [
-      ../../profiles/user/fish
       ../../profiles/user/lsd
       ../../profiles/user/mpv
       ../../profiles/user/neovim
@@ -28,6 +27,7 @@
       libreoffice-fresh
       magic-wormhole-rs
       mepo
+      qr
       xournalpp
     ];
 

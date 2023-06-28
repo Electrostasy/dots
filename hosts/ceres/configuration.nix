@@ -106,7 +106,6 @@
         passwordFile = config.sops.secrets.gediminasPassword.path;
         extraGroups = [ "wheel" "libvirtd" ];
         uid = 1000;
-        shell = pkgs.fish;
       };
     };
   };

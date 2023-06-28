@@ -1,7 +1,6 @@
 {
   home-manager.users.nixos = { pkgs, ... }: {
     imports = [
-      ../../profiles/user/fish
       ../../profiles/user/lsd
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
