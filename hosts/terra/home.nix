@@ -110,7 +110,6 @@
       qr
       smartmontools # smartctl
       vimv-rs
-      wthrr
       xplr
       youtube-dl
 
@@ -128,30 +127,6 @@
       wormhole = "wormhole-rs";
       tree = "et --dirs-first --size-left --prefix si --hidden --icons";
     };
-
-    xdg.configFile."weathercrab/wthrr.ron".text = ''
-      (
-        address: "Vilnius,LT",
-        language: "en_US",
-        forecast: [day, week],
-        units: (
-          temperature: celsius,
-          speed: kmh,
-          time: military,
-          precipitation: mm,
-        ),
-        gui: (
-          border: single,
-          color: default,
-          graph: (
-            style: lines(solid),
-            rowspan: double,
-            time_indicator: true,
-          ),
-          greeting: false,
-        ),
-      )
-    '';
   };
 }
 
