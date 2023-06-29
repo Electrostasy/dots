@@ -28,9 +28,6 @@
     };
   };
 
-  # LC_TIME is apparently not respected by `ls` and `lsd`, but `date` works.
-  environment.sessionVariables.TIME_STYLE = "long-iso";
-
   time.timeZone = lib.mkDefault "Europe/Vilnius";
 
   nixpkgs = {

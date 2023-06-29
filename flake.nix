@@ -90,7 +90,6 @@
 
         modules = [
           ./hosts/deimos/configuration.nix
-          ./hosts/deimos/home.nix
           ./profiles/system/common
           ./profiles/system/shell
           ./profiles/system/ssh

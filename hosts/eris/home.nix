@@ -1,7 +1,6 @@
 {
   home-manager.users.nixos = { pkgs, ... }: {
     imports = [
-      ../../profiles/user/lsd
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
     ];
@@ -16,13 +15,11 @@
       evtx # evtx-dump
       exiftool
       ffmpeg
-      file
       hashcat
       imagemagick
       john
       jq
       libewf
-      ripgrep
       sleuthkit # mmls, fls, fsstat, icat
       stegseek
       testdisk # photorec

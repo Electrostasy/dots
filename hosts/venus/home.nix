@@ -1,7 +1,6 @@
 {
   home-manager.users.electro = { pkgs, lib, ... }: {
     imports = [
-      ../../profiles/user/lsd
       ../../profiles/user/mpv
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
@@ -19,7 +18,6 @@
     };
 
     home.packages = with pkgs; [
-      erdtree
       freerdp # wlfreerdp
       imv
       keepassxc
@@ -30,10 +28,5 @@
       qr
       xournalpp
     ];
-
-    programs.fish.shellAliases = {
-      wormhole = "wormhole-rs";
-      tree = "et --dirs-first --size-left --prefix si --hidden --icons";
-    };
   };
 }

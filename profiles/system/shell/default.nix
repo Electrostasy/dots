@@ -1,6 +1,19 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
+  environment = {
+    sessionVariables.TIME_STYLE = "long-iso";
+    systemPackages = with pkgs; [
+      bottom
+      erdtree
+      exa
+      fd
+      file
+      ripgrep
+      vimv-rs
+    ];
+  };
+
   programs.nix-index = {
     enable = true;
 
@@ -14,10 +27,34 @@
   # By default, the user shell is set to pkgs.shadow, this overrides it.
   users.defaultUserShell = pkgs.fish;
 
+  # TODO: Why are ll, l shell aliases being added?
   programs.fish = {
     enable = true;
 
     interactiveShellInit = ''
+      function ls
+        argparse 'l/long' 'a/all' 'd/depth=' -- $argv
+        set -l exa_args (string match -v -- '-*' $argv)
+        if test (count $exa_args) -eq 0
+          set exa_args .
+        end
+
+        for i in (seq (count $exa_args))
+          set exa_args[$i] (readlink -m $exa_args[$i])
+        end
+
+        set -l exa_flags --tree --group-directories-first --icons
+        set exa_flags $exa_flags --level=(test -n "$_flag_depth" && echo $_flag_depth || echo 1)
+        if set -q _flag_long
+          set exa_flags $exa_flags --long --group
+        end
+        if set -q _flag_all
+          set exa_flags $exa_flags --all
+        end
+
+        command exa $exa_flags $exa_args
+      end
+
       set -l fish_greeting # Disable greeting.
 
       # By default, syntax highlighting seems to be disabled. Enforce default
@@ -37,7 +74,7 @@
       # Custom command-not-found handler using nix-index and syntax highlights.
       function __fish_command_not_found_handler --on-event fish_command_not_found
         set -l query $argv[1]
-        set -l attrs (${config.programs.nix-index.package}/bin/nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$query")
+        set -l attrs (command nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$query")
         set attrs (string replace '.out' '''''' $attrs | string collect | sort)
 
         echo -n "The program '"

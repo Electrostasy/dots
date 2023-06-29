@@ -2,7 +2,6 @@
   home-manager.users.electro = { config, pkgs, ... }: {
     imports = [
       ../../profiles/user/kitty
-      ../../profiles/user/lsd
       ../../profiles/user/mpv
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
@@ -100,7 +99,6 @@
       detox
       dua
       e2fsprogs # badblocks
-      erdtree
       fio
       freerdp # wlfreerdp
       magic-wormhole-rs
@@ -109,7 +107,6 @@
       pastel
       qr
       smartmontools # smartctl
-      vimv-rs
       xplr
       youtube-dl
 
@@ -117,15 +114,8 @@
       liberation_ttf
     ];
 
-    programs.bottom = {
-      enable = true;
-
-      settings.flags.tree = true;
-    };
-
-    programs.fish.shellAliases = {
-      wormhole = "wormhole-rs";
-      tree = "et --dirs-first --size-left --prefix si --hidden --icons";
+    home.shellAliases = {
+      wormhole = "${pkgs.magic-wormhole-rs.meta.mainProgram}";
     };
   };
 }

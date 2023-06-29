@@ -2,7 +2,6 @@
   home-manager.users.gediminas = { pkgs, ... }: {
     imports = [
       ../../profiles/user/kitty
-      ../../profiles/user/lsd
       ../../profiles/user/mpv
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
@@ -27,11 +26,5 @@
         settings.mode = "1680x1050@59882999";
       }
     ];
-
-    programs.bottom = {
-      enable = true;
-
-      settings.flags.tree = true;
-    };
   };
 }
