@@ -55,7 +55,7 @@
         command exa $exa_flags $exa_args
       end
 
-      set -l fish_greeting # Disable greeting.
+      set -g fish_greeting # Disable greeting.
 
       # By default, syntax highlighting seems to be disabled. Enforce default
       # theme. We could use `fish_config theme choose`, but that will not
