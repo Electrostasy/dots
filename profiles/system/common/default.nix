@@ -37,7 +37,6 @@
 
   environment.defaultPackages = with pkgs; lib.mkForce [
     file
-    ouch
     parted
   ];
 

@@ -3,12 +3,13 @@
 {
   environment = {
     sessionVariables.TIME_STYLE = "long-iso";
+
     systemPackages = with pkgs; [
       bottom
       erdtree
       exa
       fd
-      file
+      ouch
       ripgrep
       vimv-rs
     ];
@@ -27,18 +28,24 @@
   # By default, the user shell is set to pkgs.shadow, this overrides it.
   users.defaultUserShell = pkgs.fish;
 
-  # TODO: Why are ll, l shell aliases being added?
   programs.fish = {
     enable = true;
 
     interactiveShellInit = ''
+      # TODO: find where these aliases are being set:
+      # l, ll, la
       function ls
         argparse 'l/long' 'a/all' 'd/depth=' -- $argv
+
+        # Filter directories/files from flags.
         set -l exa_args (string match -v -- '-*' $argv)
+
+        # If there are no targets to ls, assume current working directory.
         if test (count $exa_args) -eq 0
           set exa_args .
         end
 
+        # Convert targets to absolute paths.
         for i in (seq (count $exa_args))
           set exa_args[$i] (readlink -m $exa_args[$i])
         end
@@ -57,21 +64,22 @@
 
       set -g fish_greeting # Disable greeting.
 
-      # By default, syntax highlighting seems to be disabled. Enforce default
-      # theme. We could use `fish_config theme choose`, but that will not
-      # export the theme colour variables to other functions and scripts.
-      fish_config theme dump "fish default" | while read -l line; echo "set -Ux $line"; end | source
+      # By default, syntax highlighting seems to be disabled under some terminal
+      # emulators. Enforce default theme explicitly.
+      set -l theme "fish default"
+      fish_config theme choose $theme
 
-      # Prompt configuration.
+      # The above will not export the theme colour variables to functions and
+      # scripts, which is why the following is used to export the theme variables.
+      fish_config theme dump $theme | while read -l line; echo "set -Ux $line"; end | source
+
       function fish_right_prompt -d "Print the right-side prompt"
         set_color $fish_color_autosuggestion; date '+%H:%M:%S'
         if test $CMD_DURATION && test $CMD_DURATION -ne 0
-          echo " "
-          set_color $fish_color_quote; echo "$(math "$CMD_DURATION/1000")s"
+          set_color $fish_color_quote; echo " $(math "$CMD_DURATION/1000")s"
         end
       end
 
-      # Custom command-not-found handler using nix-index and syntax highlights.
       function __fish_command_not_found_handler --on-event fish_command_not_found
         set -l query $argv[1]
         set -l attrs (command nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$query")
