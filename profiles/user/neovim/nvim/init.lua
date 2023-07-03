@@ -74,6 +74,27 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- These autocommands set relativenumber when entering visual/select line/block
+-- modes, and unset it when leaving them, allowing for easier range-based
+-- selections and movements.
+vim.api.nvim_create_augroup('DynamicRelativeNumber', { clear = true })
+vim.api.nvim_create_autocmd('ModeChanged', {
+  group = 'DynamicRelativeNumber',
+  -- When switching to visual/select line/block modes.
+  pattern = { '*:V', '*:\22', '*:s', '*:\19' },
+  callback = function()
+    vim.opt_local.relativenumber = true
+  end,
+})
+vim.api.nvim_create_autocmd('ModeChanged', {
+  group = 'DynamicRelativeNumber',
+  -- When switching from visual/select line/block modes.
+  pattern = { 'V:*', '\22:*', 'S:*', '\19:*' },
+  callback = function()
+    vim.opt_local.relativenumber = false
+  end,
+})
+
 vim.opt.hlsearch = true -- Highlight search matches.
 vim.opt.incsearch = true -- Highlight search matches while typing.
 vim.opt.inccommand = 'nosplit' -- Live preview when substituting.
