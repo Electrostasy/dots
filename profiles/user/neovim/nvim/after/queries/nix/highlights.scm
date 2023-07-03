@@ -7,4 +7,5 @@
 (apply_expression
   function: (select_expression
     (attrpath
-      (identifier) @function .)))
+      ; Set priority higher than LSP semantic tokens or else this will not show.
+      (identifier) @function (#set! "priority" 150) .)))
