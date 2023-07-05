@@ -1,0 +1,174 @@
+{
+  "general": {
+    "printername": "Original Prusa MK3S+"
+  },
+  "control": {
+    "style": "cross",
+    "selectedCrossStep": 0
+  },
+  "dashboard": {
+    "nonExpandPanels": {
+      "widescreen": []
+    },
+    "widescreenLayout2": [
+      {
+        "name": "miniconsole",
+        "visible": true
+      },
+      {
+        "name": "temperature",
+        "visible": true
+      }
+    ],
+    "widescreenLayout1": [
+      {
+        "name": "toolhead-control",
+        "visible": true
+      },
+      {
+        "name": "miscellaneous",
+        "visible": true
+      }
+    ],
+    "widescreenLayout3": [
+      {
+        "name": "macrogroup_e1764d6a-85f5-46ae-9ea7-c589a5c226ce",
+        "visible": true
+      },
+      {
+        "name": "macrogroup_1128adf6-52dc-497d-8785-32b3162498c1",
+        "visible": true
+      },
+      {
+        "name": "extruder-control",
+        "visible": true
+      },
+      {
+        "name": "machine-settings",
+        "visible": true
+      }
+    ],
+    "tabletLayout2": [
+      {
+        "name": "temperature",
+        "visible": true
+      },
+      {
+        "name": "miniconsole",
+        "visible": true
+      },
+      {
+        "name": "macrogroup_e1764d6a-85f5-46ae-9ea7-c589a5c226ce",
+        "visible": true
+      },
+      {
+        "name": "macrogroup_1128adf6-52dc-497d-8785-32b3162498c1",
+        "visible": true
+      },
+      {
+        "name": "miscellaneous",
+        "visible": true
+      }
+    ],
+    "tabletLayout1": [
+      {
+        "name": "toolhead-control",
+        "visible": true
+      },
+      {
+        "name": "extruder-control",
+        "visible": true
+      },
+      {
+        "name": "machine-settings",
+        "visible": true
+      }
+    ]
+  },
+  "gcodeViewer": {
+    "klipperCache": {
+      "kinematics": "cartesian",
+      "axis_maximum": [
+        244,
+        204,
+        210,
+        0
+      ],
+      "axis_minimum": [
+        -11.5,
+        -14.625,
+        -2,
+        0
+      ]
+    }
+  },
+  "macros": {
+    "mode": "expert",
+    "macrogroups": {
+      "1128adf6-52dc-497d-8785-32b3162498c1": {
+        "name": "Filament load/unload",
+        "color": "secondary",
+        "colorCustom": "#fff",
+        "showInStandby": true,
+        "showInPause": true,
+        "showInPrinting": true,
+        "macros": [
+          {
+            "pos": 1,
+            "name": "LOAD_FILAMENT",
+            "color": "group",
+            "showInStandby": true,
+            "showInPrinting": true,
+            "showInPause": true
+          },
+          {
+            "pos": 2,
+            "name": "UNLOAD_FILAMENT",
+            "color": "group",
+            "showInStandby": true,
+            "showInPrinting": true,
+            "showInPause": true
+          }
+        ]
+      },
+      "e1764d6a-85f5-46ae-9ea7-c589a5c226ce": {
+        "name": "Calibration",
+        "color": "primary",
+        "colorCustom": "#fff",
+        "showInStandby": true,
+        "showInPause": true,
+        "showInPrinting": false,
+        "macros": [
+          {
+            "pos": 1,
+            "name": "Calibrate_Z",
+            "color": "group",
+            "showInStandby": true,
+            "showInPrinting": true,
+            "showInPause": true
+          },
+          {
+            "pos": 2,
+            "name": "G80",
+            "color": "group",
+            "showInStandby": true,
+            "showInPrinting": true,
+            "showInPause": true
+          },
+          {
+            "pos": 3,
+            "name": "G81",
+            "color": "group",
+            "showInStandby": true,
+            "showInPrinting": true,
+            "showInPause": true
+          }
+        ]
+      }
+    }
+  },
+  "uiSettings": {
+    "displayCancelPrint": true,
+    "disableFanAnimation": false
+  }
+}

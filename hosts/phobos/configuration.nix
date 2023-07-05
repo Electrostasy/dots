@@ -123,16 +123,29 @@
     configFile = ./printer-prusa-mk3s.cfg;
   };
 
+  # A ridiculous way to provide the default Mainsail config. There has to be
+  # a better way to do this, but parent directories are owned by root which
+  # makes Moonraker complain and fail to start/load default.json unless we
+  # create them in order.
+  systemd.tmpfiles.rules = lib.mkAfter [
+    "d /var/lib/moonraker/config - moonraker moonraker - -"
+    "d /var/lib/moonraker/config/.theme - moonraker moonraker - -"
+    "C /var/lib/moonraker/config/.theme/default.json - moonraker moonraker - ${./mainsail-config.json}"
+  ];
+
   services.moonraker = {
     enable = true;
 
-    settings.authorization = {
-      force_logins = true;
-      cors_domains = [ "http://localhost:80" ];
-      trusted_clients = [
-        "10.0.0.0/8"
-        "127.0.0.0/8"
-      ];
+    settings = {
+      history = { };
+      authorization = {
+        force_logins = true;
+        cors_domains = [ "http://localhost:80" ];
+        trusted_clients = [
+          "10.0.0.0/8"
+          "127.0.0.0/8"
+        ];
+      };
     };
   };
 
