@@ -120,18 +120,6 @@
     user = "klipper";
     group = "klipper";
 
-    firmwares.einsy = {
-      enable = true;
-      serial = "/dev/ttyMK3S";
-      configFile = ./einsy.config;
-    };
-
-    # firmwares.rp2040 = {
-    #   enable = true;
-    #   serial = "/dev/serial/by-id/usb-Klipper_rp2040_E6611032E37D2734-if00";
-    #   configFile = ./rp2040.config;
-    # };
-
     configFile = ./printer-prusa-mk3s.cfg;
   };
 
