@@ -41,7 +41,7 @@
           nixpkgs.legacyPackages.${system});
 
     overlays = {
-      additions = import ./packages;
+      default = import ./packages;
 
       customisations = final: prev: {
         libewf = prev.libewf.overrideAttrs (_: {
