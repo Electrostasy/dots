@@ -25,6 +25,7 @@
       libreoffice-fresh
       magic-wormhole-rs
       mepo
+      nurl
       qr
       xournalpp
     ];

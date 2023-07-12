@@ -103,7 +103,7 @@
       freerdp # wlfreerdp
       magic-wormhole-rs
       neo
-      nix-prefetch
+      nurl
       pastel
       qr
       smartmontools # smartctl
