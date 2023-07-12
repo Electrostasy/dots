@@ -30,6 +30,7 @@ in
   bgrep = callPackage ./bgrep { };
   libcamera-apps = callPackage ./libcamera-apps { libcamera = libcamera-rpi; };
   inherit libcamera-rpi;
+  blisp = callPackage ./blisp { };
   mpvScripts = prev.mpvScripts // {
     osc-tethys = callPackage ./mpv/scripts/osc-tethys { };
     mfpbar = callPackage ./mpv/scripts/mfpbar { };
