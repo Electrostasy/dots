@@ -8,6 +8,7 @@ let
       "-Dpipelines=raspberrypi"
     ];
   });
+  blisp = callPackage ./blisp { };
 in
 
 {
@@ -29,8 +30,8 @@ in
   umc = callPackage ./umc { };
   bgrep = callPackage ./bgrep { };
   libcamera-apps = callPackage ./libcamera-apps { libcamera = libcamera-rpi; };
-  inherit libcamera-rpi;
-  blisp = callPackage ./blisp { };
+  inherit libcamera-rpi blisp;
+  pineflash = callPackage ./pineflash { inherit blisp; };
   mpvScripts = prev.mpvScripts // {
     osc-tethys = callPackage ./mpv/scripts/osc-tethys { };
     mfpbar = callPackage ./mpv/scripts/mfpbar { };
