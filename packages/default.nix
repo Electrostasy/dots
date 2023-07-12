@@ -35,13 +35,13 @@ let
     vimPlugins = prev.vimPlugins.extend (final': prev': {
       hlargs-nvim = prev.vimUtils.buildVimPlugin {
         pname = "hlargs-nvim";
-        version = "unstable-2023-05-24";
+        version = "unstable-2023-07-05";
 
         src = prev.fetchFromGitHub {
           owner = "m-demare";
           repo = "hlargs.nvim";
-          rev = "bd16884ef4dd3553550313d767505a0f44a3a852";
-          hash = "sha256-a3xno1tU59pKSusdg2jyZsRuGeaFBAWlLZ+fZe0nCGA=";
+          rev = "cfc9beab4e176a13311efe03e38e6b6fed5df4f6";
+          hash = "sha256-Mw5HArqBL6Uc1D3TVOSwgG0l2vh0Xq3bO170dkrJbwI=";
         };
       };
     });
