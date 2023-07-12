@@ -63,7 +63,6 @@ in
       };
 
       wireguardPeers = with common.nodes; map mkPeer [
-        jupiter
         phobos
         terra
         venus

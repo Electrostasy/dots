@@ -123,7 +123,6 @@
     users.root = {
       passwordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
-        ../jupiter/ssh_gediminas_ed25519_key.pub
         ../terra/ssh_electro_ed25519_key.pub
         ../venus/ssh_electro_ed25519_key.pub
       ];

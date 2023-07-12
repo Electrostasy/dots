@@ -44,8 +44,7 @@ in
       };
     }
     // incrementIPs
-    { jupiter.PublicKey = "+6fRdPzEfxga54TAownHZkB1HWwJnx710sYGsQYo+hI=";
-      phobos.PublicKey = "1oFQGMa4Bqz4fI7eFzv35McKIqM2uHmx84xYUzIoJy8=";
+    { phobos.PublicKey = "1oFQGMa4Bqz4fI7eFzv35McKIqM2uHmx84xYUzIoJy8=";
       terra.PublicKey = "sD/7po+EE6tudfD161kTNljopV1yRKp4QdMMhvgkcBY=";
       venus.PublicKey = "aKbnzn8++N5OoTv4tTFKlcq246m1s02s9SUttxoJICo=";
     };

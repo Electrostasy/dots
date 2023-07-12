@@ -85,38 +85,6 @@
         ];
       };
 
-      deimos = lib.nixosSystem {
-        specialArgs = { inherit self; };
-
-        modules = [
-          ./hosts/deimos/configuration.nix
-          ./profiles/system/common
-          ./profiles/system/shell
-          ./profiles/system/ssh
-        ];
-      };
-
-      jupiter = lib.nixosSystem {
-        specialArgs = { inherit self; };
-
-        modules = [
-          ./hosts/jupiter/configuration.nix
-          ./hosts/jupiter/home.nix
-          ./hosts/kepler/wireguard-peer.nix
-          ./profiles/system/audio
-          ./profiles/system/common
-          ./profiles/system/firefox
-          ./profiles/system/graphical
-          ./profiles/system/mullvad
-          ./profiles/system/shell
-          ./profiles/system/ssh
-          nixos-hardware.nixosModules.common-gpu-intel
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.common-pc-laptop-ssd
-          nixos-hardware.nixosModules.lenovo-thinkpad-t420
-        ];
-      };
-
       venus = lib.nixosSystem {
         specialArgs = { inherit self; };
 

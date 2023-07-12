@@ -202,7 +202,6 @@
     extraGroups = [ "wheel" ];
     uid = 1000;
     openssh.authorizedKeys.keyFiles = [
-      ../jupiter/ssh_gediminas_ed25519_key.pub
       ../terra/ssh_electro_ed25519_key.pub
       ../venus/ssh_electro_ed25519_key.pub
     ];
