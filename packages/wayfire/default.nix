@@ -20,7 +20,7 @@
   libxkbcommon,
   wlroots_0_16,
 
-  xcbutilwm,
+  xorg,
 
   lib,
 
@@ -110,7 +110,7 @@ stdenv.mkDerivation {
     wf-config-unstable
 
     # wf-touch
-    xcbutilwm
+    xorg.xcbutilwm
   ]
   ++ lib.optional enableXWayland xwayland
   ++ lib.optionals enableImageIO [ libpng libjpeg ]

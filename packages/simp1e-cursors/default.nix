@@ -4,7 +4,7 @@
   stdenvNoCC,
   librsvg,
   python3,
-  xcursorgen,
+  xorg,
   makeFontsConf,
 
   # Add your own theme by overriding the `theme` argument:
@@ -76,7 +76,7 @@ stdenvNoCC.mkDerivation rec {
   nativeBuildInputs = [
     librsvg
     (python3.withPackages (ps: with ps; [ pillow ]))
-    xcursorgen
+    xorg.xcursorgen
   ];
 
   # Complains about not being able to find the fontconfig config file otherwise
