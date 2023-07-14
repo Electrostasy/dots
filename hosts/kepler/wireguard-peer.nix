@@ -31,6 +31,25 @@ in
     "wgPrivateKey${peerCap}" = { };
   };
 
+  # TODO: Consider setting up Avahi mDNS over Wireguard or a proper DNS server
+  # for networked hosts on the VPN instead of this?
+  # This maps all Wireguard peers' IP address to their hostname using /etc/hosts.
+  networking.hosts =
+    builtins.listToAttrs
+      (lib.flatten
+        (lib.mapAttrsToList
+          (n: v:
+            builtins.map
+              (x:
+                lib.nameValuePair
+                  # IPv4 addresses need the subnet mask removed.
+                  (builtins.elemAt (builtins.split "/" x) 0)
+                  # Assign this IP to $hostname.internal with $hostname alias.
+                  [ (n + ".internal") n ])
+              v.AllowedIPs)
+          # Only create entries for other peers, not ourselves.
+          (lib.filterAttrs (n: _: n != peer) common.nodes)));
+
   systemd.network = {
     enable = true;
 
