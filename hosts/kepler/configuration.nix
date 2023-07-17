@@ -89,6 +89,12 @@
   };
 
   services.fail2ban.enable = true;
+  services.endlessh = {
+    enable = true;
+
+    port = 22;
+    openFirewall = true;
+  };
 
   documentation.enable = false;
 
