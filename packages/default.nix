@@ -7,7 +7,9 @@ let
 
     blisp = callPackage ./blisp { };
 
-    libcamera-apps = callPackage ./libcamera-apps { libcamera = final.libcamera-rpi; };
+    camera-streamer = callPackage ./camera-streamer { libcamera = packages.libcamera-rpi; };
+
+    libcamera-apps = callPackage ./libcamera-apps { libcamera = packages.libcamera-rpi; };
 
     libcamera-rpi = prev.libcamera.overrideAttrs (old: {
       mesonFlags = old.mesonFlags ++ [
@@ -49,13 +51,13 @@ let
     wayfire-git = callPackage ./wayfire { };
 
     wayfirePlugins = prev.wayfirePlugins // {
-      dbus-interface = callPackage ./wayfire/wayfirePlugins/wayfire-dbus { wayfire = final.wayfire-git; };
+      dbus-interface = callPackage ./wayfire/wayfirePlugins/wayfire-dbus { wayfire = packages.wayfire-git; };
 
-      firedecor = callPackage ./wayfire/wayfirePlugins/firedecor { wayfire = final.wayfire-git; };
+      firedecor = callPackage ./wayfire/wayfirePlugins/firedecor { wayfire = packages.wayfire-git; };
 
-      plugins-extra = callPackage ./wayfire/wayfirePlugins/wayfire-plugins-extra { wayfire = final.wayfire-git; };
+      plugins-extra = callPackage ./wayfire/wayfirePlugins/wayfire-plugins-extra { wayfire = packages.wayfire-git; };
 
-      shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = final.wayfire-git; };
+      shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = packages.wayfire-git; };
     };
 
     wlr-spanbg = callPackage ./wlr-spanbg { };
