@@ -5,8 +5,6 @@ let
   packages = {
     bgrep = callPackage ./bgrep { };
 
-    blisp = callPackage ./blisp { };
-
     camera-streamer = callPackage ./camera-streamer { libcamera = packages.libcamera-rpi; };
 
     libcamera-apps = callPackage ./libcamera-apps { libcamera = packages.libcamera-rpi; };
