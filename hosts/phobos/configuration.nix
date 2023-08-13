@@ -120,7 +120,7 @@
     user = "klipper";
     group = "klipper";
 
-    configFile = ./printer-prusa-mk3s.cfg;
+    configFile = ./mcu-prusa-mk3s.cfg;
   };
 
   # A ridiculous way to provide the default Mainsail config. There has to be
