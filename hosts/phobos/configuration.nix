@@ -100,13 +100,23 @@
   # with local network router ("DNSSEC validation failed: signature-expired").
   services.timesyncd.servers = lib.mkForce [ "192.168.205.1" ];
 
-  environment.persistence."/state".enable = true;
-  environment.systemPackages = with pkgs; [
-    libcamera-apps
-    libgpiod
-    libraspberrypi
-    vim
-  ];
+  environment = {
+    persistence."/state".enable = true;
+
+    systemPackages = with pkgs; [
+      libcamera-apps
+      libgpiod
+      libraspberrypi
+      vim
+
+      # Expose klipper's calibrate_shaper.py because the klipper module does not.
+      (writeShellApplication {
+        name = "calibrate_shaper";
+        runtimeInputs = [( python3.withPackages (ps: [ ps.numpy ps.matplotlib ]) )];
+        text = "${klipper.src}/scripts/calibrate_shaper.py \"$@\"";
+      })
+    ];
+  };
 
   services.udev.extraRules = ''
     # In order to not have to use /dev/serial/by-id/usb-Prusa_Research__prus...
