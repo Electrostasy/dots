@@ -133,15 +133,14 @@
     configFile = ./mcu-prusa-mk3s.cfg;
   };
 
-  # A ridiculous way to provide the default Mainsail config. There has to be
-  # a better way to do this, but parent directories are owned by root which
-  # makes Moonraker complain and fail to start/load default.json unless we
-  # create them in order.
-  systemd.tmpfiles.rules = lib.mkAfter [
-    "d /var/lib/moonraker/config - moonraker moonraker - -"
-    "d /var/lib/moonraker/config/.theme - moonraker moonraker - -"
-    "C /var/lib/moonraker/config/.theme/default.json - moonraker moonraker - ${./mainsail-config.json}"
-  ];
+  # Set Mainsail theme from Moonraker as the default theme.
+  systemd.services.moonraker.serviceConfig.ExecStartPre = pkgs.writeShellScript "set-mainsail-theme.sh" ''
+    MAINSAIL_CONFIG='${config.services.moonraker.stateDir}/config/.theme/default.json'
+    if [ ! -f "$MAINSAIL_CONFIG" ]; then
+      mkdir -p "''${MAINSAIL_CONFIG%/*}"
+      ln -s ${./mainsail-config.json} "$MAINSAIL_CONFIG"
+    fi
+  '';
 
   services.moonraker = {
     enable = true;
