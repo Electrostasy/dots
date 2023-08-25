@@ -44,6 +44,9 @@
             # Pi Camera Module 3 (Sony IMX708) support.
             camera_auto_detect=0
             dtoverlay=imx708
+
+            # Set the USB-C port as USB 2.0 host.
+            otg_mode=1
           '';
         };
       };
@@ -122,7 +125,33 @@
     # In order to not have to use /dev/serial/by-id/usb-Prusa_Research__prus...
     # to communicate with the 3D printer's serial socket.
     SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c99", ATTRS{idProduct}=="0002", SYMLINK+="ttyMK3S"
+
+    # Setup Linux USB permissions for `uhubctl` to be run by users part of `dialout`:
+    # https://github.com/mvp/uhubctl#linux-usb-permissions.
+    SUBSYSTEM=="usb", DRIVER=="usb", MODE="0664", ATTR{idVendor}=="2109", GROUP="dialout"
+    SUBSYSTEM=="usb", DRIVER=="usb", MODE="0664", ATTR{idVendor}=="1d6b", GROUP="dialout"
   '';
+
+  # RP2040-based secondary Klipper MCUs seem to be stuck in an error state on boot,
+  # giving errors such as:
+  # `usb 1-1.3: device descriptor read/64, error -32`
+  # `usb 1-1.3: Device not responding to setup address.`
+  # Power cycling them once on boot seems to fix it and allows the main Klipper
+  # service to continue launch.
+  # NOTE: 3D printer has to be connected to the host USB-C port on the Pi, which
+  # does not support power cycling, so `otg_mode=1` has to be set in `config.txt`.
+  systemd.services.klipper-mcus-power-cycle = {
+    description = "Power cycle Klipper secondary MCUs after main service loads";
+    wantedBy = [ "multi-user.target" "klipper.service" ];
+    after = [ "klipper.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.uhubctl}/bin/uhubctl --level 2 --action 2";
+      SupplementaryGroups = [ "dialout" ];
+      User = "klipper";
+      Group = "klipper";
+    };
+  };
 
   services.klipper = {
     enable = true;
