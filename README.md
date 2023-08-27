@@ -20,7 +20,7 @@ The table below lists the managed hosts and their functions:
 | :-- | :-- | :-- |
 | **terra** | Desktop | Home PC |
 | **phobos** | Raspberry Pi 4B | Klipper <br/> Moonraker <br/> Mainsail |
-| **venus** | Lenovo ThinkPad X220 Tablet | Laptop |
+| **venus** | Lenovo ThinkPad X230 Tablet | Laptop |
 | **eris** | WSL | Primary PC at work |
 | **ceres** | Desktop | Secondary PC at work |
 | **kepler** | VPS | Matrix homeserver <br/> Wireguard VPN |

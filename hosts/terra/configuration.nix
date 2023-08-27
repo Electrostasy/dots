@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./build-machine.nix
     ./audio.nix
     ./gaming.nix
   ];

@@ -1,5 +1,5 @@
 {
-  home-manager.users.electro = { pkgs, lib, ... }: {
+  home-manager.users.electro = { config, pkgs, lib, ... }: {
     imports = [
       ../../profiles/user/mpv
       ../../profiles/user/neovim
@@ -8,6 +8,19 @@
     ];
 
     home.stateVersion = "22.11";
+
+    xdg.userDirs = {
+      enable = true;
+
+      desktop = null; # unused
+      documents = "${config.home.homeDirectory}/documents";
+      download = "${config.home.homeDirectory}/downloads";
+      music = "${config.home.homeDirectory}/music";
+      pictures = "${config.home.homeDirectory}/pictures";
+      publicShare = null; # unused
+      templates = null; # unused
+      videos = "${config.home.homeDirectory}/videos";
+    };
 
     home.pointerCursor = {
       package = pkgs.simp1e-cursors;

@@ -1,23 +1,33 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ./gnome.nix
-    ./remote-build-machines.nix
-  ];
+  imports = [ ./gnome.nix ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  system.stateVersion = "22.11";
+  system.stateVersion = "23.11";
 
   boot = {
-    initrd.availableKernelModules = [
-      "ahci"
-      "ehci_pci"
-      "sdhci_pci"
-      "sd_mod"
-      "usb_storage"
-    ];
+    initrd = {
+      # Required for Plymouth to show graphical password prompt on boot.
+      systemd.enable = true;
+
+      availableKernelModules = [
+        "ahci"
+        "ehci_pci"
+        "sd_mod"
+        "sdhci_pci"
+        "usb_storage"
+        "xhci_pci"
+      ];
+
+      luks.devices."cryptroot" = {
+        device = "/dev/disk/by-uuid/a408f4d3-eff8-455f-81d3-150b53265f40";
+        allowDiscards = true;
+      };
+    };
+
+    plymouth.enable = true;
 
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -38,8 +48,6 @@
 
   hardware = {
     cpu.intel.updateMicrocode = true;
-
-    # Required for Intel AX210 WiFi.
     enableRedistributableFirmware = true;
   };
 
@@ -88,8 +96,8 @@
       # $ set -l current (cat /sys/class/power_supply/BAT0/charge_full)
       # $ set -l factory (cat /sys/class/power_supply/BAT0/charge_full_design)
       # $ math "100-$current/$factory*100"
-      START_CHARGE_THRESH_BAT0 = 40;
-      STOP_CHARGE_THRESH_BAT0 = 80;
+      START_CHARGE_THRESH_BAT0 = 67;
+      STOP_CHARGE_THRESH_BAT0 = 100;
 
       # Limit CPU speed to reduce heat and increase battery
       CPU_MAX_PERF_ON_AC = "100";
@@ -101,7 +109,11 @@
     "/" = {
       device = "none";
       fsType = "tmpfs";
-      options = [ "defaults" "size=1G" "mode=755" ];
+      options = [
+        "defaults"
+        "size=1G"
+        "mode=755"
+      ];
     };
 
     "/boot" = {
@@ -110,15 +122,27 @@
     };
 
     "/nix" = {
-      device = "/dev/disk/by-label/data";
+      device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:3" "discard=async" ];
+      options = [
+        "subvol=nix"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:3"
+        "discard=async"
+      ];
     };
 
     "/state" = {
-      device = "/dev/disk/by-label/data";
+      device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:3" "discard=async" ];
+      options = [
+        "subvol=state"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:3"
+        "discard=async"
+      ];
       neededForBoot = true;
     };
   };
@@ -129,6 +153,9 @@
     users.electro.directories = [
       ".cache"
       ".mozilla"
+      "documents"
+      "downloads"
+      "pictures"
       { directory = ".ssh"; mode = "0700"; }
     ];
   };
@@ -183,10 +210,8 @@
         };
       };
 
-      # NOTE: Only works if the wifi card is powered down:
-      # $ sudo networkctl down wlan0
       "40-tethered" = {
-        name = "enp0s2[69]u1u[12]";
+        name = "enp0s2*";
 
         DHCP = "yes";
         dns = [ "9.9.9.9" ];
