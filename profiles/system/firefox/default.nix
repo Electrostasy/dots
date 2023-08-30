@@ -3,13 +3,13 @@
 let
   arkenfox = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "arkenfox";
-    version = "112.0";
+    version = "115.1";
 
     src = pkgs.fetchFromGitHub {
       owner = "arkenfox";
       repo = "user.js";
       rev = finalAttrs.version;
-      hash = "sha256-k4PF8FWN6U+//UmZX4UxzBWbfAgEwQznLVsaFV/fVKo=";
+      hash = "sha256-t6qvPFJIF+De2KqMfCI5DEA40BwWeu4AFRWOzKeEVE0=";
     };
 
     installPhase = ''
