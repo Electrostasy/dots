@@ -5,7 +5,7 @@ let
     [burn-my-windows-profile]
 
     profile-high-priority=true
-    profile-window-type=1
+    profile-window-type=0
     profile-animation-type=0
     fire-enable-effect=false
     glide-enable-effect=true
@@ -25,6 +25,8 @@ in
   services.xserver = {
     enable = true;
 
+    # We can exclude these packages without breaking X in gnome-shell, even if
+    # I almost never use it.
     excludePackages = [ pkgs.xterm ] ++ (with pkgs.xorg; [
       iceauth
       xauth
@@ -107,6 +109,7 @@ in
       gnome.gnome-weather
       gnome.nautilus
       gnome.sushi
+      keepassxc
       rnote
       video-trimmer
       warp
@@ -124,11 +127,14 @@ in
     user.databases = [{
       settings = with lib.gvariant; {
         "org/gnome/desktop/interface".color-scheme = "prefer-dark";
-        # TODO: This is outside of the Nix store, need to set it dynamically on shell startup.
-        "org/gnome/desktop/background".picture-uri = "file:///home/electro/pictures/wallpapers/Castle Mountain, Canadian Rockies.jpeg";
-        "org/gnome/desktop/background".picture-uri-dark = "file:///home/electro/pictures/wallpapers/Castle Mountain, Canadian Rockies.jpeg";
-        "org/gnome/desktop/screensaver".picture-uri = "file:///home/electro/pictures/wallpapers/Castle Mountain, Canadian Rockies.jpeg";
-        "org/gnome/mutter".edge-tiling = true;
+        "org/gnome/desktop/calendar".show-weekdate = true;
+        "org/gnome/mutter" = {
+          edge-tiling = true;
+          attach-modal-dialogs = true;
+
+          # Enable fractional scaling.
+          experimental-features = [ "scale-monitor-framebuffer" ];
+        };
 
         # Disable automatic screen locking.
         "org/gnome/desktop/session".idle-delay = mkUint32 0;
@@ -140,6 +146,7 @@ in
         "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
 
         "org/gnome/desktop/interface".show-battery-percentage = true;
+        "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
 
         # Shut down when power button is pressed.
         "org/gnome/settings-daemon/plugins/power".power-button-action = "interactive";
@@ -152,6 +159,27 @@ in
           # Add Lithuanian language.
           (mkTuple [ "xkb" "lt" ])
         ];
+
+        "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
+        "org/gnome/nautilus/list-view" = {
+          use-tree-view = true;
+          default-zoom-level = "small";
+        };
+
+        "org/gtk/gtk4/settings/file-chooser" = {
+          sort-directories-first = true;
+          show-hidden = true;
+          view-type = "list";
+        };
+
+        "com/raggesilver/BlackBox" = {
+          font = "Recursive Mono Casual Static 11";
+          terminal-bell = false;
+        };
+
+        # Hidden/background programs only show up if they are flatpaks,
+        # so disable background play for now.
+        "io/bassi/Amberol".background-play = false;
 
         # Add/remove keybindings.
         "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -173,6 +201,8 @@ in
           switch-input-source-backward = mkEmptyArray type.string;
           activate-window-menu = [ "Menu" ];
           close = [ "<Shift><Super>w" ];
+          maximize = [ "<Super>f" ];
+          toggle-fullscreen = [ "<Shift><Super>f" ];
         };
 
         "org/gnome/shell/keybindings" = {
@@ -196,14 +226,21 @@ in
         };
 
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-          binding = "<Super>E";
+          binding = "<Super>e";
           command = "/usr/bin/env nautilus";
           name = "File Manager";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+          binding = "<Super>k";
+          command = "/usr/bin/env keepassxc";
+          name = "Password Manager";
         };
 
         "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
         ];
 
         # Extension settings.
@@ -216,22 +253,23 @@ in
         ];
 
         "org/gnome/shell/extensions/dash-to-panel" = {
-          panel-positions = "{\"0\":\"TOP\"}";
-          panel-sizes = "{\"0\":32}";
-          panel-element-positions = builtins.toJSON {
-            "0" = [
-              { element = "showAppsButton"; visible = true; position = "stackedTL"; }
-              { element = "activitiesButton"; visible = false; position = "stackedTL"; }
-              { element = "dateMenu"; visible = true; position = "stackedTL"; }
-              { element = "leftBox"; visible = true; position = "stackedTL"; }
-              { element = "taskbar"; visible = true; position = "centerMonitor"; }
-              { element = "centerBox"; visible = false; position = "centered"; }
-              { element = "rightBox"; visible = true; position = "stackedBR"; }
-              { element = "systemMenu"; visible = true; position = "stackedBR"; }
-              { element = "desktopButton"; visible = false; position = "stackedBR"; }
-            ];
-          };
-
+          # Even when we are not using multiple panels on multiple monitors,
+          # the extension still creates them in the config, so we set the same
+          # configuration for each (up to 2 monitors).
+          panel-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: "TOP"));
+          panel-sizes = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: 32));
+          panel-element-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: [
+            { element = "showAppsButton"; visible = true; position = "stackedTL"; }
+            { element = "activitiesButton"; visible = false; position = "stackedTL"; }
+            { element = "dateMenu"; visible = true; position = "stackedTL"; }
+            { element = "leftBox"; visible = true; position = "stackedTL"; }
+            { element = "taskbar"; visible = true; position = "centerMonitor"; }
+            { element = "centerBox"; visible = false; position = "centered"; }
+            { element = "rightBox"; visible = true; position = "stackedBR"; }
+            { element = "systemMenu"; visible = true; position = "stackedBR"; }
+            { element = "desktopButton"; visible = false; position = "stackedBR"; }
+          ]));
+          multi-monitors = false;
           show-apps-icon-file = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake-white.svg";
           show-apps-icon-padding = mkInt32 4;
           focus-highlight-dominant = true;
@@ -261,16 +299,28 @@ in
           edge-switch-pressure = mkUint32 100;
           mouse-rotation-speed = 1.0;
         };
-
-        "org/gtk/gtk4/settings/file-chooser".sort-directories-first = true;
-        "org/gnome/nautilus/list-view".use-tree-view = true;
-
-        "com/raggesilver/BlackBox".font = "Recursive Mono Casual Static 11";
       };
     }];
   };
 
   systemd.user.tmpfiles.rules = [
+    # Set up `Burn My Windows` config, as it uses a separate file in $HOME/.config.
     "L+ %h/.config/burn-my-windows/profiles/nix-profile.conf 0755 - - - ${burnMyWindowsProfile}"
+
+    # Automatically pick a random wallpaper at startup.
+    "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''
+      [Desktop Entry]
+      Name=Wallpaper Randomiser
+      Terminal=false
+      Exec=${pkgs.writeShellScript "wallpaper.sh" ''
+        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' $HOME/pictures/wallpapers | shuf -n 1)
+        dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
+        dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
+        dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
+      ''}
+      Type=Application
+      Categories=Utility;
+      NoDisplay=true
+    ''}"
   ];
 }
