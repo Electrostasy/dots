@@ -9,7 +9,7 @@ let
       owner = "arkenfox";
       repo = "user.js";
       rev = finalAttrs.version;
-      hash = "sha256-t6qvPFJIF+De2KqMfCI5DEA40BwWeu4AFRWOzKeEVE0=";
+      hash = "sha256-M523JiwiZR0mwjyjNaojSERFt77Dp75cg0Ifd6wTOdU=";
     };
 
     installPhase = ''
