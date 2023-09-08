@@ -24,25 +24,15 @@
     impermanence.url = "github:nix-community/impermanence/master";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    nixos-hardware,
-    ...
-  }:
-  let
-    inherit (nixpkgs) lib;
-  in
-  {
+  outputs = { self, nixpkgs, nixos-hardware, ... }: {
     legacyPackages =
-      lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
-        lib.fix
-          (lib.composeManyExtensions (builtins.attrValues self.overlays))
+      nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+        nixpkgs.lib.fix
+          (nixpkgs.lib.composeManyExtensions (builtins.attrValues self.overlays))
           nixpkgs.legacyPackages.${system});
 
     overlays = {
       default = import ./packages;
-
       customisations = final: prev: {
         libewf = prev.libewf.overrideAttrs (_: {
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
@@ -51,14 +41,11 @@
       };
     };
 
-    homeManagerModules = {
-      wayfire = import ./modules/user/wayfire;
-    };
+    homeManagerModules.wayfire = import ./modules/user/wayfire;
 
     nixosConfigurations = {
-      terra = lib.nixosSystem {
+      terra = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/terra/configuration.nix
@@ -73,9 +60,8 @@
         ];
       };
 
-      phobos = lib.nixosSystem {
+      phobos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/phobos/configuration.nix
@@ -85,9 +71,8 @@
         ];
       };
 
-      venus = lib.nixosSystem {
+      venus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/venus/configuration.nix
@@ -95,6 +80,7 @@
           ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
+          ./profiles/system/gnome
           ./profiles/system/mullvad
           ./profiles/system/shell
           ./profiles/system/ssh
@@ -104,9 +90,8 @@
         ];
       };
 
-      eris = lib.nixosSystem {
+      eris = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/eris/configuration.nix
           ./hosts/eris/home.nix
@@ -115,9 +100,8 @@
         ];
       };
 
-      ceres = lib.nixosSystem {
+      ceres = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/ceres/configuration.nix
           ./hosts/ceres/home.nix
@@ -130,9 +114,8 @@
         ];
       };
 
-      kepler = lib.nixosSystem {
+      kepler = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
-
         modules = [
           ./hosts/kepler/configuration.nix
           ./hosts/kepler/wireguard-server.nix

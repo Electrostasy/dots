@@ -74,7 +74,6 @@ in
     };
   };
 
-  # NOTE: Currently cannot connect via GUI, has to be done via iwctl.
   networking.networkmanager.wifi.backend = "iwd";
 
   environment = {
@@ -87,6 +86,7 @@ in
     ];
 
     # Persists multi-monitor configuration.
+    # TODO: Make independent of user.
     persistence."/state".users.electro.files = [ ".config/monitors.xml" ];
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
@@ -102,7 +102,6 @@ in
       celluloid
       eyedropper
       fractal-next
-      gnome.cheese
       gnome.gnome-calculator
       gnome.gnome-calendar
       gnome.gnome-system-monitor
@@ -110,7 +109,6 @@ in
       gnome.nautilus
       gnome.sushi
       keepassxc
-      rnote
       video-trimmer
       warp
     ] ++ (with pkgs.gnomeExtensions; [
@@ -176,6 +174,8 @@ in
           font = "Recursive Mono Casual Static 11";
           terminal-bell = false;
         };
+
+        "io/github/celluloid-player/celluloid".always-open-new-window = true;
 
         # Hidden/background programs only show up if they are flatpaks,
         # so disable background play for now.

@@ -32,6 +32,7 @@
 
     home.packages = with pkgs; [
       freerdp # wlfreerdp
+      gnome.cheese
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
@@ -40,6 +41,7 @@
       mepo
       nurl
       qr
+      rnote
       xournalpp
     ];
   };
