@@ -1,10 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ./audio.nix
-    ./gaming.nix
-  ];
+  imports = [ ./gaming.nix ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
 

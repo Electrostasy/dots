@@ -124,39 +124,29 @@ in
     # TODO: Investigate customizing gdm greeter.
     user.databases = [{
       settings = with lib.gvariant; {
-        "org/gnome/desktop/interface".color-scheme = "prefer-dark";
         "org/gnome/desktop/calendar".show-weekdate = true;
+        "org/gnome/desktop/input-sources".sources = [
+          (mkTuple [ "xkb" "us" ])
+          (mkTuple [ "xkb" "lt" ])
+        ];
+        "org/gnome/desktop/interface".color-scheme = "prefer-dark";
+        "org/gnome/desktop/interface".show-battery-percentage = true;
+        "org/gnome/desktop/media-handling".automount = false;
+        "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
+        "org/gnome/desktop/privacy".remember-recent-files = false;
+        "org/gnome/desktop/screensaver".lock-enabled = false;
+        "org/gnome/desktop/session".idle-delay = mkUint32 0;
+        "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
         "org/gnome/mutter" = {
           edge-tiling = true;
           attach-modal-dialogs = true;
-
-          # Enable fractional scaling.
           experimental-features = [ "scale-monitor-framebuffer" ];
         };
-
-        # Disable automatic screen locking.
-        "org/gnome/desktop/session".idle-delay = mkUint32 0;
-        "org/gnome/desktop/screensaver".lock-enabled = false;
-
-        "org/gnome/desktop/privacy".remember-recent-files = false;
-
-        # Suspend only on battery power, not while charging.
-        "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
-
-        "org/gnome/desktop/interface".show-battery-percentage = true;
-        "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
-
-        # Shut down when power button is pressed.
-        "org/gnome/settings-daemon/plugins/power".power-button-action = "interactive";
-
-        # Disable input device acceleration.
-        "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
-
-        "org/gnome/desktop/input-sources".sources = [
-          (mkTuple [ "xkb" "us" ])
-          # Add Lithuanian language.
-          (mkTuple [ "xkb" "lt" ])
-        ];
+        "org/gnome/settings-daemon/plugins/power" = {
+          # Suspend only on battery power, not while charging.
+          sleep-inactive-ac-type = "nothing";
+          power-button-action = "interactive";
+        };
 
         "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
         "org/gnome/nautilus/list-view" = {
@@ -181,12 +171,35 @@ in
         # so disable background play for now.
         "io/bassi/Amberol".background-play = false;
 
-        # Add/remove keybindings.
         "org/gnome/settings-daemon/plugins/media-keys" = {
           screenreader = mkEmptyArray type.string;
           magnifier = mkEmptyArray type.string;
           calculator = [ "<Super>c" ];
         };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+          binding = "<Super>Return";
+          command = "/usr/bin/env blackbox";
+          name = "Terminal";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+          binding = "<Super>e";
+          command = "/usr/bin/env nautilus";
+          name = "File Manager";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+          binding = "<Super>k";
+          command = "/usr/bin/env keepassxc";
+          name = "Password Manager";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
+        ];
 
         "org/gnome/desktop/wm/keybindings" = {
           switch-to-workspace-left = [ "<Super>a" ];
@@ -219,31 +232,6 @@ in
           screenshot-window = mkEmptyArray type.string;
         };
 
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-          binding = "<Super>Return";
-          command = "/usr/bin/env blackbox";
-          name = "Terminal";
-        };
-
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-          binding = "<Super>e";
-          command = "/usr/bin/env nautilus";
-          name = "File Manager";
-        };
-
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-          binding = "<Super>k";
-          command = "/usr/bin/env keepassxc";
-          name = "Password Manager";
-        };
-
-        "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
-        ];
-
-        # Extension settings.
         "org/gnome/shell".enabled-extensions = [
           "blur-my-shell@aunetx"
           "burn-my-windows@schneegans.github.com"
@@ -284,15 +272,10 @@ in
           hide-overview-on-startup = true;
           stockgs-keep-dash = true;
         };
-
         "org/gnome/shell/extensions/blur-my-shell".color-and-noise = false;
         "org/gnome/shell/extensions/blur-my-shell/applications".blur = false;
-
-        # For some reason this extension does not save its settings in dconf.
         "org/gnome/shell/extensions/burn-my-windows".active-profile = "${burnMyWindowsProfile}";
-
         "org/gnome/shell/extensions/date-menu-formatter".pattern = "y-MM-dd kk:mm";
-
         "org/gnome/shell/extensions/desktop-cube" = {
           last-first-gap = false;
           window-parallax = 0.75;
