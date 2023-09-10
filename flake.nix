@@ -50,7 +50,6 @@
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/terra/configuration.nix
           ./hosts/terra/home.nix
-          ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/graphical
@@ -77,7 +76,6 @@
           ./hosts/kepler/wireguard-peer.nix
           ./hosts/venus/configuration.nix
           ./hosts/venus/home.nix
-          ./profiles/system/audio
           ./profiles/system/common
           ./profiles/system/firefox
           ./profiles/system/gnome

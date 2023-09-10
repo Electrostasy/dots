@@ -1,0 +1,33 @@
+{
+  "context.modules": [
+    {
+      "name": "libpipewire-module-filter-chain",
+      "args": {
+        "node.name": "Microphone w/ Noise Suppression",
+        "node.description": "Microphone w/ Noise Suppression",
+        "media.name": "Microphone w/ Noise Suppression",
+        "filter.graph": {
+          "nodes": [
+            {
+              "type": "ladspa",
+              "name": "rnnoise",
+              "plugin": "@rnnoise-plugin@/lib/ladspa/librnnoise_ladspa.so",
+              "label": "noise_suppressor_mono",
+              "control": {
+                "VAD Threshold (%)": 50.0,
+                "VAD Grace Period (ms)": 200,
+                "Retroactive VAD Grace (ms)": 0
+              }
+            }
+          ]
+        }
+      },
+      "capture.props": {
+        "node.passive": true
+      },
+      "playback.props": {
+        "media.class": "Audio/Source"
+      }
+    }
+  ]
+}

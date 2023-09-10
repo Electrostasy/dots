@@ -1,17 +1,18 @@
 local dac = "JDS Labs EL DAC II+"
 local mic = "Fifine K658  Microphone"
 
-local function to_interest(string)
-  return Interest {
+local om = ObjectManager {
+  Interest {
     type = "node",
     Constraint { "media.class", "equals", "Audio/Sink", type = "pw-global" },
-    Constraint { "node.nick", "equals", string, type = "pw-global" },
-  }
-end
+    Constraint { "node.nick", "equals", dac, type = "pw-global" },
+  },
 
-local om = ObjectManager {
-  to_interest(dac),
-  to_interest(mic),
+  Interest {
+    type = "node",
+    Constraint { "media.class", "equals", "Audio/Sink", type = "pw-global" },
+    Constraint { "node.nick", "equals", mic, type = "pw-global" },
+  },
 }
 
 local dac_found = false

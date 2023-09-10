@@ -35,7 +35,11 @@
     "/" = {
       device = "none";
       fsType = "tmpfs";
-      options = [ "defaults" "size=512M" "mode=755" ];
+      options = [
+        "defaults"
+        "size=512M"
+        "mode=755"
+      ];
     };
 
     "/boot" = {
@@ -46,13 +50,25 @@
     "/nix" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=nix" "noatime" "nodiratime" "compress-force=zstd:1" "discard=async" ];
+      options = [
+        "subvol=nix"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:1"
+        "discard=async"
+      ];
     };
 
     "/state" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
-      options = [ "subvol=state" "noatime" "nodiratime" "compress-force=zstd:1" "discard=async" ];
+      options = [
+        "subvol=state"
+        "noatime"
+        "nodiratime"
+        "compress-force=zstd:1"
+        "discard=async"
+      ];
       neededForBoot = true;
     };
   };
@@ -78,6 +94,34 @@
         { directory = ".ssh"; mode = "0700"; }
       ];
     };
+  };
+
+  security.rtkit.enable = true;
+  services.pipewire.enable = true;
+
+  # TODO: Fix default node setting (where did mic go?);
+  # TODO: Fix default volume setting;
+  # TODO: Unbreak noise suppressed microphone node from not showing in sources list.
+  environment.etc = {
+    "pipewire/pipewire.conf.d/60-hifiman-sundara-eq.conf".source = ./hifiman-sundara-eq.json;
+    "pipewire/pipewire.conf.d/60-microphone-rnnoise.conf".source = pkgs.substitute {
+      replacements = [ "--replace" "@rnnoise-plugin@" pkgs.rnnoise-plugin ];
+      src = ./microphone-rnnoise.json;
+    };
+    "wireplumber/main.lua.d/60-disable-devices-nodes.lua".source = ./disable-device-nodes.lua;
+  };
+
+  systemd.user.services.wireplumber-default-nodes = {
+    description = "PipeWire set default audio sink";
+    after = [ "wireplumber.service" ];
+    wantedBy = [ "graphical-session-pre.target" ];
+
+    serviceConfig.Type = "oneshot";
+    script = ''
+      STATUS="$(${pkgs.wireplumber}/bin/wpctl status)"
+      sink="$(echo "$STATUS" | ${pkgs.gnused}/bin/sed -n 's/[ │*]\+\([0-9]\+\)\. HIFIMAN Sundara.*/\1/p')"
+      ${pkgs.wireplumber}/bin/wpctl set-default "$sink"
+    '';
   };
 
   networking = {
@@ -119,17 +163,15 @@
     mutableUsers = false;
 
     users = {
-      # Change initialHashedPassword using
-      # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
+      # Change password using:
+      # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
       root.passwordFile = config.sops.secrets.rootPassword.path;
       electro = {
         isNormalUser = true;
         passwordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         uid = 1000;
-        openssh.authorizedKeys.keyFiles = [
-          ../venus/ssh_electro_ed25519_key.pub
-        ];
+        openssh.authorizedKeys.keyFiles = [ ../venus/ssh_electro_ed25519_key.pub ];
       };
     };
   };
