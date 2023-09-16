@@ -162,10 +162,10 @@
     users = {
       # Change password using:
       # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
-      root.passwordFile = config.sops.secrets.rootPassword.path;
+      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
       electro = {
         isNormalUser = true;
-        passwordFile = config.sops.secrets.electroPassword.path;
+        hashedPasswordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         uid = 1000;
         openssh.authorizedKeys.keyFiles = [ ../venus/ssh_electro_ed25519_key.pub ];

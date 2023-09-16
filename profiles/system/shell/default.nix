@@ -7,7 +7,7 @@
     systemPackages = with pkgs; [
       bottom
       erdtree
-      exa
+      eza
       fd
       ouch
       ripgrep
@@ -38,28 +38,28 @@
         argparse 'l/long' 'a/all' 'd/depth=' -- $argv
 
         # Filter directories/files from flags.
-        set -l exa_args (string match -v -- '-*' $argv)
+        set -l eza_args (string match -v -- '-*' $argv)
 
         # If there are no targets to ls, assume current working directory.
-        if test (count $exa_args) -eq 0
-          set exa_args .
+        if test (count $eza_args) -eq 0
+          set eza_args .
         end
 
         # Convert targets to absolute paths.
-        for i in (seq (count $exa_args))
-          set exa_args[$i] (readlink -m $exa_args[$i])
+        for i in (seq (count $eza_args))
+          set eza_args[$i] (readlink -m $eza_args[$i])
         end
 
-        set -l exa_flags --tree --group-directories-first --icons
-        set exa_flags $exa_flags --level=(test -n "$_flag_depth" && echo $_flag_depth || echo 1)
+        set -l eza_flags --tree --group-directories-first --icons
+        set eza_flags $eza_flags --level=(test -n "$_flag_depth" && echo $_flag_depth || echo 1)
         if set -q _flag_long
-          set exa_flags $exa_flags --long --group
+          set eza_flags $eza_flags --long --group
         end
         if set -q _flag_all
-          set exa_flags $exa_flags --all
+          set eza_flags $eza_flags --all
         end
 
-        command exa $exa_flags $exa_args
+        command eza $eza_flags $eza_args
       end
 
       set -g fish_greeting # Disable greeting.

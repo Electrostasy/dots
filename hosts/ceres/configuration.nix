@@ -100,10 +100,10 @@
     mutableUsers = false;
 
     users = {
-      root.passwordFile = config.sops.secrets.rootPassword.path;
+      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
       gediminas = {
         isNormalUser = true;
-        passwordFile = config.sops.secrets.gediminasPassword.path;
+        hashedPasswordFile = config.sops.secrets.gediminasPassword.path;
         extraGroups = [ "wheel" "libvirtd" ];
         uid = 1000;
       };

@@ -236,7 +236,7 @@
   users.mutableUsers = false;
   users.users.pi = {
     isNormalUser = true;
-    passwordFile = config.sops.secrets.piPassword.path;
+    hashedPasswordFile = config.sops.secrets.piPassword.path;
     extraGroups = [ "wheel" ];
     uid = 1000;
     openssh.authorizedKeys.keyFiles = [

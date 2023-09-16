@@ -127,7 +127,7 @@
     # Change password in ./secrets.yaml using
     # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
     users.root = {
-      passwordFile = config.sops.secrets.rootPassword.path;
+      hashedPasswordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
         ../terra/ssh_electro_ed25519_key.pub
         ../venus/ssh_electro_ed25519_key.pub

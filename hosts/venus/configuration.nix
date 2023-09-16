@@ -247,10 +247,10 @@
     mutableUsers = false;
 
     users = {
-      root.passwordFile = config.sops.secrets.rootPassword.path;
+      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
       electro = {
         isNormalUser = true;
-        passwordFile = config.sops.secrets.electroPassword.path;
+        hashedPasswordFile = config.sops.secrets.electroPassword.path;
         extraGroups = [ "wheel" ];
         uid = 1000;
         openssh.authorizedKeys.keyFiles = [
