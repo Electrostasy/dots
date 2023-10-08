@@ -61,7 +61,7 @@ local groups = {
   -- Highlighting groups.
   ColorColumn = { bg = shade[2] },
   Conceal = { bg = shade[3] },
-  Cursor = { bg = shade[1] },
+  Cursor = { reverse = true },
   CursorColumn = { bg = shade[2] },
   CursorLine = { bg = shade[2] },
   Directory = { bg = accent[6] },
@@ -82,7 +82,7 @@ local groups = {
   CursorLineSign = { bg = shade[2] },
   MatchParen = { bg = shade[3] },
   MoreMsg = { fg = shade[1], bg = accent[5] },
-  NonText = { fg = shade[2] },
+  NonText = { fg = shade[2], bg = shade[1] },
   Pmenu = { fg = shade[8], bg = shade[2] },
   PmenuSel = { fg = accent[5], bg = shade[3] },
   PmenuSbar = { fg = accent[4], bg = shade[3] },
@@ -163,9 +163,9 @@ local groups = {
   GitSignsChange = { fg = accent[5], bg = shade[1] },
   GitSignsDelete = { fg = accent[7], bg = shade[1] },
 
-  IndentBlanklineChar = { link = 'NonText' },
-  IndentBlanklineContextChar = { fg = accent[6] },
-  IndentBlanklineSpaceChar = { link = 'NonText' },
+  IblIndent = { link = 'NonText' },
+  IblScope = { fg = accent[6] },
+  IblWhitespace = { link = 'NonText' },
 
   Hlargs = { fg = accent[6] },
   ['@parameter'] = { link = 'Hlargs' },

@@ -18,16 +18,18 @@ vim.g.loaded_2html_plugin = 1
 
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
-  'n-c-v:block',
-  'i-ci-ve-r-o:blinkwait250-blinkon250-blinkoff250',
-  'i-ci-ve:ver25',
-  'r-cr-o:hor20'
+  'n-c-v:block-Cursor',
+  'i-ci-ve-r-o:blinkwait250-blinkon250-blinkoff250-Cursor',
+  'i-ci-ve:ver25-Cursor',
+  'r-cr-o:hor20-Cursor'
 }
 
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 vim.cmd.colorscheme('tranquil')
 
+-- We do not need to exhaustively specify all the fields.
+---@diagnostic disable-next-line: missing-fields
 require('nvim-treesitter.configs').setup({
   highlight = { enable = true },
   indent = { enable = true },
@@ -149,9 +151,7 @@ vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
       vim.opt_local.listchars = normal_listchars
     end
 
-    -- Refresh indents, leading whitespace can get stuck when entering/leaving
-    -- insert mode.
-    require('indent_blankline').refresh()
+    require('ibl').debounced_refresh(0)
   end
 })
 

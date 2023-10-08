@@ -6,6 +6,6 @@
 ; identifier is targetted.
 (apply_expression
   function: (select_expression
-    (attrpath
+    attrpath: (attrpath
       ; Set priority higher than LSP semantic tokens or else this will not show.
-      (identifier) @function (#set! "priority" 150) .)))
+      attr: ((identifier) @function (#set! "priority" 150)) .)))
