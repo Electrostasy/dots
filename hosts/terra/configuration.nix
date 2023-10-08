@@ -94,18 +94,79 @@
   };
 
   security.rtkit.enable = true;
-  services.pipewire.enable = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+  };
 
   # TODO: Fix default node setting (where did mic go?);
   # TODO: Fix default volume setting;
   # TODO: Unbreak noise suppressed microphone node from not showing in sources list.
-  environment.etc = {
+  environment.etc = let json = pkgs.formats.json { }; in {
     "pipewire/pipewire.conf.d/60-hifiman-sundara-eq.conf".source = ./hifiman-sundara-eq.json;
-    "pipewire/pipewire.conf.d/60-microphone-rnnoise.conf".source = pkgs.substitute {
-      replacements = [ "--replace" "@rnnoise-plugin@" pkgs.rnnoise-plugin ];
-      src = ./microphone-rnnoise.json;
+    "pipewire/pipewire.conf.d/60-microphone-rnnoise.conf".source = json.generate "60-microphone-rnnoise.conf" {
+      context.modules = [
+        {
+          name = "libpipewire-module-filter-chain";
+          args = {
+            node.name = "Microphone w/ Noise Suppression";
+            node.description = "Microphone w/ Noise Suppression";
+            media.name = "Microphone w/ Noise Suppression";
+            filter.graph = {
+              nodes = [
+                {
+                  type = "ladspa";
+                  name = "rnnoise";
+                  plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                  label = "noise_suppressor_mono";
+                  control = {
+                    "VAD Threshold (%)" = 50.0;
+                    "VAD Grace Period (ms)" = 200;
+                    "Retroactive VAD Grace (ms)" = 0;
+                  };
+                }
+              ];
+            };
+          };
+          capture.props = {
+            node.passive = true;
+          };
+          playback.props = {
+            media.class = "Audio/Source";
+          };
+        }
+      ];
     };
+
     "wireplumber/main.lua.d/60-disable-devices-nodes.lua".source = ./disable-device-nodes.lua;
+
+    # Configure for low latency, fixes audio crackling.
+    "pipewire/pipewire.conf.d/92-low-latency.conf".source = json.generate "92-low-latency.conf" {
+      context.properties = {
+        default.clock.rate = 48000;
+        default.clock.quantum = 32;
+        default.clock.min-quantum = 32;
+        default.clock.max-quantum = 32;
+      };
+    };
+    "pipewire/pipewire-pulse.conf.d/92-low-latency.conf".source = json.generate "92-low-latency.conf" {
+      context.modules = [
+        {
+          name = "libpipewire-module-protocol-pulse";
+          args = {
+            pulse.min.req = "32/48000";
+            pulse.default.req = "32/48000";
+            pulse.max.req = "32/48000";
+            pulse.min.quantum = "32/48000";
+            pulse.max.quantum = "32/48000";
+          };
+        }
+      ];
+      stream.properties = {
+        node.latency = "32/48000";
+        resample.quality = 1;
+      };
+    };
   };
 
   systemd.user.services.wireplumber-default-nodes = {
