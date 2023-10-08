@@ -17,9 +17,6 @@ let
   '';
 in
 {
-  # Required for ssh-askpass.
-  programs.seahorse.enable = true;
-
   # Due to the way desktop configuration works in Nixpkgs, we have to install
   # an X server even if we only use Wayland.
   services.xserver = {
@@ -56,38 +53,58 @@ in
   };
 
   # Disable default GNOME module features.
+  networking.networkmanager.wifi.backend = "iwd";
   hardware.pulseaudio.enable = false;
   services = {
     avahi.enable = false;
-
-    gnome = {
-      core-utilities.enable = false;
-      tracker-miners.enable = false;
-      tracker.enable = false;
-    };
-
     pipewire = {
       enable = true;
-
       pulse.enable = true;
-      alsa.enable = true;
     };
   };
 
-  networking.networkmanager.wifi.backend = "iwd";
-
   environment = {
+    # Most of these are optional programs added by services.gnome.core-services
+    # and etc., but the module sets other useful options so it is better to
+    # exclude these instead of disabling the module.
     gnome.excludePackages = with pkgs.gnome; [
-      geary
+      baobab # disk usage analyzer
+      eog # image viewer, will be replaced by loupe in 45
+      epiphany # web browser
+      geary # e-mail client
+      gnome-backgrounds
       gnome-bluetooth
-      gnome-terminal
+      gnome-characters
+      gnome-clocks
+      gnome-color-manager
+      gnome-contacts
+      gnome-font-viewer
+      gnome-logs
+      gnome-music
+      gnome-system-monitor
+      gnome-themes-extra
+      pkgs.glib
+      pkgs.gnome-connections
+      # TODO: Uncomment later.
+      # pkgs.gnome-console
+      pkgs.gnome-photos
+      pkgs.gnome-text-editor
       pkgs.gnome-tour
-      pkgs.orca
+      pkgs.gnome-user-docs
+      pkgs.orca # screen reader
+      simple-scan
+      totem # video player
+      yelp# help viewer
     ];
 
-    # Persists multi-monitor configuration.
     # TODO: Make independent of user.
-    persistence."/state".users.electro.files = [ ".config/monitors.xml" ];
+    persistence."/state".users.electro = {
+      # Multi-monitor configuration.
+      files = [ ".config/monitors.xml" ];
+
+      # GNOME file index.
+      directories = [ ".cache/tracker3" ];
+    };
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
 
@@ -97,17 +114,16 @@ in
       (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
       recursive
 
+      # Load Nautilus extensions.
+      gnome.nautilus-python
+
       amberol
-      blackbox-terminal
+      # blackbox currently memory leaks, so use gnome-console/kgx in the meantime.
+      # blackbox-terminal
       celluloid
       eyedropper
-      fractal-next
-      gnome.gnome-calculator
-      gnome.gnome-calendar
-      gnome.gnome-system-monitor
-      gnome.gnome-weather
-      gnome.nautilus
-      gnome.sushi
+      # fractal-next rarely builds successfully on hydra nowadays due to timing out.
+      # fractal-next
       keepassxc
       video-trimmer
       warp
@@ -129,8 +145,13 @@ in
           (mkTuple [ "xkb" "us" ])
           (mkTuple [ "xkb" "lt" ])
         ];
-        "org/gnome/desktop/interface".color-scheme = "prefer-dark";
-        "org/gnome/desktop/interface".show-battery-percentage = true;
+
+        "org/gnome/desktop/interface" = {
+          color-scheme = "prefer-dark";
+          show-battery-percentage = true;
+          monospace-font-name = "Recursive 11";
+        };
+
         "org/gnome/desktop/media-handling".automount = false;
         "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
         "org/gnome/desktop/privacy".remember-recent-files = false;
@@ -142,6 +163,7 @@ in
           attach-modal-dialogs = true;
           experimental-features = [ "scale-monitor-framebuffer" ];
         };
+
         "org/gnome/settings-daemon/plugins/power" = {
           # Suspend only on battery power, not while charging.
           sleep-inactive-ac-type = "nothing";
@@ -160,11 +182,6 @@ in
           view-type = "list";
         };
 
-        "com/raggesilver/BlackBox" = {
-          font = "Recursive Mono Casual Static 11";
-          terminal-bell = false;
-        };
-
         "io/github/celluloid-player/celluloid".always-open-new-window = true;
 
         # Hidden/background programs only show up if they are flatpaks,
@@ -179,7 +196,7 @@ in
 
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
-          command = "/usr/bin/env blackbox";
+          command = "/usr/bin/env kgx";
           name = "Terminal";
         };
 
