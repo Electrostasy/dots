@@ -80,7 +80,6 @@
       options = [
         "subvol=nix"
         "noatime"
-        "nodiratime"
         "compress-force=zstd:3"
       ];
     };
@@ -91,7 +90,6 @@
       options = [
         "subvol=state"
         "noatime"
-        "nodiratime"
         "compress-force=zstd:3"
       ];
       neededForBoot = true;

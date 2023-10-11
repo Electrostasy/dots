@@ -63,7 +63,7 @@ parted /dev/mmcblk1 -- mkpart primary 546MiB 100%
 
 mkfs.vfat -F 32 -n boot /dev/mmcblk1p2
 mkfs.btrfs -L nixos /dev/mmcblk1p3
-mount -t btrfs -o noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt
+mount -t btrfs -o noatime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt
 btrfs subvolume create /mnt/nix
 btrfs subvolume create /mnt/state
 umount /mnt
@@ -71,8 +71,8 @@ umount /mnt
 mount -t tmpfs none /mnt
 mkdir -p /mnt/{boot,nix,state}
 mount /dev/mmcblk1p2 /mnt/boot
-mount -t btrfs -o subvol=nix,noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/nix
-mount -t btrfs -o subvol=state,noatime,nodiratime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/state
+mount -t btrfs -o subvol=nix,noatime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/nix
+mount -t btrfs -o subvol=state,noatime,compress-force=zstd:3 /dev/mmcblk1p3 /mnt/state
 mkdir -p /mnt/{state/,}/var/lib/sops-nix
 # Persist secrets key file.
 cp /var/lib/sops-nix/keys.txt /mnt/state/var/lib/sops-nix

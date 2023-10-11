@@ -46,7 +46,6 @@
     options = [
       "subvol=steam"
       "noatime"
-      "nodiratime"
       "compress-force=zstd:1"
       "discard=async"
     ];

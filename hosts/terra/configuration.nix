@@ -50,7 +50,6 @@
       options = [
         "subvol=nix"
         "noatime"
-        "nodiratime"
         "compress-force=zstd:1"
         "discard=async"
       ];
@@ -62,7 +61,6 @@
       options = [
         "subvol=state"
         "noatime"
-        "nodiratime"
         "compress-force=zstd:1"
         "discard=async"
       ];
