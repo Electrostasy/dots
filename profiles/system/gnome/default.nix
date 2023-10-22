@@ -85,8 +85,6 @@ in
       gnome-themes-extra
       pkgs.glib
       pkgs.gnome-connections
-      # TODO: Uncomment later.
-      # pkgs.gnome-console
       pkgs.gnome-photos
       pkgs.gnome-text-editor
       pkgs.gnome-tour
@@ -118,12 +116,9 @@ in
       gnome.nautilus-python
 
       amberol
-      # blackbox currently memory leaks, so use gnome-console/kgx in the meantime.
-      # blackbox-terminal
       celluloid
       eyedropper
-      # fractal-next rarely builds successfully on hydra nowadays due to timing out.
-      # fractal-next
+      fractal-next
       keepassxc
       video-trimmer
       warp

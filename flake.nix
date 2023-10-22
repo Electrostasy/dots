@@ -38,6 +38,16 @@
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
           buildInputs = [ prev.fuse ];
         });
+
+        fractal-next = prev.fractal-next.overrideAttrs (oldAttrs: {
+          # Necessary to avoid 2hr+ builds, has to be built locally due to timeouts
+          # on Hydra.
+          nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ prev.git ];
+          mesonFlags = (oldAttrs.mesonFlags or []) ++ [ "-Dprofile=hack" ];
+
+          # For playing inline video: https://github.com/NixOS/nixpkgs/pull/261305
+          buildInputs = oldAttrs.buildInputs ++ [ prev.gst_all_1.gst-plugins-good ];
+        });
       };
     };
 
