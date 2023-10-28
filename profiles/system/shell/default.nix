@@ -31,7 +31,7 @@
   programs.fish = {
     enable = true;
 
-    interactiveShellInit = ''
+    interactiveShellInit = /* fish */ ''
       # TODO: find where these aliases are being set:
       # l, ll, la
       function ls

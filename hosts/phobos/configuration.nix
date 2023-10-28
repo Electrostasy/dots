@@ -28,7 +28,7 @@
           # https://patchwork.kernel.org/project/linux-media/list/?series=715172
           "firmware/overlays/imx708.dtbo" = "${kernel}/dtbs/overlays/imx708.dtbo";
 
-          "firmware/config.txt" = pkgs.writeText "config.txt" ''
+          "firmware/config.txt" = pkgs.writeText "config.txt" /* ini */ ''
             [pi4]
             kernel=Tow-Boot.noenv.rpi4.bin
             enable_gic=1
