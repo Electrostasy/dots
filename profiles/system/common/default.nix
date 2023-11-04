@@ -35,11 +35,6 @@
     config.allowAliases = false;
   };
 
-  environment.defaultPackages = with pkgs; lib.mkForce [
-    file
-    parted
-  ];
-
   programs.git = {
     enable = true;
 

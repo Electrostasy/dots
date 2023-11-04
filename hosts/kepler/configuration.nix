@@ -98,11 +98,6 @@
 
   documentation.enable = false;
 
-  environment.systemPackages = with pkgs; [
-    git
-    vim
-  ];
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 

@@ -12,12 +12,7 @@
     home.stateVersion = "22.11";
 
     home.packages = with pkgs; [
-      detox
-      du-dust
-      fio
       libewf
-      magic-wormhole-rs
-      neo
       virt-manager
     ];
 

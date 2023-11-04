@@ -62,28 +62,15 @@
       spek
       xdg-utils
 
-      aria2
-      bitwise
-      detox
-      dua
-      e2fsprogs # badblocks
-      fio
       freerdp # xfreerdp
-      magic-wormhole-rs
       neo
       nurl
       pastel
-      smartmontools # smartctl
-      tio
       youtube-dl
 
       ipafont
       liberation_ttf
     ];
-
-    home.shellAliases = {
-      wormhole = "${pkgs.magic-wormhole-rs.meta.mainProgram}";
-    };
   };
 }
 

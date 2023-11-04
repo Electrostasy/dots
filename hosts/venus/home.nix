@@ -31,16 +31,13 @@
     };
 
     home.packages = with pkgs; [
-      freerdp # wlfreerdp
-      gnome.cheese
+      freerdp # xfreerdp
       imv
       keepassxc
       liberation_ttf # Replacement fonts for TNR, Arial and Courier New
       libreoffice-fresh
-      magic-wormhole-rs
       mepo
       nurl
-      qr
       rnote
       xournalpp
     ];

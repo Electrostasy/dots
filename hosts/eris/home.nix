@@ -18,14 +18,11 @@
       hashcat
       imagemagick
       john
-      jq
       libewf
       sleuthkit # mmls, fls, fsstat, icat
       stegseek
       testdisk # photorec
       unixtools.xxd
-      wget
-      xplr
       xsv
     ];
   };

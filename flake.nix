@@ -148,5 +148,22 @@
         ];
       };
     };
+
+    devShells = forAllSystems (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            bitwise
+            detox
+            dua
+            elf2uf2-rs
+            fio
+            smartmontools
+            tio
+          ];
+        };
+      });
   };
 }

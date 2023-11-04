@@ -5,10 +5,13 @@
     sessionVariables.TIME_STYLE = "long-iso";
 
     systemPackages = with pkgs; [
+      aria2
       bottom
-      erdtree
       eza
       fd
+      file
+      jq
+      magic-wormhole-rs
       ouch
       ripgrep
       vimv-rs
@@ -32,6 +35,9 @@
     enable = true;
 
     interactiveShellInit = /* fish */ ''
+      alias wormhole wormhole-rs
+      alias a2c aria2c
+
       # TODO: find where these aliases are being set:
       # l, ll, la
       function ls
