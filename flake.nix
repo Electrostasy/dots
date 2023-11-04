@@ -24,13 +24,9 @@
     impermanence.url = "github:nix-community/impermanence/master";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, ... }: {
-    legacyPackages =
-      nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
-        nixpkgs.lib.fix
-          (nixpkgs.lib.composeManyExtensions (builtins.attrValues self.overlays))
-          nixpkgs.legacyPackages.${system});
-
+  outputs = { self, nixpkgs, nixos-hardware, ... }: let
+    forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
+  in {
     overlays = {
       default = import ./packages;
       customisations = final: prev: {
@@ -51,6 +47,15 @@
       };
     };
 
+    legacyPackages = forAllSystems (system:
+      nixpkgs.lib.fix
+        (nixpkgs.lib.composeManyExtensions (builtins.attrValues self.overlays))
+        nixpkgs.legacyPackages.${system});
+
+    packages = forAllSystems (system: {
+      marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
+    });
+
     homeManagerModules.wayfire = import ./modules/user/wayfire;
 
     nixosConfigurations = {
@@ -64,6 +69,16 @@
           ./profiles/system/firefox
           ./profiles/system/graphical
           ./profiles/system/mullvad
+          ./profiles/system/shell
+          ./profiles/system/ssh
+        ];
+      };
+
+      mars = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit self; };
+        modules = [
+          ./hosts/mars/configuration.nix
+          ./profiles/system/common
           ./profiles/system/shell
           ./profiles/system/ssh
         ];

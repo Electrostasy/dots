@@ -26,8 +26,6 @@ let
 
     pineflash = callPackage ./pineflash { };
 
-    qr = callPackage ./qr { };
-
     simp1e-cursors = callPackage ./simp1e-cursors { };
 
     umc = callPackage ./umc { };
@@ -58,7 +56,11 @@ let
       shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = packages.wayfire-git; };
     };
 
-    wlr-spanbg = callPackage ./wlr-spanbg { };
+    wlr-spanbg = callPackage ./scripts/wlr-spanbg { };
+
+    mountImage = callPackage ./scripts/mountImage.nix { };
+
+    qr = callPackage ./scripts/qr.nix { };
   };
 in
   packages

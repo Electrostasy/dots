@@ -19,6 +19,7 @@ The table below lists the managed hosts and their functions:
 | Hostname | Device type | Description
 | :-- | :-- | :-- |
 | **terra** | Desktop | Home PC |
+| **mars** | Raspberry Pi Zero 2 W | - |
 | **phobos** | Raspberry Pi 4B | Klipper <br/> Moonraker <br/> Mainsail |
 | **venus** | Lenovo ThinkPad X230 Tablet | Laptop |
 | **eris** | WSL | Primary PC at work |

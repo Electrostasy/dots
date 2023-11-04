@@ -8,7 +8,7 @@
 
 writeTextFile {
   name = "qr.fish";
-  text = ''
+  text = /* fish */ ''
     #!/usr/bin/env fish
     function qr -d "Encode clipboard contents as a QR code, or decode a QR code from selected screen region"
       argparse -x e,d -x e,c 'e/encode' 'd/decode' 'c/camera' -- $argv
