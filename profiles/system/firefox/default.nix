@@ -3,13 +3,13 @@
 let
   arkenfox = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "arkenfox";
-    version = "115.1";
+    version = "118";
 
     src = pkgs.fetchFromGitHub {
       owner = "arkenfox";
       repo = "user.js";
       rev = finalAttrs.version;
-      hash = "sha256-M523JiwiZR0mwjyjNaojSERFt77Dp75cg0Ifd6wTOdU=";
+      hash = "sha256-/wW55BnbryBleWOvIGPA+QgeL28TN8lSuTwiFXTp9ss=";
     };
 
     installPhase = ''
@@ -177,6 +177,7 @@ in
           "keepassxc-browser_keepassxc_org-browser-action"
           "ublock0_raymondhill_net-browser-action"
           "add-ons-button"
+          "unified-extensions-button"
         ];
         toolbar-menubar = [ "menubar-items" ];
         TabsToolbar = [
@@ -200,7 +201,7 @@ in
       # No idea what these are for, but this pref is not loaded correctly
       # without them.
       dirtyAreaCache = [];
-      currentVersion = 17;
+      currentVersion = 19;
       newElementCount = 0;
     })}");
 
