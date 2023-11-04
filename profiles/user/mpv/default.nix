@@ -1,9 +1,4 @@
-{ osConfig, config, pkgs, lib, ... }:
-
-let
-  inherit (osConfig.users.users.${config.home.username}) uid;
-  runtimeDir = "/run/user/${builtins.toString uid}/";
-in
+{ osConfig, pkgs, lib, ... }:
 
 {
   xdg.configFile."mpv/fonts.conf".text = ''
@@ -20,13 +15,6 @@ in
       <cachedir prefix="xdg">fontconfig</cachedir>
     </fontconfig>
   '';
-
-  # xdg.configFile."mpv/script-opts/thumbfast.conf".text = lib.generators.toKeyValue { } {
-  #   socket = runtimeDir + "thumbfast";
-  #   thumbnail = runtimeDir + "thumbfast.out";
-  #   network = "yes";
-  #   hwdec = "yes";
-  # };
 
   xdg.configFile."mpv/script-opts/uosc.conf".text = lib.generators.toKeyValue { } {
     top_bar = "never";
@@ -47,48 +35,47 @@ in
     speed_opacity = 0.0;
   };
 
+  # Ensure font is always installed with this module.
+  home.packages = [ pkgs.recursive ];
+
   programs.mpv = {
     enable = true;
 
-    scripts = with pkgs.mpvScripts; [
-      # Currently broken for some reason, doesn't generate thumbnails, frozen etc.
-      # thumbfast
-      uosc
-    ];
+    scripts = with pkgs.mpvScripts; [ uosc ];
 
     bindings = {
+      # Don't perform window management functions.
       MBTN_LEFT = "ignore";
       MBTN_LEFT_DBL = "ignore";
-      "ALT+k" = "add sub-scale +0.1";
-      "ALT+j" = "add sub-scale -0.1";
     };
 
-    config = {
+    config = lib.mapAttrs (n: v: lib.mkDefault v) {
       # OSC/OSD is replaced with uosc plugin
       osc = "no";
       osd-bar = "no";
       border = "no";
       osd-font = "Recursive Sans Linear Light";
 
-      # PipeWire backend is selected automatically if detected, set it anyway
+      # PipeWire backend is selected automatically if detected, set it anyway.
       ao = "pipewire";
 
-      # Force showing subtitles while seeking
+      # Force showing subtitles while seeking.
       demuxer-mkv-subtitle-preroll = "yes";
 
-      # Load external subtitles with similar name to file
+      # Load external subtitles with similar name to file.
       sub-auto = "fuzzy";
       sub-bold = "no";
       sub-gray = "yes";
 
-      # Overriding embedded media `ass` subtitles
-      sub-ass = "no";
+      # Subtitle styling.
+      # Can't selectively override the font for ASS subtitles in libass, without
+      # stripping all the style tags, so just keep them enabled.
+      # sub-ass-override = "yes";
       sub-font = "Recursive Sans Linear Light";
-      sub-font-size = 28;
+      sub-font-size = 32;
       sub-blur = 0.15;
       sub-border-color = "0.0/0.0/0.0/0.0";
       sub-border-size = 2.0;
-      sub-pos = 100;
       sub-color = "1.0/1.0/1.0/1.0";
       sub-margin-x = 0;
       sub-margin-y = 56;
@@ -117,9 +104,8 @@ in
       video-sync = "display-resample";
       autofit = "50%";
 
-      # Audio language priority
+      # Language priority
       alang = [ "ja" "jp" "jpn" "en" "eng" ];
-      # Subtitle language priority
       slang = [ "en" "eng" ];
     };
   };

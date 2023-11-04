@@ -28,6 +28,9 @@
     enableRedistributableFirmware = true;
   };
 
+  # Tweaks CPU scheduler for responsiveness over throughput.
+  programs.cfs-zen-tweaks.enable = true;
+
   fileSystems = {
     "/" = {
       device = "none";

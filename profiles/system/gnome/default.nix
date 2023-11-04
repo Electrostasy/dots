@@ -177,7 +177,16 @@ in
           view-type = "list";
         };
 
-        "io/github/celluloid-player/celluloid".always-open-new-window = true;
+        "io/github/celluloid-player/celluloid" = {
+          always-open-new-window = true;
+          always-autohide-cursor = true;
+          always-show-title-buttons = true;
+          autofit-enable = false;
+          mpv-config-enable = true;
+          mpv-config-file = "file:///home/electro/.config/mpv/mpv.conf";
+          mpv-input-config-enable = true;
+          mpv-input-config-file = "file:///home/electro/.config/mpv/input.conf";
+        };
 
         # Hidden/background programs only show up if they are flatpaks,
         # so disable background play for now.
@@ -222,7 +231,8 @@ in
           switch-to-workspace-2 = [ "<Super>2" ];
           switch-to-workspace-3 = [ "<Super>3" ];
           switch-to-workspace-4 = [ "<Super>4" ];
-          switch-input-source = [ "<Shift><Alt>" ];
+          # https://unix.stackexchange.com/a/436347
+          switch-input-source = [ "<Alt>Shift_L" ];
           switch-input-source-backward = mkEmptyArray type.string;
           activate-window-menu = [ "Menu" ];
           close = [ "<Shift><Super>w" ];

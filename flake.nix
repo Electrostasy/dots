@@ -67,7 +67,7 @@
           ./hosts/terra/home.nix
           ./profiles/system/common
           ./profiles/system/firefox
-          ./profiles/system/graphical
+          ./profiles/system/gnome
           ./profiles/system/mullvad
           ./profiles/system/shell
           ./profiles/system/ssh

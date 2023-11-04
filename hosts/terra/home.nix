@@ -1,15 +1,24 @@
 {
-  home-manager.users.electro = { config, pkgs, ... }: {
+  home-manager.users.electro = { config, pkgs, lib, ... }: {
     imports = [
-      ../../profiles/user/kitty
       ../../profiles/user/mpv
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
-      ../../profiles/user/wayfire
       ../../profiles/user/zathura
     ];
 
     home.stateVersion = "22.11";
+
+    programs.mpv = {
+      package = pkgs.celluloid;
+      scripts = lib.mkForce [ ];
+      config = {
+        # Border is required for Celluloid's CSD to render.
+        border = "yes";
+        autofit-smaller = "1920x1080";
+        cursor-autohide = "always";
+      };
+    };
 
     xdg.userDirs = {
       enable = true;
@@ -34,57 +43,16 @@
         "image/jpeg" = "imv.desktop";
         "image/png" = "imv.desktop";
         "image/webp" = "imv.desktop";
+        "application/pdf" = "org.pwmt.zathura.desktop";
       };
     };
 
     fonts.fontconfig.enable = true;
 
-    wayland.windowManager.wayfire.settings.plugins = [
-      { plugin = "output:DP-1";
-        settings = {
-          mode = "3840x2160@119910";
-          position = "0,250";
-          scale = 1.5;
-        };
-      }
-      { plugin = "output:HDMI-A-1";
-        settings = {
-          mode = "1920x1080@74973";
-          position = "2560,0";
-          transform = 270;
-        };
-      }
-      { plugin = "command";
-        settings = {
-          # Switch between scaled and unscaled, shifting the position of the
-          # outputs accordingly.
-          binding_toggle_scale = "<super> <alt> KEY_GRAVE";
-          command_toggle_scale = toString (pkgs.writeShellScript "toggle_scale.sh" ''
-            file="$XDG_RUNTIME_DIR/toggle_scale"
-            if [[ -e "$file" ]]; then
-              ${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --pos 0,250 --scale 1.5
-              ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 2560,0
-              rm "$file"
-            else
-              ${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --pos 0,0 --scale 1.0
-              ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 3840,120
-              touch "$file"
-            fi
-          '');
-        };
-      }
-      { plugin = "autostart";
-        settings.wallpaper = toString (pkgs.writeShellScript "pick_wallpaper.sh" ''
-          wallpaper="$(find ~/pictures/wallpapers -type f | shuf -n 1)"
-          ${pkgs.wlr-spanbg}/bin/wlr-spanbg "$wallpaper"
-        '');
-      }
-    ];
-
     home.packages = with pkgs; [
       f3d
+      freecad
       prusa-slicer
-      solvespace
 
       gimp
       imv
@@ -100,14 +68,13 @@
       dua
       e2fsprogs # badblocks
       fio
-      freerdp # wlfreerdp
+      freerdp # xfreerdp
       magic-wormhole-rs
       neo
       nurl
       pastel
-      qr
       smartmontools # smartctl
-      xplr
+      tio
       youtube-dl
 
       ipafont
