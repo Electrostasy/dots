@@ -15,13 +15,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "libcamera-apps";
-  version = "1.1.2";
+  version = "1.2.1";
 
   src = fetchFromGitHub {
     owner = "raspberrypi";
     repo = finalAttrs.pname;
     rev = "v" + finalAttrs.version;
-    hash = "sha256-A6UriYk8bHRL6wp6ehXOnUnbJH2/mNDkxwGemD/UYpw=";
+    hash = "sha256-IRHCM8RpszSDH44Ztkf0J1LUwvX8D3qxQ/4KLiL/fn0=";
   };
 
   nativeBuildInputs = [
