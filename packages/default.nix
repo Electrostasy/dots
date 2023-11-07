@@ -10,9 +10,14 @@ let
     libcamera-apps = callPackage ./libcamera-apps { libcamera = packages.libcamera-rpi; };
 
     libcamera-rpi = prev.libcamera.overrideAttrs (old: {
+      version = "0.1.0";
+      src = old.src.override {
+        rev = "v0.1.0";
+        hash = "sha256-icHZtv25QvJEv0DlELT3cDxho3Oz2BJAMNKr5W4bshk=";
+      };
       mesonFlags = old.mesonFlags ++ [
-        "-Dipas=raspberrypi"
-        "-Dpipelines=raspberrypi"
+        "-Dipas=rpi/vc4"
+        "-Dpipelines=rpi/vc4"
       ];
     });
 
