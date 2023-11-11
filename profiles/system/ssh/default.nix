@@ -1,6 +1,11 @@
 { config, lib, ... }:
 
 {
+  programs.ssh.extraConfig = ''
+    Match exec "host %h | grep 'sol.${config.networking.domain}'"
+      Port 3101
+  '';
+
   services.openssh = {
     enable = true;
 
