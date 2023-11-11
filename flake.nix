@@ -5,7 +5,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,8 +23,14 @@
     impermanence.url = "github:nix-community/impermanence/master";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, ... }: let
-    forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
+  outputs = { self, nixpkgs, ... }: let
+    inherit (nixpkgs.lib) genAttrs fix composeManyExtensions mapAttrs;
+
+    forAllSystems = genAttrs [ "x86_64-linux" "aarch64-linux" ];
+
+    nixosSystem = args: nixpkgs.lib.nixosSystem (args // {
+      specialArgs = args.specialArgs or { } // { inherit self; };
+    });
   in {
     overlays = {
       default = import ./packages;
@@ -48,118 +53,24 @@
     };
 
     legacyPackages = forAllSystems (system:
-      nixpkgs.lib.fix
-        (nixpkgs.lib.composeManyExtensions (builtins.attrValues self.overlays))
+      fix
+        (composeManyExtensions (builtins.attrValues self.overlays))
         nixpkgs.legacyPackages.${system});
 
     packages = forAllSystems (system: {
       marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
     });
 
-    homeManagerModules.wayfire = import ./modules/user/wayfire;
-
-    nixosConfigurations = {
-      terra = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/terra/configuration.nix
-          ./hosts/terra/home.nix
-          ./profiles/system/common
-          ./profiles/system/firefox
-          ./profiles/system/gnome
-          ./profiles/system/mullvad
-          ./profiles/system/shell
-          ./profiles/system/ssh
-        ];
-      };
-
-      mars = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/mars/configuration.nix
-          ./profiles/system/common
-          ./profiles/system/shell
-          ./profiles/system/ssh
-        ];
-      };
-
-      phobos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/phobos/configuration.nix
-          ./profiles/system/common
-          ./profiles/system/shell
-          ./profiles/system/ssh
-        ];
-      };
-
-      venus = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/venus/configuration.nix
-          ./hosts/venus/home.nix
-          ./profiles/system/common
-          ./profiles/system/firefox
-          ./profiles/system/gnome
-          ./profiles/system/mullvad
-          ./profiles/system/shell
-          ./profiles/system/ssh
-          nixos-hardware.nixosModules.common-gpu-intel
-          nixos-hardware.nixosModules.common-pc-laptop
-          nixos-hardware.nixosModules.lenovo-thinkpad-x220
-        ];
-      };
-
-      eris = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/eris/configuration.nix
-          ./hosts/eris/home.nix
-          ./profiles/system/common
-          ./profiles/system/shell
-        ];
-      };
-
-      ceres = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/ceres/configuration.nix
-          ./hosts/ceres/home.nix
-          ./profiles/system/common
-          ./profiles/system/firefox
-          ./profiles/system/graphical
-          ./profiles/system/shell
-          ./profiles/system/ssh
-          nixos-hardware.nixosModules.common-cpu-intel
-        ];
-      };
-
-      kepler = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-        modules = [
-          ./hosts/kepler/configuration.nix
-          ./profiles/system/common
-          ./profiles/system/shell
-          ./profiles/system/ssh
-        ];
-      };
+    nixosConfigurations = mapAttrs (_: nixosSystem) {
+      ceres.modules = [ ./hosts/ceres ];
+      eris.modules = [ ./hosts/eris ];
+      kepler.modules = [ ./hosts/kepler ];
+      mars.modules = [ ./hosts/mars ];
+      phobos.modules = [ ./hosts/phobos ];
+      terra.modules = [ ./hosts/terra ];
+      venus.modules = [ ./hosts/venus ];
     };
 
-    devShells = forAllSystems (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        default = pkgs.mkShell {
-          packages = with pkgs; [
-            bitwise
-            detox
-            dua
-            elf2uf2-rs
-            fio
-            smartmontools
-            tio
-          ];
-        };
-      });
+    homeManagerModules.wayfire = import ./modules/user/wayfire;
   };
 }

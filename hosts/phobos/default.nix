@@ -1,6 +1,12 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ../../profiles/system/common
+    ../../profiles/system/shell
+    ../../profiles/system/ssh
+  ];
+
   nixpkgs.hostPlatform = "aarch64-linux";
 
   system.stateVersion = "23.05";

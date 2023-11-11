@@ -1,6 +1,16 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ../../profiles/system/common
+    ../../profiles/system/firefox
+    ../../profiles/system/gnome
+    ../../profiles/system/mullvad
+    ../../profiles/system/shell
+    ../../profiles/system/ssh
+    ./home.nix
+  ];
+
   nixpkgs.hostPlatform = "x86_64-linux";
 
   system.stateVersion = "23.11";
@@ -27,7 +37,10 @@
 
     plymouth.enable = true;
 
-    kernelModules = [ "kvm-intel" ];
+    kernelModules = [
+      "i915"
+      "kvm-intel"
+    ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "acpi.ec_no_wakeup=1"
@@ -47,7 +60,14 @@
   hardware = {
     cpu.intel.updateMicrocode = true;
     enableRedistributableFirmware = true;
+    opengl.extraPackages = with pkgs; [
+      intel-media-driver
+      intel-vaapi-driver
+      libvdpau-va-gl
+    ];
   };
+
+  environment.variables.VDPAU_DRIVER = "va_gl";
 
   services.thermald.enable = true;
 

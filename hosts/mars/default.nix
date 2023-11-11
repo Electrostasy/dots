@@ -1,7 +1,12 @@
 { config, pkgs, modulesPath, ... }:
 
 {
-  imports = [ "${modulesPath}/installer/sd-card/sd-image.nix"];
+  imports = [
+    "${modulesPath}/installer/sd-card/sd-image.nix"
+    ../../profiles/system/common
+    ../../profiles/system/shell
+    ../../profiles/system/ssh
+  ];
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
 
   nixpkgs.hostPlatform = "aarch64-linux";

@@ -1,6 +1,15 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ../../profiles/system/common
+    ../../profiles/system/firefox
+    ../../profiles/system/graphical
+    ../../profiles/system/shell
+    ../../profiles/system/ssh
+    ./home.nix
+  ];
+
   system.stateVersion = "22.05";
 
   nixpkgs.hostPlatform = "x86_64-linux";

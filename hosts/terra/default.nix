@@ -1,7 +1,16 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./gaming.nix ];
+  imports = [
+    ../../profiles/system/common
+    ../../profiles/system/firefox
+    ../../profiles/system/gnome
+    ../../profiles/system/mullvad
+    ../../profiles/system/shell
+    ../../profiles/system/ssh
+    ./gaming.nix
+    ./home.nix
+  ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
