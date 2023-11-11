@@ -62,7 +62,6 @@
       terra = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
         modules = [
-          ./hosts/kepler/wireguard-peer.nix
           ./hosts/terra/configuration.nix
           ./hosts/terra/home.nix
           ./profiles/system/common
@@ -87,7 +86,6 @@
       phobos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
         modules = [
-          ./hosts/kepler/wireguard-peer.nix
           ./hosts/phobos/configuration.nix
           ./profiles/system/common
           ./profiles/system/shell
@@ -98,7 +96,6 @@
       venus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
         modules = [
-          ./hosts/kepler/wireguard-peer.nix
           ./hosts/venus/configuration.nix
           ./hosts/venus/home.nix
           ./profiles/system/common
@@ -141,7 +138,6 @@
         specialArgs = { inherit self; };
         modules = [
           ./hosts/kepler/configuration.nix
-          ./hosts/kepler/wireguard-server.nix
           ./profiles/system/common
           ./profiles/system/shell
           ./profiles/system/ssh

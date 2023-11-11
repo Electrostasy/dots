@@ -8,6 +8,20 @@
     ./impermanence.nix
   ];
 
+  # Every host is to be considered part of this domain, however, only `kepler`
+  # is internet-facing.
+  networking.domain = "0x6776.lt";
+
+  # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
+  # control server running on `kepler`.
+  sops.secrets.tailscaleKey.sopsFile = ../../../hosts/kepler/secrets.yaml;
+  services.tailscale = {
+    enable = true;
+
+    authKeyFile = config.sops.secrets.tailscaleKey.path;
+    extraUpFlags = [ "--login-server" "https://sol.${config.networking.domain}" ];
+  };
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
 

@@ -2,8 +2,9 @@
 
 {
   imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
-    ./matrix.nix
+    "${modulesPath}/profiles/qemu-guest.nix"
+    ./dendrite.nix
+    ./headscale.nix
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -88,16 +89,6 @@
     };
   };
 
-  services.fail2ban.enable = true;
-  services.endlessh = {
-    enable = true;
-
-    port = 22;
-    openFirewall = true;
-  };
-
-  documentation.enable = false;
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
 
@@ -108,19 +99,37 @@
     };
   };
 
-  services.openssh = {
-    settings.PermitRootLogin = lib.mkForce "prohibit-password";
-    hostKeys = [
-      { type = "ed25519"; inherit (config.sops.secrets.sshHostKeyEd25519) path; }
-      { type = "rsa"; inherit (config.sops.secrets.sshHostKeyRsa) path; }
-    ];
+  services = {
+    postgresql.package = pkgs.postgresql_15;
+
+    fail2ban.enable = true;
+
+    endlessh = {
+      enable = true;
+
+      port = 22;
+      openFirewall = true;
+    };
+
+    openssh = {
+      settings.PermitRootLogin = lib.mkForce "prohibit-password";
+      hostKeys = [
+        { type = "ed25519"; inherit (config.sops.secrets.sshHostKeyEd25519) path; }
+        { type = "rsa"; inherit (config.sops.secrets.sshHostKeyRsa) path; }
+      ];
+    };
+  };
+
+  documentation = {
+    enable = false;
+    man.man-db.enable = false;
   };
 
   users = {
     mutableUsers = false;
 
-    # Change password in ./secrets.yaml using
-    # `nix run nixpkgs#mkpasswd -- -m SHA-512 -s`
+    # Change password in ./secrets.yaml using:
+    # $ mkpasswd -- -m SHA-512 -s
     users.root = {
       hashedPasswordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
