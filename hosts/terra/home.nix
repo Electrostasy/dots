@@ -45,6 +45,61 @@
         "image/webp" = "imv.desktop";
         "application/pdf" = "org.pwmt.zathura.desktop";
       };
+
+      # Celluloid has way too many associations with audio files, I need them to
+      # be opened with Amberol instead.
+      associations =
+        let
+          associate = desktop: mimeTypes:
+            builtins.listToAttrs
+              (builtins.map (mime: { name = mime; value = desktop; }) mimeTypes);
+          mkAudioMimeType = builtins.map (x: "audio/" + x);
+        in
+          {
+            added =
+              associate
+                "io.bassi.Amberol.desktop"
+                (mkAudioMimeType [
+                  "aac"
+                  "ac3"
+                  "flac"
+                  "m4a"
+                  "mp1"
+                  "mp2"
+                  "mp3"
+                  "mpegurl"
+                  "mpg"
+                  "ogg"
+                  "opus"
+                  "x-wav"
+                ]);
+
+            removed =
+              associate
+                "io.github.celluloid_player.Celluloid.desktop"
+                (mkAudioMimeType [
+                  "mpeg"
+                  "wav"
+                  "x-aac"
+                  "x-aiff"
+                  "x-ape"
+                  "x-flac"
+                  "x-m4a"
+                  "x-mp1"
+                  "x-mp2"
+                  "x-mp3"
+                  "x-mpeg"
+                  "x-mpegurl"
+                  "x-mpg"
+                  "x-pn-aiff"
+                  "x-pn-au"
+                  "x-pn-wav"
+                  "x-speex"
+                  "x-vorbis"
+                  "x-vorbis+ogg"
+                  "x-wavpack"
+                ]);
+          };
     };
 
     fonts.fontconfig.enable = true;
