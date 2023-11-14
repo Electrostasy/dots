@@ -3,7 +3,7 @@
 let
   arkenfox = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "arkenfox";
-    version = "118";
+    version = "118.0";
 
     src = pkgs.fetchFromGitHub {
       owner = "arkenfox";
