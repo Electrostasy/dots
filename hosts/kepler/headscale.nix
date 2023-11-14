@@ -82,6 +82,32 @@
     ];
   };
 
+  # On a weekly basis, schedule old nodes for expiration.
+  systemd.timers.headscale-expirenodes = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "weekly";
+      Persistent = true;
+      Unit = "headscale-expirenodes.service";
+    };
+  };
+
+  systemd.services.headscale-expirenodes = {
+    serviceConfig.Type = "oneshot";
+
+    path = [
+      config.services.headscale.package # headscale
+      pkgs.jq # jq
+    ];
+
+    script = ''
+      JQ_SCRIPT='map(select(.online != true and .expiry.seconds < 0 and now - .last_seen.seconds > 86400) | .id).[]'
+      for ID in $(headscale nodes list -o json-line | jq -M "$JQ_SCRIPT"); do
+        headscale nodes expire --identifier $ID
+      done
+    '';
+  };
+
   # Ensure that the `sol` namespace always exists with the configured preauthkey.
   # If the namespace doesn't exist, create it and 'surgically' insert the key.
   # Does not remove other namespaces.
