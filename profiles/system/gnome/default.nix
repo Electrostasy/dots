@@ -318,7 +318,8 @@ in
       Name=Wallpaper Randomiser
       Terminal=false
       Exec=${pkgs.writeShellScript "wallpaper.sh" ''
-        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' $HOME/pictures/wallpapers | shuf -n 1)
+        PICTURES="$(${pkgs.xdg-user-dirs}/bin/xdg-user-dir PICTURES)"
+        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
         dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
         dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
         dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"

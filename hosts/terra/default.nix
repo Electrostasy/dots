@@ -95,9 +95,9 @@
         ".config/keepassxc"
         ".local/share/fish"
         ".mozilla/firefox"
-        "documents"
-        "downloads"
-        "pictures"
+        "Documents"
+        "Downloads"
+        "Pictures"
         { directory = ".ssh"; mode = "0700"; }
       ];
     };

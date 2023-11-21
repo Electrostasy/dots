@@ -20,19 +20,6 @@
       };
     };
 
-    xdg.userDirs = {
-      enable = true;
-
-      desktop = null; # unused
-      documents = "${config.home.homeDirectory}/documents";
-      download = "${config.home.homeDirectory}/downloads";
-      music = "${config.home.homeDirectory}/music";
-      pictures = "${config.home.homeDirectory}/pictures";
-      publicShare = null; # unused
-      templates = null; # unused
-      videos = "${config.home.homeDirectory}/videos";
-    };
-
     xdg.mimeApps = {
       enable = true;
 

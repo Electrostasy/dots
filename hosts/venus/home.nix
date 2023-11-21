@@ -9,19 +9,6 @@
 
     home.stateVersion = "22.11";
 
-    xdg.userDirs = {
-      enable = true;
-
-      desktop = null; # unused
-      documents = "${config.home.homeDirectory}/documents";
-      download = "${config.home.homeDirectory}/downloads";
-      music = "${config.home.homeDirectory}/music";
-      pictures = "${config.home.homeDirectory}/pictures";
-      publicShare = null; # unused
-      templates = null; # unused
-      videos = "${config.home.homeDirectory}/videos";
-    };
-
     home.pointerCursor = {
       package = pkgs.simp1e-cursors;
       name = "Simp1e-Adw-Dark";

@@ -169,9 +169,9 @@
     users.electro.directories = [
       ".cache"
       ".mozilla"
-      "documents"
-      "downloads"
-      "pictures"
+      "Documents"
+      "Downloads"
+      "Pictures"
       { directory = ".ssh"; mode = "0700"; }
     ];
   };
