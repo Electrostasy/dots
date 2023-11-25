@@ -17,7 +17,13 @@
   system.stateVersion = "22.05";
 
   boot = {
-    initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "ahci"
+      "nvme"
+      "usbhid"
+      "sd_mod"
+    ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
     tmp = {
@@ -26,10 +32,13 @@
       # space compiling programs.
       tmpfsSize = "75%";
     };
+
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
+
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
   hardware = {

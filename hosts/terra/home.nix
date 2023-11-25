@@ -4,7 +4,6 @@
       ../../profiles/user/mpv
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
-      ../../profiles/user/zathura
     ];
 
     home.stateVersion = "22.11";
@@ -23,69 +22,82 @@
     xdg.mimeApps = {
       enable = true;
 
-      # Removed/added associations are not respected for some arcane reason,
-      # set default applications instead.
       defaultApplications = {
-        "image/gif" = "imv.desktop";
-        "image/jpeg" = "imv.desktop";
-        "image/png" = "imv.desktop";
-        "image/webp" = "imv.desktop";
-        "application/pdf" = "org.pwmt.zathura.desktop";
+        "application/pdf" = "org.gnome.Evince.desktop";
       };
 
-      # Celluloid has way too many associations with audio files, I need them to
-      # be opened with Amberol instead.
       associations =
         let
           associate = desktop: mimeTypes:
             builtins.listToAttrs
               (builtins.map (mime: { name = mime; value = desktop; }) mimeTypes);
-          mkAudioMimeType = builtins.map (x: "audio/" + x);
         in
           {
             added =
-              associate
-                "io.bassi.Amberol.desktop"
-                (mkAudioMimeType [
-                  "aac"
-                  "ac3"
-                  "flac"
-                  "m4a"
-                  "mp1"
-                  "mp2"
-                  "mp3"
-                  "mpegurl"
-                  "mpg"
-                  "ogg"
-                  "opus"
-                  "x-wav"
-                ]);
+              # Handle other audio formats already specified as audio/x-* but
+              # not audio/*, or as audio/* but not audio/x-*.
+              (associate "io.bassi.Amberol.desktop" [
+                "audio/aac"
+                "audio/ac3"
+                "audio/flac"
+                "audio/m4a"
+                "audio/mp1"
+                "audio/mp2"
+                "audio/mp3"
+                "audio/mpegurl"
+                "audio/mpg"
+                "audio/ogg"
+                "audio/opus"
+                "audio/x-wav"
+              ]);
 
             removed =
-              associate
-                "io.github.celluloid_player.Celluloid.desktop"
-                (mkAudioMimeType [
-                  "mpeg"
-                  "wav"
-                  "x-aac"
-                  "x-aiff"
-                  "x-ape"
-                  "x-flac"
-                  "x-m4a"
-                  "x-mp1"
-                  "x-mp2"
-                  "x-mp3"
-                  "x-mpeg"
-                  "x-mpegurl"
-                  "x-mpg"
-                  "x-pn-aiff"
-                  "x-pn-au"
-                  "x-pn-wav"
-                  "x-speex"
-                  "x-vorbis"
-                  "x-vorbis+ogg"
-                  "x-wavpack"
-                ]);
+              # Celluloid has way too many associations with audio files for
+              # a video player.
+              (associate "io.github.celluloid_player.Celluloid.desktop" [
+                "audio/mpeg"
+                "audio/wav"
+                "audio/x-aac"
+                "audio/x-aiff"
+                "audio/x-ape"
+                "audio/x-flac"
+                "audio/x-m4a"
+                "audio/x-mp1"
+                "audio/x-mp2"
+                "audio/x-mp3"
+                "audio/x-mpeg"
+                "audio/x-mpegurl"
+                "audio/x-mpg"
+                "audio/x-pn-aiff"
+                "audio/x-pn-au"
+                "audio/x-pn-wav"
+                "audio/x-speex"
+                "audio/x-vorbis"
+                "audio/x-vorbis+ogg"
+                "audio/x-wavpack"
+              ])
+              //
+              # Prefer to open images with Loupe instead of an image editor.
+              (associate "gimp.desktop" [
+                "image/avif"
+                "image/bmp"
+                "image/gif"
+                "image/heic"
+                "image/heif"
+                "image/jpeg"
+                "image/jxl"
+                "image/png"
+                "image/svg+xml"
+                "image/tiff"
+                "image/webp"
+                "image/x-exr"
+                "image/x-portable-anymap"
+                "image/x-portable-bitmap"
+                "image/x-portable-graymap"
+                "image/x-portable-pixmap"
+                "image/x-tga"
+                "image/x-webp"
+              ]);
           };
     };
 
@@ -97,7 +109,6 @@
       prusa-slicer
 
       gimp
-      imv
       keepassxc
       libreoffice-fresh
       qpwgraph

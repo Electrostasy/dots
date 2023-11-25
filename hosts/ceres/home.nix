@@ -6,7 +6,6 @@
       ../../profiles/user/neovim
       ../../profiles/user/tealdeer
       ../../profiles/user/wayfire
-      ../../profiles/user/zathura
     ];
 
     home.stateVersion = "22.11";

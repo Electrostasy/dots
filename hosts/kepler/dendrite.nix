@@ -105,15 +105,8 @@
     ensureDatabases = [ "dendrite" ];
     ensureUsers = [
       { name = "dendrite";
-        ensurePermissions = {
-          "DATABASE \"dendrite\"" = "ALL PRIVILEGES";
-        };
+        ensureDBOwnership = true;
       }
     ];
   };
-
-  # See https://github.com/NixOS/nixpkgs/pull/266270.
-  systemd.services.postgresql.postStart = lib.mkAfter ''
-    $PSQL -tAc 'ALTER DATABASE "dendrite" OWNER TO "dendrite";'
-  '';
 }

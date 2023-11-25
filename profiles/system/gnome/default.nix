@@ -69,7 +69,6 @@ in
     # exclude these instead of disabling the module.
     gnome.excludePackages = with pkgs.gnome; [
       baobab # disk usage analyzer
-      eog # image viewer, will be replaced by loupe in 45
       epiphany # web browser
       geary # e-mail client
       gnome-backgrounds
@@ -115,19 +114,19 @@ in
       # Load Nautilus extensions.
       gnome.nautilus-python
 
-      amberol
-      celluloid
-      eyedropper
-      fractal-next
+      amberol # Music player
+      celluloid # MPV-based video player
+      eyedropper # Colour picker
+      fractal-next # Matrix client
       keepassxc
-      video-trimmer
-      warp
+      tagger # Music tagger
+      warp # Magic Wormhole client
     ] ++ (with pkgs.gnomeExtensions; [
       blur-my-shell
       burn-my-windows
       dash-to-panel
-      date-menu-formatter
       desktop-cube
+      panel-date-format
     ]);
   };
 
@@ -258,9 +257,12 @@ in
           "blur-my-shell@aunetx"
           "burn-my-windows@schneegans.github.com"
           "dash-to-panel@jderose9.github.com"
-          "date-menu-formatter@marcinjakubowski.github.com"
           "desktop-cube@schneegans.github.com"
+          "native-window-placement@gnome-shell-extensions.gcampax.github.com"
+          "panel-date-format@keiii.github.com"
         ];
+
+        "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
         "org/gnome/shell/extensions/dash-to-panel" = {
           # Even when we are not using multiple panels on multiple monitors,
@@ -269,23 +271,23 @@ in
           panel-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: "TOP"));
           panel-sizes = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: 32));
           panel-element-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: [
-            { element = "showAppsButton"; visible = true; position = "stackedTL"; }
-            { element = "activitiesButton"; visible = false; position = "stackedTL"; }
+            { element = "showAppsButton"; visible = false; position = "stackedTL"; }
             { element = "dateMenu"; visible = true; position = "stackedTL"; }
+            { element = "rightBox"; visible = true; position = "stackedTL"; }
             { element = "leftBox"; visible = true; position = "stackedTL"; }
             { element = "taskbar"; visible = true; position = "centerMonitor"; }
             { element = "centerBox"; visible = false; position = "centered"; }
-            { element = "rightBox"; visible = true; position = "stackedBR"; }
+            { element = "activitiesButton"; visible = true; position = "stackedBR"; }
             { element = "systemMenu"; visible = true; position = "stackedBR"; }
             { element = "desktopButton"; visible = false; position = "stackedBR"; }
           ]));
           multi-monitors = false;
-          show-apps-icon-file = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake-white.svg";
-          show-apps-icon-padding = mkInt32 4;
           focus-highlight-dominant = true;
-          dot-size = mkInt32 0;
+          dot-size = mkInt32 2;
+          dot-position = "TOP";
+          dot-color-dominant = true;
           appicon-padding = mkInt32 2;
-          appicon-margin = mkInt32 0;
+          appicon-margin = mkInt32 2;
           trans-use-custom-opacity = true;
           trans-panel-opacity = 0.25;
           show-favorites = false;
@@ -297,7 +299,7 @@ in
         "org/gnome/shell/extensions/blur-my-shell".color-and-noise = false;
         "org/gnome/shell/extensions/blur-my-shell/applications".blur = false;
         "org/gnome/shell/extensions/burn-my-windows".active-profile = "${burnMyWindowsProfile}";
-        "org/gnome/shell/extensions/date-menu-formatter".pattern = "y-MM-dd kk:mm";
+        "org/gnome/shell/extensions/blur-my-shell/panel".override-background = false;
         "org/gnome/shell/extensions/desktop-cube" = {
           last-first-gap = false;
           window-parallax = 0.75;

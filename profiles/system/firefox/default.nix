@@ -3,13 +3,13 @@
 let
   arkenfox = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "arkenfox";
-    version = "118.0";
+    version = "119.0";
 
     src = pkgs.fetchFromGitHub {
       owner = "arkenfox";
       repo = "user.js";
       rev = finalAttrs.version;
-      hash = "sha256-/wW55BnbryBleWOvIGPA+QgeL28TN8lSuTwiFXTp9ss=";
+      hash = "sha256-MAerYaRbaQBqS8WJ3eaq6uxVqQg8diymPbLCU72nDjM=";
     };
 
     installPhase = ''
@@ -94,7 +94,7 @@ in
   ];
 
   # Main configuration is done using autoconfig.js.
-  programs.firefox.autoConfig = ''
+  programs.firefox.autoConfig = /* javascript */ ''
     /// First line HAS to be a comment.
 
     // Enable DNS over HTTPS (DoH).
@@ -142,10 +142,18 @@ in
     // Enable scrolling using the middle-click.
     pref("general.autoScroll", true);
 
-    // Disable the GTK client side decorations.
-    pref("browser.tabs.inTitlebar", ${
-      if config.services.xserver.desktopManager.gnome.enable then "1" else "0"
-    });
+    // Disable the GTK client side decorations if not on GNOME.
+    ${
+      if config.services.xserver.desktopManager.gnome.enable then
+        ''
+          pref("browser.tabs.inTitlebar", 1);
+          pref("widget.gtk.rounded-bottom-corners.enabled", true);
+        ''
+      else
+        ''
+          pref("browser.tabs.inTitlebar", 0);
+        ''
+    }
 
     // Disable PIP.
     pref("media.videocontrols.picture-in-picture.enabled", false);

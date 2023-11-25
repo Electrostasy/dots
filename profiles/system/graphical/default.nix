@@ -47,13 +47,17 @@
   # Enables xdg-desktop-portal, xdg-desktop-portal-wlr (supplying Screenshot
   # and ScreenCast portals for xdg-desktop-portal and wlroots-based Wayland
   # compositors).
-  xdg.portal.wlr = {
-    enable = true;
+  xdg.portal = {
+    configPackages = [ pkgs.xdg-desktop-portal-wlr ];
 
-    settings.screencast = {
-      max_fps = 60;
-      chooser_type = "simple";
-      chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+    wlr = {
+      enable = true;
+
+      settings.screencast = {
+        max_fps = 60;
+        chooser_type = "simple";
+        chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+      };
     };
   };
 }
