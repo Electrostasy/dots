@@ -1,6 +1,15 @@
 { pkgs, lib, ... }:
 
 let
+  gnomeShellExtensions = with pkgs.gnomeExtensions; [
+    blur-my-shell
+    burn-my-windows
+    dash-to-panel
+    desktop-cube
+    native-window-placement
+    panel-date-format
+  ];
+
   burnMyWindowsProfile = pkgs.writeText "nix-profile.conf" ''
     [burn-my-windows-profile]
 
@@ -105,7 +114,7 @@ in
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
 
-    systemPackages = with pkgs; [
+    systemPackages = with pkgs; gnomeShellExtensions ++ [
       adw-gtk3
 
       (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
@@ -121,13 +130,7 @@ in
       keepassxc
       tagger # Music tagger
       warp # Magic Wormhole client
-    ] ++ (with pkgs.gnomeExtensions; [
-      blur-my-shell
-      burn-my-windows
-      dash-to-panel
-      desktop-cube
-      panel-date-format
-    ]);
+    ];
   };
 
   programs.dconf.profiles = {
@@ -253,14 +256,10 @@ in
           screenshot-window = mkEmptyArray type.string;
         };
 
-        "org/gnome/shell".enabled-extensions = [
-          "blur-my-shell@aunetx"
-          "burn-my-windows@schneegans.github.com"
-          "dash-to-panel@jderose9.github.com"
-          "desktop-cube@schneegans.github.com"
-          "native-window-placement@gnome-shell-extensions.gcampax.github.com"
-          "panel-date-format@keiii.github.com"
-        ];
+        "org/gnome/shell".enabled-extensions =
+          builtins.map
+            (x: x.extensionUuid)
+            gnomeShellExtensions;
 
         "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
