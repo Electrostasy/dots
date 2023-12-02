@@ -126,7 +126,7 @@ in
       amberol # Music player
       celluloid # MPV-based video player
       eyedropper # Colour picker
-      fractal-next # Matrix client
+      fractal # Matrix client
       keepassxc
       tagger # Music tagger
       warp # Magic Wormhole client
