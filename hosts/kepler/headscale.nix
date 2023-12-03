@@ -32,16 +32,12 @@
     };
   };
 
-  sops.secrets = {
-    # Headscale does not support LoadCredential, so set permissions for the
-    # secret accordingly.
-    headscaleKey = {
-      mode = "0440";
-      owner = config.users.users.headscale.name;
-      group = config.users.groups.headscale.name;
-    };
-
-    tailscaleKey = { };
+  # Headscale does not support LoadCredential, so set permissions for the
+  # secret accordingly.
+  sops.secrets.headscaleKey = {
+    mode = "0440";
+    owner = config.users.users.headscale.name;
+    group = config.users.groups.headscale.name;
   };
 
   environment.systemPackages = [ config.services.headscale.package ];
@@ -73,39 +69,7 @@
 
     openFirewall = true;
     useRoutingFeatures = "both";
-    # Generate new keys on a host running headscale using:
-    # $ headscale --user sol preauthkeys create --reusable --expiration 365d
-    authKeyFile = config.sops.secrets.tailscaleKey.path;
-    extraUpFlags = [
-      "--advertise-exit-node"
-      "--login-server" "https://sol.${config.networking.domain}"
-    ];
-  };
-
-  # On a weekly basis, schedule old nodes for expiration.
-  systemd.timers.headscale-expirenodes = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "weekly";
-      Persistent = true;
-      Unit = "headscale-expirenodes.service";
-    };
-  };
-
-  systemd.services.headscale-expirenodes = {
-    serviceConfig.Type = "oneshot";
-
-    path = [
-      config.services.headscale.package # headscale
-      pkgs.jq # jq
-    ];
-
-    script = ''
-      JQ_SCRIPT='map(select(.online != true and .expiry.seconds < 0 and now - .last_seen.seconds > 86400) | .id).[]'
-      for ID in $(headscale nodes list -o json-line | jq -M "$JQ_SCRIPT"); do
-        headscale nodes expire --identifier $ID
-      done
-    '';
+    extraUpFlags = [ "--advertise-exit-node" ];
   };
 
   # Ensure that the `sol` namespace always exists with the configured preauthkey.
@@ -138,7 +102,7 @@
         headscale namespaces create sol
 
         QUERY='INSERT INTO pre_auth_keys '
-        QUERY+='(key, user_id, reusable, created_at, expiration) '
+        QUERY+='(key, user_id, ephemeral, created_at, expiration) '
         QUERY+='VALUES '
         QUERY+="('$(systemd-creds cat 'tailscaleKey')', 1, 1, datetime('now'), datetime('now', '+1 year'));"
 

@@ -18,8 +18,12 @@
   services.tailscale = {
     enable = true;
 
+    # Generate new keys on the host running headscale using:
+    # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
     authKeyFile = config.sops.secrets.tailscaleKey.path;
-    extraUpFlags = [ "--login-server" "https://sol.${config.networking.domain}" ];
+    extraUpFlags = [
+      "--login-server" "https://sol.${config.networking.domain}"
+    ];
   };
 
   i18n = {
