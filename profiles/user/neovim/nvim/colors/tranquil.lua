@@ -61,7 +61,7 @@ local groups = {
   -- Highlighting groups.
   ColorColumn = { bg = shade[2] },
   Conceal = { bg = shade[3] },
-  Cursor = { reverse = true },
+  Cursor = { bg = shade[4] },
   CursorColumn = { bg = shade[2] },
   CursorLine = { bg = shade[2] },
   Directory = { bg = accent[6] },
@@ -82,7 +82,7 @@ local groups = {
   CursorLineSign = { bg = shade[2] },
   MatchParen = { bg = shade[3] },
   MoreMsg = { fg = shade[1], bg = accent[5] },
-  NonText = { fg = shade[2], bg = shade[1] },
+  NonText = { fg = shade[2] },
   Pmenu = { fg = shade[8], bg = shade[2] },
   PmenuSel = { fg = accent[5], bg = shade[3] },
   PmenuSbar = { fg = accent[4], bg = shade[3] },
