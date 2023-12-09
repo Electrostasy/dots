@@ -4,6 +4,11 @@
   environment = {
     sessionVariables.TIME_STYLE = "long-iso";
 
+    shellAliases = {
+      a2c = pkgs.aria2.meta.mainProgram;
+      wh = pkgs.magic-wormhole-rs.meta.mainProgram;
+    };
+
     systemPackages = with pkgs; [
       aria2
       bottom
@@ -35,11 +40,6 @@
     enable = true;
 
     interactiveShellInit = /* fish */ ''
-      alias wormhole wormhole-rs
-      alias a2c aria2c
-
-      # TODO: find where these aliases are being set:
-      # l, ll, la
       function ls
         argparse 'l/long' 'a/all' 'd/depth=' -- $argv
 
