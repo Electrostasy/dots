@@ -12,21 +12,23 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
-  system.stateVersion = "23.11";
-
   sdImage = {
     imageBaseName = "${config.networking.hostName}-sd-image";
     compressImage = false;
 
     populateFirmwareCommands = /* bash */ ''
       cat <<EOF > ./firmware/config.txt
-      arm_64bit=1
+      armstub=armstub8-gic.bin
+      enable_gic=1
+      disable_overscan=1
       enable_uart=1
       avoid_warnings=1
       EOF
 
-      cp ${pkgs.ubootRaspberryPi3_64bit}/u-boot.bin ./firmware/kernel8.img
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{bootcode.bin,fixup.dat,start.elf} ./firmware
+      cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin ./firmware/armstub8-gic.bin
+      cp ${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin ./firmware/kernel8.img
+      # For some reason, the CM4 will not boot without the compiled device tree present for it.
+      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{fixup4.dat,start4.elf,bcm2711-rpi-cm4.dtb} ./firmware
     '';
 
     populateRootCommands = /* bash */ ''
@@ -36,7 +38,9 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    # Required for bcachefs support until 6.7 is released.
+    kernelPackages = pkgs.linuxPackages_testing;
+
     kernelParams = [
       "console=ttyS0,115200n8"
       "console=ttyAMA0,115200n8"
@@ -51,21 +55,39 @@
     };
   };
 
-  # TODO: Setup networking properly.
-  networking.hostName = "mars";
+  environment.systemPackages = [ pkgs.smartmontools ];
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
+  # TODO: Add the disks once testing is done.
+  # Also can't mount by UUID yet or device string:
+  # https://github.com/koverstreet/bcachefs-tools/pull/142
+  # fileSystems."/srv/pool" = { };
 
-    secrets = {
-      piPassword.neededForUsers = true;
-      sshHostKey = { };
+  networking = {
+    hostName = "luna";
+
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+  };
+
+  systemd.network = {
+    enable = true;
+
+    networks."40-wired" = {
+      name = "end0";
+
+      DHCP = "yes";
+      dns = [ "9.9.9.9" ];
+
+      networkConfig.LinkLocalAddressing = "no";
+      dhcpV4Config.RouteMetric = 10;
     };
   };
 
-  services.openssh.hostKeys = [
-    { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
-  ];
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets.piPassword.neededForUsers = true;
+  };
 
   users = {
     mutableUsers = false;
@@ -80,4 +102,6 @@
       ];
     };
   };
+
+  system.stateVersion = "24.05";
 }

@@ -24,7 +24,7 @@
   };
 
   outputs = { self, nixpkgs, ... }: let
-    inherit (nixpkgs.lib) genAttrs fix composeManyExtensions mapAttrs;
+    inherit (nixpkgs.lib) genAttrs fix composeManyExtensions;
 
     forAllSystems = genAttrs [ "x86_64-linux" "aarch64-linux" ];
 
@@ -35,10 +35,10 @@
     overlays = {
       default = import ./packages;
       customisations = final: prev: {
-        libewf = prev.libewf.overrideAttrs (_: {
+        libewf = prev.libewf.overrideAttrs {
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
           buildInputs = [ prev.fuse ];
-        });
+        };
       };
     };
 
@@ -47,14 +47,16 @@
         (composeManyExtensions (builtins.attrValues self.overlays))
         nixpkgs.legacyPackages.${system});
 
-    packages = forAllSystems (system: {
+    packages = forAllSystems (_: {
+      lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
       marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
     });
 
-    nixosConfigurations = mapAttrs (_: nixosSystem) {
+    nixosConfigurations = builtins.mapAttrs (_: nixosSystem) {
       ceres.modules = [ ./hosts/ceres ];
       eris.modules = [ ./hosts/eris ];
       kepler.modules = [ ./hosts/kepler ];
+      luna.modules = [ ./hosts/luna ];
       mars.modules = [ ./hosts/mars ];
       phobos.modules = [ ./hosts/phobos ];
       terra.modules = [ ./hosts/terra ];

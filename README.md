@@ -1,76 +1,92 @@
 # dots
-This repository contains declarative [Nix] packages, modules, [NixOS] 
-system/user configurations and state management across my various devices.
-
-> [!IMPORTANT]
-> The [Nix] experimental feature "[Flakes]" is required in order to consume
-> the outputs of this flake.
+This repository contains a [Nix] [flake] for packages, [NixOS] modules &
+configurations across my various devices.
 
 [Nix]: https://nixos.org/guides/how-nix-works.html
+[flake]: https://nixos.wiki/wiki/Flakes
 [NixOS]: https://nixos.org/guides/how-nix-works.html#nixos
-[Flakes]: https://nixos.wiki/wiki/Flakes
 
 ## Hosts
 
-> [!WARNING]
-> These configurations cannot be switched to without the appropriate hardware
-> configuration (CPU, GPU, storage partitioning) and environments.
-
 The table below lists the managed hosts and their descriptions:
-| Hostname | Device type | Description
+| Hostname | Device type | Description |
 | :-- | :-- | :-- |
 | **ceres** | Desktop | Secondary PC at work |
 | **eris** | WSL | Primary PC at work |
 | **kepler** | VPS | Matrix homeserver <br/> Headscale |
-| **mars** | Raspberry Pi Zero 2 W | - |
+| [**luna**](#luna) | Raspberry Pi Compute Module 4 | NAS |
+| [**mars**](#mars) | Raspberry Pi Zero 2 W | - |
 | **phobos** | Raspberry Pi 4B | Klipper <br/> Moonraker <br/> Mainsail |
 | **terra** | Desktop | Primary PC at home |
 | **venus** | Lenovo ThinkPad X230 Tablet | Laptop |
 
 > [!WARNING]
-> These configurations cannot be built and successfully activated on machines
-> that do not have a `/var/lib/sops-nix/keys.txt` file containing the [age]
-> private key that corresponds to an age public key in the root
-> [.sops.yaml](./.sops.yaml) file. The age private key is used for decrypting
-> secrets encrypted with the public key on NixOS system activation. See [sops-nix].
+> These configurations have encrypted secrets managed by [sops-nix], and
+> cannot be built and successfully activated on machines that do not have a
+> `/var/lib/sops-nix/keys.txt` file containing the [age] private key that
+> corresponds to an age public key in the root [.sops.yaml](./.sops.yaml) file.
+> The age private key is used for decrypting secrets encrypted with the public
+> key on NixOS system activation. See [sops-nix].
 
 [age]: https://age-encryption.org/v1
 [sops-nix]: https://github.com/Mic92/sops-nix
 
 ## Installation Guides
 
+This section contains installation guides to serve as a reminder for myself,
+because I can and will forget eventually, how to reflash and/or reinstall
+certain hosts. Some hosts can be pre-installed via generated images. I wrote a
+small tool (dirty bash script), creatively and aptly named [mountImage], to
+mount an image as a loop device to insert/remove files such as private keys
+for decrypting secrets, otherwise these images cannot be booted and logged into
+or work correctly.
+
+[mountImage]: ./packages/scripts/mountImage.sh
+
 <details>
-<summary>mars SD image</summary>
+<summary>luna</summary>
+
+### luna
+
+The host [luna](./hosts/luna/default.nix) is a Raspberry Pi Compute Module 4 (CM4)
+mounted to an [Axzez Interceptor] carrier board, serving mostly as a NAS. It
+can be installed on a CM4 starting with generating the SD image:
+```sh
+nix build github:Electrostasy/dots#lunaImage
+```
+
+Flash the SD image to eMMC storage using the Raspberry Pi Compute Module 4 IO
+Board by bridging the first set of pins on the 'J2' jumper to disable eMMC boot.
+With a micro USB cable attached to a host PC, and powering the IO board
+with the jumper set, you can run `rpiboot` as root on the host see eMMC storage as a
+block device. You can then flash the image in
+`./result/sd-image/luna-sd-image-...-aarch64-linux.img` to it, disconnect the
+micro USB cable from the host PC, power off the IO Board, detach the CM4 and
+attach it to your carrier board. For more info, read this [guide].
+
+[Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
+[guide]: https://www.jeffgeerling.com/blog/2020/how-flash-raspberry-pi-os-compute-module-4-emmc-usbboot
+</details>
+
+<details>
+<summary>mars</summary>
 
 ### mars
 
-The host [mars](./hosts/mars/default.nix) can be installed on a Raspberry Pi Zero 2 W
-by generating the SD image with the following command:
-
-> [!NOTE]
-> This command expects to be run on an aarch64-linux system. You can add emulate
-> the build by adding it to binfmt:
-> ```nix
-> {
->   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-> }
-
+The host [mars](./hosts/mars/default.nix) is a Raspberry Pi Zero 2 W, currently
+unused. It can be installed on a Raspberry Pi Zero 2 W starting with generating the
+SD image:
 ```sh
 nix build github:Electrostasy/dots#marsImage
 ```
 
-You can additionally mount the image as a loop device and insert/remove files,
-such as private keys for decrypting secrets.
-See [github:Electrostasy/dots#mountImage](./packages/scripts/mountImage.sh)
-
-Flash the build output to a selected SD card (up to 32 GB in size) with the SD
+Flash the SD image to a selected SD card (up to 32 GB in size) with the SD
 image in `./result/sd-image/mars-sd-image-...-aarch64-linux.img` and you can
-boot it straight away.
-
+boot straight away.
 </details>
 
 <details>
-<summary>phobos manual installation</summary>
+<summary>phobos</summary>
 
 ### phobos
 
