@@ -27,6 +27,8 @@
 
   networking.hostName = "eris";
 
+  services.openssh.enable = false;
+
   users.users.${config.wsl.defaultUser} = {
     extraGroups = [ "wheel" ];
     uid = 1000;

@@ -91,6 +91,8 @@
     ];
   };
 
+  services.openssh.enable = false;
+
   virtualisation.libvirtd = {
     enable = true;
     qemu.package = pkgs.qemu_kvm;
@@ -98,24 +100,19 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      rootPassword.neededForUsers = true;
-      gediminasPassword.neededForUsers = true;
-    };
+    secrets.gediminasPassword.neededForUsers = true;
   };
 
   users = {
     mutableUsers = false;
-
-    users = {
-      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
-      gediminas = {
-        isNormalUser = true;
-        hashedPasswordFile = config.sops.secrets.gediminasPassword.path;
-        extraGroups = [ "wheel" "libvirtd" ];
-        uid = 1000;
-      };
+    users.gediminas = {
+      isNormalUser = true;
+      hashedPasswordFile = config.sops.secrets.gediminasPassword.path;
+      extraGroups = [
+        "wheel"
+        "libvirtd"
+      ];
+      uid = 1000;
     };
   };
 

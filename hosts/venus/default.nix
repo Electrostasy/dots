@@ -249,32 +249,19 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      rootPassword.neededForUsers = true;
-      electroPassword.neededForUsers = true;
-      sshHostKey = { };
-    };
+    secrets.electroPassword.neededForUsers = true;
   };
-
-  services.openssh.hostKeys = [
-    { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
-  ];
 
   users = {
     mutableUsers = false;
-
-    users = {
-      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
-      electro = {
-        isNormalUser = true;
-        hashedPasswordFile = config.sops.secrets.electroPassword.path;
-        extraGroups = [ "wheel" ];
-        uid = 1000;
-        openssh.authorizedKeys.keyFiles = [
-          ../terra/ssh_electro_ed25519_key.pub
-        ];
-      };
+    users.electro = {
+      isNormalUser = true;
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
+      extraGroups = [ "wheel" ];
+      uid = 1000;
+      openssh.authorizedKeys.keyFiles = [
+        ../terra/ssh_host_ed25519_key.pub
+      ];
     };
   };
 }

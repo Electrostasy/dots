@@ -94,12 +94,7 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      rootPassword.neededForUsers = true;
-      sshHostKeyEd25519 = { };
-      sshHostKeyRsa = { };
-    };
+    secrets.rootPassword.neededForUsers = true;
   };
 
   services = {
@@ -114,13 +109,7 @@
       openFirewall = true;
     };
 
-    openssh = {
-      settings.PermitRootLogin = lib.mkForce "prohibit-password";
-      hostKeys = [
-        { type = "ed25519"; inherit (config.sops.secrets.sshHostKeyEd25519) path; }
-        { type = "rsa"; inherit (config.sops.secrets.sshHostKeyRsa) path; }
-      ];
-    };
+    openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
   };
 
   documentation = {
@@ -136,8 +125,8 @@
     users.root = {
       hashedPasswordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
-        ../terra/ssh_electro_ed25519_key.pub
-        ../venus/ssh_electro_ed25519_key.pub
+        ../terra/ssh_host_ed25519_key.pub
+        ../venus/ssh_host_ed25519_key.pub
       ];
     };
   };

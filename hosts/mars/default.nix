@@ -56,16 +56,8 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      piPassword.neededForUsers = true;
-      sshHostKey = { };
-    };
+    secrets.piPassword.neededForUsers = true;
   };
-
-  services.openssh.hostKeys = [
-    { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
-  ];
 
   users = {
     mutableUsers = false;
@@ -75,8 +67,8 @@
       extraGroups = [ "wheel" ];
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [
-        ../terra/ssh_electro_ed25519_key.pub
-        ../venus/ssh_electro_ed25519_key.pub
+        ../terra/ssh_host_ed25519_key.pub
+        ../venus/ssh_host_ed25519_key.pub
       ];
     };
   };

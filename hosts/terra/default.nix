@@ -224,32 +224,22 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      rootPassword.neededForUsers = true;
-      electroPassword.neededForUsers = true;
-      sshHostKey = { };
-    };
+    secrets.electroPassword.neededForUsers = true;
   };
-
-  services.openssh.hostKeys = [
-    { inherit (config.sops.secrets.sshHostKey) path; type = "ed25519"; }
-  ];
 
   users = {
     mutableUsers = false;
 
-    users = {
-      # Change password using:
-      # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
-      root.hashedPasswordFile = config.sops.secrets.rootPassword.path;
-      electro = {
-        isNormalUser = true;
-        hashedPasswordFile = config.sops.secrets.electroPassword.path;
-        extraGroups = [ "wheel" ];
-        uid = 1000;
-        openssh.authorizedKeys.keyFiles = [ ../venus/ssh_electro_ed25519_key.pub ];
-      };
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
+    users.electro = {
+      isNormalUser = true;
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
+      extraGroups = [ "wheel" ];
+      uid = 1000;
+      openssh.authorizedKeys.keyFiles = [
+        ../venus/ssh_host_ed25519_key.pub
+      ];
     };
   };
 }
