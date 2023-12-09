@@ -4,6 +4,7 @@
   imports = [
     "${modulesPath}/profiles/qemu-guest.nix"
     ../../profiles/system/common
+    ../../profiles/system/headless
     ../../profiles/system/shell
     ../../profiles/system/ssh
     ./dendrite.nix
@@ -92,11 +93,6 @@
     };
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets.rootPassword.neededForUsers = true;
-  };
-
   services = {
     postgresql.package = pkgs.postgresql_15;
 
@@ -112,9 +108,15 @@
     openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
   };
 
-  documentation = {
-    enable = false;
-    man.man-db.enable = false;
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets = {
+      rootPassword.neededForUsers = true;
+      rootIdentity = {
+        mode = "0400";
+        owner = config.users.users.root.name;
+      };
+    };
   };
 
   users = {

@@ -168,11 +168,10 @@
 
     users.electro.directories = [
       ".cache"
-      ".mozilla"
+      ".mozilla/firefox"
       "Documents"
       "Downloads"
       "Pictures"
-      { directory = ".ssh"; mode = "0700"; }
     ];
   };
 
@@ -249,7 +248,13 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-    secrets.electroPassword.neededForUsers = true;
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
   };
 
   users = {

@@ -225,7 +225,13 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-    secrets.piPassword.neededForUsers = true;
+    secrets = {
+      piPassword.neededForUsers = true;
+      piIdentity = {
+        mode = "0400";
+        owner = config.users.users.pi.name;
+      };
+    };
   };
 
   users.mutableUsers = false;

@@ -1,22 +1,10 @@
 { config, lib, ... }:
 
 {
-  # This has to be defined for each host running SSH separately
-  sops.secrets =
-    lib.optionalAttrs
-      (config.services.openssh.enable)
-      { sshHostKey = { }; };
-
   services.openssh = {
     enable = lib.mkDefault true;
 
     ports = [ 3101 ];
-
-    # Nearly every host is accessible via SSH, but for the ones that are not,
-    # we do not have a host key defined.
-    hostKeys = lib.optionals (config.services.openssh.enable) [
-      { type = "ed25519"; inherit (config.sops.secrets.sshHostKey) path; }
-    ];
 
     settings = {
       PermitRootLogin = "no";
@@ -64,6 +52,17 @@
     extraConfig = ''
       Match exec "host %h | grep 'sol.${config.networking.domain}'"
         Port 3101
+        ${
+          let
+            identities =
+              lib.filterAttrs
+                (name: _: lib.hasSuffix "Identity" name)
+                config.sops.secrets;
+          in
+            lib.concatStringsSep
+              "\n"
+              (lib.mapAttrsToList (_: v: "IdentityFile ${v.path}") identities)
+        }
     '';
   };
 }

@@ -70,7 +70,6 @@
 
     users.gediminas.directories = [
       ".cache"
-      { directory = ".ssh"; mode = "0700"; }
       "Visiems"
     ];
   };
