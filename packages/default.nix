@@ -7,15 +7,21 @@ let
 
     camera-streamer = callPackage ./camera-streamer { libcamera = packages.libcamera-rpi; };
 
-    libcamera-apps = callPackage ./libcamera-apps { libcamera = packages.libcamera-rpi; };
+    rpicam-apps = callPackage ./rpicam-apps { libcamera = packages.libcamera-rpi; };
 
-    libcamera-rpi = prev.libcamera.overrideAttrs (old: {
-      version = "0.1.0";
-      src = old.src.override {
-        rev = "v0.1.0";
-        hash = "sha256-icHZtv25QvJEv0DlELT3cDxho3Oz2BJAMNKr5W4bshk=";
+    libcamera-rpi = prev.libcamera.overrideAttrs (newAttrs: oldAttrs: {
+      version = "v0.1.0+rpt20231122";
+
+      src = prev.fetchFromGitHub {
+        owner = "raspberrypi";
+        repo = oldAttrs.pname;
+        rev = newAttrs.version;
+        hash = "sha256-T5MBTTYaDfaWEo/czTE822e5ZXQmcJ9pd+RWNoM4sBs=";
       };
-      mesonFlags = old.mesonFlags ++ [
+
+      patches = [];
+
+      mesonFlags = (oldAttrs.mesonFlags or []) ++ [
         "-Dipas=rpi/vc4"
         "-Dpipelines=rpi/vc4"
       ];

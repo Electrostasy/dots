@@ -112,7 +112,7 @@
     persistence."/state".enable = true;
 
     systemPackages = with pkgs; [
-      libcamera-apps
+      rpicam-apps
       libgpiod
       libraspberrypi
       vim
