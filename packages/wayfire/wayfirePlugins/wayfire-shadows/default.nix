@@ -1,31 +1,34 @@
-{
-  stdenv,
-  fetchFromGitHub,
-  meson,
-  ninja,
-  pkg-config,
-
-  wayfire,
-  cairo,
-  pango,
-  wayland,
-  libxkbcommon,
-  wlroots_0_16,
-  wf-config,
-
-  lib,
+{ stdenv
+, fetchFromGitHub
+, meson
+, ninja
+, pkg-config
+, wayfire
+, cairo
+, libGL
+, libxkbcommon
+, pango
+, wayland
+, wf-config
+, wlroots
+, lib
 }:
 
 stdenv.mkDerivation {
   pname = "wayfire-shadows";
-  version = "unstable-2023-03-09";
+  version = "unstable-2023-09-08";
 
   src = fetchFromGitHub {
     owner = "timgott";
     repo = "wayfire-shadows";
-    rev = "dbcd78989631aa712f7b716a8b3a82256f1e2559";
-    sha256 = "sha256-ct5SqP/LcDh/Ff72Enf461fB1u0O3LoGLTuLZx8IPOc=";
+    rev = "de3239501fcafd1aa8bd01d703aa9469900004c5";
+    sha256 = "sha256-oVlSzpddPDk6pbyLFMhAkuRffkYpinP7jRspVmfLfyA=";
   };
+
+  postPatch = ''
+    substituteInPlace meson.build \
+      --replace "wayfire.get_variable( pkgconfig: 'metadatadir' )" "join_paths(get_option('prefix'), 'share/wayfire/metadata')"
+  '';
 
   nativeBuildInputs = [
     meson
@@ -34,17 +37,15 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    wayfire
     cairo
-    pango
-    wayland
+    libGL
     libxkbcommon
-    wlroots_0_16
+    pango
+    wayfire
+    wayland
     wf-config
+    wlroots
   ];
-
-  PKG_CONFIG_WAYFIRE_LIBDIR = "lib";
-  PKG_CONFIG_WAYFIRE_METADATADIR = "share/wayfire/metadata";
 
   meta = with lib; {
     website = "https://github.com/timgott/wayfire-shadows";

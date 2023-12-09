@@ -87,14 +87,6 @@
 
   wayland.windowManager.wayfire = {
     enable = true;
-    package = pkgs.wayfire-git;
-
-    extraSessionCommands = [
-      "export _JAVA_AWT_WM_NONREPARENTING=1"
-      "export MOZ_ENABLE_WAYLAND=1"
-      "export NIXOS_OZONE_WL=1"
-      "export SDL_VIDEODRIVER=wayland"
-    ];
 
     settings = {
       close_top_view = "<super> <shift> KEY_W";

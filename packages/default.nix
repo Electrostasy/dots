@@ -55,16 +55,8 @@ let
       };
     });
 
-    wayfire-git = callPackage ./wayfire { };
-
     wayfirePlugins = prev.wayfirePlugins // {
-      dbus-interface = callPackage ./wayfire/wayfirePlugins/wayfire-dbus { wayfire = packages.wayfire-git; };
-
-      firedecor = callPackage ./wayfire/wayfirePlugins/firedecor { wayfire = packages.wayfire-git; };
-
-      plugins-extra = callPackage ./wayfire/wayfirePlugins/wayfire-plugins-extra { wayfire = packages.wayfire-git; };
-
-      shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { wayfire = packages.wayfire-git; };
+      shadows = callPackage ./wayfire/wayfirePlugins/wayfire-shadows { };
     };
 
     wlr-spanbg = callPackage ./scripts/wlr-spanbg { };

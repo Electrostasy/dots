@@ -18,31 +18,29 @@ in
     }
   ];
 
-  wayland.windowManager.wayfire = {
-    extraSessionCommands = [
-      # Programs may use this for WM/DE specific behavior.
-      "export XDG_CURRENT_DESKTOP=sway"
+  home.sessionVariables = {
+    # Programs may use this for WM/DE specific behavior.
+    XDG_CURRENT_DESKTOP = "sway";
 
-      # Programs may use this for Wayland detection.
-      "export XDG_SESSION_TYPE=wayland"
-    ];
-
-    settings.plugins = [{
-      plugin = "autostart";
-      settings = {
-        # We can use the `--systemd` flag to have DBus import the environment
-        # variables into the systemd user session, but this does not seem to
-        # actually work.
-        a0001_dbus_env = "${update-environment} 2>/dev/null && ${update-environment} ${variables}";
-
-        # Because DBus cannot import the variables into the systemd user session,
-        # we explicitly import them here next.
-        a0002_systemd_env = "${systemctl} import-environment ${variables}";
-
-        # TODO: Stop wayfire-session.target when Wayfire closes, and unset all
-        # set environment variables in the systemd user session.
-        a0003_session = "${systemctl} start wayfire-session.target";
-      };
-    }];
+    # Programs may use this for Wayland detection.
+    XDG_SESSION_TYPE = "wayland";
   };
+
+  wayland.windowManager.wayfire.settings.plugins = [{
+    plugin = "autostart";
+    settings = {
+      # We can use the `--systemd` flag to have DBus import the environment
+      # variables into the systemd user session, but this does not seem to
+      # actually work.
+      a0001_dbus_env = "${update-environment} 2>/dev/null && ${update-environment} ${variables}";
+
+      # Because DBus cannot import the variables into the systemd user session,
+      # we explicitly import them here next.
+      a0002_systemd_env = "${systemctl} import-environment ${variables}";
+
+      # TODO: Stop wayfire-session.target when Wayfire closes, and unset all
+      # set environment variables in the systemd user session.
+      a0003_session = "${systemctl} start wayfire-session.target";
+    };
+  }];
 }

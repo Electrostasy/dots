@@ -50,28 +50,9 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = pkgs.wayfireApplications-unwrapped.wayfire;
-      example = literalExpression "pkgs.wayfireApplications-unwrapped.wayfire";
+      default = pkgs.wayfire;
+      example = literalExpression "pkgs.wayfire";
       description = "Package to use";
-    };
-
-    extraSessionCommands = mkOption {
-      type = with types; listOf str;
-      default = [ ];
-      example = literalExpression ''[ "export NIXOS_OZONE_WL=1" ]'';
-      description = "Additional commands to run when launching";
-    };
-
-    withGtkWrapper = mkEnableOption "Make Wayfire aware of Gtk themes and settings";
-
-    systemdIntegration = mkOption {
-      type = types.bool;
-      default = pkgs.stdenv.isLinux;
-      example = false;
-      description = ''
-        Whether to enable wayfire-session.target on Wayfire startup. This links
-        to graphical-session.target.
-      '';
     };
 
     settings = mkOption {
@@ -144,26 +125,15 @@ in {
       };
     };
 
-    finalPackage = pkgs.callPackage ./wrapper.nix {
+    finalPackage = pkgs.wayfire-with-plugins.override {
       wayfire = cfg.package;
       plugins = remove null (catAttrs "package" mergedPlugins);
-      inherit (cfg) extraSessionCommands withGtkWrapper;
     };
 
   in mkIf cfg.enable {
     home.packages = [ finalPackage ];
 
     xdg.configFile."wayfire.ini".text = generators.toINI { } settings;
-
-    systemd.user.targets.wayfire-session = mkIf cfg.systemdIntegration {
-      Unit = {
-        Description = "Wayfire compositor session";
-        Documentation = [ "man:systemd.special(7)" ];
-        BindsTo = [ "graphical-session.target" ];
-        Wants = [ "graphical-session-pre.target" ];
-        After = [ "graphical-session-pre.target" ];
-      };
-    };
 
     systemd.user.targets.tray.Unit = {
       Description = "Home-Manager System Tray";
