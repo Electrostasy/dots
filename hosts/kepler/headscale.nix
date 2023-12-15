@@ -54,6 +54,9 @@
       # $ headscale generate private-key
       private_key_path = config.sops.secrets.headscaleKey.path;
 
+      # Remove ephemeral nodes as soon as possible (1m5s is non-inclusive minimum).
+      ephemeral_node_inactivity_timeout = "1m6s";
+
       dns_config = {
         base_domain = config.networking.domain;
         domains = [ "sol.${config.networking.domain}" ];
