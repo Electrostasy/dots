@@ -22,13 +22,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "camera-streamer";
-  version = "0.2.7";
+  version = "0.2.8";
 
   src = fetchFromGitHub {
     owner = "ayufan";
     repo = finalAttrs.pname;
     rev = "refs/tags/v${finalAttrs.version}";
-    hash = "sha256-ZD3ixSamunm7E+b83ewVBB45/uYLAbDYzqJygFBU4lc=";
+    hash = "sha256-8vV8BMFoDeh22I1/qxk6zttJROaD/lrThBxXHZSPpT4=";
     fetchSubmodules = true;
   };
 
