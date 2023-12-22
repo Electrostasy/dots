@@ -37,6 +37,8 @@ let
 
     pineflash = callPackage ./pineflash { };
 
+    printer-driver-ptouch = callPackage ./printer-driver-ptouch { };
+
     simp1e-cursors = callPackage ./simp1e-cursors { };
 
     umc = callPackage ./umc { };
