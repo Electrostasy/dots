@@ -39,6 +39,8 @@ let
 
     printer-driver-ptouch = callPackage ./printer-driver-ptouch { };
 
+    pt-p300bt-labelmaker = callPackage ./pt-p300bt-labelmaker { };
+
     simp1e-cursors = callPackage ./simp1e-cursors { };
 
     umc = callPackage ./umc { };

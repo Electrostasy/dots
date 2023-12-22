@@ -108,17 +108,17 @@
       freecad
       prusa-slicer
 
+      freerdp # xfreerdp
       gimp
       keepassxc
       libreoffice-fresh
-      qpwgraph
-      spek
-      xdg-utils
-
-      freerdp # xfreerdp
       neo
       nurl
       pastel
+      pt-p300bt-labelmaker
+      qpwgraph
+      spek
+      xdg-utils
       youtube-dl
 
       ipafont
