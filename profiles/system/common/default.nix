@@ -23,6 +23,10 @@
     authKeyFile = config.sops.secrets.tailscaleKey.path;
     extraUpFlags = [
       "--login-server" "https://sol.${config.networking.domain}"
+
+      # On shutdowns, the nodes remain in headscale even if they are ephemeral.
+      # Either a logout before shutdown, or a reauth on connect is necessary.
+      "--force-reauth"
     ];
   };
 
