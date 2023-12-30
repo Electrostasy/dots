@@ -128,10 +128,15 @@
     # Set Mainsail theme from Moonraker as the default theme.
     moonraker.preStart = /* bash */ ''
       MAINSAIL_CONFIG='${config.services.moonraker.stateDir}/config/.theme/default.json'
-      if [ ! -f "$MAINSAIL_CONFIG" ]; then
-        mkdir -p "''${MAINSAIL_CONFIG%/*}"
-        ln -s ${./mainsail-config.json} "$MAINSAIL_CONFIG"
+      # If the symlink is broken, remove it first.
+      if [ -h "$MAINSAIL_CONFIG" -a ! -e "$MAINSAIL_CONFIG" ]; then
+        unlink "$MAINSAIL_CONFIG"
+      else
+        exit 0
       fi
+
+      mkdir -p "''${MAINSAIL_CONFIG%/*}"
+      ln -s ${./mainsail-config.json} "$MAINSAIL_CONFIG"
     '';
 
     camera-streamer = {
