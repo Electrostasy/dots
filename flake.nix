@@ -5,6 +5,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,13 +25,11 @@
   };
 
   outputs = { self, nixpkgs, ... }: let
-    inherit (nixpkgs.lib) genAttrs fix composeManyExtensions;
-
-    forAllSystems = genAttrs [ "x86_64-linux" "aarch64-linux" ];
-
-    nixosSystem = args: nixpkgs.lib.nixosSystem (args // {
-      specialArgs = args.specialArgs or { } // { inherit self; };
-    });
+    inherit (nixpkgs.lib) genAttrs fix composeManyExtensions nixosSystem;
+    forAllSystems = genAttrs [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
   in {
     overlays = {
       default = import ./packages;
@@ -50,18 +49,22 @@
     packages = forAllSystems (_: {
       lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
       marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
+      phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
     });
 
-    nixosConfigurations = builtins.mapAttrs (_: nixosSystem) {
-      ceres.modules = [ ./hosts/ceres ];
-      eris.modules = [ ./hosts/eris ];
-      kepler.modules = [ ./hosts/kepler ];
-      luna.modules = [ ./hosts/luna ];
-      mars.modules = [ ./hosts/mars ];
-      phobos.modules = [ ./hosts/phobos ];
-      terra.modules = [ ./hosts/terra ];
-      venus.modules = [ ./hosts/venus ];
-    };
+    nixosConfigurations =
+      builtins.mapAttrs
+        (_: v: nixosSystem { specialArgs.self = self; modules = [ v ]; })
+        {
+          ceres = ./hosts/ceres;
+          eris = ./hosts/eris;
+          kepler = ./hosts/kepler;
+          luna = ./hosts/luna;
+          mars = ./hosts/mars;
+          phobos = ./hosts/phobos;
+          terra = ./hosts/terra;
+          venus = ./hosts/venus;
+        };
 
     homeManagerModules.wayfire = import ./modules/user/wayfire;
   };

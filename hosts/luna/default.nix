@@ -27,7 +27,9 @@
 
       cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin ./firmware/armstub8-gic.bin
       cp ${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin ./firmware/kernel8.img
-      # For some reason, the CM4 will not boot without the compiled device tree present for it.
+      # FDT binary for the Raspberry Pi Compute Module 4 is required to boot.
+      # CM4 firmware loads and modifies the device tree, and does not seem
+      # capable of getting it from U-Boot.
       cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{fixup4.dat,start4.elf,bcm2711-rpi-cm4.dtb} ./firmware
     '';
 

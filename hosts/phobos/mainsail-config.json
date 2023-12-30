@@ -4,13 +4,18 @@
   },
   "control": {
     "style": "cross",
-    "selectedCrossStep": 0
+    "selectedCrossStep": 4,
+    "hideDuringPrint": true
   },
   "dashboard": {
     "nonExpandPanels": {
       "widescreen": []
     },
     "widescreenLayout2": [
+      {
+        "name": "webcam",
+        "visible": true
+      },
       {
         "name": "miniconsole",
         "visible": true
@@ -72,6 +77,10 @@
     ],
     "tabletLayout1": [
       {
+        "name": "webcam",
+        "visible": true
+      },
+      {
         "name": "toolhead-control",
         "visible": true
       },
@@ -85,23 +94,6 @@
       }
     ]
   },
-  "gcodeViewer": {
-    "klipperCache": {
-      "kinematics": "cartesian",
-      "axis_maximum": [
-        244,
-        204,
-        210,
-        0
-      ],
-      "axis_minimum": [
-        -11.5,
-        -14.625,
-        -2,
-        0
-      ]
-    }
-  },
   "macros": {
     "mode": "expert",
     "macrogroups": {
@@ -111,7 +103,7 @@
         "colorCustom": "#fff",
         "showInStandby": true,
         "showInPause": true,
-        "showInPrinting": true,
+        "showInPrinting": false,
         "macros": [
           {
             "pos": 1,
@@ -136,7 +128,7 @@
         "color": "primary",
         "colorCustom": "#fff",
         "showInStandby": true,
-        "showInPause": true,
+        "showInPause": false,
         "showInPrinting": false,
         "macros": [
           {
@@ -169,6 +161,46 @@
   },
   "uiSettings": {
     "displayCancelPrint": true,
-    "disableFanAnimation": false
+    "disableFanAnimation": false,
+    "primary": "#FF6841",
+    "logo": "#FF6841",
+    "confirmOnPowerDeviceChange": true,
+    "confirmOnEmergencyStop": true,
+    "hideUpdateWarnings": true
+  },
+  "webcams": {
+    "37493e03-b155-41db-a967-c6e598b6c0f9": {
+      "name": "Enclosure",
+      "service": "webrtc-camerastreamer",
+      "targetFps": 15,
+      "urlStream": "http://phobos:8080/webrtc",
+      "urlSnapshot": "http://phobos:8080/snapshot",
+      "flipX": false,
+      "flipY": false,
+      "enabled": true,
+      "targetFpsIdle": 15,
+      "aspectRatio": "4:3",
+      "icon": "mdiWebcam",
+      "location": "printer",
+      "rotation": 0,
+      "extra_data": {}
+    }
+  },
+  "gcodeViewer": {
+    "klipperCache": {
+      "kinematics": "cartesian",
+      "axis_maximum": [
+        244,
+        204,
+        210,
+        0
+      ],
+      "axis_minimum": [
+        -11.5,
+        -14.625,
+        -2,
+        0
+      ]
+    }
   }
 }
