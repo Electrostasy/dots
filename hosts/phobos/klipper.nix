@@ -117,6 +117,14 @@
   '';
 
   systemd.services = {
+    # RP2040-based secondary Klipper MCUs seem to be stuck in an error state on boot,
+    # giving errors such as:
+    # `usb 1-1.3: device descriptor read/64, error -32`
+    # `usb 1-1.3: Device not responding to setup address.`
+    # Power cycling them once on boot seems to fix it and allows the main Klipper
+    # service to continue launch.
+    klipper.postStart = "${pkgs.uhubctl}/bin/uhubctl --level 2 --action 2";
+
     # Set Mainsail theme from Moonraker as the default theme.
     moonraker.preStart = /* bash */ ''
       MAINSAIL_CONFIG='${config.services.moonraker.stateDir}/config/.theme/default.json'
