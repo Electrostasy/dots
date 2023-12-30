@@ -8,6 +8,7 @@ let
     desktop-cube
     native-window-placement
     panel-date-format
+    tophat
   ];
 
   burnMyWindowsProfile = pkgs.writeText "nix-profile.conf" ''
@@ -114,6 +115,8 @@ in
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
 
+    variables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
+
     systemPackages = with pkgs; gnomeShellExtensions ++ [
       adw-gtk3
 
@@ -122,6 +125,10 @@ in
 
       # Load Nautilus extensions.
       gnome.nautilus-python
+
+      # Needed for gnomeExtensions.tophat + GI_TYPELIB_PATH as per issue:
+      # https://github.com/fflewddur/tophat/issues/106#issuecomment-1848319826
+      libgtop
 
       amberol # Music player
       celluloid # MPV-based video player
@@ -271,12 +278,12 @@ in
           panel-sizes = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: 32));
           panel-element-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: [
             { element = "showAppsButton"; visible = false; position = "stackedTL"; }
+            { element = "activitiesButton"; visible = true; position = "stackedTL"; }
             { element = "dateMenu"; visible = true; position = "stackedTL"; }
             { element = "rightBox"; visible = true; position = "stackedTL"; }
-            { element = "leftBox"; visible = true; position = "stackedTL"; }
             { element = "taskbar"; visible = true; position = "centerMonitor"; }
+            { element = "leftBox"; visible = true; position = "stackedBR"; }
             { element = "centerBox"; visible = false; position = "centered"; }
-            { element = "activitiesButton"; visible = true; position = "stackedBR"; }
             { element = "systemMenu"; visible = true; position = "stackedBR"; }
             { element = "desktopButton"; visible = false; position = "stackedBR"; }
           ]));
@@ -304,6 +311,12 @@ in
           window-parallax = 0.75;
           edge-switch-pressure = mkUint32 100;
           mouse-rotation-speed = 1.0;
+        };
+
+        "org/gnome/shell/extensions/tophat" = {
+          cpu-display = "both";
+          mem-display = "both";
+          show-disk = false;
         };
       };
     }];
