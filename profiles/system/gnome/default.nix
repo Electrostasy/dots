@@ -125,6 +125,8 @@ in
 
       # Load Nautilus extensions.
       gnome.nautilus-python
+      nautilus-amberol
+      nautilus-vimv
 
       # Needed for gnomeExtensions.tophat + GI_TYPELIB_PATH as per issue:
       # https://github.com/fflewddur/tophat/issues/106#issuecomment-1848319826
@@ -325,11 +327,6 @@ in
   systemd.user.tmpfiles.rules = [
     # Set up `Burn My Windows` config, as it uses a separate file in $HOME/.config.
     "L+ %h/.config/burn-my-windows/profiles/nix-profile.conf 0755 - - - ${burnMyWindowsProfile}"
-
-    # Add custom Nautilus extensions.
-    # TODO: Turn them into packages to install via environment.systemPackages.
-    "L+ %h/.local/share/nautilus-python/extensions/nautilus-vimv.py 0755 - - - ${./nautilus-vimv.py}"
-    "L+ %h/.local/share/nautilus-python/extensions/nautilus-amberol.py 0755 - - - ${./nautilus-amberol.py}"
 
     # Automatically pick a random wallpaper at startup.
     "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''

@@ -5,6 +5,12 @@ let
   packages = {
     bgrep = callPackage ./bgrep { };
 
+    buildNautilusExtension = { name, script }: prev.runCommand "build-nautilus-ext-${name}" {} ''
+      DEST="$out/share/nautilus-python/extensions"
+      mkdir -p "$DEST"
+      ln -s ${script} "$DEST/${name}"
+    '';
+
     camera-streamer = callPackage ./camera-streamer { libcamera = packages.libcamera-rpi; };
 
     rpicam-apps = callPackage ./rpicam-apps { libcamera = packages.libcamera-rpi; };
@@ -68,6 +74,16 @@ let
     mountImage = callPackage ./scripts/mountImage.nix { };
 
     qr = callPackage ./scripts/qr.nix { };
+
+    nautilus-amberol = packages.buildNautilusExtension {
+      name = "nautilus-amberol.py";
+      script = ./scripts/nautilus-amberol.py;
+    };
+
+    nautilus-vimv = packages.buildNautilusExtension {
+      name = "nautilus-vimv.py";
+      script = ./scripts/nautilus-vimv.py;
+    };
   };
 in
   packages
