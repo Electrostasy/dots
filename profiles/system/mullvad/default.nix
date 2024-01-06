@@ -1,8 +1,17 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
-  sops.secrets.mullvadAccount.sopsFile = ./secrets.yaml;
-  environment.etc."mullvad-vpn/account-history.json".source = config.sops.secrets.mullvadAccount.path;
+  sops.secrets.mullvadAccount = {
+    sopsFile = ./secrets.yaml;
+    path = "/etc/mullvad-vpn/account-history.json";
+  };
+
+  environment.persistence."/state".files = [
+    # Contains the device-specific rotated Wireguard private key. If this is
+    # not persistent, new devices from the associated Mullvad account have to
+    # be removed each time the device is restarted.
+    "/etc/mullvad-vpn/device.json"
+  ];
 
   services.mullvad-vpn.enable = true;
 
@@ -12,7 +21,7 @@
     # Mullvad and Tailscale will fight to the death over routing rules (and
     # Mullvad will win) unless we set exceptions for Tailscale. Issue link:
     # https://github.com/tailscale/tailscale/issues/925#issuecomment-1616354736.
-    tables."mullvad-tailscale" = {
+    tables."mullvad-tailscale" = lib.mkIf config.services.tailscale.enable {
       family = "inet";
       content = ''
         chain prerouting {
