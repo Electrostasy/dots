@@ -4,18 +4,23 @@
   # Use WirePlumber rules to disable S/PDIF and other unused sources/sinks.
   environment.etc."wireplumber/main.lua.d/60-custom-alsa.lua".source = ./wp-alsa-rules.lua;
 
-  # Use WirePlumber `wpexec` script to set default volume and default nodes, as
-  # it overrides `default.configured.audio.{sink,source}` from PipeWire's
-  # `context.properties`.
+  # Use WirePlumber `wpexec` script to set default nodes, as it overrides
+  # `default.configured.audio.{sink,source}` from PipeWire's `context.properties`.
   systemd.user.services.wireplumber-defaults = {
-    description = "WirePlumber set default volume and nodes";
+    description = "WirePlumber set default nodes";
     after = [ "wireplumber.service" ];
-    wantedBy = [ "graphical-session-pre.target" ];
+    wantedBy = [ "wireplumber.service" ];
 
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${config.services.pipewire.wireplumber.package}/bin/wpexec ${./wpexec-defaults.lua}";
-    };
+    serviceConfig.ExecStart = "${config.services.pipewire.wireplumber.package}/bin/wpexec ${./wpexec-defaults.lua}";
+  };
+
+  # Use WirePlumber `wpexec` script to set default volume.
+  systemd.user.services.wireplumber-volume = {
+    description = "WirePlumber set default volume";
+    after = [ "wireplumber.service" ];
+    wantedBy = [ "wireplumber.service" ];
+
+    serviceConfig.ExecStart = "${config.services.pipewire.wireplumber.package}/bin/wpexec ${./wpexec-volume.lua}";
   };
 
   security.rtkit.enable = true;
