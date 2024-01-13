@@ -6,6 +6,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    sharedModules = builtins.attrValues self.outputs.homeManagerModules;
   };
 
   # NixOS is unaware of home-manager variables because home-manager does not
