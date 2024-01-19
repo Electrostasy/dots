@@ -53,7 +53,7 @@
   time.timeZone = lib.mkDefault "Europe/Vilnius";
 
   nixpkgs = {
-    overlays = builtins.attrValues self.overlays;
+    overlays = lib.attrValues self.overlays;
     config.allowAliases = false;
   };
 

@@ -94,6 +94,8 @@
     ];
   };
 
+  # Can only use one of these.
+  services.power-profiles-daemon.enable = false;
   services.tlp = {
     enable = true;
 
