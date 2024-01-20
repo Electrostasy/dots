@@ -1,7 +1,10 @@
 { pkgs, lib, ... }:
 
 {
-  imports = [ ./extensions.nix ];
+  imports = [
+    ./extensions.nix
+    ./mimetypes.nix
+  ];
 
   # Due to the way desktop configuration works in Nixpkgs, we have to install
   # an X server even if we only use Wayland.
