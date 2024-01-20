@@ -104,6 +104,7 @@
 
       amberol
       celluloid
+      eartag
       eyedropper
       fractal
       keepassxc
