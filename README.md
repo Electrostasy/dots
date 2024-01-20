@@ -41,7 +41,7 @@ mount an image as a loop device to insert/remove files such as private keys
 for decrypting secrets, otherwise these images cannot be booted and logged into
 or work correctly.
 
-[mountImage]: ./packages/scripts/mountImage.sh
+[mountImage]: ./pkgs/mountImage/mountImage.sh
 
 <details>
 <summary>luna</summary>
