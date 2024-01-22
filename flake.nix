@@ -100,8 +100,14 @@
               # Inject this flake into the module system.
               specialArgs = { inherit self; };
 
-              # Load the config for the host.
-              modules = [ ./hosts/${name} ];
+              modules = [
+                # We can set the hostname here instead of repeating
+                # it for each host.
+                { networking.hostName = name; }
+
+                # Load the config for the host.
+                ./hosts/${name}
+              ];
             })
           hosts;
 

@@ -73,8 +73,6 @@
   services.timesyncd.servers = lib.mkForce [ "192.168.205.1" ];
 
   networking = {
-    hostName = "phobos";
-
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;

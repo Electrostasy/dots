@@ -51,9 +51,6 @@
     };
   };
 
-  # TODO: Setup networking properly.
-  networking.hostName = "mars";
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
     secrets = {

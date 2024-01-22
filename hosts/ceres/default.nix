@@ -75,8 +75,6 @@
   };
 
   networking = {
-    hostName = "ceres";
-
     dhcpcd.enable = false;
     useDHCP = false;
 

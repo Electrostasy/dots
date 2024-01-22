@@ -65,8 +65,6 @@
   # fileSystems."/srv/pool" = { };
 
   networking = {
-    hostName = "luna";
-
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;

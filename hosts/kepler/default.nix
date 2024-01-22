@@ -48,8 +48,6 @@
   };
 
   networking = {
-    hostName = "kepler";
-
     dhcpcd.enable = false;
     useDHCP = false;
     enableIPv6 = false;

@@ -178,8 +178,6 @@
   };
 
   networking = {
-    hostName = "venus";
-
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;

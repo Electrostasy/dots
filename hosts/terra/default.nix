@@ -113,8 +113,6 @@
   };
 
   networking = {
-    hostName = "terra";
-
     dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;

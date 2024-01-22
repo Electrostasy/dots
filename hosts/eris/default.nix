@@ -25,8 +25,6 @@
     };
   };
 
-  networking.hostName = "eris";
-
   services.openssh.enable = false;
 
   users.users.${config.wsl.defaultUser} = {
