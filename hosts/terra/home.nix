@@ -38,9 +38,6 @@
       spek
       xdg-utils
       youtube-dl
-
-      ipafont
-      liberation_ttf
     ];
   };
 }

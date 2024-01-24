@@ -20,7 +20,6 @@
       freerdp # xfreerdp
       imv
       keepassxc
-      liberation_ttf # Replacement fonts for TNR, Arial and Courier New
       libreoffice-fresh
       mepo
       nurl
