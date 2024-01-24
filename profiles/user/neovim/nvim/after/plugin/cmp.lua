@@ -1,8 +1,3 @@
--- Disable built-in completion.
--- https://github.com/hrsh7th/nvim-cmp/discussions/941
-vim.opt.complete = ''
-vim.opt.completeopt = ''
-
 -- Avoid depending on lspkind.nvim when this is all we use these icons for.
 local kind_icons = {
   Text = '',
@@ -32,22 +27,24 @@ local kind_icons = {
   TypeParameter = '',
 }
 
--- Generate highlight groups for completion item menu. Item kinds are dark
--- foreground and bright background, so the menu text uses the kind background.
+-- Flip highlight groups for completion item menu. Default is to have the item
+-- kind highlighted a bright colour, but for this, we want the background to be
+-- highlight bright instead.
 for kind, _ in pairs(kind_icons) do
-  local kind_group = vim.api.nvim_get_hl_by_name(('CmpItemKind%s'):format(kind), true)
-  vim.api.nvim_set_hl(0, ('CmpItemMenu%s'):format(kind), {
-    fg = kind_group.background
+  local group_str = ('CmpItemKind%s'):format(kind)
+  local group = vim.api.nvim_get_hl_by_name(group_str, true)
+  vim.api.nvim_set_hl(0, group_str, {
+    fg = group.background, bg = group.foreground
   })
 end
 
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 
-local has_words_before = function()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
-end
+-- local has_words_before = function()
+--   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+--   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+-- end
 
 cmp.setup({
   snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
@@ -57,8 +54,8 @@ cmp.setup({
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
         luasnip.expand_or_jump()
-      elseif has_words_before() then
-        cmp.complete()
+      -- elseif has_words_before() then
+      --   cmp.complete()
       else
         fallback()
       end
@@ -83,6 +80,7 @@ cmp.setup({
     { name = 'path', option = { trailing_slash = true } },
   },
   formatting = {
+    expandable_indicator = true,
     fields = {
       cmp.ItemField.Kind,
       cmp.ItemField.Abbr,
@@ -104,6 +102,7 @@ cmp.setup({
     },
   },
   sorting = {
+    priority_weight = 2,
     comparators = {
       cmp.config.compare.offset,
       cmp.config.compare.exact,

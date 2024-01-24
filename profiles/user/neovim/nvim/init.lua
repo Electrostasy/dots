@@ -26,22 +26,39 @@ vim.opt.guicursor = {
 
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
-vim.cmd.colorscheme('tranquil')
+vim.cmd.colorscheme('poimandres')
 
 -- We do not need to exhaustively specify all the fields.
 ---@diagnostic disable-next-line: missing-fields
 require('nvim-treesitter.configs').setup({
   highlight = { enable = true },
   indent = { enable = true },
-  incremental_selection = { enable = false },
-  playground = { enable = true },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = '<C-Space>',
+      node_incremental = '<Space>',
+      node_decremental = '<C-Space>',
+      scope_incremental = nil,
+    },
+  },
 
   -- Available under plugins/showpairs.lua.
   showpairs = { enable = true },
 })
 
-require('hlargs').setup()
-require('gitsigns').setup()
+-- TODO: Signs in the signcolumn ignore cursorline background.
+-- :h gitsigns-config
+require('gitsigns').setup({
+  signs = {
+    add = { text = '┃' },
+    change = { text = '┃' },
+    delete = { text = '┃' },
+    topdelete = { text = '╏' },
+    changedelete = { text = '┇' },
+    untracked = { text = '┊' },
+  },
+})
 
 vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
 vim.opt.hidden = true -- Allow dirty buffers in the background.
@@ -56,13 +73,12 @@ vim.opt.ruler = true
 vim.opt.shortmess:append('S')
 
 -- Highlight line containing cursor only on active buffer.
-vim.opt.cursorline = true
 vim.api.nvim_create_augroup('ActiveBufferCursorline', { clear = true })
-vim.api.nvim_create_autocmd({ 'WinEnter', 'WinLeave' }, {
+vim.api.nvim_create_autocmd({ 'BufEnter', 'WinLeave' }, {
   group = 'ActiveBufferCursorline',
   pattern = '*',
-  callback = function()
-    vim.opt_local.cursorline = not vim.opt_local.cursorline:get()
+  callback = function(args)
+    vim.opt_local.cursorline = args.event == 'BufEnter'
   end
 })
 
@@ -76,24 +92,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- These autocommands set relativenumber when entering visual/select line/block
--- modes, and unset it when leaving them, allowing for easier range-based
--- selections and movements.
+-- Set relativenumber when entering visual/select line/block modes, and unset
+-- it when leaving them, allowing for easier range-based selections and movements.
 vim.api.nvim_create_augroup('DynamicRelativeNumber', { clear = true })
 vim.api.nvim_create_autocmd('ModeChanged', {
   group = 'DynamicRelativeNumber',
-  -- When switching to visual/select line/block modes.
-  pattern = { '*:V', '*:\22', '*:s', '*:\19' },
-  callback = function()
-    vim.opt_local.relativenumber = true
-  end,
-})
-vim.api.nvim_create_autocmd('ModeChanged', {
-  group = 'DynamicRelativeNumber',
-  -- When switching from visual/select line/block modes.
-  pattern = { 'V:*', '\22:*', 'S:*', '\19:*' },
-  callback = function()
-    vim.opt_local.relativenumber = false
+  pattern = '*',
+  callback = function(args)
+    vim.opt_local.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
   end,
 })
 
@@ -108,6 +114,14 @@ vim.opt.autoindent = true
 vim.opt.wrap = false
 vim.opt.splitbelow = true
 vim.opt.splitright = true
+vim.keymap.set('n', '<C-h>', '<C-w>h')
+vim.keymap.set('n', '<C-j>', '<C-w>j')
+vim.keymap.set('n', '<C-k>', '<C-w>k')
+vim.keymap.set('n', '<C-l>', '<C-w>l')
+vim.keymap.set('n', '<C-Left>', '<C-w>h')
+vim.keymap.set('n', '<C-Up>', '<C-w>j')
+vim.keymap.set('n', '<C-Down>', '<C-w>j')
+vim.keymap.set('n', '<C-Right>', '<C-w>l')
 
 -- Better window separators.
 vim.opt.fillchars:append({
@@ -141,7 +155,7 @@ vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
   group = 'InsertModeListChars',
   pattern = '*',
   callback = function(args)
-    if vim.tbl_contains({ 'quickfix', 'prompt' }, vim.opt_local.buftype:get()) then
+    if vim.tbl_contains({ 'quickfix', 'prompt' }, args.match) then
       return
     end
 
@@ -155,21 +169,11 @@ vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
   end
 })
 
--- Additional filetypes to register.
--- Until plenary.nvim evaluates vim.filetype, we have to register them with
--- plenary.nvim too.
--- https://github.com/nvim-lua/plenary.nvim/issues/400
-local filetypes = {
+-- https://github.com/nvim-telescope/telescope.nvim/pull/2529
+vim.filetype.add({
   filename = {
     ['flake.lock'] = 'json',
-    ['cargo.lock'] = 'toml'
   },
-  extension = {},
-}
-vim.filetype.add(filetypes)
-require('plenary.filetype').add_table({
-  file_name = filetypes.filename,
-  extension = filetypes.extension
 })
 
 -- Keymaps when an LSP is attached to the buffer.
@@ -194,11 +198,19 @@ local lsp_mappings = {
   end },
 }
 
+-- Parameter highlighting.
+local hlargs = require('hlargs')
+hlargs.setup()
+
 vim.api.nvim_create_augroup('LspMappings', { clear = true })
 vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
   group = 'LspMappings',
   pattern = '*',
   callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local capabilities = client.server_capabilities
+    local hasSemanticTokens = capabilities.semanticTokensProvider and capabilities.semanticTokensProvider.full
+
     if args.event == 'LspAttach' then
       for _, mapping in ipairs(lsp_mappings) do
         vim.keymap.set(unpack(mapping))
@@ -210,10 +222,21 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
         virtual_text = false,
         virtual_lines = true,
       })
+
+      -- If LSP supports semantic tokens, disable Hlargs for the current buffer.
+      -- :h hlargs-lsp
+      if hasSemanticTokens then
+        hlargs.disable_buf(args.buf)
+      end
     else
-      -- TODO: Unload lsp_lines as well.
       for _, mapping in ipairs(lsp_mappings) do
         vim.keymap.del(unpack(mapping))
+      end
+
+      -- If LSP supports semantic tokens, enable Hlargs for the current buffer.
+      -- :h hlargs-lsp
+      if hasSemanticTokens then
+        hlargs.enable_buf(args.buf)
       end
     end
   end

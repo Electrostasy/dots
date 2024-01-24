@@ -10,20 +10,20 @@ vim.g.qf_disable_statusline = 1
 vim.api.nvim_create_augroup('StatusLine', { clear = true })
 
 local mode_map = {
-  ['n'] = { 'Normal', 'StatusLineModeNormal' },
-  ['v'] = { 'Visual', 'StatusLineModeVisual' },
-  ['V'] = { 'V-Line', 'StatusLineModeVisual' },
-  ['\22'] = { 'V-Block', 'StatusLineModeVisual' },
-  ['s'] = { 'Select', 'StatusLineModeSelect' },
-  ['S'] = { 'S-Line', 'StatusLineModeSelect' },
-  ['\19'] = { 'S-Block', 'StatusLineModeSelect' },
-  ['i'] = { 'Insert', 'StatusLineModeInsert' },
-  ['R'] = { 'Replace', 'StatusLineModeReplace' },
-  ['c'] = { 'Command', 'StatusLineModeCommand' },
-  ['r'] = { 'Prompt', 'StatusLineModePrompt' },
-  ['r?'] = { 'Confirm', 'StatusLineModeConfirm' },
-  ['!'] = { 'Shell', 'StatusLineModeShell' },
-  ['t'] = { 'Terminal', 'StatusLineModeTerminal' },
+  ['n'] = { 'Normal', 'User1' },
+  ['v'] = { 'Visual', 'User2' },
+  ['V'] = { 'V-Line', 'User2' },
+  ['\22'] = { 'V-Block', 'User2' },
+  ['s'] = { 'Select', 'User3' },
+  ['S'] = { 'S-Line', 'User3' },
+  ['\19'] = { 'S-Block', 'User3' },
+  ['i'] = { 'Insert', 'User4' },
+  ['R'] = { 'Replace', 'User5' },
+  ['c'] = { 'Command', 'User6' },
+  ['r'] = { 'Prompt', 'User7' },
+  ['r?'] = { 'Confirm', 'User7' },
+  ['!'] = { 'Shell', 'User8' },
+  ['t'] = { 'Terminal', 'User9' },
 }
 
 -- Pre-fetch colorscheme highlight groups to derive colours from. Update the
@@ -31,14 +31,21 @@ local mode_map = {
 local hl = {}
 do
   local groups = {
-    'Normal',
-    'Function',
-    'Keyword',
-    'Statement',
-    'Constant',
-    'PreProc',
+    'User1',
+    'User2',
+    'User3',
+    'User4',
+    'User5',
+    'User6',
+    'User7',
+    'User8',
+    'User9',
     'StatusLine',
     'StatusLineNC',
+    'DiagnosticSignError',
+    'DiagnosticSignWarn',
+    'DiagnosticSignInfo',
+    'DiagnosticSignHint',
     'GitSignsAdd',
     'GitSignsDelete',
     'GitSignsChange',
@@ -61,38 +68,36 @@ do
   })
 
   hl = renew_hlgroups()
-end
 
--- local function brighten(col, amount)
---   local num = tonumber(col, 16)
-
---   local r = bit.rshift(num, 16) + amount
---   local b = bit.band(bit.rshift(num, 8), 0x00FF) + amount
---   local g = bit.band(num, 0x0000FF) + amount
---   col = bit.bor(g, bit.bor(bit.lshift(b, 8), bit.lshift(r, 16)))
-
---   return ('%#x'):format(col)
--- end
-
--- Define highlight groups for the statusline.
-local stl_groups = {
-  StatusLineModeNormal = { fg = hl.Normal.background, bg = hl.Normal.foreground, bold = true },
-  StatusLineModeVisual = { fg = hl.Normal.background, bg = hl.Normal.foreground, bold = true },
-  StatusLineModeSelect = { link = 'StatusLineModeVisual' },
-  StatusLineModeInsert = { fg = hl.Normal.background, bg = hl.Function.foreground, bold = true },
-  StatusLineModeReplace = { link = 'StatusLineModeInsert' },
-  StatusLineModeCommand = { fg = hl.Normal.background, bg = hl.Keyword.foreground, bold = true },
-  StatusLineModePrompt = { fg = hl.Normal.background, bg = hl.Statement.foreground, bold = true },
-  StatusLineModeConfirm = { link = 'StatusLineModePrompt' },
-  StatusLineModeShell = { fg = hl.Normal.background, bg = hl.Constant.foreground, bold = true },
-  StatusLineModeTerminal = { fg = hl.Normal.background, bg = hl.PreProc.foreground, bold = true },
-
-  StatusLineGitAdd = { fg = hl.GitSignsAdd.foreground, bg = hl.StatusLine.background },
-  StatusLineGitDelete = { fg = hl.GitSignsDelete.foreground, bg = hl.StatusLine.background },
-  StatusLineGitChange = { fg = hl.GitSignsChange.foreground, bg = hl.StatusLine.background },
-}
-for group, opts in pairs(stl_groups) do
-  vim.api.nvim_set_hl(0, group, opts)
+  -- Define highlight groups for the statusline.
+  local stl_groups = {
+    -- StatusLineUser1 = { fg = hl.StatusLine.foreground, bg = blend(hl.User1.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser2 = { fg = hl.StatusLine.foreground, bg = blend(hl.User2.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser3 = { fg = hl.StatusLine.foreground, bg = blend(hl.User3.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser4 = { fg = hl.StatusLine.foreground, bg = blend(hl.User4.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser5 = { fg = hl.StatusLine.foreground, bg = blend(hl.User5.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser6 = { fg = hl.StatusLine.foreground, bg = blend(hl.User6.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser7 = { fg = hl.StatusLine.foreground, bg = blend(hl.User7.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser8 = { fg = hl.StatusLine.foreground, bg = blend(hl.User8.background, hl.StatusLine.background, 0.1) },
+    -- StatusLineUser9 = { fg = hl.StatusLine.foreground, bg = blend(hl.User9.background, hl.StatusLine.background, 0.1) },
+    StatusLineLSPError = { fg = hl.DiagnosticSignError.foreground, bg = hl.StatusLine.background },
+    StatusLineLSPWarn = { fg = hl.DiagnosticSignWarn.foreground, bg = hl.StatusLine.background },
+    StatusLineLSPInfo = { fg = hl.DiagnosticSignInfo.foreground, bg = hl.StatusLine.background },
+    StatusLineLSPHint = { fg = hl.DiagnosticSignHint.foreground, bg = hl.StatusLine.background },
+    StatusLineNCLSPError = { fg = hl.DiagnosticSignError.foreground, bg = hl.StatusLineNC.background },
+    StatusLineNCLSPWarn = { fg = hl.DiagnosticSignWarn.foreground, bg = hl.StatusLineNC.background },
+    StatusLineNCLSPInfo = { fg = hl.DiagnosticSignInfo.foreground, bg = hl.StatusLineNC.background },
+    StatusLineNCLSPHint = { fg = hl.DiagnosticSignHint.foreground, bg = hl.StatusLineNC.background },
+    StatusLineGitAdd = { fg = hl.GitSignsAdd.foreground, bg = hl.StatusLine.background },
+    StatusLineGitDelete = { fg = hl.GitSignsDelete.foreground, bg = hl.StatusLine.background },
+    StatusLineGitChange = { fg = hl.GitSignsChange.foreground, bg = hl.StatusLine.background },
+    StatusLineNCGitAdd = { fg = hl.GitSignsAdd.foreground, bg = hl.StatusLineNC.background },
+    StatusLineNCGitDelete = { fg = hl.GitSignsDelete.foreground, bg = hl.StatusLineNC.background },
+    StatusLineNCGitChange = { fg = hl.GitSignsChange.foreground, bg = hl.StatusLineNC.background },
+  }
+  for group, opts in pairs(stl_groups) do
+    vim.api.nvim_set_hl(0, group, opts)
+  end
 end
 
 local function int_len(int)
@@ -334,10 +339,12 @@ function __StatusLine(current)
       table.insert(groups, (' %s %s'):format(message.title, progress_frames[vim.b[buf].lsp_progress_idx]))
     end
 
+    local nc = current == 0 and '' or 'NC'
+
     local function diagnostic_format(kind)
       local diagnostics = #vim.diagnostic.get(buf, { severity = vim.diagnostic.severity[kind:upper()] })
-      local group = ('DiagnosticSign%s'):format(kind)
-      local _, sign = next(vim.fn.sign_getdefined(group))
+      local group = ('StatusLine%sLSP%s'):format(nc, kind)
+      local _, sign = next(vim.fn.sign_getdefined('DiagnosticSign' .. kind))
       if diagnostics > 0 then
         return ('%%#%s# %d %s'):format(group, diagnostics, sign.text)
       end
@@ -356,19 +363,21 @@ function __StatusLine(current)
   -- Git components.
   local git = vim.b.gitsigns_status_dict
   if git then
+    local nc = current == 0 and '' or 'NC'
+
     local additions_count = git.added or 0
     if additions_count > 0 then
-      table.insert(groups, (' %%#StatusLineGitAdd#+%d%%*'):format(additions_count))
+      table.insert(groups, (' %%#StatusLine%sGitAdd#+%d%%*'):format(nc, additions_count))
     end
 
     local removals_count = git.removed or 0
     if removals_count > 0 then
-      table.insert(groups, (' %%#StatusLineGitDelete#-%d%%*'):format(removals_count))
+      table.insert(groups, (' %%#StatusLine%sGitDelete#-%d%%*'):format(nc, removals_count))
     end
 
     local changes_count = git.changed or 0
     if changes_count > 0 then
-      table.insert(groups, (' %%#StatusLineGitChange#~%d%%*'):format(changes_count))
+      table.insert(groups, (' %%#StatusLine%sGitChange#~%d%%*'):format(nc, changes_count))
     end
 
     local branch = git.head

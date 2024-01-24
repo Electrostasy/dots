@@ -10,7 +10,7 @@ telescope.setup({
 
     layout_config = { prompt_position = 'top' },
     sorting_strategy = 'ascending',
-    prompt_prefix = ' ',
+    prompt_prefix = '🔭 ',
     dynamic_preview_title = true,
     selection_caret = '▶ ',
     borderchars = {
@@ -42,15 +42,21 @@ telescope.setup({
     }
   },
   extensions = {
-    fzf = {
-      fuzzy = true,
-      override_generic_sorter = true,
-      override_file_sorter = true,
-      case_mode = 'smart_case',
+    ['zf-native'] = {
+      file = {
+        enable = true,
+        highlight_results = true,
+        match_file = true,
+      },
+      generic = {
+        enable = true,
+        highlight_results = true,
+        match_file = false,
+      },
     },
   }
 })
-telescope.load_extension('fzf')
+telescope.load_extension('zf-native')
 
 vim.keymap.set('n', '<leader>b', builtin.buffers, { silent = true })
 vim.keymap.set('n', '<leader>e', function()

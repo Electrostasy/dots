@@ -26,45 +26,20 @@
       # Functionality.
       comment-nvim
       gitsigns-nvim
-      nvim-surround
-      telescope-fzf-native-nvim
+      telescope-zf-native-nvim
       telescope-nvim
       treesj
-    ] ++ builtins.map (plugin: { inherit plugin; optional = true; }) [
-      # Tree-sitter AST inspection.
-      playground
     ];
 
     extraPackages = with pkgs; [
-      # Lua LSP & linter.
-      lua-language-server
-      # selene
-
-      # Nix doc searcher, LSP & linter.
-      # manix
-      nil
-      # statix
-
-      # Python LSP, formatter & linter.
-      python311Packages.jedi-language-server
-      # ruff
-
-      # Rust linter, LSP & formatter.
-      # clippy
-      rust-analyzer
-      # rustfmt
-
-      # C/C++ LSP & formatter.
       clang-tools
-
-      # Zig LSP.
-      zls
-
-      # Plugin dependencies.
+      lua-language-server
+      nil
+      python311Packages.jedi-language-server
       ripgrep
-
-      # Clipboard support on Wayland.
+      rust-analyzer
       wl-clipboard
+      zls
     ];
 
     withRuby = false;
