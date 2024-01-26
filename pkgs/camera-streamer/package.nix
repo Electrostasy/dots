@@ -26,7 +26,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchFromGitHub {
     owner = "ayufan";
-    repo = finalAttrs.pname;
+    repo = "camera-streamer";
     rev = "refs/tags/v${finalAttrs.version}";
     hash = "sha256-8vV8BMFoDeh22I1/qxk6zttJROaD/lrThBxXHZSPpT4=";
     fetchSubmodules = true;

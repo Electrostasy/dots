@@ -20,7 +20,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchFromGitHub {
     owner = "raspberrypi";
-    repo = finalAttrs.pname;
+    repo = "rpicam-apps";
     rev = "v" + finalAttrs.version;
     hash = "sha256-3NG2ZE/Ub3lTbfne0LCXuDgLGTPaAAADRdElEbZwvls=";
   };
@@ -51,7 +51,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = ''
       libcamera-based applications to drive the cameras on a Raspberry Pi platform
     '';
-    homepage = "https://github.com/raspberrypi/libcamera-apps";
+    homepage = "https://github.com/raspberrypi/rpicam-apps";
     license = licenses.bsd2;
   };
 })
