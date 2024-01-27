@@ -1,7 +1,7 @@
 (object (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (array (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))

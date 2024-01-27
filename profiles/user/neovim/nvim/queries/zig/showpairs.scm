@@ -1,27 +1,27 @@
 (FnCallArguments (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (ParamDeclList (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (Block (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (InitList (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (ErrorSetDecl (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (PtrTypeStart (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (SuffixOp (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))

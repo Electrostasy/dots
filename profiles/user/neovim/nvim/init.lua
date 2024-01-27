@@ -33,9 +33,6 @@ vim.cmd.colorscheme('poimandres')
 require('nvim-treesitter.configs').setup({
   highlight = { enable = true },
   indent = { enable = true },
-
-  -- Available under plugins/showpairs.lua.
-  showpairs = { enable = true },
 })
 
 -- TODO: Signs in the signcolumn ignore cursorline background.

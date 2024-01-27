@@ -1,23 +1,23 @@
 (arguments (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (parameters (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (parenthesized_expression (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (table_constructor (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (bracket_index_expression (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (field (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))

@@ -1,47 +1,47 @@
 (field_declaration_list (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (template_argument_list (
   ("<" @opening)
-  (">" @closing))) @container
+  (">" @closing)))
 
 (argument_list (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (parameter_list (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (condition_clause (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (for_statement (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (compound_statement (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (subscript_expression (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (lambda_capture_specifier (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (array_declarator (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (attribute_declaration (
   ("[[" @opening)
-  ("]]" @closing))) @container
+  ("]]" @closing)))
 
 (initializer_list (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))

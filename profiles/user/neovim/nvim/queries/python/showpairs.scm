@@ -1,31 +1,31 @@
 (tuple (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (parameters (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (argument_list (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (parenthesized_expression (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (list (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (dictionary (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (interpolation (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (subscript (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))

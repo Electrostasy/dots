@@ -1,23 +1,23 @@
 (parenthesized_expression (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (inherit_from (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (interpolation (
   ("${" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (attrset_expression (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (formals (
   ("{" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (list_expression (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))

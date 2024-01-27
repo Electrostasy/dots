@@ -1,13 +1,13 @@
 (list_element_access (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
 
 (command_substitution (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 ; Doesn't work? Invalid node???
 ; (double_quote_string
 ;   (command_substitution (
 ;     ("$(" @opening)
-;     (")" @closing))) @container)
+;     (")" @closing))))

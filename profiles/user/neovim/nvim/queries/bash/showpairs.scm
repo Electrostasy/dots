@@ -1,15 +1,15 @@
 (command_substitution (
   ("$(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (expansion (
   ("${" @opening)
-  ("}" @closing))) @container
+  ("}" @closing)))
 
 (arithmetic_expansion (
   ("$((" @opening)
-  ("))" @closing))) @container
+  ("))" @closing)))
 
 (test_command (
   ("[[" @opening)
-  ("]]" @closing))) @container
+  ("]]" @closing)))

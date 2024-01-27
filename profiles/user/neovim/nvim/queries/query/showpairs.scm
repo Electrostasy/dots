@@ -1,11 +1,11 @@
 (named_node (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (grouping (
   ("(" @opening)
-  (")" @closing))) @container
+  (")" @closing)))
 
 (list (
   ("[" @opening)
-  ("]" @closing))) @container
+  ("]" @closing)))
