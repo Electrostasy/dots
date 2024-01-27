@@ -203,6 +203,13 @@
         show-battery-percentage = true;
       };
 
+      # Console seems to not be able to actually use the system font correctly,
+      # but Monospace also appears to be the real system monospace font.
+      "org/gnome/Console" = {
+        use-system-font = false;
+        custom-font = "Monospace 10";
+      };
+
       "org/gnome/desktop/media-handling".automount = false;
       "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
       "org/gnome/desktop/privacy".remember-recent-files = false;
