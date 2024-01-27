@@ -256,6 +256,7 @@ function __StatusLine(current)
   -- end
 
   -- Max line number in gutter.
+  ---@diagnostic disable-next-line: undefined-field
   local show_linenr = vim.opt.number:get() or vim.opt.relativenumber:get()
   if show_linenr then
     local buf_length_digits = int_len(vim.api.nvim_buf_line_count(buf))
@@ -264,6 +265,7 @@ function __StatusLine(current)
 
   -- Mode indicator.
   local mode, mode_hl = unpack(mode_map[vim.api.nvim_get_mode().mode:sub(1, 1)])
+  ---@diagnostic disable-next-line: undefined-field
   if current == 0 and not vim.opt.showmode:get() then
     table.insert(groups, ('%%#%s# %s %%*'):format(mode_hl, mode))
   end
@@ -288,6 +290,7 @@ function __StatusLine(current)
     table.insert(groups, (' %s'):format('󰦝'))
   end
 
+  ---@diagnostic disable-next-line: undefined-field
   local ruler = vim.opt.ruler:get()
   if ruler then
     local format = vim.opt.rulerformat:get()

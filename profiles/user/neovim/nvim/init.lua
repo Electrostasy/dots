@@ -33,15 +33,6 @@ vim.cmd.colorscheme('poimandres')
 require('nvim-treesitter.configs').setup({
   highlight = { enable = true },
   indent = { enable = true },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = '<C-Space>',
-      node_incremental = '<Space>',
-      node_decremental = '<C-Space>',
-      scope_incremental = nil,
-    },
-  },
 
   -- Available under plugins/showpairs.lua.
   showpairs = { enable = true },
