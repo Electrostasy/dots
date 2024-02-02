@@ -4,43 +4,68 @@
   imports = [
     ../../profiles/system/common
     ../../profiles/system/shell
-    ./home.nix
   ];
 
   system.stateVersion = "22.05";
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  home-manager.users.${config.wsl.defaultUser} = {
+    imports = [
+      ../../profiles/user/neovim
+      ../../profiles/user/tealdeer
+    ];
+
+    home.stateVersion = "22.11";
+  };
+
   wsl = {
     enable = true;
     defaultUser = "nixos";
     startMenuLaunchers = false;
+
+    # OpenGL/CUDA from Windows instead.
+    useWindowsDriver = true;
 
     wslConf = {
       automount.root = "/mnt";
       network = {
         hostname = config.networking.hostName;
         generateHosts = false;
+
+        # Otherwise breaks tailscale.
+        generateResolvConf = false;
       };
     };
   };
 
-  services.openssh.enable = false;
+  networking.nameservers = [ "9.9.9.9" ];
+
+  environment.systemPackages = with pkgs; [
+    bintools-unwrapped
+    binwalk
+    dos2unix
+    evtx # evtx-dump
+    exiftool
+    ffmpeg
+    hashcat
+    imagemagick
+    john
+    libewf
+    sleuthkit # mmls, fls, fsstat, icat
+    stegseek
+    testdisk # photorec
+    unixtools.xxd
+    xlsx2csv
+    xsv
+  ];
 
   users.users.${config.wsl.defaultUser} = {
     extraGroups = [ "wheel" ];
     uid = 1000;
+    openssh.authorizedKeys.keyFiles = [
+      ../terra/ssh_host_ed25519_key.pub
+      ../venus/ssh_host_ed25519_key.pub
+    ];
   };
-
-  # CUDA support
-  nixpkgs.config.allowUnfree = true;
-  environment.systemPackages = with pkgs; [
-    cudatoolkit
-    cudaPackages.cudnn
-  ];
-  environment.sessionVariables.LD_LIBRARY_PATH = [
-    "/usr/lib/wsl/lib"
-    "${pkgs.cudatoolkit}/lib"
-    "${pkgs.cudaPackages.cudnn}/lib"
-  ];
 }

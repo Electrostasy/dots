@@ -30,7 +30,8 @@
     ];
   };
 
-  i18n = {
+  # Cannot mess with locales on WSL, so do not customize them there.
+  i18n = lib.mkIf (!config.wsl.enable) {
     defaultLocale = "en_US.UTF-8";
 
     # Necessary to support different encodings of e.g. file names. Without

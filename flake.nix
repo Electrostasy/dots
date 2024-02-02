@@ -63,10 +63,10 @@
           pkgs;
 
       customisations = final: prev: {
-        libewf = prev.libewf.overrideAttrs {
+        libewf = prev.libewf.overrideAttrs (oldAttrs: {
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
-          buildInputs = [ prev.fuse ];
-        };
+          buildInputs = oldAttrs.buildInputs ++ [ prev.fuse ];
+        });
       };
     };
 
