@@ -9,7 +9,7 @@ let
     && device == "none"
     && fsType == "tmpfs";
 
-  hasImpermanence = config.environment.persistence."/state".enable;
+  hasImpermanence = config.environment.persistence.state.enable;
 
   hasSops = config.sops.secrets != { };
 in
@@ -17,15 +17,15 @@ in
 {
   imports = [ self.inputs.impermanence.nixosModule ];
 
-  warnings =
-    if hasStatelessRoot && !hasImpermanence then [ ''
-      You have a root on tmpfs configuration without persistence enabled on "/state"
-      for host "${config.networking.hostName}".
+  warnings = lib.optionals (hasStatelessRoot && !hasImpermanence) [
+    ''
+      You have a root on tmpfs configuration without persistence enabled on ${config.environment.persistence.state.persistentStoragePath} for host "${config.networking.hostName}".
 
       This is possibly unintentional, check the option:
 
-        environment.persistence."/state".enable
-    '' ] else [];
+        environment.persistence.state.enable
+    ''
+  ];
 
   # Persist the age private key if sops-nix is used for secrets management.
   # Does not work with impermanence, as it is not mounted early enough in the
@@ -43,9 +43,12 @@ in
     };
 
   # See section "Necessary system state" in the NixOS manual.
-  environment.persistence."/state" = {
+  environment.persistence.state = {
     # Impermanence should be opt-in by default.
     enable = lib.mkDefault false;
+
+    persistentStoragePath = "/state";
+    hideMounts = config.services.xserver.enable;
 
     directories = [
       # NixOS configuration directory, used by `nixos-rebuild` etc.
@@ -76,5 +79,19 @@ in
       # the host with a globally unique ID in the network.
       "/etc/machine-id"
     ];
+
+    # Persist the Nix flake and evaluation caches.
+    users = {
+      root = {
+        home = "/root";
+        directories = [
+          ".cache/nix"
+        ];
+      };
+
+      electro.directories = [
+        ".cache/nix"
+      ];
+    };
   };
 }

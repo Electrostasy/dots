@@ -13,7 +13,6 @@
   home-manager.users.${config.wsl.defaultUser} = {
     imports = [
       ../../profiles/user/neovim
-      ../../profiles/user/tealdeer
     ];
 
     home.stateVersion = "22.11";

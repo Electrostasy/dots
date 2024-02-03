@@ -84,12 +84,27 @@
     ];
 
     # TODO: Make independent of user.
-    persistence."/state".users.electro = {
-      # Multi-monitor configuration.
-      files = [ ".config/monitors.xml" ];
+    persistence.state.users.electro = {
+      files = [
+        # Multi-monitor configuration.
+        # TODO: Make declarative?
+        ".config/monitors.xml"
 
-      # GNOME file index.
-      directories = [ ".cache/tracker3" ];
+        # Contains last opened database and other useful state.
+        ".cache/keepassxc/keepassxc.ini"
+      ];
+
+      directories = [
+        ".cache/fontconfig"
+        ".cache/tracker3"
+
+        # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
+        ".cache/thumbnails/large"
+        ".cache/thumbnails/normal"
+        ".cache/thumbnails/x-large"
+        ".cache/thumbnails/xx-large"
+        ".cache/thumbnails/fail"
+      ];
     };
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
@@ -113,6 +128,28 @@
       warp
     ];
   };
+
+  systemd.user.tmpfiles.rules = [
+    # Delete the ~/.cache/thumbnails/fail directory to retry generating thumbnails.
+    "e %h/.cache/thumbnails/fail - - - 7d -"
+
+    # Pick a random wallpaper at startup.
+    "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''
+      [Desktop Entry]
+      Name=Wallpaper Randomiser
+      Terminal=false
+      Exec=${pkgs.writeShellScript "wallpaper.sh" ''
+        PICTURES="$(${pkgs.xdg-user-dirs}/bin/xdg-user-dir PICTURES)"
+        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
+        dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
+        dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
+        dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
+      ''}
+      Type=Application
+      Categories=Utility;
+      NoDisplay=true
+    ''}"
+  ];
 
   fonts = {
     enableDefaultPackages = false;
@@ -318,23 +355,4 @@
       };
     };
   }];
-
-  systemd.user.tmpfiles.rules = [
-    # Automatically pick a random wallpaper at startup.
-    "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''
-      [Desktop Entry]
-      Name=Wallpaper Randomiser
-      Terminal=false
-      Exec=${pkgs.writeShellScript "wallpaper.sh" ''
-        PICTURES="$(${pkgs.xdg-user-dirs}/bin/xdg-user-dir PICTURES)"
-        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
-        dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
-        dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
-        dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
-      ''}
-      Type=Application
-      Categories=Utility;
-      NoDisplay=true
-    ''}"
-  ];
 }

@@ -41,6 +41,11 @@ let
   };
 in
 {
+  environment.persistence.state.users.electro.directories = [
+    ".mozilla/firefox"
+    ".mozilla/native-messaging-hosts"
+  ];
+
   programs.firefox.enable = true;
 
   programs.firefox.policies = {

@@ -19,8 +19,19 @@
       magic-wormhole-rs
       ouch
       ripgrep
+      tealdeer
       vimv-rs
     ];
+
+    persistence.state.users.electro = {
+      directories = [
+        ".cache/nix-index"
+        ".cache/tealdeer/tldr-pages"
+
+        # https://github.com/fish-shell/fish-shell/issues/8627
+        ".local/share/fish"
+      ];
+    };
   };
 
   programs.nix-index = {

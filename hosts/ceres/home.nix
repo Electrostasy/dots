@@ -1,10 +1,9 @@
 {
-  home-manager.users.gediminas = { pkgs, ... }: {
+  home-manager.users.electro = { pkgs, ... }: {
     imports = [
       ../../profiles/user/kitty
       ../../profiles/user/mpv
       ../../profiles/user/neovim
-      ../../profiles/user/tealdeer
       ../../profiles/user/wayfire
     ];
 

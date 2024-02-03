@@ -65,11 +65,10 @@
     };
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.state = {
     enable = true;
 
-    users.gediminas.directories = [
-      ".cache"
+    users.electro.directories = [
       "Visiems"
     ];
   };
@@ -97,14 +96,14 @@
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
-    secrets.gediminasPassword.neededForUsers = true;
+    secrets.electroPassword.neededForUsers = true;
   };
 
   users = {
     mutableUsers = false;
-    users.gediminas = {
+    users.electro = {
       isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.gediminasPassword.path;
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
       extraGroups = [
         "wheel"
         "libvirtd"
@@ -127,7 +126,7 @@
     '';
 
     shares."Visiems" = {
-      path = "/home/gediminas/Visiems";
+      path = "/home/electro/Visiems";
       browseable = true;
       writable = true;
       public = true;

@@ -101,8 +101,7 @@
               specialArgs = { inherit self; };
 
               modules = [
-                # We can set the hostname here instead of repeating
-                # it for each host.
+                # Set the hostname here instead of repeating it for each host.
                 { networking.hostName = name; }
 
                 # Load the config for the host.

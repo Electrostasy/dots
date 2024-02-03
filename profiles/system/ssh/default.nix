@@ -1,7 +1,7 @@
 { config, lib, ... }:
 
 {
-  environment.persistence."/state".files = [
+  environment.persistence.state.files = [
     "/etc/ssh/ssh_host_ed25519_key"
     "/etc/ssh/ssh_host_ed25519_key.pub"
   ];

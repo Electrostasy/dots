@@ -90,21 +90,16 @@
     };
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.state = {
     enable = true;
 
     users.electro = {
       files = [
         ".config/git-credential-keepassxc"
-        ".mozilla/native-messaging-hosts/org.keepassxc.keepassxc_browser.json"
       ];
 
       directories = [
-        ".cache"
         ".config/PrusaSlicer"
-        ".config/keepassxc"
-        ".local/share/fish"
-        ".mozilla/firefox"
         "Documents"
         "Downloads"
         "Pictures"

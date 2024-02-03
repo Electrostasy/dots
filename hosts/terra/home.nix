@@ -3,7 +3,6 @@
     imports = [
       ../../profiles/user/mpv
       ../../profiles/user/neovim
-      ../../profiles/user/tealdeer
     ];
 
     home.stateVersion = "22.11";

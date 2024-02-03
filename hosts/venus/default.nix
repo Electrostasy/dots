@@ -165,12 +165,10 @@
     };
   };
 
-  environment.persistence."/state" = {
+  environment.persistence.state = {
     enable = true;
 
     users.electro.directories = [
-      ".cache"
-      ".mozilla/firefox"
       "Documents"
       "Downloads"
       "Pictures"
