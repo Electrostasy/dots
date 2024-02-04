@@ -71,13 +71,9 @@
         "https://sr.ht/".insteadOf = [ "srht:" "sourcehut:" ];
       };
 
-      # On condition that a graphical environment is running, as presumed by the
-      # presence of OpenGL or Vulkan, configure for Keepassxc password manager
-      # support. Will not work on WSL without also installing Keepassxc, and running
-      # it from WSL, but that's fine.
       credential.helper =
         lib.mkIf
-          (with config.hardware; opengl.enable or opengl.driSupport)
+          (config.services.xserver.enable or (with config.hardware; opengl.enable or opengl.driSupport))
           "${pkgs.git-credential-keepassxc}/bin/git-credential-keepassxc --git-groups";
 
       user = {

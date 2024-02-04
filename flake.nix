@@ -54,10 +54,13 @@
                 # Namespaced package sets created with `lib.makeScope pkgs.newScope`.
                 prev.${name}.overrideScope (final': prev':
                   lib.mapAttrs (name': value': final'.callPackage value' { }) value)
-              else
+              else if lib.hasAttrByPath [ name "extend" ] prev then
                 # Namespaced package sets created with `lib.makeExtensible`.
                 prev.${name}.extend (final': prev':
                   lib.mapAttrs (name': value': final.callPackage value' { }) value)
+              else
+                # Namespaced package sets in regular attrsets.
+                prev.${name} // value
             else
               final.callPackage value { })
           pkgs;

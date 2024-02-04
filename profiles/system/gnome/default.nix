@@ -2,31 +2,12 @@
 
 {
   imports = [
+    ./debloat.nix
     ./extensions.nix
     ./mimetypes.nix
   ];
 
-  # Due to the way desktop configuration works in Nixpkgs, we have to install
-  # an X server even if we only use Wayland.
   services.xserver = {
-    enable = true;
-
-    # We can exclude these packages without breaking X in gnome-shell, even if
-    # I almost never use it.
-    excludePackages = [ pkgs.xterm ] ++ (with pkgs.xorg; [
-      iceauth
-      xauth
-      xf86inputevdev
-      xinput
-      xlsclients
-      xorgserver
-      xprop
-      xrandr
-      xrdb
-      xset
-      xsetroot
-    ]);
-
     desktopManager.gnome.enable = true;
     displayManager = {
       # https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
@@ -41,53 +22,20 @@
     };
   };
 
-  # Disable default GNOME module features.
+  # Prefer iwd to wpa_supplicant.
   networking.networkmanager.wifi.backend = "iwd";
+
+  # Prefer pipewire to pulseaudio.
   hardware.pulseaudio.enable = false;
-  services = {
-    avahi.enable = false;
-    pipewire = {
-      enable = true;
-      pulse.enable = true;
-    };
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
   };
 
   environment = {
-    # Most of these are optional programs added by services.gnome.core-services
-    # and etc., but the module sets other useful options so it is better to
-    # exclude these instead of disabling the module.
-    gnome.excludePackages = with pkgs.gnome; [
-      baobab # disk usage analyzer
-      epiphany # web browser
-      geary # e-mail client
-      gnome-backgrounds
-      gnome-bluetooth
-      gnome-characters
-      gnome-clocks
-      gnome-color-manager
-      gnome-contacts
-      gnome-font-viewer
-      gnome-logs
-      gnome-music
-      gnome-system-monitor
-      gnome-themes-extra
-      pkgs.glib
-      pkgs.gnome-connections
-      pkgs.gnome-photos
-      pkgs.gnome-text-editor
-      pkgs.gnome-tour
-      pkgs.gnome-user-docs
-      pkgs.orca # screen reader
-      simple-scan
-      totem # video player
-      yelp # help viewer
-    ];
-
-    # TODO: Make independent of user.
     persistence.state.users.electro = {
       files = [
         # Multi-monitor configuration.
-        # TODO: Make declarative?
         ".config/monitors.xml"
 
         # Contains last opened database and other useful state.
@@ -117,6 +65,10 @@
       nautilus-amberol
       nautilus-vimv
 
+      # Thumbnailers.
+      ffmpegthumbnailer
+
+      # Extra programs to install.
       amberol
       celluloid
       eartag
@@ -130,9 +82,6 @@
   };
 
   systemd.user.tmpfiles.rules = [
-    # Delete the ~/.cache/thumbnails/fail directory to retry generating thumbnails.
-    "e %h/.cache/thumbnails/fail - - - 7d -"
-
     # Pick a random wallpaper at startup.
     "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''
       [Desktop Entry]
@@ -253,33 +202,29 @@
       "org/gnome/desktop/screensaver".lock-enabled = false;
       "org/gnome/desktop/session".idle-delay = mkUint32 0;
       "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
-      "org/gnome/mutter" = {
-        edge-tiling = true;
-        attach-modal-dialogs = true;
-        experimental-features = [ "scale-monitor-framebuffer" ];
-      };
+      "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
 
       "org/gnome/settings-daemon/plugins/power" = {
+        power-button-action = "interactive";
         # Suspend only on battery power, not while charging.
         sleep-inactive-ac-type = "nothing";
-        power-button-action = "interactive";
       };
 
       "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
       "org/gnome/nautilus/list-view" = {
-        use-tree-view = true;
         default-zoom-level = "small";
+        use-tree-view = true;
       };
 
       "org/gtk/gtk4/settings/file-chooser" = {
-        sort-directories-first = true;
         show-hidden = true;
+        sort-directories-first = true;
         view-type = "list";
       };
 
       "io/github/celluloid-player/celluloid" = {
-        always-open-new-window = true;
         always-autohide-cursor = true;
+        always-open-new-window = true;
         always-show-title-buttons = true;
         autofit-enable = false;
         mpv-config-enable = true;
@@ -316,6 +261,7 @@
         name = "Password Manager";
       };
 
+      # This is necessary for some reason, or the above custom-keybindings don't work.
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
@@ -323,35 +269,36 @@
       ];
 
       "org/gnome/desktop/wm/keybindings" = {
-        switch-to-workspace-left = [ "<Super>a" ];
-        switch-to-workspace-right = [ "<Super>d" ];
-        move-to-workspace-left = [ "<Shift><Super>a" ];
-        move-to-workspace-right = [ "<Shift><Super>d" ];
+        activate-window-menu = [ "Menu" ];
+        close = [ "<Shift><Super>w" ];
+        move-to-workspace-left = [ "<Control><Super>a" ];
+        move-to-workspace-right = [ "<Control><Super>d" ];
+        panel-run-dialog = [ "<Alt>space" ];
+        # https://unix.stackexchange.com/a/436347
+        switch-input-source = [ "<Alt>Shift_L" ];
+        switch-input-source-backward = mkEmptyArray type.string;
         switch-to-workspace-1 = [ "<Super>1" ];
         switch-to-workspace-2 = [ "<Super>2" ];
         switch-to-workspace-3 = [ "<Super>3" ];
         switch-to-workspace-4 = [ "<Super>4" ];
-        # https://unix.stackexchange.com/a/436347
-        switch-input-source = [ "<Alt>Shift_L" ];
-        switch-input-source-backward = mkEmptyArray type.string;
-        activate-window-menu = [ "Menu" ];
-        close = [ "<Shift><Super>w" ];
-        maximize = [ "<Super>f" ];
+        switch-to-workspace-left = [ "<Shift><Super>a" ];
+        switch-to-workspace-right = [ "<Shift><Super>d" ];
         toggle-fullscreen = [ "<Shift><Super>f" ];
       };
 
       "org/gnome/shell/keybindings" = {
-        # Following binds are replaced by the ones above.
-        toggle-application-view = mkEmptyArray type.string;
+        # Following binds need to be disabled, as their defaults are used for
+        # the binds above, and will run into conflicts.
         switch-to-application-1 = mkEmptyArray type.string;
         switch-to-application-2 = mkEmptyArray type.string;
         switch-to-application-3 = mkEmptyArray type.string;
         switch-to-application-4 = mkEmptyArray type.string;
+        toggle-application-view = mkEmptyArray type.string;
+        toggle-quick-settings = mkEmptyArray type.string;
 
-        show-screen-recording-ui = mkEmptyArray type.string;
         screenshot = mkEmptyArray type.string;
+        show-screen-recording-ui = mkEmptyArray type.string;
         show-screenshot-ui = [ "<Shift><Super>s" ];
-        screenshot-window = mkEmptyArray type.string;
       };
     };
   }];

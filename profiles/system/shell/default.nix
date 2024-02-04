@@ -26,7 +26,10 @@
     persistence.state.users.electro = {
       directories = [
         ".cache/nix-index"
-        ".cache/tealdeer/tldr-pages"
+
+        # tealdeer removes the entire tldr-pages subdirectory, so we cannot
+        # persist it, but instead we persist the parent directory.
+        ".cache/tealdeer"
 
         # https://github.com/fish-shell/fish-shell/issues/8627
         ".local/share/fish"

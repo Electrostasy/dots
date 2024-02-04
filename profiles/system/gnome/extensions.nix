@@ -8,6 +8,7 @@ let
     desktop-cube
     native-window-placement
     panel-date-format
+    tiling-assistant
     tophat
   ];
 
@@ -88,6 +89,20 @@ in
         window-parallax = 0.75;
         edge-switch-pressure = mkUint32 100;
         mouse-rotation-speed = 1.0;
+      };
+
+      "org/gnome/shell/extensions/tiling-assistant" = {
+        active-window-hint = mkUint32 0;
+        restore-window = [ "<Super>r" ];
+        tile-bottom-half = [ "<Super>s" ];
+        tile-bottomleft-quarter = [ "<Alt><Super>a" ];
+        tile-bottomright-quarter = [ "<Alt><Super>d" ];
+        tile-left-half = [ "<Super>a" ];
+        tile-maximize = [ "<Super>f" ];
+        tile-right-half = [ "<Super>d" ];
+        tile-top-half = [ "<Super>w" ];
+        tile-topleft-quarter = [ "<Alt><Super>q" ];
+        tile-topright-quarter = [ "<Alt><Super>e" ];
       };
 
       "org/gnome/shell/extensions/tophat" = {
