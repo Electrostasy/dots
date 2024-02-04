@@ -37,9 +37,6 @@
       files = [
         # Multi-monitor configuration.
         ".config/monitors.xml"
-
-        # Contains last opened database and other useful state.
-        ".cache/keepassxc/keepassxc.ini"
       ];
 
       directories = [
@@ -52,6 +49,9 @@
         ".cache/thumbnails/x-large"
         ".cache/thumbnails/xx-large"
         ".cache/thumbnails/fail"
+
+        ".cache/keepassxc"
+        ".config/keepassxc"
       ];
     };
 
