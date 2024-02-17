@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -80,25 +80,6 @@
       warp
     ];
   };
-
-  systemd.user.tmpfiles.rules = [
-    # Pick a random wallpaper at startup.
-    "L+ %h/.config/autostart/wallpaper.desktop 0755 - - - ${pkgs.writeText "wallpaper.desktop" ''
-      [Desktop Entry]
-      Name=Wallpaper Randomiser
-      Terminal=false
-      Exec=${pkgs.writeShellScript "wallpaper.sh" ''
-        PICTURES="$(${pkgs.xdg-user-dirs}/bin/xdg-user-dir PICTURES)"
-        FILE=$(${pkgs.fd}/bin/fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
-        dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
-        dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
-        dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
-      ''}
-      Type=Application
-      Categories=Utility;
-      NoDisplay=true
-    ''}"
-  ];
 
   fonts = {
     enableDefaultPackages = false;
@@ -302,4 +283,78 @@
       };
     };
   }];
+
+  systemd.tmpfiles.settings."10-gnome-autostart" = {
+    # We need to create a directory for them first, or else we get errors
+    # about unsafe path transitions from `electro` to `root` users.
+    "/home/electro/.config/autostart"."d" = {
+      mode = "0755";
+      user = config.users.users.electro.name;
+      group = config.users.users.electro.group;
+    };
+
+    # Pick a random wallpaper at startup.
+    "/home/electro/.config/autostart/random-wallpaper.desktop"."L+".argument =
+      let
+        script = pkgs.writeShellApplication {
+          name = "random-wallpaper";
+          runtimeInputs = [
+            pkgs.xdg-user-dirs
+            pkgs.fd
+          ];
+
+          text = ''
+            PICTURES="$(xdg-user-dir PICTURES)"
+            FILE=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
+
+            dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
+            dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
+            dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
+          '';
+        };
+        desktopEntry = pkgs.makeDesktopItem {
+          name = "random-wallpaper";
+          desktopName = "Select a random wallpaper on startup";
+          categories = [ "Utility" ];
+          noDisplay = true;
+          terminal = false;
+          type = "Application";
+          exec = "${script}/bin/random-wallpaper";
+        };
+      in
+        "${desktopEntry}/share/applications/random-wallpaper.desktop";
+
+    # Blur My Shell extension seems to be buggy with Dash To Panel when fractional
+    # scaling is enabled - only part of the panel is blurred. Turning it on and
+    # off again seems to fix it. Do that soon as the session starts.
+    "/home/electro/.config/autostart/blur-my-shell-fix.desktop"."L+".argument =
+      let
+        script = pkgs.writeShellApplication {
+          name = "blur-my-shell-fix";
+          runtimeInputs = [ config.systemd.package ];
+
+          text = ''
+            service='org.gnome.Shell.Extensions'
+            object='/org/gnome/Shell/Extensions'
+            interface='org.gnome.Shell.Extensions'
+            extension_uuid='blur-my-shell@aunetx'
+            for method in DisableExtension EnableExtension; do
+              busctl --user call $service $object $interface $method s $extension_uuid
+              # Wait a bit before re-enabling, shorter time does not always work.
+              sleep 0.5
+            done
+          '';
+        };
+        desktopEntry = pkgs.makeDesktopItem {
+          name = "blur-my-shell-fix";
+          desktopName = "Fix for Blur my Shell when used with fractional scaling";
+          categories = [ "Utility" ];
+          noDisplay = true;
+          terminal = false;
+          type = "Application";
+          exec = "${script}/bin/blur-my-shell-fix";
+        };
+      in
+        "${desktopEntry}/share/applications/blur-my-shell-fix.desktop";
+  };
 }
