@@ -2,7 +2,11 @@
 
 {
   # Use WirePlumber rules to disable S/PDIF and other unused sources/sinks.
-  environment.etc."wireplumber/main.lua.d/60-custom-alsa.lua".source = ./wp-alsa-rules.lua;
+  # https://github.com/NixOS/nixpkgs/pull/282377
+  # https://github.com/NixOS/nixpkgs/pull/292115
+  services.pipewire.configPackages = [
+    (pkgs.writeTextDir "share/wireplumber/main.lua.d/60-custom-alsa.lua" (builtins.readFile ./wp-alsa-rules.lua))
+  ];
 
   # Use WirePlumber `wpexec` script to set default nodes, as it overrides
   # `default.configured.audio.{sink,source}` from PipeWire's `context.properties`.
