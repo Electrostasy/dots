@@ -1,4 +1,4 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, modulesPath, self, ... }:
 
 {
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
@@ -8,6 +8,7 @@
     ../../profiles/system/headless
     ../../profiles/system/shell
     ../../profiles/system/ssh
+    self.inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
@@ -23,6 +24,11 @@
       disable_overscan=1
       enable_uart=1
       avoid_warnings=1
+
+      # If we try to access the dwc or XHCI when the firmware hasn't initialized
+      # it, the system will freeze. This signals to the firmware to enable the
+      # XHCI controller.
+      otg_mode=1
       EOF
 
       cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin ./firmware/armstub8-gic.bin
@@ -39,9 +45,19 @@
     '';
   };
 
+  hardware.raspberry-pi."4" = {
+    # fdtoverlay can't merge some Raspberry Pi overlays (errors out with
+    # FDT_ERR_NOTFOUND), as hardware.deviceTree is not RPi specific, but
+    # Raspberry Pi's own dtmerge can, so this is the only way to use device
+    # tree overlays on RPi in NixOS and U-Boot.
+    apply-overlays-dtmerge.enable = true;
+
+    # Required for USB to work.
+    xhci.enable = true;
+  };
+
   boot = {
-    # Required for bcachefs support until 6.7 is released.
-    kernelPackages = pkgs.linuxPackages_testing;
+    kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
       "console=ttyS0,115200n8"
