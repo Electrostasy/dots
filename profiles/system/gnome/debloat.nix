@@ -33,7 +33,7 @@
       evolution-data-server.enable = lib.mkForce false;
       gnome-browser-connector.enable = false;
       gnome-initial-setup.enable = false;
-      gnome-online-accounts.enable = false;
+      gnome-online-accounts.enable = lib.mkForce false;
       gnome-online-miners.enable = lib.mkForce false;
       gnome-user-share.enable = false;
       rygel.enable = false;
@@ -58,9 +58,8 @@
     gnome-music
     gnome-system-monitor
     gnome-themes-extra
-    pkgs.glib
+    # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
     pkgs.gnome-connections
-    pkgs.gnome-photos
     pkgs.gnome-text-editor
     pkgs.gnome-tour
     pkgs.gnome-user-docs
