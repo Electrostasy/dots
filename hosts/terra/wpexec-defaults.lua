@@ -15,25 +15,21 @@ local om = ObjectManager {
   }
 }
 
-local headphones_found = false
-local microphone_found = false
 om:connect('object-added', function(_, node)
-  local name = node.properties['node.name']
-  local media_class = node.properties['media.class']
+  Core.timeout_add(100, function()
+    local name = node.properties['node.name']
+    local media_class = node.properties['media.class']
 
-  if not headphones_found and name == headphones then
-    headphones_found = true
-  end
+    Core.require_api('default-nodes', function(default_nodes)
+      default_nodes:call('set-default-configured-node-name', media_class, name)
+      local headphones_found = default_nodes:call('get-default-configured-node-name', 'Audio/Sink') == headphones
+      local microphone_found = default_nodes:call('get-default-configured-node-name', 'Audio/Source') == microphone
+      if headphones_found and microphone_found then
+        Core.quit()
+      end
+    end)
 
-  if not microphone_found and name == microphone then
-    microphone_found = true
-  end
-
-  Core.require_api('default-nodes', function(default_nodes)
-    default_nodes:call('set-default-configured-node-name', media_class, name)
-    if headphones_found and microphone_found then
-      Core.quit()
-    end
+    return true
   end)
 
 end)

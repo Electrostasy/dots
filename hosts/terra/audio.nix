@@ -1,13 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Use WirePlumber rules to disable S/PDIF and other unused sources/sinks.
-  # https://github.com/NixOS/nixpkgs/pull/282377
-  # https://github.com/NixOS/nixpkgs/pull/292115
-  services.pipewire.configPackages = [
-    (pkgs.writeTextDir "share/wireplumber/main.lua.d/60-custom-alsa.lua" (builtins.readFile ./wp-alsa-rules.lua))
-  ];
-
   # Use WirePlumber `wpexec` script to set default nodes, as it overrides
   # `default.configured.audio.{sink,source}` from PipeWire's `context.properties`.
   systemd.user.services.wireplumber-defaults = {
@@ -18,20 +11,61 @@
     serviceConfig.ExecStart = "${config.services.pipewire.wireplumber.package}/bin/wpexec ${./wpexec-defaults.lua}";
   };
 
-  # Use WirePlumber `wpexec` script to set default volume.
-  systemd.user.services.wireplumber-volume = {
-    description = "WirePlumber set default volume";
-    after = [ "wireplumber.service" ];
-    wantedBy = [ "wireplumber.service" ];
-
-    serviceConfig.ExecStart = "${config.services.pipewire.wireplumber.package}/bin/wpexec ${./wpexec-volume.lua}";
-  };
-
   security.rtkit.enable = true;
 
   services.pipewire = {
     enable = true;
     pulse.enable = true;
+
+    # https://github.com/NixOS/nixpkgs/pull/282377
+    # https://github.com/NixOS/nixpkgs/pull/292115
+    wireplumber.configPackages = [
+      # Override default volume from 0.4 to 1.0.
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-default-sink-volume.conf" ''
+        wireplumber.settings = {
+          device.routes.default-sink-volume = 1.0
+        }
+      '')
+
+      # Disable unwanted nodes/devices.
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-disable-devices.conf" ''
+        monitor.alsa.rules = [
+          {
+            matches = [ { device.product.name = "Navi 21/23 HDMI/DP Audio Controller" } ]
+            actions = {
+              update-props = {
+                device.disabled = true
+              }
+            }
+          }
+          {
+            matches = [ { node.name = "alsa_output.usb-FIFINE_Microphones_Fifine_K658_Microphone_REV1.0-00.analog-stereo" } ]
+            actions = {
+              update-props = {
+                node.disabled = true
+              }
+            }
+          }
+        ]
+      '')
+
+      # Disable S/PDIF, we don't use it or intend to use it.
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-disable-spdif.conf" ''
+        monitor.alsa.rules = [
+          {
+            matches = [
+              { device.nick = "Fifine K658  Microphone" },
+              { device.nick = "JDS Labs EL DAC II+"}
+            ]
+            actions = {
+              update-props = {
+                device.profile-set = analog-only.conf
+              }
+            }
+          }
+        ]
+      '')
+    ];
 
     # EQ for HIFIMAN Sundara headphones based on 10 band parametric EQ from:
     # https://github.com/jaakkopasanen/AutoEq/tree/master/results/oratory1990
@@ -183,36 +217,6 @@
           };
         }
       ];
-    };
-
-    # Configure pipewire for low latency (fixes audio crackling).
-    extraConfig.pipewire."92-low-latency" = {
-      "context.properties" = {
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 32;
-        "default.clock.min-quantum" = 16;
-        "default.clock.max-quantum" = 768;
-      };
-    };
-
-    # Configure pipewire-pulse for low latency (fixes audio crackling in some
-    # games):
-    # https://docs.pipewire.org/page_module_protocol_pulse.html
-    extraConfig.pipewire-pulse = {
-      "92-low-latency" = {
-        "pulse.properties" = {
-          "pulse.default.req" = "32/48000";
-          "pulse.min.req" = "16/48000";
-          "pulse.max.req" = "768/48000";
-          "pulse.min.quantum" = "16/48000";
-          "pulse.max.quantum" = "768/48000";
-        };
-
-        "stream.properties" = {
-          "node.latency" = "32/48000";
-          "resample.quality" = 1;
-        };
-      };
     };
   };
 }
