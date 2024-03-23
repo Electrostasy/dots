@@ -167,6 +167,7 @@
 
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
+        gtk-enable-primary-paste = false;
         show-battery-percentage = true;
       };
 
