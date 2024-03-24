@@ -260,15 +260,18 @@
     };
   };
 
-  users.users.electro = {
-    isNormalUser = true;
-    hashedPasswordFile = config.sops.secrets.electroPassword.path;
-    extraGroups = [
-      "wheel" # allow using `sudo` for this user.
-      "networkmanager" # don't ask password when connecting to networks.
-    ];
-    uid = 1000;
-    openssh.authorizedKeys.keyFiles = [ ../terra/ssh_host_ed25519_key.pub ];
+  users = {
+    mutableUsers = false;
+    users.electro = {
+      isNormalUser = true;
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
+      extraGroups = [
+        "wheel" # allow using `sudo` for this user.
+        "networkmanager" # don't ask password when connecting to networks.
+      ];
+      uid = 1000;
+      openssh.authorizedKeys.keyFiles = [ ../terra/ssh_host_ed25519_key.pub ];
+    };
   };
 
   system.stateVersion = "24.05";
