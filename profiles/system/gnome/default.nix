@@ -59,6 +59,7 @@
 
     systemPackages = with pkgs; [
       adw-gtk3
+      morewaita-icon-theme
 
       # Load Nautilus extensions.
       gnome.nautilus-python
