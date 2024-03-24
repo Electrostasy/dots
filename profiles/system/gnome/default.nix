@@ -23,7 +23,7 @@
   };
 
   # Prefer iwd to wpa_supplicant.
-  networking.networkmanager.wifi.backend = "iwd";
+  networking.networkmanager.wifi.backend = lib.mkDefault "iwd";
 
   # Prefer pipewire to pulseaudio.
   hardware.pulseaudio.enable = false;
@@ -180,6 +180,7 @@
 
       "org/gnome/desktop/media-handling".automount = false;
       "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
+      "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
       "org/gnome/desktop/privacy".remember-recent-files = false;
       "org/gnome/desktop/screensaver".lock-enabled = false;
       "org/gnome/desktop/session".idle-delay = mkUint32 0;

@@ -148,6 +148,7 @@
       extraGroups = [ "wheel" ];
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [
+        ../mercury/ssh_host_ed25519_key.pub
         ../venus/ssh_host_ed25519_key.pub
       ];
     };

@@ -16,9 +16,10 @@ The table below lists the managed hosts and their descriptions:
 | **kepler** | VPS | Matrix homeserver <br/> Headscale |
 | **luna** | Raspberry Pi Compute Module 4 | NAS |
 | **mars** | Raspberry Pi Zero 2 W | - |
+| **mercury** | Asus ROG Flow Z13 (2022) | Personal/work laptop |
 | **phobos** | Raspberry Pi 4 Model B | Klipper <br/> Moonraker <br/> Mainsail |
 | **terra** | Desktop | Primary PC at home |
-| **venus** | Lenovo ThinkPad X230 Tablet | Laptop |
+| **venus** | Lenovo ThinkPad X230 Tablet | Personal laptop |
 
 > [!WARNING]
 > These configurations have encrypted secrets managed by [sops-nix], and

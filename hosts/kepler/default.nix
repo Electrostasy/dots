@@ -125,6 +125,7 @@
     users.root = {
       hashedPasswordFile = config.sops.secrets.rootPassword.path;
       openssh.authorizedKeys.keyFiles = [
+        ../mercury/ssh_host_ed25519_key.pub
         ../terra/ssh_host_ed25519_key.pub
         ../venus/ssh_host_ed25519_key.pub
       ];
