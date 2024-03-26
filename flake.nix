@@ -65,10 +65,24 @@
               final.callPackage value { })
           pkgs;
 
-      customisations = final: prev: {
+      ewfmount-fix = final: prev: {
         libewf = prev.libewf.overrideAttrs (oldAttrs: {
           # `ewfmount` depends on `fuse` to mount *.E01 forensic images.
           buildInputs = oldAttrs.buildInputs ++ [ prev.fuse ];
+        });
+      };
+
+      unl0kr_3 = final: prev: {
+        unl0kr = prev.unl0kr.overrideAttrs (finalAttrs: oldAttrs: {
+          # Contains various fixes since 2.0.0.
+          version = "3.0.0";
+          src = oldAttrs.src.override {
+            owner = "postmarketOS";
+            repo = "buffybox";
+            rev = finalAttrs.version;
+            hash = "sha256-xmyh5F6sqD1sOPdocWJtucj4Y8yqbaHfF+a/XOcMk74=";
+          };
+          sourceRoot = "${finalAttrs.src.name}/unl0kr";
         });
       };
     };
