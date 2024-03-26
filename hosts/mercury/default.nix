@@ -75,16 +75,29 @@
 
     initrd = {
       systemd.enable = true;
-      # Does not detect touchscreen, probably need to figure out the required
-      # kernel modules needed in initrd for it to work.
-      # unl0kr.enable = true;
 
       luks.devices."cryptroot".device = "/dev/disk/by-uuid/eea26205-2ae5-4d2c-9a13-32c7d9ae2421";
+
+      # Panel orientation detection does not work (is it even supported?), and
+      # hardware keyboard's state is not detected (folded and inactive/unfolded
+      # and active).
+      unl0kr = {
+        enable = true;
+        settings.general.animations = true;
+      };
 
       availableKernelModules = [
         "nvme"
         "usbhid"
         "xhci_pci"
+
+        # Required for unl0kr.
+        "evdev"
+
+        # Required for touchscreen support.
+        "hid_multitouch"
+        "i2c_hid_acpi"
+        "intel_lpss_pci"
       ];
     };
 
