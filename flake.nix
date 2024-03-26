@@ -113,6 +113,8 @@
             })
           hosts;
 
+    nixosModules.unl0kr-settings = import ./modules/system/unl0kr-settings;
+
     homeManagerModules.wayfire = import ./modules/user/wayfire;
   };
 }

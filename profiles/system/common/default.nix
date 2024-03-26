@@ -1,7 +1,7 @@
 { config, pkgs, lib, self, ... }:
 
 {
-  imports = [
+  imports = (builtins.attrValues self.nixosModules) ++ [
     self.inputs.nixos-wsl.nixosModules.wsl
     ./home-manager.nix
     ./sops.nix
