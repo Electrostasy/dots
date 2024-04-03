@@ -158,136 +158,152 @@
     };
   };
 
-  programs.dconf.profiles.user.databases = [{
-    settings = with lib.gvariant; {
-      "org/gnome/desktop/calendar".show-weekdate = true;
-      "org/gnome/desktop/input-sources".sources = [
-        (mkTuple [ "xkb" "us" ])
-        (mkTuple [ "xkb" "lt" ])
-      ];
+  programs.dconf.profiles = {
+    gdm.databases = [{
+      settings = {
+        # GDM by default is always unscaled compared to the GNOME lockscreen.
+        "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
 
-      "org/gnome/desktop/interface" = {
-        color-scheme = "prefer-dark";
-        gtk-enable-primary-paste = false;
-        show-battery-percentage = true;
+        "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
+        "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
       };
+    }];
 
-      # Console seems to not be able to actually use the system font correctly,
-      # but Monospace also appears to be the real system monospace font.
-      "org/gnome/Console" = {
-        use-system-font = false;
-        custom-font = "Monospace 10";
+    user.databases = [{
+      settings = with lib.gvariant; {
+        "org/gnome/desktop/calendar".show-weekdate = true;
+        "org/gnome/desktop/input-sources".sources = [
+          (mkTuple [ "xkb" "us" ])
+          (mkTuple [ "xkb" "lt" ])
+        ];
+
+        "org/gnome/desktop/interface" = {
+          color-scheme = "prefer-dark";
+          gtk-enable-primary-paste = false;
+          show-battery-percentage = true;
+        };
+
+        "org/gnome/Console" = {
+          # Console seems to not be able to actually use the system font correctly,
+          # but Monospace also appears to be the real system monospace font.
+          use-system-font = false;
+          custom-font = "Monospace 10";
+        };
+
+        "org/gnome/desktop/media-handling".automount = false;
+        "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
+        "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
+        "org/gnome/desktop/privacy".remember-recent-files = false;
+        "org/gnome/desktop/screensaver".lock-enabled = false;
+        "org/gnome/desktop/session".idle-delay = mkUint32 0;
+        "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
+        "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
+
+        "org/gnome/settings-daemon/plugins/power" = {
+          power-button-action = "interactive";
+          # Suspend only on battery power, not while charging.
+          sleep-inactive-ac-type = "nothing";
+        };
+
+        "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
+        "org/gnome/nautilus/list-view" = {
+          default-zoom-level = "small";
+          use-tree-view = true;
+        };
+
+        "org/gtk/gtk4/settings/file-chooser" = {
+          show-hidden = true;
+          sort-directories-first = true;
+          view-type = "list";
+        };
+
+        "io/github/celluloid-player/celluloid" = {
+          always-autohide-cursor = true;
+          always-open-new-window = true;
+          always-show-title-buttons = true;
+          autofit-enable = false;
+          mpv-config-enable = true;
+          mpv-config-file = "file:///home/electro/.config/mpv/mpv.conf";
+          mpv-input-config-enable = true;
+          mpv-input-config-file = "file:///home/electro/.config/mpv/input.conf";
+        };
+
+        # Hidden/background programs only show up if they are flatpaks,
+        # so disable background play for now.
+        "io/bassi/Amberol".background-play = false;
+
+        "org/gnome/settings-daemon/plugins/media-keys" = {
+          screenreader = mkEmptyArray type.string;
+          magnifier = mkEmptyArray type.string;
+          calculator = [ "<Super>c" ];
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+          binding = "<Super>Return";
+          command = "/usr/bin/env kgx";
+          name = "Terminal";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+          binding = "<Super>e";
+          command = "/usr/bin/env nautilus";
+          name = "File Manager";
+        };
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+          binding = "<Super>k";
+          command = "/usr/bin/env keepassxc";
+          name = "Password Manager";
+        };
+
+        # This is necessary for some reason, or the above custom-keybindings don't work.
+        "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
+        ];
+
+        "org/gnome/desktop/wm/keybindings" = {
+          activate-window-menu = [ "Menu" ];
+          close = [ "<Shift><Super>w" ];
+          move-to-workspace-left = [ "<Control><Super>a" ];
+          move-to-workspace-right = [ "<Control><Super>d" ];
+          panel-run-dialog = [ "<Alt>space" ];
+          switch-input-source = [ "<Alt>Shift_L" ]; # https://unix.stackexchange.com/a/436347
+          switch-input-source-backward = mkEmptyArray type.string;
+          switch-to-workspace-1 = [ "<Super>1" ];
+          switch-to-workspace-2 = [ "<Super>2" ];
+          switch-to-workspace-3 = [ "<Super>3" ];
+          switch-to-workspace-4 = [ "<Super>4" ];
+          switch-to-workspace-left = [ "<Shift><Super>a" ];
+          switch-to-workspace-right = [ "<Shift><Super>d" ];
+          toggle-fullscreen = [ "<Shift><Super>f" ];
+        };
+
+        "org/gnome/shell/keybindings" = {
+          # Following binds need to be disabled, as their defaults are used for
+          # the binds above, and will run into conflicts.
+          switch-to-application-1 = mkEmptyArray type.string;
+          switch-to-application-2 = mkEmptyArray type.string;
+          switch-to-application-3 = mkEmptyArray type.string;
+          switch-to-application-4 = mkEmptyArray type.string;
+          toggle-application-view = mkEmptyArray type.string;
+          toggle-quick-settings = mkEmptyArray type.string;
+
+          screenshot = mkEmptyArray type.string;
+          show-screen-recording-ui = mkEmptyArray type.string;
+          show-screenshot-ui = [ "<Shift><Super>s" ];
+        };
       };
-
-      "org/gnome/desktop/media-handling".automount = false;
-      "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
-      "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
-      "org/gnome/desktop/privacy".remember-recent-files = false;
-      "org/gnome/desktop/screensaver".lock-enabled = false;
-      "org/gnome/desktop/session".idle-delay = mkUint32 0;
-      "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
-      "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
-
-      "org/gnome/settings-daemon/plugins/power" = {
-        power-button-action = "interactive";
-        # Suspend only on battery power, not while charging.
-        sleep-inactive-ac-type = "nothing";
-      };
-
-      "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
-      "org/gnome/nautilus/list-view" = {
-        default-zoom-level = "small";
-        use-tree-view = true;
-      };
-
-      "org/gtk/gtk4/settings/file-chooser" = {
-        show-hidden = true;
-        sort-directories-first = true;
-        view-type = "list";
-      };
-
-      "io/github/celluloid-player/celluloid" = {
-        always-autohide-cursor = true;
-        always-open-new-window = true;
-        always-show-title-buttons = true;
-        autofit-enable = false;
-        mpv-config-enable = true;
-        mpv-config-file = "file:///home/electro/.config/mpv/mpv.conf";
-        mpv-input-config-enable = true;
-        mpv-input-config-file = "file:///home/electro/.config/mpv/input.conf";
-      };
-
-      # Hidden/background programs only show up if they are flatpaks,
-      # so disable background play for now.
-      "io/bassi/Amberol".background-play = false;
-
-      "org/gnome/settings-daemon/plugins/media-keys" = {
-        screenreader = mkEmptyArray type.string;
-        magnifier = mkEmptyArray type.string;
-        calculator = [ "<Super>c" ];
-      };
-
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-        binding = "<Super>Return";
-        command = "/usr/bin/env kgx";
-        name = "Terminal";
-      };
-
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-        binding = "<Super>e";
-        command = "/usr/bin/env nautilus";
-        name = "File Manager";
-      };
-
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-        binding = "<Super>k";
-        command = "/usr/bin/env keepassxc";
-        name = "Password Manager";
-      };
-
-      # This is necessary for some reason, or the above custom-keybindings don't work.
-      "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
-      ];
-
-      "org/gnome/desktop/wm/keybindings" = {
-        activate-window-menu = [ "Menu" ];
-        close = [ "<Shift><Super>w" ];
-        move-to-workspace-left = [ "<Control><Super>a" ];
-        move-to-workspace-right = [ "<Control><Super>d" ];
-        panel-run-dialog = [ "<Alt>space" ];
-        # https://unix.stackexchange.com/a/436347
-        switch-input-source = [ "<Alt>Shift_L" ];
-        switch-input-source-backward = mkEmptyArray type.string;
-        switch-to-workspace-1 = [ "<Super>1" ];
-        switch-to-workspace-2 = [ "<Super>2" ];
-        switch-to-workspace-3 = [ "<Super>3" ];
-        switch-to-workspace-4 = [ "<Super>4" ];
-        switch-to-workspace-left = [ "<Shift><Super>a" ];
-        switch-to-workspace-right = [ "<Shift><Super>d" ];
-        toggle-fullscreen = [ "<Shift><Super>f" ];
-      };
-
-      "org/gnome/shell/keybindings" = {
-        # Following binds need to be disabled, as their defaults are used for
-        # the binds above, and will run into conflicts.
-        switch-to-application-1 = mkEmptyArray type.string;
-        switch-to-application-2 = mkEmptyArray type.string;
-        switch-to-application-3 = mkEmptyArray type.string;
-        switch-to-application-4 = mkEmptyArray type.string;
-        toggle-application-view = mkEmptyArray type.string;
-        toggle-quick-settings = mkEmptyArray type.string;
-
-        screenshot = mkEmptyArray type.string;
-        show-screen-recording-ui = mkEmptyArray type.string;
-        show-screenshot-ui = [ "<Shift><Super>s" ];
-      };
-    };
-  }];
+    }];
+  };
 
   systemd.tmpfiles.settings."10-gnome-autostart" = {
+    # Link the monitors.xml files together. This is not ideal, but GDM and
+    # gnome-shell don't quite communicate on unified display settings yet.
+    "/run/gdm/.config/monitors.xml"."L+".argument =
+      "${config.environment.persistence.state.persistentStoragePath}/home/electro/.config/monitors.xml";
+
     # We need to create a directory for them first, or else we get errors
     # about unsafe path transitions from `electro` to `root` users.
     "/home/electro/.config/autostart"."d" = {
