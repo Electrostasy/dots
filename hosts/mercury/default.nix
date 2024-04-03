@@ -31,9 +31,8 @@
 
   hardware = {
     enableRedistributableFirmware = true;
-
-    # Orientation detection for auto-rotate in GNOME.
-    sensor.iio.enable = true;
+    bluetooth.powerOnBoot = false;
+    sensor.iio.enable = true; # orientation detection for auto-rotate.
 
     opengl = {
       enable = true;
