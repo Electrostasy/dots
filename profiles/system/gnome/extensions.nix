@@ -1,23 +1,17 @@
-{ pkgs, lib, ... }:
-
-let
-  gnomeShellExtensions = with pkgs.gnomeExtensions; [
-    blur-my-shell
-    dash-to-panel
-    desktop-cube
-    native-window-placement
-    panel-date-format
-    tiling-assistant
-    tophat
-  ];
-in
+{ config, pkgs, lib, ... }:
 
 {
   environment = {
-    # Needed for gnomeExtensions.tophat + GI_TYPELIB_PATH as per issue:
     # https://github.com/fflewddur/tophat/issues/106#issuecomment-1848319826
     variables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
-    systemPackages = [ pkgs.libgtop ] ++ gnomeShellExtensions;
+    systemPackages = [ pkgs.libgtop ] ++ (with pkgs.gnomeExtensions; [
+      blur-my-shell
+      desktop-cube
+      native-window-placement
+      panel-date-format
+      tiling-assistant
+      tophat
+    ]);
   };
 
   programs.dconf.profiles.user.databases = [{
@@ -25,46 +19,12 @@ in
       "org/gnome/shell".enabled-extensions =
         builtins.map
           (x: x.extensionUuid)
-          gnomeShellExtensions;
+          (lib.filter (p: p ? extensionUuid) config.environment.systemPackages);
 
       "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
-      "org/gnome/shell/extensions/dash-to-panel" = {
-        # Even when we are not using multiple panels on multiple monitors,
-        # the extension still creates them in the config, so we set the same
-        # configuration for each (up to 2 monitors).
-        panel-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: "TOP"));
-        panel-sizes = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: 32));
-        panel-element-positions = builtins.toJSON (lib.genAttrs [ "0" "1" ] (x: [
-          { element = "showAppsButton"; visible = false; position = "stackedTL"; }
-          { element = "activitiesButton"; visible = true; position = "stackedTL"; }
-          { element = "dateMenu"; visible = true; position = "stackedTL"; }
-          { element = "taskbar"; visible = true; position = "centerMonitor"; }
-          { element = "leftBox"; visible = true; position = "stackedBR"; }
-          { element = "rightBox"; visible = true; position = "stackedTL"; }
-          { element = "centerBox"; visible = false; position = "centered"; }
-          { element = "systemMenu"; visible = true; position = "stackedBR"; }
-          { element = "desktopButton"; visible = false; position = "stackedBR"; }
-        ]));
-        multi-monitors = false;
-        focus-highlight-dominant = true;
-        dot-size = mkInt32 2;
-        dot-position = "TOP";
-        dot-color-dominant = true;
-        appicon-padding = mkInt32 2;
-        appicon-margin = mkInt32 2;
-        trans-use-custom-opacity = true;
-        trans-panel-opacity = 0.25;
-        show-favorites = false;
-        group-apps = false;
-        isolate-workspaces = true;
-        hide-overview-on-startup = true;
-        stockgs-keep-dash = true;
-      };
-
       "org/gnome/shell/extensions/blur-my-shell".color-and-noise = false;
       "org/gnome/shell/extensions/blur-my-shell/applications".blur = false;
-      "org/gnome/shell/extensions/blur-my-shell/panel".override-background = false;
 
       "org/gnome/shell/extensions/desktop-cube" = {
         last-first-gap = false;
