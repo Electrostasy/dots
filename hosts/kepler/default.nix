@@ -8,6 +8,7 @@
     ../../profiles/system/shell
     ../../profiles/system/ssh
     ./dendrite.nix
+    ./fileserver.nix
     ./headscale.nix
   ];
 

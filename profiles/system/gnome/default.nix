@@ -61,7 +61,7 @@
       adw-gtk3
       morewaita-icon-theme
 
-      # Load Nautilus extensions.
+      # Nautilus extensions.
       gnome.nautilus-python
       nautilus-amberol
       nautilus-vimv
@@ -69,7 +69,7 @@
       # Thumbnailers.
       ffmpegthumbnailer
 
-      # Extra programs to install.
+      # Graphical programs.
       amberol
       celluloid
       eartag
@@ -79,6 +79,9 @@
       resources
       tagger
       warp
+
+      # CLI utilities.
+      wl-clipboard
     ];
   };
 

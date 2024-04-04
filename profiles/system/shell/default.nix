@@ -19,6 +19,7 @@
       magic-wormhole-rs
       ouch
       ripgrep
+      rsync
       tealdeer
       vimv-rs
     ];
@@ -54,6 +55,22 @@
     enable = true;
 
     interactiveShellInit = /* fish */ ''
+      function kepler-up -a source -d "Upload file to kepler for public sharing"
+        rsync --compress --progress --chown=nginx:nginx --perms --chmod=D440,F440 $source root@kepler:/srv/http/static
+
+        if test $status -eq 0
+          set -l url "https://0x6776.lt/static/$source"
+          echo $url
+
+          if command -q wl-copy
+            wl-copy $url
+          end
+        else
+          echo "Upload failed!"
+          exit 1
+        end
+      end
+
       function ls
         argparse 'l/long' 'a/all' 'd/depth=' -- $argv
 
