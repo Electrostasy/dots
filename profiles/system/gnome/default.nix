@@ -211,6 +211,7 @@
         "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
         "org/gnome/nautilus/list-view" = {
           default-zoom-level = "small";
+          default-visible-columns = [ "name" "size" "detailed_type" "date_modified" ];
           use-tree-view = true;
         };
 
