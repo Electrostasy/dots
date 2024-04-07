@@ -13,14 +13,14 @@ function __fish_command_not_found_handler --on-event fish_command_not_found
 
   # If we do not have access to a database, print a helpful error message.
   if test $status -ne 0
-    printf 'Packages index not found in search path:\n  %s\n\n' (printf '%s ' $db_locations)
-    printf 'Index can be generated using the command:\n  '
-    printf '    %s\n' (printf 'nix-index --filter-prefix /bin/' | fish_indent --ansi --no-indent)
+    printf 'Packages index not found in search path:\n    %s\n\n' (printf '%s ' $db_locations)
+    printf 'Index can be generated using the command:\n    '
+    printf 'nix-index --filter-prefix /bin/' | fish_indent --ansi --no-indent
 
     set -l current_arch (nix eval --impure --raw --expr 'builtins.currentSystem')
     set -l supported_archs "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin"
     if contains $current_arch $supported_archs
-      set -l uri "https://github.com/nix-community/nix-index-database/releases/latest/download/index-$arch"
+      set -l uri "https://github.com/nix-community/nix-index-database/releases/latest/download/index-$current_arch"
       set -l text "Community maintained packages index is available"
       printf '\n%s.\n' (_hyperlink $uri $text)
     end
