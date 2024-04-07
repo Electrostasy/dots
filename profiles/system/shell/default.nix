@@ -67,7 +67,7 @@
       # alias takes precedence for some reason.
       function ls --wraps eza
         set -l entries (realpath (path filter -- $argv || pwd))
-        set -l flags (path filter -v -- $argv | string replace -r '^./' \'\')
+        set -l flags (path filter -v -- $argv | string replace -r '^./' "")
 
         command eza -TL1 --group-directories-first --icons=auto $entries $flags
       end
