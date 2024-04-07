@@ -27,6 +27,7 @@
     ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
+
     tmp = {
       useTmpfs = true;
       # Use a higher than default (50%) upper limit for /tmp to not run out of
@@ -103,6 +104,16 @@
         "Documents"
         "Downloads"
         "Pictures"
+      ];
+    };
+  };
+
+  # Set default mount options for mounting through udisksctl/nautilus.
+  services.udisks2.settings."mount_options.conf" = {
+    "/dev/disk/by-uuid/e208c920-b9e7-42e6-a38a-ef6aacbeb374" = {
+      btrfs_defaults = [
+        "noatime"
+        "compress-force=zstd:3"
       ];
     };
   };
