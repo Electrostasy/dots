@@ -5,6 +5,7 @@
     ../../profiles/system/common
     ../../profiles/system/firefox
     ../../profiles/system/graphical
+    ../../profiles/system/neovim
     ../../profiles/system/shell
     ../../profiles/system/ssh
     ./home.nix

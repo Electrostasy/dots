@@ -3,7 +3,6 @@
     imports = [
       ../../profiles/user/kitty
       ../../profiles/user/mpv
-      ../../profiles/user/neovim
       ../../profiles/user/wayfire
     ];
 

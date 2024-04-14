@@ -1,6 +1,15 @@
 { pkgs, ... }:
 
 {
+  # Configuration is written in Lua, copy it to the Nix store and symlink it
+  # to ~/.config/nvim.
+  systemd.tmpfiles.settings."10-neovim"."/home/electro/.config/nvim"."L+".argument = "${./nvim}";
+
+  environment.variables = {
+    EDITOR = "nvim";
+    MANPAGER = "nvim -c 'set ft=man bt=nowrite noswapfile nobk shada=\\\"NONE\\\" ro noma' +Man! -o -";
+  };
+
   programs.neovim = {
     enable = true;
 
@@ -31,28 +40,18 @@
       treesj
     ];
 
+    extraPython3Packages = ps: with ps; [
+      jedi-language-server
+    ];
+
     extraPackages = with pkgs; [
       clang-tools
       lua-language-server
       nil
-      python311Packages.jedi-language-server
       ripgrep
       rust-analyzer
       wl-clipboard
       zls
     ];
-
-    withRuby = false;
-    withPython3 = false;
-    withNodeJs = false;
-  };
-
-  # Configuration is written in Lua, copy it to the Nix store and symlink it
-  # to ~/.config/nvim.
-  home.file.".config/nvim".source = ./nvim;
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    MANPAGER = "nvim -c 'set ft=man bt=nowrite noswapfile nobk shada=\\\"NONE\\\" ro noma' +Man! -o -";
   };
 }

@@ -8,6 +8,7 @@
     ../../profiles/system/mullvad
     ../../profiles/system/shell
     ../../profiles/system/ssh
+    ../../profiles/system/neovim
     ./home.nix
   ];
 

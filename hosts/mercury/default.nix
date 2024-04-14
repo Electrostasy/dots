@@ -6,6 +6,7 @@
     ../../profiles/system/firefox
     ../../profiles/system/gnome
     ../../profiles/system/mullvad
+    ../../profiles/system/neovim
     ../../profiles/system/shell
     ../../profiles/system/ssh
   ];
@@ -15,7 +16,6 @@
   home-manager.users.electro = { config, pkgs, lib, ... }: {
     imports = [
       ../../profiles/user/mpv
-      ../../profiles/user/neovim
     ];
 
     home.stateVersion = "22.11";

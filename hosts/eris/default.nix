@@ -3,20 +3,13 @@
 {
   imports = [
     ../../profiles/system/common
+    ../../profiles/system/neovim
     ../../profiles/system/shell
   ];
 
   system.stateVersion = "22.05";
 
   nixpkgs.hostPlatform = "x86_64-linux";
-
-  home-manager.users.${config.wsl.defaultUser} = {
-    imports = [
-      ../../profiles/user/neovim
-    ];
-
-    home.stateVersion = "22.11";
-  };
 
   wsl = {
     enable = true;

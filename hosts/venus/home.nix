@@ -2,7 +2,6 @@
   home-manager.users.electro = { config, pkgs, lib, ... }: {
     imports = [
       ../../profiles/user/mpv
-      ../../profiles/user/neovim
     ];
 
     home.stateVersion = "22.11";
