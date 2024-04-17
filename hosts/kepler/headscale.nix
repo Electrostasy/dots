@@ -59,10 +59,7 @@
 
       dns_config = {
         base_domain = config.networking.domain;
-        domains = [ "sol.${config.networking.domain}" ];
         magic_dns = true;
-        nameservers = [ "9.9.9.9" ];
-        override_local_dns = true;
       };
     };
   };
@@ -96,20 +93,20 @@
     };
 
     script = ''
-      NAMESPACES=($(headscale namespaces list | sed -r '/^\s*$/d;1d;$d' | cut -d'|' -f2 | tr -d ' '))
-      if [ "$NAMESPACES" = 'sol' ]; then
+      namespaces=($(headscale namespaces list | sed -r '/^\s*$/d;1d;$d' | cut -d'|' -f2 | tr -d ' '))
+      if [ "$namespaces" = 'sol' ]; then
         exit 0
       fi
 
-      if [ -z "$NAMESPACES" ]; then
+      if [ -z "$namespaces" ]; then
         headscale namespaces create sol
 
-        QUERY='INSERT INTO pre_auth_keys '
-        QUERY+='(key, user_id, ephemeral, created_at, expiration) '
-        QUERY+='VALUES '
-        QUERY+="('$(systemd-creds cat 'tailscaleKey')', 1, 1, datetime('now'), datetime('now', '+1 year'));"
+        query='INSERT INTO pre_auth_keys '
+        query+='(key, user_id, ephemeral, created_at, expiration) '
+        query+='VALUES '
+        query+="('$(systemd-creds cat 'tailscaleKey')', 1, 1, datetime('now'), datetime('now', '+1 year'));"
 
-        sqlite3 ${config.users.users.headscale.home}/db.sqlite "$QUERY"
+        sqlite3 ${config.users.users.headscale.home}/db.sqlite "$query"
       fi
     '';
   };
