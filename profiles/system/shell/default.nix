@@ -66,10 +66,9 @@
       # we cannot put this in ./functions/ls.fish, because then the built-in `ls`
       # alias takes precedence for some reason.
       function ls --wraps eza
-        set -l entries (realpath (path filter -- $argv || pwd))
-        set -l flags (path filter -v -- $argv | string replace -r '^./' "")
-
-        command eza -TL1 --group-directories-first --icons=auto $entries $flags
+        set -l flags (path filter -v -- $argv | string match -rg '^\./(-.*)$')
+        set -l entries (path normalize -- $argv | string match -rv '^\./' | path resolve; or pwd)
+        command eza -TL1 --group-directories-first --icons=auto $flags $entries
       end
 
       # Syntax highlighting seems to be disabled under some terminal emulators.
