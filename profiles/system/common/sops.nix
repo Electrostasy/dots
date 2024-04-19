@@ -6,21 +6,31 @@ in
 
 {
   imports = [ self.inputs.sops-nix.nixosModules.default ];
-} // lib.mkIf (config.sops.secrets != { }) {
-  sops = {
-    age = {
-      inherit keyFile;
-      sshKeyPaths = [];
+
+  config = lib.mkIf (config.sops.secrets != { }) {
+    # This is required for `nixos-rebuild build-vm` to work correctly.
+    virtualisation.vmVariant = {
+      virtualisation.sharedDirectories.sops = {
+        source = builtins.dirOf keyFile;
+        target = builtins.dirOf keyFile;
+      };
     };
-    gnupg.sshKeyPaths = [];
-  };
 
-  environment = {
-    sessionVariables.SOPS_AGE_KEY_FILE = keyFile;
+    sops = {
+      age = {
+        inherit keyFile;
+        sshKeyPaths = [];
+      };
+      gnupg.sshKeyPaths = [];
+    };
 
-    systemPackages = with pkgs; [
-      rage
-      sops
-    ];
+    environment = {
+      sessionVariables.SOPS_AGE_KEY_FILE = keyFile;
+
+      systemPackages = with pkgs; [
+        rage
+        sops
+      ];
+    };
   };
 }
