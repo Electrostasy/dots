@@ -14,9 +14,12 @@
 
   # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
   # control server running on `kepler`.
-  sops.secrets.tailscaleKey.sopsFile = ../../../hosts/kepler/secrets.yaml;
+  sops.secrets = lib.mkIf config.services.tailscale.enable {
+    tailscaleKey.sopsFile = ../../../hosts/kepler/secrets.yaml;
+  };
+
   services.tailscale = {
-    enable = true;
+    enable = lib.mkDefault true;
 
     # Generate new keys on the host running headscale using:
     # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y

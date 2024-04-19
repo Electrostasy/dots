@@ -7,7 +7,6 @@
     ../../profiles/system/graphical
     ../../profiles/system/neovim
     ../../profiles/system/shell
-    ../../profiles/system/ssh
     ./home.nix
   ];
 
@@ -88,7 +87,7 @@
     ];
   };
 
-  services.openssh.enable = false;
+  services.tailscale.enable = false;
 
   virtualisation.libvirtd = {
     enable = true;

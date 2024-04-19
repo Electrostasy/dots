@@ -33,6 +33,8 @@
 
   networking.nameservers = [ "9.9.9.9" ];
 
+  services.tailscale.enable = false;
+
   environment.systemPackages = with pkgs; [
     bintools-unwrapped
     binwalk
