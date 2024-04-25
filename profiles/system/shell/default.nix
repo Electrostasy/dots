@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   environment = {
@@ -54,8 +54,8 @@
     enable = true;
 
     # Translate bash scripts ahead of time as opposed to foreignenv doing it
-    # every time it needs to interpret a script.
-    useBabelfish = true;
+    # every time it needs to interpret a script. Also breaks WSL apparently.
+    useBabelfish = !config.wsl.enable;
 
     interactiveShellInit = /* fish */ ''
       set -g fish_greeting # Disable greeting.

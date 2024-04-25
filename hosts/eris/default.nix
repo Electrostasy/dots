@@ -24,12 +24,15 @@
       network = {
         hostname = config.networking.hostName;
         generateHosts = false;
-
-        # Otherwise breaks tailscale.
         generateResolvConf = false;
       };
     };
   };
+
+  # Even if we change our WSL user to electro and specify `-u electro` to run
+  # WSL as electro, we still start in /home/nixos instead of the proper directory,
+  # so just copy the config symlink after creating it in the neovim profile.
+  systemd.tmpfiles.settings."11-neovim"."/home/nixos/.config/nvim"."C".argument = "/home/electro/.config/nvim";
 
   networking.nameservers = [ "9.9.9.9" ];
 
