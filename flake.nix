@@ -125,6 +125,31 @@
           ];
         });
       };
+
+      # Add support for FBX, OFF, DAE, DXF, X, 3MF files.
+      f3d-with-assimp = final: prev: {
+        f3d = prev.f3d.overrideAttrs (oldAttrs: {
+          buildInputs = oldAttrs.buildInputs ++ [ prev.assimp ];
+
+          cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+            "-DF3D_PLUGIN_BUILD_ASSIMP=ON"
+          ];
+        });
+      };
+
+      # Add support for STEP, IGES files.
+      f3d-with-occt = final: prev: {
+        f3d = prev.f3d.overrideAttrs (oldAttrs: {
+          buildInputs = oldAttrs.buildInputs ++ (with prev; [
+            opencascade-occt
+            fontconfig
+          ]);
+
+          cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+            "-DF3D_PLUGIN_BUILD_OCCT=ON"
+          ];
+        });
+      };
     };
 
     /* If I instead apply overlays on nixpkgs to generate this, namespaced package
