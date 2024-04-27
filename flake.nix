@@ -72,6 +72,17 @@
         });
       };
 
+      ffmpeg-with-zmqsend = final: prev: {
+        ffmpeg_7-zmqsend = (prev.ffmpeg_7.override { withZmq = true; buildAvfilter = true; }).overrideAttrs (oldAttrs: {
+          # Apparently, ffmpeg compiled with libzmq support does not build the
+          # zmqsend tool.
+          buildFlags = oldAttrs.buildFlags ++ [ "tools/zmqsend" ];
+          postInstall = ''
+            install -D tools/zmqsend -t $bin/bin
+          '';
+        });
+      };
+
       unl0kr_3 = final: prev: {
         unl0kr = prev.unl0kr.overrideAttrs (finalAttrs: oldAttrs: {
           # Contains various fixes since 2.0.0.
