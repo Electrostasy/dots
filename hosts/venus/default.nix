@@ -176,6 +176,17 @@
     ];
   };
 
+  environment.systemPackages = with pkgs; [
+    freerdp # xfreerdp
+    imv
+    keepassxc
+    libreoffice-fresh
+    mepo
+    nurl
+    rnote
+    xournalpp
+  ];
+
   networking = {
     dhcpcd.enable = false;
     useDHCP = false;

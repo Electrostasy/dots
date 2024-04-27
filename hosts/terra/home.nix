@@ -18,25 +18,6 @@
     };
 
     fonts.fontconfig.enable = true;
-
-    home.packages = with pkgs; [
-      f3d
-      freecad
-      prusa-slicer
-
-      freerdp # xfreerdp
-      gimp
-      keepassxc
-      libreoffice-fresh
-      neo
-      nurl
-      pastel
-      pt-p300bt-labelmaker
-      qpwgraph
-      spek
-      xdg-utils
-      youtube-dl
-    ];
   };
 }
 

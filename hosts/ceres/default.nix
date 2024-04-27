@@ -73,6 +73,11 @@
     ];
   };
 
+  environment.systemPackages = with pkgs; [
+    libewf
+    virt-manager
+  ];
+
   networking = {
     dhcpcd.enable = false;
     useDHCP = false;

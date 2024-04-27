@@ -13,16 +13,5 @@
 
       x11.enable = true;
     };
-
-    home.packages = with pkgs; [
-      freerdp # xfreerdp
-      imv
-      keepassxc
-      libreoffice-fresh
-      mepo
-      nurl
-      rnote
-      xournalpp
-    ];
   };
 }

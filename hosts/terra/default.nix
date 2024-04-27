@@ -44,9 +44,29 @@
     binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
+  environment.systemPackages = with pkgs; [
+    f3d
+    flacon
+    freecad
+    freerdp
+    gimp
+    keepassxc
+    libreoffice-fresh
+    neo
+    nurl
+    pastel
+    picard
+    prusa-slicer
+    pt-p300bt-labelmaker
+    spek
+    via
+    youtube-dl
+  ];
+
   hardware = {
     cpu.intel.updateMicrocode = true;
     enableRedistributableFirmware = true;
+    keyboard.qmk.enable = true;
   };
 
   # Tweaks CPU scheduler for responsiveness over throughput.
