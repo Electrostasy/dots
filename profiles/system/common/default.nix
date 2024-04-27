@@ -106,7 +106,6 @@
         "flakes" # Enable flakes.
         "nix-command" # Enable `nix {build,repl,shell,develop,...}` subcommands.
         "no-url-literals" # Disallow unquoted URLs in Nix language syntax.
-        "repl-flake" # Allow passing installables to `nix repl`.
       ];
       auto-allocate-uids = true;
       use-cgroups = true;
