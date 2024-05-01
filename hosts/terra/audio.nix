@@ -17,55 +17,29 @@
     enable = true;
     pulse.enable = true;
 
-    # https://github.com/NixOS/nixpkgs/pull/282377
-    # https://github.com/NixOS/nixpkgs/pull/292115
-    wireplumber.configPackages = [
-      # Override default volume from 0.4 to 1.0.
-      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-default-sink-volume.conf" ''
-        wireplumber.settings = {
-          device.routes.default-sink-volume = 1.0
+    wireplumber.extraConfig = {
+      # Default volume is by default set to 0.4.
+      "60-defaults"."wireplumber.settings"."device.routes.default-sink-volume" = 1.0;
+
+      "60-disable-devices"."monitor.alsa.rules" = [
+        {
+          # Disable HDMI audio on the GPU.
+          matches = [ { "device.product.name" = "Navi 21/23 HDMI/DP Audio Controller"; } ];
+          actions.update-props."device.disabled" = true;
         }
-      '')
+      ];
 
-      # Disable unwanted nodes/devices.
-      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-disable-devices.conf" ''
-        monitor.alsa.rules = [
-          {
-            matches = [ { device.product.name = "Navi 21/23 HDMI/DP Audio Controller" } ]
-            actions = {
-              update-props = {
-                device.disabled = true
-              }
-            }
-          }
-          {
-            matches = [ { node.name = "alsa_output.usb-FIFINE_Microphones_Fifine_K658_Microphone_REV1.0-00.analog-stereo" } ]
-            actions = {
-              update-props = {
-                node.disabled = true
-              }
-            }
-          }
-        ]
-      '')
-
-      # Disable S/PDIF, we don't use it or intend to use it.
-      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-disable-spdif.conf" ''
-        monitor.alsa.rules = [
-          {
-            matches = [
-              { device.nick = "Fifine K658  Microphone" },
-              { device.nick = "JDS Labs EL DAC II+"}
-            ]
-            actions = {
-              update-props = {
-                device.profile-set = analog-only.conf
-              }
-            }
-          }
-        ]
-      '')
-    ];
+      # Disable S/PDIF.
+      "60-disable-spdif"."monitor.alsa.rules" = [
+        {
+          matches = [
+            { "device.nick" = "Fifine K658  Microphone"; }
+            { "device.nick" = "JDS Labs EL DAC II+"; }
+          ];
+          actions."update-props"."device.profile-set" = "analog-only.conf";
+        }
+      ];
+    };
 
     # EQ for HIFIMAN Sundara headphones based on 10 band parametric EQ from:
     # https://github.com/jaakkopasanen/AutoEq/tree/master/results/oratory1990
@@ -90,61 +64,61 @@
                     type = "builtin";
                     name = "eq_1";
                     label = "bq_lowshelf";
-                    control = { "Freq" = 105.0; "Q" = 0.7; "Gain" = 1.496236; };
+                    control = { Freq = 105.0; Q = 0.7; Gain = 1.496236; };
                   }
                   {
                     type = "builtin";
                     name = "eq_2";
                     label = "bq_peaking";
-                    control = { "Freq" = 197.0; "Q" = 0.18; "Gain" = 0.860994; };
+                    control = { Freq = 197.0; Q = 0.18; Gain = 0.860994; };
                   }
                   {
                     type = "builtin";
                     name = "eq_3";
                     label = "bq_peaking";
-                    control = { "Freq" = 1950.0; "Q" = 1.84; "Gain" = 2.113489; };
+                    control = { Freq = 1950.0; Q = 1.84; Gain = 2.113489; };
                   }
                   {
                     type = "builtin";
                     name = "eq_4";
                     label = "bq_peaking";
-                    control = { "Freq" = 3797.0; "Q" = 1.05; "Gain" = 0.595662; };
+                    control = { Freq = 3797.0; Q = 1.05; Gain = 0.595662; };
                   }
                   {
                     type = "builtin";
                     name = "eq_5";
                     label = "bq_peaking";
-                    control = { "Freq" = 6109.0; "Q" = 3.33; "Gain" = 1.798871; };
+                    control = { Freq = 6109.0; Q = 3.33; Gain = 1.798871; };
                   }
                   {
                     type = "builtin";
                     name = "eq_6";
                     label = "bq_peaking";
-                    control = { "Freq" = 71.0; "Q" = 1.84; "Gain" = 0.944061; };
+                    control = { Freq = 71.0; Q = 1.84; Gain = 0.944061; };
                   }
                   {
                     type = "builtin";
                     name = "eq_7";
                     label = "bq_peaking";
-                    control = { "Freq" = 458.0; "Q" = 2.9; "Gain" = 1.148154; };
+                    control = { Freq = 458.0; Q = 2.9; Gain = 1.148154; };
                   }
                   {
                     type = "builtin";
                     name = "eq_8";
                     label = "bq_peaking";
-                    control = { "Freq" = 824.0; "Q" = 2.49; "Gain" = 0.891251; };
+                    control = { Freq = 824.0; Q = 2.49; Gain = 0.891251; };
                   }
                   {
                     type = "builtin";
                     name = "eq_9";
                     label = "bq_peaking";
-                    control = { "Freq" = 9193.0; "Q" = 2.74; "Gain" = 1.513561; };
+                    control = { Freq = 9193.0; Q = 2.74; Gain = 1.513561; };
                   }
                   {
                     type = "builtin";
                     name = "eq_10";
                     label = "bq_highshelf";
-                    control = { "Freq" = 10000.0; "Q" = 0.7; "Gain" = 0.616595; };
+                    control = { Freq = 10000.0; Q = 0.7; Gain = 0.616595; };
                   }
                 ];
               in
