@@ -65,10 +65,10 @@
       # Graphical programs.
       amberol
       celluloid
-      eartag
       eyedropper
       fractal
       keepassxc
+      papers
       resources
       tagger
       warp
@@ -193,7 +193,10 @@
         "org/gnome/desktop/screensaver".lock-enabled = false;
         "org/gnome/desktop/session".idle-delay = mkUint32 0;
         "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
-        "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
+        "org/gnome/mutter".experimental-features = [
+          "scale-monitor-framebuffer"
+          "variable-refresh-rate"
+        ];
 
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "interactive";
@@ -201,7 +204,11 @@
           sleep-inactive-ac-type = "nothing";
         };
 
-        "org/gnome/nautilus/preferences".default-folder-viewer = "list-view";
+        "org/gnome/nautilus/preferences" = {
+          default-folder-viewer = "list-view";
+          date-time-format = "detailed";
+        };
+
         "org/gnome/nautilus/list-view" = {
           default-zoom-level = "small";
           default-visible-columns = [ "name" "size" "detailed_type" "date_modified" ];

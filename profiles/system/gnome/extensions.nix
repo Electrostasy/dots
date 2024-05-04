@@ -23,9 +23,6 @@
 
       "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
-      "org/gnome/shell/extensions/blur-my-shell".color-and-noise = false;
-      "org/gnome/shell/extensions/blur-my-shell/applications".blur = false;
-
       "org/gnome/shell/extensions/desktop-cube" = {
         last-first-gap = false;
         window-parallax = 0.75;

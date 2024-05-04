@@ -44,9 +44,10 @@
   # and etc., but the module sets other useful options so it is better to
   # exclude these instead of disabling the module.
   environment.gnome.excludePackages = with pkgs.gnome; [
-    baobab # disk usage analyzer
-    epiphany # web browser
-    geary # e-mail client
+    baobab
+    epiphany
+    evince
+    geary
     gnome-backgrounds
     gnome-bluetooth
     gnome-characters
@@ -59,13 +60,12 @@
     gnome-system-monitor
     gnome-themes-extra
     # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
-    pkgs.gnome-connections
     pkgs.gnome-text-editor
     pkgs.gnome-tour
     pkgs.gnome-user-docs
-    pkgs.orca # screen reader
+    pkgs.orca
     simple-scan
-    totem # video player
-    yelp # help viewer
+    totem
+    yelp
   ];
 }
