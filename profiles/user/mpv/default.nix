@@ -61,6 +61,7 @@
 
       # Force showing subtitles while seeking.
       demuxer-mkv-subtitle-preroll = "yes";
+      hr-seek = "yes"; # use precise seeks whenever possible.
 
       # Load external subtitles with similar name to file.
       sub-auto = "fuzzy";
