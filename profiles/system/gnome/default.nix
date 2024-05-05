@@ -166,7 +166,9 @@
     }];
 
     user.databases = [{
-      settings = with lib.gvariant; {
+      # Enables a way to easily reference other values in this attrset without
+      # using recursive attrsets.
+      settings = lib.fix (self: with lib.gvariant; {
         "org/gnome/desktop/calendar".show-weekdate = true;
         "org/gnome/desktop/input-sources".sources = [
           (mkTuple [ "xkb" "us" ])
@@ -298,7 +300,40 @@
           show-screen-recording-ui = mkEmptyArray type.string;
           show-screenshot-ui = [ "<Shift><Super>s" ];
         };
-      };
+
+        # https://www.jwestman.net/2024/02/10/new-look-for-gnome-maps.html
+        "org/gnome/maps".map-type = "MapsVectorSource";
+
+        # Weather shown in the panel's date/notification menu.
+        "org/gnome/shell/weather" = {
+          automatic-location = false;
+          # Locations are based on data/Locations.xml in the GNOME/libgweather repository.
+          locations =
+            let
+              mkLocation = { name, code, latitude, longitude }:
+                mkVariant (mkTuple [
+                  (mkUint32 2)
+                  (mkVariant (mkTuple [
+                    name
+                    code
+                    false
+                    [ (mkTuple [ latitude longitude ]) ]
+                    (mkEmptyArray (with type; tupleOf [ double double ]))
+                  ]))
+                ]);
+            in [
+              (mkLocation {
+                name = "Vilnius";
+                code = "EYVI";
+                latitude = 0.95353154218847114;
+                longitude = 0.43807764225057672;
+              })
+            ];
+        };
+
+        # Weather shown in GNOME Weather program.
+        "org/gnome/Weather".locations = self."org/gnome/shell/weather".locations;
+      });
     }];
   };
 
@@ -347,7 +382,7 @@
       in
         "${desktopEntry}/share/applications/random-wallpaper.desktop";
 
-    # Blur My Shell extension seems to be buggy with Dash To Panel when fractional
+    # Blur My Shell extension seems to be buggy regarding the panel when fractional
     # scaling is enabled - only part of the panel is blurred. Turning it on and
     # off again seems to fix it. Do that soon as the session starts.
     "/home/electro/.config/autostart/blur-my-shell-fix.desktop"."L+".argument =
