@@ -35,23 +35,16 @@
 
   # Cannot mess with locales on WSL, so do not customize them there.
   i18n = lib.mkIf (!config.wsl.enable) {
-    defaultLocale = "en_US.UTF-8";
+    # We want European formatting for everything, while keeping the language
+    # English. With this, we get ISO-8601 formatted dates, metric measurements,
+    # the works, while keeping it English.
+    defaultLocale = "en_DK.UTF-8";
 
-    # Necessary to support different encodings of e.g. file names. Without
-    # ja_JP, Japanese symbols in filenames will not be displayed correctly.
     supportedLocales = [
-      "en_US.UTF-8/UTF-8"
-      "ja_JP.UTF-8/UTF-8"
-      "lt_LT.UTF-8/UTF-8"
-
-      # Needed for LC_TIME.
       "en_DK.UTF-8/UTF-8"
+      "ja_JP.UTF-8/UTF-8" # required for Japanese in filenames.
+      "lt_LT.UTF-8/UTF-8"
     ];
-
-    extraLocaleSettings = {
-      # en_DK follows the ISO-8601 standard and time is formatted sanely.
-      LC_TIME = "en_DK.UTF-8";
-    };
   };
 
   time.timeZone = lib.mkDefault "Europe/Vilnius";
