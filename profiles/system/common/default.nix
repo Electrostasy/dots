@@ -86,7 +86,7 @@
   ];
 
   nix = {
-    package = pkgs.nixVersions.unstable;
+    package = pkgs.nixVersions.latest;
 
     settings = {
       # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
