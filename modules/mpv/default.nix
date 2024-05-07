@@ -58,6 +58,8 @@ in
           };
         })));
 
+        description = "Scripts to install with optional configuration.";
+
         default = mpvScripts: [];
       };
 
@@ -76,32 +78,51 @@ in
     environment = {
       systemPackages = [ cfg.finalPackage ];
 
-      etc = lib.attrsets.mergeAttrsList [
-        {
-          "xdg/mpv/mpv.conf".source = (pkgs.formats.iniWithGlobalSection { inherit listToValue; }).generate "mpv.conf" {
-            globalSection = lib.filterAttrs (n: v: !builtins.isAttrs v) cfg.settings;
-            sections = lib.filterAttrs (n: v: builtins.isAttrs v) cfg.settings;
-          };
+      etc = lib.mkMerge [
+        (lib.optionalAttrs (cfg.settings != { }) {
+          "xdg/mpv/mpv.conf".source =
+            let
+              format = pkgs.formats.iniWithGlobalSection { inherit listToValue; };
+              filterGlobals = lib.filterAttrs (_: v: !lib.isAttrs v);
+              filterProfiles = lib.filterAttrs (_: v: lib.isAttrs v);
+            in
+            format.generate "mpv.conf" {
+              globalSection = filterGlobals cfg.settings;
+              sections = filterProfiles cfg.settings;
+            };
+        })
 
-          # input.conf does not use = as separator between key-value pairs.
-          "xdg/mpv/input.conf".source = pkgs.writeText "input.conf"
-            (lib.generators.toKeyValue
-              { mkKeyValue = lib.generators.mkKeyValueDefault {} " "; }
-              (lib.mapAttrs (n: v: if lib.isList v then listToValue v else v) cfg.bindings));
+        (lib.optionalAttrs (cfg.bindings != { }) {
+          # input.conf does not use = as separator between key-value pairs and
+          # we cannot change the separator in `pkgs.formats.keyValue`.
+          "xdg/mpv/input.conf".source =
+            let
+              generator = with lib.generators; toKeyValue { mkKeyValue = mkKeyValueDefault {} " "; };
+              bindings' = lib.mapAttrs (_: v: if lib.isList v then listToValue v else v) cfg.bindings;
+            in
+            pkgs.writeText "input.conf" (generator bindings');
+        })
 
+        (lib.optionalAttrs (cfg.fonts != "") {
           "xdg/mpv/fonts.conf".source = pkgs.writeText "fonts.conf" cfg.fonts;
-        }
+        })
 
         # For each script accompanied by configuration, generate a .conf file
         # using the script name.
-        (builtins.listToAttrs
-          (builtins.map
-            (s: let inherit (s.script.passthru) scriptName; in {
-              name = "xdg/mpv/script-opts/${scriptName}.conf";
-              value.source = settingsFormat.generate "${scriptName}.conf" s.settings;
-            })
-            (lib.filter (s: !lib.isDerivation s && lib.isAttrs s) evaluatedScripts)))
-        ];
+        (let
+          mkScriptConfig = scriptName: settings:
+            lib.nameValuePair
+              "xdg/mpv/script-opts/${scriptName}.conf"
+              { source = settingsFormat.generate "${scriptName}.conf" settings; };
+
+          scriptsWithSettings = lib.filter (s: !lib.isDerivation s && lib.isAttrs s) evaluatedScripts;
+        in
+          builtins.listToAttrs
+            (builtins.map
+              (s:
+                mkScriptConfig s.script.passthru.scriptName s.settings)
+              scriptsWithSettings))
+      ];
     };
   };
 }
