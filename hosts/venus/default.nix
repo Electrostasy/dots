@@ -5,10 +5,11 @@
     ../../profiles/system/common
     ../../profiles/system/firefox
     ../../profiles/system/gnome
+    ../../profiles/system/mpv
     ../../profiles/system/mullvad
+    ../../profiles/system/neovim
     ../../profiles/system/shell
     ../../profiles/system/ssh
-    ../../profiles/system/neovim
     ./home.nix
   ];
 

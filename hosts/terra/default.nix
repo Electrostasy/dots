@@ -5,13 +5,13 @@
     ../../profiles/system/common
     ../../profiles/system/firefox
     ../../profiles/system/gnome
+    ../../profiles/system/mpv
     ../../profiles/system/mullvad
     ../../profiles/system/neovim
     ../../profiles/system/shell
     ../../profiles/system/ssh
     ./audio.nix
     ./gaming.nix
-    ./home.nix
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -62,6 +62,12 @@
     via
     youtube-dl
   ];
+
+  programs.mpv.settings = {
+    border = "yes";
+    autofit-smaller = "1920x1080";
+    cursor-autohide = "always";
+  };
 
   hardware = {
     cpu.intel.updateMicrocode = true;

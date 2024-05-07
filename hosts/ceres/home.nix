@@ -2,7 +2,6 @@
   home-manager.users.electro = { pkgs, ... }: {
     imports = [
       ../../profiles/user/kitty
-      ../../profiles/user/mpv
       ../../profiles/user/wayfire
     ];
 

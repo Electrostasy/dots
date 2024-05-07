@@ -64,7 +64,6 @@
 
       # Graphical programs.
       amberol
-      celluloid
       eyedropper
       fractal
       keepassxc
@@ -221,17 +220,6 @@
           show-hidden = true;
           sort-directories-first = true;
           view-type = "list";
-        };
-
-        "io/github/celluloid-player/celluloid" = {
-          always-autohide-cursor = true;
-          always-open-new-window = true;
-          always-show-title-buttons = true;
-          autofit-enable = false;
-          mpv-config-enable = true;
-          mpv-config-file = "file:///home/electro/.config/mpv/mpv.conf";
-          mpv-input-config-enable = true;
-          mpv-input-config-file = "file:///home/electro/.config/mpv/input.conf";
         };
 
         # Hidden/background programs only show up if they are flatpaks,

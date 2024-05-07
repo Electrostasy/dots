@@ -44,7 +44,7 @@
 
     /*
       Attribute set of all the packages packaged in this flake, a mapping of
-      package names to their paths.
+      package names to their derivations.
 
       If generated from the default overlay, namespaced package sets will bring
       in all of the packages under the namespace, making it unclear what packages
@@ -87,6 +87,8 @@
           hosts;
 
     nixosModules = {
+      mpv = import ./modules/system/mpv;
+
       neovim = import ./modules/system/neovim;
 
       unl0kr-settings = import ./modules/system/unl0kr-settings;

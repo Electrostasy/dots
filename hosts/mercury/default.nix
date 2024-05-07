@@ -5,6 +5,7 @@
     ../../profiles/system/common
     ../../profiles/system/firefox
     ../../profiles/system/gnome
+    ../../profiles/system/mpv
     ../../profiles/system/mullvad
     ../../profiles/system/neovim
     ../../profiles/system/shell
@@ -12,14 +13,6 @@
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
-
-  home-manager.users.electro = { config, pkgs, lib, ... }: {
-    imports = [
-      ../../profiles/user/mpv
-    ];
-
-    home.stateVersion = "22.11";
-  };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 

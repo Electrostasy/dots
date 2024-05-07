@@ -1,9 +1,5 @@
 {
   home-manager.users.electro = { config, pkgs, lib, ... }: {
-    imports = [
-      ../../profiles/user/mpv
-    ];
-
     home.stateVersion = "22.11";
 
     home.pointerCursor = {
