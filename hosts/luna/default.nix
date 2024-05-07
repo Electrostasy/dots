@@ -4,7 +4,7 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
-    ../../profiles/headless
+    "${modulesPath}/profiles/minimal.nix"
     ../../profiles/shell
     ../../profiles/ssh
     self.inputs.nixos-hardware.nixosModules.raspberry-pi-4

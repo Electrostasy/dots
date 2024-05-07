@@ -2,8 +2,8 @@
 
 {
   imports = [
+    "${modulesPath}/profiles/minimal.nix"
     "${modulesPath}/profiles/qemu-guest.nix"
-    ../../profiles/headless
     ../../profiles/shell
     ../../profiles/ssh
     ./dendrite.nix
