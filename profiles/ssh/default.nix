@@ -43,12 +43,13 @@
 
   programs.ssh = let sshdConfig = config.services.openssh.settings; in {
     knownHosts = lib.filterAttrs (n: _: n != config.networking.hostName) {
-      kepler.publicKeyFile = ../../../hosts/kepler/ssh_host_ed25519_key.pub;
-      luna.publicKeyFile = ../../../hosts/luna/ssh_host_ed25519_key.pub;
-      mars.publicKeyFile = ../../../hosts/mars/ssh_host_ed25519_key.pub;
-      phobos.publicKeyFile = ../../../hosts/phobos/ssh_host_ed25519_key.pub;
-      terra.publicKeyFile = ../../../hosts/terra/ssh_host_ed25519_key.pub;
-      venus.publicKeyFile = ../../../hosts/venus/ssh_host_ed25519_key.pub;
+      kepler.publicKeyFile = ../../hosts/kepler/ssh_host_ed25519_key.pub;
+      luna.publicKeyFile = ../../hosts/luna/ssh_host_ed25519_key.pub;
+      mars.publicKeyFile = ../../hosts/mars/ssh_host_ed25519_key.pub;
+      mercury.publicKeyFile = ../../hosts/mercury/ssh_host_ed25519_key.pub;
+      phobos.publicKeyFile = ../../hosts/phobos/ssh_host_ed25519_key.pub;
+      terra.publicKeyFile = ../../hosts/terra/ssh_host_ed25519_key.pub;
+      venus.publicKeyFile = ../../hosts/venus/ssh_host_ed25519_key.pub;
     };
 
     kexAlgorithms = sshdConfig.KexAlgorithms;

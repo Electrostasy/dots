@@ -3,10 +3,10 @@
 {
   imports = [
     "${modulesPath}/profiles/qemu-guest.nix"
-    ../../profiles/system/common
-    ../../profiles/system/headless
-    ../../profiles/system/shell
-    ../../profiles/system/ssh
+    ../../profiles/common
+    ../../profiles/headless
+    ../../profiles/shell
+    ../../profiles/ssh
     ./dendrite.nix
     ./fileserver.nix
     ./headscale.nix

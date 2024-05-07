@@ -6,10 +6,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -87,11 +83,11 @@
           hosts;
 
     nixosModules = {
-      mpv = import ./modules/system/mpv;
+      mpv = import ./modules/mpv;
 
-      neovim = import ./modules/system/neovim;
+      neovim = import ./modules/neovim;
 
-      unl0kr-settings = import ./modules/system/unl0kr-settings;
+      unl0kr-settings = import ./modules/unl0kr-settings;
     };
 
     homeManagerModules.wayfire = import ./modules/user/wayfire;

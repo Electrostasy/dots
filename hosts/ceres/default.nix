@@ -2,13 +2,12 @@
 
 {
   imports = [
-    ../../profiles/system/common
-    ../../profiles/system/firefox
-    ../../profiles/system/graphical
-    ../../profiles/system/mpv
-    ../../profiles/system/neovim
-    ../../profiles/system/shell
-    ./home.nix
+    ../../profiles/common
+    ../../profiles/firefox
+    ../../profiles/gnome
+    ../../profiles/mpv
+    ../../profiles/neovim
+    ../../profiles/shell
   ];
 
   system.stateVersion = "22.05";

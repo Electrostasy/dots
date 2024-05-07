@@ -2,15 +2,14 @@
 
 {
   imports = [
-    ../../profiles/system/common
-    ../../profiles/system/firefox
-    ../../profiles/system/gnome
-    ../../profiles/system/mpv
-    ../../profiles/system/mullvad
-    ../../profiles/system/neovim
-    ../../profiles/system/shell
-    ../../profiles/system/ssh
-    ./home.nix
+    ../../profiles/common
+    ../../profiles/firefox
+    ../../profiles/gnome
+    ../../profiles/mpv
+    ../../profiles/mullvad
+    ../../profiles/neovim
+    ../../profiles/shell
+    ../../profiles/ssh
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";

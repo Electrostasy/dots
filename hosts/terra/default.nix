@@ -2,14 +2,14 @@
 
 {
   imports = [
-    ../../profiles/system/common
-    ../../profiles/system/firefox
-    ../../profiles/system/gnome
-    ../../profiles/system/mpv
-    ../../profiles/system/mullvad
-    ../../profiles/system/neovim
-    ../../profiles/system/shell
-    ../../profiles/system/ssh
+    ../../profiles/common
+    ../../profiles/firefox
+    ../../profiles/gnome
+    ../../profiles/mpv
+    ../../profiles/mullvad
+    ../../profiles/neovim
+    ../../profiles/shell
+    ../../profiles/ssh
     ./audio.nix
     ./gaming.nix
   ];

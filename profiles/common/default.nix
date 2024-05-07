@@ -3,7 +3,6 @@
 {
   imports = (builtins.attrValues self.nixosModules) ++ [
     self.inputs.nixos-wsl.nixosModules.wsl
-    ./home-manager.nix
     ./sops.nix
     ./impermanence.nix
   ];
@@ -15,7 +14,7 @@
   # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
   # control server running on `kepler`.
   sops.secrets = lib.mkIf config.services.tailscale.enable {
-    tailscaleKey.sopsFile = ../../../hosts/kepler/secrets.yaml;
+    tailscaleKey.sopsFile = ../../hosts/kepler/secrets.yaml;
   };
 
   services.tailscale = {

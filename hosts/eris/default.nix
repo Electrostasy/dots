@@ -2,9 +2,9 @@
 
 {
   imports = [
-    ../../profiles/system/common
-    ../../profiles/system/neovim
-    ../../profiles/system/shell
+    ../../profiles/common
+    ../../profiles/neovim
+    ../../profiles/shell
   ];
 
   system.stateVersion = "22.05";

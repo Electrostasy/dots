@@ -4,10 +4,10 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
-    ../../profiles/system/common
-    ../../profiles/system/headless
-    ../../profiles/system/shell
-    ../../profiles/system/ssh
+    ../../profiles/common
+    ../../profiles/headless
+    ../../profiles/shell
+    ../../profiles/ssh
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
