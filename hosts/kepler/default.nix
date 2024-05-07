@@ -3,7 +3,6 @@
 {
   imports = [
     "${modulesPath}/profiles/qemu-guest.nix"
-    ../../profiles/common
     ../../profiles/headless
     ../../profiles/shell
     ../../profiles/ssh

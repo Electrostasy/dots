@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../profiles/common
     ../../profiles/firefox
     ../../profiles/gnome
     ../../profiles/mpv

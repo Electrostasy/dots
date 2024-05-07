@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../profiles/common
     ../../profiles/neovim
     ../../profiles/shell
   ];
