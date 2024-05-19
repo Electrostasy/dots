@@ -47,7 +47,7 @@ groups.builtin = {
   -- TermCursor = {},
   -- TermCursorNC = {},
   ErrorMsg = { fg = palette.pink3, bold = true },
-  -- WinSeparator = {},
+  WinSeparator = { link = 'NonText' },
   Folded = { fg = palette.text, bg = palette.background3 },
   FoldColumn = { fg = palette.blueGray2 },
   SignColumn = { fg = palette.text, bg = palette.none },
@@ -222,6 +222,9 @@ groups.treesitter = {
 }
 
 groups.lsp = {
+  --- :h lsp
+  LspInlayHint = { fg = palette.blueGray3, bg = blend(palette.background1, palette.background2, 0.5) },
+
   --- :h lsp-semantic-highlight
   -- ['@lsp.type.class'] = { link = 'Structure' },
   -- ['@lsp.type.decorator'] = { link = 'Function' },

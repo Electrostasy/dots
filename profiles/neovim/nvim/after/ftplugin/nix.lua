@@ -1,4 +1,4 @@
-local free_memory = vim.loop.get_free_memory()
+local free_memory = vim.uv.get_free_memory()
 
 -- If we have more than 2 GB of RAM, then evaluate all flake inputs using up to
 -- half of our free memory (to hopefully not trigger OOM conditions). 2 GB is

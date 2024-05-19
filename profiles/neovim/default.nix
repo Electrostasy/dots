@@ -16,12 +16,10 @@
     plugins = with pkgs.vimPlugins; [
       # Completion engine and sources.
       cmp-buffer
-      cmp_luasnip
       cmp-nvim-lsp
       cmp-nvim-lua
       cmp-path
       cmp-under-comparator
-      luasnip
       nvim-cmp
 
       # Visual improvements.
@@ -33,7 +31,6 @@
       nvim-web-devicons
 
       # Functionality.
-      comment-nvim
       gitsigns-nvim
       telescope-zf-native-nvim
       telescope-nvim

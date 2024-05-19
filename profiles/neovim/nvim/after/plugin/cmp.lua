@@ -32,30 +32,18 @@ local kind_icons = {
 -- highlight bright instead.
 for kind, _ in pairs(kind_icons) do
   local group_str = ('CmpItemKind%s'):format(kind)
-  local group = vim.api.nvim_get_hl_by_name(group_str, true)
-  vim.api.nvim_set_hl(0, group_str, {
-    fg = group.background, bg = group.foreground
-  })
+  local group = vim.api.nvim_get_hl(0, { name = group_str })
+  vim.api.nvim_set_hl(0, group_str, { fg = group.bg, bg = group.fg })
 end
 
 local cmp = require('cmp')
-local luasnip = require('luasnip')
-
--- local has_words_before = function()
---   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
---   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
--- end
-
 cmp.setup({
-  snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
   mapping = cmp.mapping.preset.insert({
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      -- elseif has_words_before() then
-      --   cmp.complete()
+      elseif vim.snippet.active({ direction = 1 }) then
+        vim.snippet.jump(1)
       else
         fallback()
       end
@@ -63,19 +51,23 @@ cmp.setup({
     ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
+      elseif vim.snippet.active({ direction = -1 }) then
+        vim.snippet.jump(-1)
       else
         fallback()
       end
     end, { 'i', 's' }),
     ['<C-j>'] = cmp.mapping.scroll_docs(-1),
     ['<C-k>'] = cmp.mapping.scroll_docs(1),
-    ['<C-e>'] = cmp.mapping.abort(),
+    ['<C-e>'] = function()
+      if vim.snippet.active({ direction = -1 }) or vim.snippet.active({ direction = 1 }) then
+        vim.snippet.stop()
+      end
+      cmp.mapping.abort()
+    end,
     ['<CR>'] = cmp.mapping.confirm({ select = false }),
   }),
   sources = {
-    { name = 'luasnip' },
     { name = 'nvim_lsp' },
     { name = 'path', option = { trailing_slash = true } },
   },
@@ -114,6 +106,9 @@ cmp.setup({
       cmp.config.compare.order
     }
   },
-  view = { entries = 'custom' },
+  view = {
+    entries = 'custom',
+    follow_cursor = true,
+  },
   experimental = { ghost_text = true },
 })

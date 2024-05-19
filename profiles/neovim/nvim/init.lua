@@ -157,7 +157,6 @@ vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
   end
 })
 
--- https://github.com/nvim-telescope/telescope.nvim/pull/2529
 vim.filetype.add({
   filename = {
     ['flake.lock'] = 'json',
@@ -172,11 +171,11 @@ local lsp_mappings = {
   { 'n', 'K', vim.lsp.buf.hover, { silent = true, buffer = true } },
   { 'n', 'gi', vim.lsp.buf.implementation, { silent = true, buffer = true } },
   { 'n', '<C-k>', vim.lsp.buf.signature_help, { silent = true, buffer = true } },
-  { 'n', '<Leader>D', vim.lsp.buf.type_definition, { silent = true, buffer = true } },
-  { 'n', '<Leader>rn', vim.lsp.buf.rename, { silent = true, buffer = true } },
-  { 'n', '<Leader>C', vim.lsp.buf.code_action, { silent = true, buffer = true } },
+  { 'n', '<Leader>t', vim.lsp.buf.type_definition, { silent = true, buffer = true } },
+  { 'n', '<Leader>r', vim.lsp.buf.rename, { silent = true, buffer = true } },
+  { 'n', '<Leader>c', vim.lsp.buf.code_action, { silent = true, buffer = true } },
   { 'n', '<Leader>R', vim.lsp.buf.references, { silent = true, buffer = true } },
-  { 'n', '<Leader>F', vim.lsp.buf.format, { silent = true, buffer = true } },
+  { 'n', '<Leader>f', vim.lsp.buf.format, { silent = true, buffer = true } },
   { 'n', '<Leader>d', function()
     local virt_text = vim.diagnostic.config().virtual_text
     vim.diagnostic.config({
@@ -196,8 +195,12 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
   pattern = '*',
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    local capabilities = client.server_capabilities
-    local hasSemanticTokens = capabilities.semanticTokensProvider and capabilities.semanticTokensProvider.full
+    if client == nil then
+      return
+    end
+
+    local caps = client.server_capabilities
+    local hasSemanticTokens = caps ~= nil and caps.semanticTokensProvider and caps.semanticTokensProvider.full
 
     if args.event == 'LspAttach' then
       for _, mapping in ipairs(lsp_mappings) do
@@ -208,7 +211,9 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
       lsp_lines.setup()
       vim.diagnostic.config({
         virtual_text = false,
-        virtual_lines = true,
+        virtual_lines = {
+          highlight_whole_line = false,
+        },
       })
 
       -- If LSP supports semantic tokens, disable Hlargs for the current buffer.

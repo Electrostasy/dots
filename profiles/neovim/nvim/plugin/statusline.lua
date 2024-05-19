@@ -54,7 +54,7 @@ do
   local function renew_hlgroups()
     local t = {}
     for _, group in ipairs(groups) do
-      t[group] = vim.api.nvim_get_hl_by_name(group, true)
+      t[group] = vim.api.nvim_get_hl(0, { name = group })
     end
     return t
   end
@@ -169,41 +169,29 @@ end
 -- LSP progress timer for statusline, based on:
 -- https://gist.github.com/runiq/2e81265c1c2a7587fbe9c184ceaa94c6
 local progress_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
-local function lsp_has_messages(buf_id)
-  for _, client in pairs(vim.lsp.buf_get_clients(buf_id)) do
-    if not vim.tbl_isempty(client.messages.messages) then
-      return true
-    end
-    for _, progress in pairs(client.messages.progress) do
-      if not progress.done then
-        return true
-      end
-    end
-  end
-  return false
-end
-local timer = vim.loop.new_timer()
-vim.api.nvim_create_autocmd('User', {
-  pattern = 'LspProgressUpdate',
+local timer = vim.uv.new_timer()
+vim.api.nvim_create_autocmd('LspProgress', {
+  pattern = { 'begin', 'report', 'end' },
   group = 'StatusLine',
-  callback = function()
-    local buf_id = vim.api.nvim_get_current_buf()
+  callback = function(event)
     if timer:get_due_in() == 0 then
       timer:start(0, 80, function()
-        if lsp_has_messages(buf_id) then
-          -- Cycle through frames.
-          vim.b[buf_id].lsp_progress_idx = (vim.b[buf_id].lsp_progress_idx or 1) % #progress_frames + 1
-          timer:again()
-        else
-          -- Reset cycle index for next run.
-          vim.b[buf_id].lsp_progress_idx = 1
-          timer:stop()
-        end
+        for _, client in pairs(vim.lsp.get_clients({ id = event.data.client_id })) do
+          if client.progress:peek() then
+            -- Cycle through frames.
+            vim.b[event.buf].lsp_progress_idx = (vim.b[event.buf].lsp_progress_idx or 1) % #progress_frames + 1
+            timer:again()
+          else
+            -- Reset cycle index for next run.
+            vim.b[event.buf].lsp_progress_idx = 1
+            timer:stop()
+          end
 
-        -- Redraw statusline on next tick.
-        vim.schedule(function()
-          vim.api.nvim_command('redrawstatus')
-        end)
+          -- Redraw statusline on next tick.
+          vim.schedule(function()
+            vim.api.nvim_command('redrawstatus')
+          end)
+        end
       end)
     end
   end
@@ -335,11 +323,12 @@ function __StatusLine(current)
   table.insert(groups, '%=')
 
   -- TODO: Show multiple LSP clients instead of first attached one.
-  local _, lsp = next(vim.lsp.buf_get_clients(buf))
-  if lsp ~= nil then
-    if lsp_has_messages(buf) then
-      local _, message = next(lsp.messages.progress)
-      table.insert(groups, (' %s %s'):format(message.title, progress_frames[vim.b[buf].lsp_progress_idx]))
+  for _, client in pairs(vim.lsp.get_clients({ bufnr = buf })) do
+    if client.progress:peek() ~= nil then
+      local progress = client.progress:pop()
+      if progress.value ~= nil and progress.value.title ~= nil then
+        table.insert(groups, (' %s %s'):format(progress.value.title, progress_frames[vim.b[buf].lsp_progress_idx]))
+      end
     end
 
     local nc = current == 0 and '' or 'NC'
@@ -353,14 +342,14 @@ function __StatusLine(current)
       end
     end
 
-    for _, kind in ipairs({ 'Error', 'Warn', 'Info', 'Hint' }) do
+    for _, kind in pairs({ 'Error', 'Warn', 'Info', 'Hint' }) do
       local format = diagnostic_format(kind)
       if error then
         table.insert(groups, format)
       end
     end
 
-    table.insert(groups, ('%%* %s'):format(lsp.config.name))
+    table.insert(groups, ('%%* %s'):format(client.config.name))
   end
 
   -- Git components.
