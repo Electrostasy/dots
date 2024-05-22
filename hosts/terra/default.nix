@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, self, ... }:
 
 {
   imports = [
@@ -13,7 +13,14 @@
     ./gaming.nix
   ];
 
-  nixpkgs.hostPlatform = "x86_64-linux";
+  nixpkgs = {
+    hostPlatform = "x86_64-linux";
+    overlays = with self.overlays; [
+      f3d-assimp
+      f3d-interactive
+      f3d-occt
+    ];
+  };
 
   system.stateVersion = "22.05";
 

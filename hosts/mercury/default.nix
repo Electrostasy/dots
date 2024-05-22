@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, self, ... }:
 
 {
   imports = [
@@ -11,7 +11,10 @@
     ../../profiles/ssh
   ];
 
-  nixpkgs.hostPlatform = "x86_64-linux";
+  nixpkgs = {
+    hostPlatform = "x86_64-linux";
+    overlays = [ self.overlays.unl0kr_3_update ];
+  };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 

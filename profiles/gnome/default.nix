@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, self, ... }:
 
 {
   imports = [
@@ -7,6 +7,8 @@
     ./extensions.nix
     ./mimetypes.nix
   ];
+
+  nixpkgs.overlays = [ self.overlays.gnome-dynamic-triple-double-buffering ];
 
   services.xserver = {
     desktopManager.gnome.enable = true;

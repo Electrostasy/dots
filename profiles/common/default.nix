@@ -1,7 +1,7 @@
 { config, pkgs, lib, self, ... }:
 
 {
-  imports = (builtins.attrValues self.nixosModules) ++ [
+  imports = (lib.attrValues self.nixosModules) ++ [
     self.inputs.nixos-wsl.nixosModules.wsl
     ./sops.nix
     ./impermanence.nix
@@ -49,8 +49,8 @@
   time.timeZone = lib.mkDefault "Europe/Vilnius";
 
   nixpkgs = {
-    overlays = lib.attrValues self.overlays;
     config.allowAliases = false;
+    overlays = [ self.overlays.default ];
   };
 
   programs.git = {
