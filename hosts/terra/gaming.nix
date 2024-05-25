@@ -3,10 +3,7 @@
 {
   boot = {
     kernelParams = [
-      # swappiness of 10 is generally better for SSDs.
       "vm.swappiness=10"
-
-      # Enable zswap.
       "zswap.enabled=1"
     ];
 
@@ -99,43 +96,16 @@
   programs.gamescope = {
     enable = true;
 
-    # It should be possible to add cap_sys_nice to the bwrap sandbox, but
-    # every attempt I have made has made either steam not launch, or gamescope
-    # not launch, so just disable it altogether.
-    # Tracking issues:
     # https://github.com/NixOS/nixpkgs/issues/217119
-    # https://github.com/ValveSoftware/gamescope/issues/309
-    # TODO: Make the gamescope CAP_SYS_NICE wrapper run in bwrap.
     # capSysNice = true;
-
-    args = [
-      "-H 2160" # set maximum output dimensions to 3840x2160.
-    ];
   };
 
   programs.steam = {
     enable = true;
+    protontricks.enable = true;
 
     package = pkgs.steam-small.override {
       extraArgs = "-pipewire-dmabuf -fulldesktopres";
-
-      extraPkgs = pkgs: with pkgs; [
-        # Required for `gamescope` with Steam integration (`-e`):
-        # https://github.com/NixOS/nixpkgs/issues/162562#issuecomment-1523177264
-        # https://github.com/ValveSoftware/gamescope/issues/660#issuecomment-1289895009
-        # Otherwise we cannot run `gamescope` in Steam in the NixOS buildFHSenv
-        # bwrap sandbox.
-        keyutils
-        libkrb5
-        libpng
-        libpulseaudio
-        libvorbis
-        stdenv.cc.cc.lib
-        xorg.libXScrnSaver
-        xorg.libXcursor
-        xorg.libXi
-        xorg.libXinerama
-      ];
     };
   };
 
