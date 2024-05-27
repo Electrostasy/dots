@@ -54,7 +54,7 @@ do
   local function renew_hlgroups()
     local t = {}
     for _, group in ipairs(groups) do
-      t[group] = vim.api.nvim_get_hl(0, { name = group })
+      t[group] = vim.api.nvim_get_hl(0, { name = group, link = false })
     end
     return t
   end
@@ -71,29 +71,29 @@ do
 
   -- Define highlight groups for the statusline.
   local stl_groups = {
-    -- StatusLineUser1 = { fg = hl.StatusLine.foreground, bg = blend(hl.User1.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser2 = { fg = hl.StatusLine.foreground, bg = blend(hl.User2.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser3 = { fg = hl.StatusLine.foreground, bg = blend(hl.User3.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser4 = { fg = hl.StatusLine.foreground, bg = blend(hl.User4.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser5 = { fg = hl.StatusLine.foreground, bg = blend(hl.User5.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser6 = { fg = hl.StatusLine.foreground, bg = blend(hl.User6.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser7 = { fg = hl.StatusLine.foreground, bg = blend(hl.User7.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser8 = { fg = hl.StatusLine.foreground, bg = blend(hl.User8.background, hl.StatusLine.background, 0.1) },
-    -- StatusLineUser9 = { fg = hl.StatusLine.foreground, bg = blend(hl.User9.background, hl.StatusLine.background, 0.1) },
-    StatusLineLSPError = { fg = hl.DiagnosticSignError.foreground, bg = hl.StatusLine.background },
-    StatusLineLSPWarn = { fg = hl.DiagnosticSignWarn.foreground, bg = hl.StatusLine.background },
-    StatusLineLSPInfo = { fg = hl.DiagnosticSignInfo.foreground, bg = hl.StatusLine.background },
-    StatusLineLSPHint = { fg = hl.DiagnosticSignHint.foreground, bg = hl.StatusLine.background },
-    StatusLineNCLSPError = { fg = hl.DiagnosticSignError.foreground, bg = hl.StatusLineNC.background },
-    StatusLineNCLSPWarn = { fg = hl.DiagnosticSignWarn.foreground, bg = hl.StatusLineNC.background },
-    StatusLineNCLSPInfo = { fg = hl.DiagnosticSignInfo.foreground, bg = hl.StatusLineNC.background },
-    StatusLineNCLSPHint = { fg = hl.DiagnosticSignHint.foreground, bg = hl.StatusLineNC.background },
-    StatusLineGitAdd = { fg = hl.GitSignsAdd.foreground, bg = hl.StatusLine.background },
-    StatusLineGitDelete = { fg = hl.GitSignsDelete.foreground, bg = hl.StatusLine.background },
-    StatusLineGitChange = { fg = hl.GitSignsChange.foreground, bg = hl.StatusLine.background },
-    StatusLineNCGitAdd = { fg = hl.GitSignsAdd.foreground, bg = hl.StatusLineNC.background },
-    StatusLineNCGitDelete = { fg = hl.GitSignsDelete.foreground, bg = hl.StatusLineNC.background },
-    StatusLineNCGitChange = { fg = hl.GitSignsChange.foreground, bg = hl.StatusLineNC.background },
+    -- StatusLineUser1 = { fg = hl.StatusLine.fg, bg = blend(hl.User1.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser2 = { fg = hl.StatusLine.fg, bg = blend(hl.User2.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser3 = { fg = hl.StatusLine.fg, bg = blend(hl.User3.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser4 = { fg = hl.StatusLine.fg, bg = blend(hl.User4.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser5 = { fg = hl.StatusLine.fg, bg = blend(hl.User5.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser6 = { fg = hl.StatusLine.fg, bg = blend(hl.User6.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser7 = { fg = hl.StatusLine.fg, bg = blend(hl.User7.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser8 = { fg = hl.StatusLine.fg, bg = blend(hl.User8.bg, hl.StatusLine.bg, 0.1) },
+    -- StatusLineUser9 = { fg = hl.StatusLine.fg, bg = blend(hl.User9.bg, hl.StatusLine.bg, 0.1) },
+    StatusLineLSPError = { fg = hl.DiagnosticSignError.fg, bg = hl.StatusLine.bg },
+    StatusLineLSPWarn = { fg = hl.DiagnosticSignWarn.fg, bg = hl.StatusLine.bg },
+    StatusLineLSPInfo = { fg = hl.DiagnosticSignInfo.fg, bg = hl.StatusLine.bg },
+    StatusLineLSPHint = { fg = hl.DiagnosticSignHint.fg, bg = hl.StatusLine.bg },
+    StatusLineNCLSPError = { fg = hl.DiagnosticSignError.fg, bg = hl.StatusLineNC.bg },
+    StatusLineNCLSPWarn = { fg = hl.DiagnosticSignWarn.fg, bg = hl.StatusLineNC.bg },
+    StatusLineNCLSPInfo = { fg = hl.DiagnosticSignInfo.fg, bg = hl.StatusLineNC.bg },
+    StatusLineNCLSPHint = { fg = hl.DiagnosticSignHint.fg, bg = hl.StatusLineNC.bg },
+    StatusLineGitAdd = { fg = hl.GitSignsAdd.fg, bg = hl.StatusLine.bg },
+    StatusLineGitDelete = { fg = hl.GitSignsDelete.fg, bg = hl.StatusLine.bg },
+    StatusLineGitChange = { fg = hl.GitSignsChange.fg, bg = hl.StatusLine.bg },
+    StatusLineNCGitAdd = { fg = hl.GitSignsAdd.fg, bg = hl.StatusLineNC.bg },
+    StatusLineNCGitDelete = { fg = hl.GitSignsDelete.fg, bg = hl.StatusLineNC.bg },
+    StatusLineNCGitChange = { fg = hl.GitSignsChange.fg, bg = hl.StatusLineNC.bg },
   }
   for group, opts in pairs(stl_groups) do
     vim.api.nvim_set_hl(0, group, opts)
@@ -171,27 +171,34 @@ end
 local progress_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
 local timer = vim.uv.new_timer()
 vim.api.nvim_create_autocmd('LspProgress', {
-  pattern = { 'begin', 'report', 'end' },
+  pattern = '*',
   group = 'StatusLine',
-  callback = function(event)
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client then
+      return
+    end
+
+    if not vim.iter(pairs(client.attached_buffers)):find(args.buf) then
+      return
+    end
+
     if timer:get_due_in() == 0 then
       timer:start(0, 80, function()
-        for _, client in pairs(vim.lsp.get_clients({ id = event.data.client_id })) do
-          if client.progress:peek() then
-            -- Cycle through frames.
-            vim.b[event.buf].lsp_progress_idx = (vim.b[event.buf].lsp_progress_idx or 1) % #progress_frames + 1
-            timer:again()
-          else
-            -- Reset cycle index for next run.
-            vim.b[event.buf].lsp_progress_idx = 1
-            timer:stop()
-          end
-
-          -- Redraw statusline on next tick.
-          vim.schedule(function()
-            vim.api.nvim_command('redrawstatus')
-          end)
+        if client.progress:peek() then
+          -- Cycle through frames.
+          vim.b[args.buf].lsp_progress_idx = (vim.b[args.buf].lsp_progress_idx or 1) % #progress_frames + 1
+          timer:again()
+        else
+          -- Reset cycle index for next run.
+          vim.b[args.buf].lsp_progress_idx = 1
+          timer:stop()
         end
+
+        -- Redraw statusline on next tick.
+        vim.schedule(function()
+          vim.api.nvim_command('redrawstatus')
+        end)
       end)
     end
   end
@@ -245,8 +252,7 @@ function __StatusLine(current)
 
   -- Max line number in gutter.
   ---@diagnostic disable-next-line: undefined-field
-  local show_linenr = vim.opt.number:get() or vim.opt.relativenumber:get()
-  if show_linenr then
+  if vim.opt.number:get() or vim.opt.relativenumber:get() then
     local buf_length_digits = int_len(vim.api.nvim_buf_line_count(buf))
     table.insert(groups, ('%s%s '):format(string.rep(' ', gutter_width - buf_length_digits - 2), '%L'))
   end
@@ -322,34 +328,40 @@ function __StatusLine(current)
 
   table.insert(groups, '%=')
 
-  -- TODO: Show multiple LSP clients instead of first attached one.
-  for _, client in pairs(vim.lsp.get_clients({ bufnr = buf })) do
-    if client.progress:peek() ~= nil then
-      local progress = client.progress:pop()
-      if progress.value ~= nil and progress.value.title ~= nil then
-        table.insert(groups, (' %s %s'):format(progress.value.title, progress_frames[vim.b[buf].lsp_progress_idx]))
-      end
+  do
+    local diagnostics_map = {
+      [vim.diagnostic.severity.ERROR] = 'Error',
+      [vim.diagnostic.severity.WARN] = 'Warn',
+      [vim.diagnostic.severity.INFO] = 'Info',
+      [vim.diagnostic.severity.HINT] = 'Hint',
+    }
+
+    local signs = vim.diagnostic.config().signs
+    if signs == nil or signs == true then
+      signs = vim.iter(diagnostics_map):map(function(s) s:sub(1, 1) end):totable()
+    elseif signs.text then
+      signs = signs.text
     end
 
-    local nc = current == 0 and '' or 'NC'
-
-    local function diagnostic_format(kind)
-      local diagnostics = #vim.diagnostic.get(buf, { severity = vim.diagnostic.severity[kind:upper()] })
-      local group = ('StatusLine%sLSP%s'):format(nc, kind)
-      local _, sign = next(vim.fn.sign_getdefined('DiagnosticSign' .. kind))
-      if diagnostics > 0 then
-        return ('%%#%s# %d %s'):format(group, diagnostics, sign.text)
+    -- TODO: Show multiple LSP clients instead of first attached one.
+    for _, client in pairs(vim.lsp.get_clients({ bufnr = buf })) do
+      if client.progress:peek() ~= nil then
+        local progress = client.progress:pop()
+        if progress.value ~= nil and progress.value.title ~= nil then
+          table.insert(groups, (' %s %s'):format(progress.value.title, progress_frames[vim.b[buf].lsp_progress_idx]))
+        end
       end
-    end
 
-    for _, kind in pairs({ 'Error', 'Warn', 'Info', 'Hint' }) do
-      local format = diagnostic_format(kind)
-      if error then
-        table.insert(groups, format)
+      for severity_id, severity_pretty in pairs(diagnostics_map) do
+        local diagnostics = #vim.diagnostic.get(buf, { severity = severity_id })
+        if diagnostics > 0 then
+          local group = ('StatusLine%sLSP%s'):format(current == 0 and '' or 'NC', severity_pretty)
+          table.insert(groups, ('%%#%s# %d %s '):format(group, diagnostics, signs[severity_id]))
+        end
       end
-    end
 
-    table.insert(groups, ('%%* %s'):format(client.config.name))
+      table.insert(groups, ('%%* %s'):format(client.config.name))
+    end
   end
 
   -- Git components.

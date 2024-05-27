@@ -93,7 +93,7 @@ vim.api.nvim_create_autocmd('ModeChanged', {
 
 vim.opt.hlsearch = true -- Highlight search matches.
 vim.opt.incsearch = true -- Highlight search matches while typing.
-vim.opt.inccommand = 'nosplit' -- Live preview when substituting.
+vim.opt.inccommand = 'nosplit' -- Live preview for supporting commands.
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
@@ -102,14 +102,14 @@ vim.opt.autoindent = true
 vim.opt.wrap = false
 vim.opt.splitbelow = true
 vim.opt.splitright = true
-vim.keymap.set('n', '<C-h>', '<C-w>h')
-vim.keymap.set('n', '<C-j>', '<C-w>j')
-vim.keymap.set('n', '<C-k>', '<C-w>k')
-vim.keymap.set('n', '<C-l>', '<C-w>l')
-vim.keymap.set('n', '<C-Left>', '<C-w>h')
-vim.keymap.set('n', '<C-Up>', '<C-w>j')
-vim.keymap.set('n', '<C-Down>', '<C-w>j')
-vim.keymap.set('n', '<C-Right>', '<C-w>l')
+vim.keymap.set('n', '<C-h>', '<C-w>h', { silent = true })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { silent = true })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { silent = true })
+vim.keymap.set('n', '<C-Left>', '<C-w>h', { silent = true })
+vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
 
 -- Better window separators.
 vim.opt.fillchars:append({
@@ -123,120 +123,42 @@ vim.opt.fillchars:append({
 })
 
 -- Show listchars while in Insert mode.
-local normal_listchars = {
-  extends = '»',
-  precedes = '«',
-  trail = '∙',
-}
-local insert_listchars = {
-  eol = '¶',
-  tab = '--▸',
-  space = '·',
-  lead = '·',
-  nbsp = '¤',
-}
-vim.opt.showbreak = '↳'
-vim.opt.list = true
-vim.opt.listchars = normal_listchars
-vim.api.nvim_create_augroup('InsertModeListChars', { clear = true })
-vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
-  group = 'InsertModeListChars',
-  pattern = '*',
-  callback = function(args)
-    if vim.tbl_contains({ 'quickfix', 'prompt' }, args.match) then
-      return
+do
+  local normal_listchars = {
+    extends = '»',
+    precedes = '«',
+    trail = '∙',
+  }
+
+  local insert_listchars = {
+    eol = '¶',
+    tab = '--▸',
+    space = '·',
+    lead = '·',
+    nbsp = '¤',
+  }
+
+  vim.opt.showbreak = '↳'
+  vim.opt.list = true
+  vim.opt.listchars = normal_listchars
+
+  vim.api.nvim_create_augroup('InsertModeListChars', { clear = true })
+  vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
+    group = 'InsertModeListChars',
+    pattern = '*',
+    callback = function(args)
+      if vim.tbl_contains({ 'quickfix', 'prompt' }, args.match) then
+        return
+      end
+
+      vim.opt_local.listchars = args.event == 'InsertEnter' and insert_listchars or normal_listchars
+
+      -- When we first enter Insert mode, the listchars in indentation are not
+      -- visible until the cursor is first moved, unless we refresh ibl first.
+      require('ibl').debounced_refresh(args.buf)
     end
-
-    if args.event == 'InsertEnter' then
-      vim.opt_local.listchars = insert_listchars
-    else
-      vim.opt_local.listchars = normal_listchars
-    end
-
-    require('ibl').debounced_refresh(0)
-  end
-})
-
-vim.filetype.add({
-  filename = {
-    ['flake.lock'] = 'json',
-  },
-})
-
--- Keymaps when an LSP is attached to the buffer.
-local lsp_lines = require('lsp_lines')
-local lsp_mappings = {
-  { 'n', 'gD', vim.lsp.buf.declaration, { silent = true, buffer = true } },
-  { 'n', 'gd', vim.lsp.buf.definition, { silent = true, buffer = true } },
-  { 'n', 'K', vim.lsp.buf.hover, { silent = true, buffer = true } },
-  { 'n', 'gi', vim.lsp.buf.implementation, { silent = true, buffer = true } },
-  { 'n', '<C-k>', vim.lsp.buf.signature_help, { silent = true, buffer = true } },
-  { 'n', '<Leader>t', vim.lsp.buf.type_definition, { silent = true, buffer = true } },
-  { 'n', '<Leader>r', vim.lsp.buf.rename, { silent = true, buffer = true } },
-  { 'n', '<Leader>c', vim.lsp.buf.code_action, { silent = true, buffer = true } },
-  { 'n', '<Leader>R', vim.lsp.buf.references, { silent = true, buffer = true } },
-  { 'n', '<Leader>f', vim.lsp.buf.format, { silent = true, buffer = true } },
-  { 'n', '<Leader>d', function()
-    local virt_text = vim.diagnostic.config().virtual_text
-    vim.diagnostic.config({
-      virtual_text = not virt_text,
-      virtual_lines = virt_text,
-    })
-  end },
-}
+  })
+end
 
 -- Parameter highlighting.
-local hlargs = require('hlargs')
-hlargs.setup()
-
-vim.api.nvim_create_augroup('LspMappings', { clear = true })
-vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
-  group = 'LspMappings',
-  pattern = '*',
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client == nil then
-      return
-    end
-
-    local caps = client.server_capabilities
-    local hasSemanticTokens = caps ~= nil and caps.semanticTokensProvider and caps.semanticTokensProvider.full
-
-    if args.event == 'LspAttach' then
-      for _, mapping in ipairs(lsp_mappings) do
-        vim.keymap.set(unpack(mapping))
-      end
-
-      -- Show virtual lines by default.
-      lsp_lines.setup()
-      vim.diagnostic.config({
-        virtual_text = false,
-        virtual_lines = {
-          highlight_whole_line = false,
-        },
-      })
-
-      -- If LSP supports semantic tokens, disable Hlargs for the current buffer.
-      -- :h hlargs-lsp
-      if hasSemanticTokens then
-        hlargs.disable_buf(args.buf)
-      end
-    else
-      for _, mapping in ipairs(lsp_mappings) do
-        vim.keymap.del(unpack(mapping))
-      end
-
-      -- If LSP supports semantic tokens, enable Hlargs for the current buffer.
-      -- :h hlargs-lsp
-      if hasSemanticTokens then
-        hlargs.enable_buf(args.buf)
-      end
-    end
-  end
-})
-
--- :h diagnostic-signs
-vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' })
-vim.fn.sign_define('DiagnosticSignWarn', { text = '', texthl = 'DiagnosticSignWarn' })
-vim.fn.sign_define('DiagnosticSignInfo', { text = '', texthl = 'DiagnosticSignInfo' })
-vim.fn.sign_define('DiagnosticSignHint', { text = '󰞋', texthl = 'DiagnosticSignHint' })
+require('hlargs').setup()

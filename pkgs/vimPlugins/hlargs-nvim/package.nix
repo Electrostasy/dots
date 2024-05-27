@@ -1,16 +1,22 @@
-{
-  vimUtils,
-  fetchFromGitHub,
+{ vimUtils
+, fetchFromGitHub
+, lib
 }:
 
 vimUtils.buildVimPlugin {
   pname = "hlargs-nvim";
-  version = "unstable-2023-07-05";
+  version = "unstable-2024-05-18";
 
   src = fetchFromGitHub {
     owner = "m-demare";
     repo = "hlargs.nvim";
-    rev = "cfc9beab4e176a13311efe03e38e6b6fed5df4f6";
-    hash = "sha256-Mw5HArqBL6Uc1D3TVOSwgG0l2vh0Xq3bO170dkrJbwI=";
+    rev = "30fe1b3de2b7614f061be4fc9c71984a2b87e50a";
+    hash = "sha256-V3XG1SCBz+EvObW7JSNIUxGZLv6zoRXyap7nRETmUA8=";
+  };
+
+  meta = {
+    website = "https://github.com/m-demare/hlargs.nvim";
+    description = "Highlight arguments' definitions and usages, using Treesitter";
+    license = lib.licenses.gpl3;
   };
 }

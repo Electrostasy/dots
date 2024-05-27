@@ -76,7 +76,8 @@ end
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   group = augroup,
   callback = function(event)
-    local query = vim.treesitter.query.get(vim.opt_local.filetype:get(), 'showpairs')
+    local filetype = vim.opt_local.filetype:get()
+    local query = vim.treesitter.query.get(filetype, 'showpairs')
     if not query then
       vim.api.nvim_clear_autocmds({
         group = augroup,

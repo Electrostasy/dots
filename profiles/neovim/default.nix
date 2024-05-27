@@ -1,8 +1,6 @@
 { pkgs, ... }:
 
 {
-  # Configuration is written in Lua, copy it to the Nix store and symlink it
-  # to ~/.config/nvim.
   systemd.tmpfiles.settings."10-neovim"."/home/electro/.config/nvim"."L+".argument = "${./nvim}";
 
   environment.variables = {
@@ -26,7 +24,7 @@
       hlargs-nvim
       indent-blankline-nvim
       lsp_lines-nvim
-      nvim-colorizer-lua
+      nvim-highlight-colors
       nvim-treesitter.withAllGrammars
       nvim-web-devicons
 

@@ -10,7 +10,11 @@ local eval_memory = math.max(min_memory, math.floor(free_memory / 2 * 0.000001))
 vim.lsp.start({
   name = 'nil',
   cmd = { 'nil' },
-  root_dir = vim.fs.dirname(vim.fs.find({ 'flake.nix', '.git' }, { upward = true })[1]),
+  root_dir = vim.fs.root(0, {
+    'flake.nix',
+    '.git',
+  }),
+
   settings = {
     ['nil'] = {
       nix = {

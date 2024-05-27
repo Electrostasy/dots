@@ -1,14 +1,3 @@
-local root_pattern = {
-  '.luarc.json',
-  '.luarc.jsonc',
-  '.luacheckrc',
-  '.stylua.toml',
-  'stylua.toml',
-  'selene.toml',
-  'selene.yml',
-  '.git'
-}
-
 local path = vim.split(package.path, ';')
 table.insert(path, 'lua/?.lua')
 table.insert(path, 'lua/?/init.lua')
@@ -16,7 +5,16 @@ table.insert(path, 'lua/?/init.lua')
 vim.lsp.start({
   name = 'lua-language-server',
   cmd = { 'lua-language-server' },
-  root_dir = vim.fs.dirname(vim.fs.find(root_pattern, { upward = true })[1]),
+  root_dir = vim.fs.root(0, {
+    '.luarc.json',
+    '.luarc.jsonc',
+    '.luacheckrc',
+    '.stylua.toml',
+    'stylua.toml',
+    'selene.toml',
+    'selene.yml',
+    '.git'
+  }),
 
   settings = {
     Lua = {
@@ -33,5 +31,3 @@ vim.lsp.start({
     },
   },
 })
-
-vim.lsp.inlay_hint.enable()
