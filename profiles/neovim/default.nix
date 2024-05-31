@@ -35,11 +35,8 @@
       treesj
     ];
 
-    extraPython3Packages = ps: with ps; [
-      jedi-language-server
-    ];
-
     extraPackages = with pkgs; [
+      basedpyright
       clang-tools
       lua-language-server
       nil
