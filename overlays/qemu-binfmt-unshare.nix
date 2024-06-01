@@ -1,5 +1,34 @@
 final: prev:
 
+/*
+  Example on how to use:
+
+  { pkgs, self, ... }:
+  {
+    nixpkgs.overlays = [ self.overlays.qemu-binfmt-unshare ];
+    boot.binfmt = {
+      emulatedSystems = [ "aarch64-linux" ];
+
+      registrations.aarch64-linux.interpreter =
+        let
+          qemu-user = pkgs.qemu-unshare.override {
+            smartcardSupport = false;
+            spiceSupport = false;
+            openGLSupport = false;
+            virglSupport = false;
+            vncSupport = false;
+            gtkSupport = false;
+            sdlSupport = false;
+            pulseSupport = false;
+            smbdSupport = false;
+            seccompSupport = false;
+            hostCpuTargets = [ "aarch64-linux-user" ];
+          };
+        in "${qemu-user}/bin/qemu-aarch64";
+    };
+  };
+*/
+
 let
   # qemu-x86_64 doesn't support unshare on aarch64-linux (CLONE_NEWUSER):
   # https://gitlab.com/qemu-project/qemu/-/issues/871, and this questionable
