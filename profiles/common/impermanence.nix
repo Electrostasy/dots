@@ -48,7 +48,7 @@ in
     enable = lib.mkDefault false;
 
     persistentStoragePath = "/state";
-    hideMounts = config.services.xserver.enable;
+    hideMounts = config.services.gvfs.enable;
 
     directories = [
       # NixOS configuration directory, used by `nixos-rebuild` etc.

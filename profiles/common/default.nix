@@ -88,10 +88,6 @@
     package = pkgs.nixVersions.latest;
 
     settings = {
-      # Setting $NIX_PATH to Flake-provided nixpkgs allows repl and other
-      # channel-dependent programs to use the correct nixpkgs.
-      nix-path = [ "nixpkgs=${pkgs.path}" ];
-
       experimental-features = [
         "auto-allocate-uids" # Don't create `nixbld*` user accounts for builds.
         "cgroups" # Allow Nix to execute builds inside cgroups.
@@ -103,17 +99,8 @@
       use-cgroups = true;
 
       # TODO: Make configuration buildable with IFD disabled.
-      # allow-import-from-derivation = false; # Disable IFD by default.
-      flake-registry = pkgs.writeText "flake-registry.json" (builtins.toJSON {
-        flakes = [];
-        version = 2;
-      });
+      allow-import-from-derivation = true; # Enable IFD by default.
       use-xdg-base-directories = true; # Don't clutter $HOME.
-    };
-
-    registry.nixpkgs = {
-      from = { type = "indirect"; id = "nixpkgs"; };
-      flake = self.inputs.nixpkgs;
     };
   };
 
