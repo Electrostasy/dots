@@ -23,7 +23,8 @@
   outputs = { self, nixpkgs, ... }: let
     inherit (nixpkgs) lib;
 
-    forAllSystems = lib.genAttrs [
+    forEverySystem = lib.genAttrs lib.systems.flakeExposed;
+    forEachSystem = lib.genAttrs [
       "x86_64-linux"
       "aarch64-linux"
     ];
@@ -39,25 +40,66 @@
     };
 
     /*
-      Attribute set of all the packages packaged in this flake, a mapping of
-      package names to their derivations.
-
       If generated from the default overlay, namespaced package sets will bring
       in all of the packages under the namespace, making it unclear what packages
       are actually provided by this flake.
     */
-    legacyPackages = forAllSystems (system:
+    legacyPackages = forEachSystem (system:
       lib.packagesFromDirectoryRecursive {
         callPackage = nixpkgs.legacyPackages.${system}.callPackage;
         directory = ./pkgs;
       });
 
-    packages =
-      forAllSystems (system: {
-        lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
-        marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
-        phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
-      });
+    packages = forEachSystem (system: {
+      lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
+      marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
+      phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
+    });
+
+    devShells = forEverySystem (system: {
+      portable-nvim =
+        let
+          evaluatedConfig = import "${nixpkgs}/nixos/lib/eval-config.nix" {
+            specialArgs = { inherit self; };
+            inherit system;
+
+            modules = [
+              ./profiles/common
+              ./profiles/neovim
+              {
+                # Add the Neovim configuration as a plugin.
+                programs.neovim.plugins = [(
+                  pkgs.vimUtils.buildVimPlugin {
+                    name = "lua-config";
+                    src = ./profiles/neovim/nvim;
+
+                    postInstall = ''
+                      mv $out/init.lua $out/plugin/init.lua
+                    '';
+                  }
+                )];
+              }
+            ];
+          };
+          inherit (evaluatedConfig) config pkgs;
+        in
+          pkgs.mkShellNoCC {
+            name = "portable-neovim-shell";
+            packages = [ config.programs.neovim.finalPackage ];
+
+            shellHook = ''
+              export EDITOR=${config.environment.variables.EDITOR}
+            '';
+          };
+    });
+
+    nixosModules = {
+      mpv = import ./modules/mpv;
+      neovim = import ./modules/neovim;
+      unl0kr-settings = import ./modules/unl0kr-settings;
+    };
+
+    homeManagerModules.wayfire = import ./modules/user/wayfire;
 
     nixosConfigurations =
       let
@@ -79,15 +121,5 @@
               ];
             })
           hosts;
-
-    nixosModules = {
-      mpv = import ./modules/mpv;
-
-      neovim = import ./modules/neovim;
-
-      unl0kr-settings = import ./modules/unl0kr-settings;
-    };
-
-    homeManagerModules.wayfire = import ./modules/user/wayfire;
   };
 }
