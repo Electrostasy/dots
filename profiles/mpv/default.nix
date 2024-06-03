@@ -5,6 +5,7 @@
     enable = true;
 
     scripts = [
+      pkgs.mpvScripts.thumbfast
       {
         script = pkgs.mpvScripts.uosc;
         settings = {
