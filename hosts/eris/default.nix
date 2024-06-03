@@ -23,11 +23,7 @@
 
     wslConf = {
       automount.root = "/mnt";
-      network = {
-        hostname = config.networking.hostName;
-        generateHosts = false;
-        generateResolvConf = false;
-      };
+      network.hostname = config.networking.hostName;
     };
   };
 
@@ -35,8 +31,6 @@
   # WSL as electro, we still start in /home/nixos instead of the proper directory,
   # so just copy the config symlink after creating it in the neovim profile.
   systemd.tmpfiles.settings."11-neovim"."/home/nixos/.config/nvim"."C".argument = "/home/electro/.config/nvim";
-
-  networking.nameservers = [ "9.9.9.9" ];
 
   services.tailscale.enable = false;
 
@@ -62,9 +56,5 @@
   users.users.${config.wsl.defaultUser} = {
     extraGroups = [ "wheel" ];
     uid = 1000;
-    openssh.authorizedKeys.keyFiles = [
-      ../terra/ssh_host_ed25519_key.pub
-      ../venus/ssh_host_ed25519_key.pub
-    ];
   };
 }
