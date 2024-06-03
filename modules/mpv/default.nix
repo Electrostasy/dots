@@ -6,8 +6,6 @@ let
   # Lists in mpv config are separated by comma.
   listToValue = lib.concatMapStringsSep "," builtins.toString;
   settingsFormat = pkgs.formats.keyValue { inherit listToValue; };
-
-  evaluatedScripts = cfg.scripts pkgs.mpvScripts;
 in
 
 {
@@ -43,7 +41,7 @@ in
       };
 
       scripts = lib.mkOption {
-        type = with lib.types; functionTo (listOf (either package (submodule {
+        type = with lib.types; listOf (either package (submodule {
           options = {
             script = lib.mkOption {
               type = lib.types.package;
@@ -56,7 +54,7 @@ in
               };
             };
           };
-        })));
+        }));
 
         description = "Scripts to install with optional configuration.";
 
@@ -72,7 +70,7 @@ in
 
   config = lib.mkIf cfg.enable {
     programs.mpv.finalPackage = pkgs.wrapMpv cfg.package {
-      scripts = builtins.map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) evaluatedScripts;
+      scripts = builtins.map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
     };
 
     environment = {
@@ -115,7 +113,7 @@ in
               "xdg/mpv/script-opts/${scriptName}.conf"
               { source = settingsFormat.generate "${scriptName}.conf" settings; };
 
-          scriptsWithSettings = lib.filter (s: !lib.isDerivation s && lib.isAttrs s) evaluatedScripts;
+          scriptsWithSettings = lib.filter (s: !lib.isDerivation s && lib.isAttrs s) cfg.scripts;
         in
           builtins.listToAttrs
             (builtins.map

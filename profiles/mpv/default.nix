@@ -4,9 +4,9 @@
   programs.mpv = {
     enable = true;
 
-    scripts = mpvScripts: [
+    scripts = [
       {
-        script = mpvScripts.uosc;
+        script = pkgs.mpvScripts.uosc;
         settings = {
           top_bar = "never";
           foreground = "dcd7baff";
@@ -88,7 +88,7 @@
       autofit = "50%";
 
       # Language priority
-      alang = [ "ja" "jp" "jpn" "en" "eng" ];
+      alang = [ "ja" "jpn" "en" "eng" ];
       slang = [ "en" "eng" ];
     };
 
