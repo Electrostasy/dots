@@ -77,11 +77,10 @@
         "62.77.159.143"
       ];
       routes = [
-        { routeConfig = {
-            Scope = "link";
-            Destination = "169.254.0.1/32";
-            Gateway = "0.0.0.0";
-          };
+        {
+          Scope = "link";
+          Destination = "169.254.0.1/32";
+          Gateway = "0.0.0.0";
         }
       ];
 
