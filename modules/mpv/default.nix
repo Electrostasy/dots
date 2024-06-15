@@ -69,7 +69,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.mpv.finalPackage = pkgs.wrapMpv cfg.package {
+    programs.mpv.finalPackage = cfg.package.wrapper {
+      mpv = cfg.package;
       scripts = builtins.map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
     };
 
