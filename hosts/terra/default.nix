@@ -1,4 +1,4 @@
-{ config, pkgs, self, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -13,14 +13,7 @@
     ./gaming.nix
   ];
 
-  nixpkgs = {
-    hostPlatform = "x86_64-linux";
-    overlays = with self.overlays; [
-      f3d-assimp
-      f3d-interactive
-      f3d-occt
-    ];
-  };
+  nixpkgs.hostPlatform = "x86_64-linux";
 
   system.stateVersion = "22.05";
 
@@ -51,7 +44,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    f3d
     flacon
     freecad
     freerdp

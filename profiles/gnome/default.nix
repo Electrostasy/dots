@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, self, ... }:
 
 {
   imports = [
@@ -6,6 +6,12 @@
     ./debloat.nix
     ./extensions.nix
     ./mimetypes.nix
+  ];
+
+  nixpkgs.overlays = [
+    self.overlays.f3d-assimp
+    self.overlays.f3d-interactive
+    self.overlays.f3d-occt
   ];
 
   services.xserver = {
@@ -65,6 +71,7 @@
 
       # Graphical programs.
       amberol
+      exhibit
       eyedropper
       fractal
       keepassxc
