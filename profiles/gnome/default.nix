@@ -101,6 +101,9 @@
       # Enables a way to easily reference other values in this attrset without
       # using recursive attrsets.
       settings = lib.fix (self: with lib.gvariant; {
+        # Disable ^I GTK inspector warning.
+        "org/gtk/gtk4/settings/debug".inspector-warning = false;
+
         "org/gnome/desktop/calendar".show-weekdate = true;
         "org/gnome/desktop/input-sources".sources = [
           (mkTuple [ "xkb" "us" ])
