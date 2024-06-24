@@ -74,6 +74,7 @@
       exhibit
       eyedropper
       fractal
+      freerdp
       keepassxc
       papers
       resources

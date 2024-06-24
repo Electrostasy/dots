@@ -176,7 +176,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    freerdp # xfreerdp
     imv
     keepassxc
     libreoffice-fresh

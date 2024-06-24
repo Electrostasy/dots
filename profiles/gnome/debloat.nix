@@ -46,7 +46,6 @@
   environment.gnome.excludePackages = with pkgs.gnome; [
     baobab
     epiphany
-    evince
     geary
     gnome-backgrounds
     gnome-bluetooth
@@ -60,6 +59,7 @@
     gnome-system-monitor
     gnome-themes-extra
     # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
+    pkgs.gnome-connections
     pkgs.gnome-text-editor
     pkgs.gnome-tour
     pkgs.gnome-user-docs
