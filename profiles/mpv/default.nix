@@ -37,7 +37,9 @@
 
     settings = {
       osd-bar = "no";
-      border = "no";
+      border = "yes";
+      autofit-smaller = "1920x1080";
+      cursor-autohide = "always";
 
       # PipeWire backend is selected automatically if detected, set it anyway.
       ao = "pipewire";

@@ -18,12 +18,11 @@
     pulse.enable = true;
 
     wireplumber.extraConfig = {
-      # Default volume is by default set to 0.4.
+      # Volume is by default set to 0.4.
       "60-defaults"."wireplumber.settings"."device.routes.default-sink-volume" = 1.0;
 
       "60-disable-devices"."monitor.alsa.rules" = [
         {
-          # Disable HDMI audio on the GPU.
           matches = [ { "device.product.name" = "Navi 21/23 HDMI/DP Audio Controller"; } ];
           actions.update-props."device.disabled" = true;
         }

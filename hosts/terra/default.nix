@@ -15,16 +15,38 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  system.stateVersion = "22.05";
-
   boot = {
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "ahci"
-      "nvme"
-      "usbhid"
-      "sd_mod"
-    ];
+    initrd = {
+      luks.devices."cryptroot" = {
+        device = "/dev/disk/by-partuuid/6e31b86f-1d1d-4cd8-91b3-79af16dda198";
+        allowDiscards = true;
+
+        # Restore the root subvolume from an empty snapshot.
+        postOpenCommands = ''
+          mkdir -p /mnt
+          mount -o subvol=/ /dev/mapper/cryptroot /mnt
+
+          btrfs subvolume list -o /mnt/root | cut -f9 -d' ' | while read subvolume; do
+            echo "deleting /$subvolume subvolume..."
+            btrfs subvolume delete "/mnt/$subvolume"
+          done && echo "deleting /root subvolume..." && btrfs subvolume delete /mnt/root
+
+          echo "restoring blank /root subvolume..."
+          btrfs subvolume snapshot /mnt/root-blank /mnt/root
+
+          umount /mnt
+        '';
+      };
+
+      availableKernelModules = [
+        "xhci_pci"
+        "ahci"
+        "nvme"
+        "usbhid"
+        "sd_mod"
+      ];
+    };
+
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
 
@@ -46,11 +68,9 @@
   environment.systemPackages = with pkgs; [
     flacon
     freecad
-    freerdp
     gimp
-    keepassxc
+    kicad
     libreoffice-fresh
-    neo
     nurl
     pastel
     picard
@@ -58,14 +78,7 @@
     pt-p300bt-labelmaker
     spek
     via
-    youtube-dl
   ];
-
-  programs.mpv.settings = {
-    border = "yes";
-    autofit-smaller = "1920x1080";
-    cursor-autohide = "always";
-  };
 
   hardware = {
     cpu.intel.updateMicrocode = true;
@@ -73,27 +86,25 @@
     keyboard.qmk.enable = true;
   };
 
-  # Tweaks CPU scheduler for responsiveness over throughput.
-  programs.cfs-zen-tweaks.enable = true;
-
   fileSystems = {
     "/" = {
-      device = "none";
-      fsType = "tmpfs";
+      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
+      fsType = "btrfs";
       options = [
-        "defaults"
-        "size=512M"
-        "mode=755"
+        "subvol=root"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
       ];
     };
 
     "/boot" = {
-      device = "/dev/disk/by-label/boot";
+      device = "/dev/disk/by-partuuid/ed8ad820-1751-48ca-af62-4f671f64f0f4";
       fsType = "vfat";
     };
 
     "/nix" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
       fsType = "btrfs";
       options = [
         "subvol=nix"
@@ -104,7 +115,7 @@
     };
 
     "/state" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
       fsType = "btrfs";
       options = [
         "subvol=state"
@@ -116,6 +127,10 @@
     };
   };
 
+  swapDevices = [
+    { device = "/dev/disk/by-partuuid/212fa8ad-6681-44ff-9df4-1cf6b0df55be"; randomEncryption.enable = true; }
+  ];
+
   environment.persistence.state = {
     enable = true;
 
@@ -126,6 +141,7 @@
 
       directories = [
         ".config/PrusaSlicer"
+        ".local/share/FreeCAD"
         "Documents"
         "Downloads"
         "Pictures"
@@ -189,4 +205,6 @@
       ];
     };
   };
+
+  system.stateVersion = "24.11";
 }
