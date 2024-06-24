@@ -21,18 +21,27 @@
         device = "/dev/disk/by-partuuid/6e31b86f-1d1d-4cd8-91b3-79af16dda198";
         allowDiscards = true;
 
-        # Restore the root subvolume from an empty snapshot.
+        # In order to restore the root subvolume from an empty snapshot, first
+        # the lower level subvolumes under /root which seem to get created by
+        # systemd need to be deleted.
         postOpenCommands = ''
           mkdir -p /mnt
           mount -o subvol=/ /dev/mapper/cryptroot /mnt
 
-          btrfs subvolume list -o /mnt/root | cut -f9 -d' ' | while read subvolume; do
-            echo "deleting /$subvolume subvolume..."
+          for subvolume in $(btrfs subvolume list -o /mnt/root | cut -f9 -d' '); do
+            echo "Deleting /$subvolume subvolume..."
             btrfs subvolume delete "/mnt/$subvolume"
-          done && echo "deleting /root subvolume..." && btrfs subvolume delete /mnt/root
+          done
 
-          echo "restoring blank /root subvolume..."
-          btrfs subvolume snapshot /mnt/root-blank /mnt/root
+          if [ $? -eq 0 ]; then
+            echo "Deleting /root subvolume..."
+            btrfs subvolume delete /mnt/root
+
+            echo "Restoring /root subvolume from blank snapshot..."
+            btrfs subvolume snapshot /mnt/root-blank /mnt/root
+          else
+            echo "Failed to delete subvolumes under /mnt/root!"
+          fi
 
           umount /mnt
         '';
@@ -140,6 +149,7 @@
       ];
 
       directories = [
+        ".config/FreeCAD"
         ".config/PrusaSlicer"
         ".local/share/FreeCAD"
         "Documents"
