@@ -7,7 +7,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-wsl = {
-      url = "github:nix-community/NixOS-WSL/main";
+      # Restore when fixed:
+      # https://github.com/nix-community/NixOS-WSL/pull/503
+      # url = "github:nix-community/NixOS-WSL/main";
+      url = "github:getchoo/NixOS-WSL/hardware-graphics";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {

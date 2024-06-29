@@ -29,11 +29,7 @@
     bluetooth.powerOnBoot = false;
     sensor.iio.enable = true; # orientation detection for auto-rotate.
 
-    opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
-    };
+    graphics.enable = true;
 
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.stable;

@@ -68,7 +68,7 @@
 
       credential.helper =
         lib.mkIf
-          (config.services.xserver.enable or (with config.hardware; opengl.enable or opengl.driSupport))
+          (config.services.xserver.enable or config.hardware.graphics.enable)
           "${pkgs.git-credential-keepassxc}/bin/git-credential-keepassxc --git-groups";
 
       user = {
