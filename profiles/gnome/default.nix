@@ -313,18 +313,37 @@
       let
         script = pkgs.writeShellApplication {
           name = "blur-my-shell-fix";
-          runtimeInputs = [ config.systemd.package ];
+          runtimeInputs = [
+            config.systemd.package
+            pkgs.jq
+          ];
 
           text = ''
-            service='org.gnome.Shell.Extensions'
-            object='/org/gnome/Shell/Extensions'
-            interface='org.gnome.Shell.Extensions'
-            extension_uuid='blur-my-shell@aunetx'
-            for method in DisableExtension EnableExtension; do
-              busctl --user call $service $object $interface $method s $extension_uuid
-              # Wait a bit before re-enabling, shorter time does not always work.
-              sleep 0.5
-            done
+            function get_current_state() {
+              busctl --user call \
+                'org.gnome.Mutter.DisplayConfig' \
+                '/org/gnome/Mutter/DisplayConfig' \
+                'org.gnome.Mutter.DisplayConfig' \
+                'GetCurrentState' -j
+            }
+
+            function toggle_extension() {
+              extension_uuid="$1"
+              for method in "DisableExtension" "EnableExtension"; do
+                busctl --user call \
+                  'org.gnome.Shell.Extensions' \
+                  '/org/gnome/Shell/Extensions' \
+                  'org.gnome.Shell.Extensions' \
+                  "$method" 's' "$extension_uuid"
+
+                sleep 0.5 # wait a bit before re-enabling.
+              done
+            }
+
+            # Only run if any display has fractional scaling enabled.
+            if [ "$(get_current_state | jq '.data[2] | map(fmod(.[2]; 1) | select(. != 0)) | length')" -ne '0' ]; then
+              toggle_extension 'blur-my-shell@aunetx'
+            fi
           '';
         };
         desktopEntry = pkgs.makeDesktopItem {
