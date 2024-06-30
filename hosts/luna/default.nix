@@ -4,7 +4,6 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
-    "${modulesPath}/profiles/minimal.nix"
     ../../profiles/shell
     ../../profiles/ssh
     self.inputs.nixos-hardware.nixosModules.raspberry-pi-4
@@ -102,22 +101,23 @@
   sops = {
     defaultSopsFile = ./secrets.yaml;
     secrets = {
-      piPassword.neededForUsers = true;
-      piIdentity = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
         mode = "0400";
-        owner = config.users.users.pi.name;
+        owner = config.users.users.electro.name;
       };
     };
   };
 
   users = {
     mutableUsers = false;
-    users.pi = {
+    users.electro = {
       isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.piPassword.path;
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
       extraGroups = [ "wheel" ];
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [
+        ../mercury/ssh_host_ed25519_key.pub
         ../terra/ssh_host_ed25519_key.pub
         ../venus/ssh_host_ed25519_key.pub
       ];

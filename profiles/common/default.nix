@@ -101,6 +101,9 @@
       # TODO: Make configuration buildable with IFD disabled.
       allow-import-from-derivation = true; # Enable IFD by default.
       use-xdg-base-directories = true; # Don't clutter $HOME.
+
+      # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
+      trusted-users = [ "@wheel" ];
     };
   };
 
