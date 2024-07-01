@@ -15,11 +15,32 @@
 
   services.mullvad-vpn.enable = true;
 
+  systemd.services.mullvad-daemon = {
+    serviceConfig.LoadCredential = [ "mullvadAccount:${config.sops.secrets.mullvadAccount.path}" ];
+    path = [ config.services.mullvad-vpn.package ];
+
+    postStart = ''
+      # Wait for mullvad-daemon to initialize.
+      while ! mullvad status 2&1> /dev/null; do
+        sleep 1
+      done
+
+      if [ "$(mullvad account get)" == 'Not logged in on any account' ]; then
+        mullvad account login $(systemd-creds cat 'mullvadAccount')
+      fi
+
+      if [ $? -eq 0 ]; then
+        mullvad auto-connect set on
+        mullvad dns set default --block-ads --block-trackers --block-malware
+      fi
+    '';
+  };
+
   networking.nftables = lib.mkIf config.services.tailscale.enable {
     enable = true;
 
     # Mullvad and Tailscale will fight to the death over routing rules (and
-    # Mullvad will win) unless we set exceptions for Tailscale. Issue link:
+    # Mullvad will win) unless we set exceptions for Tailscale:
     # https://github.com/tailscale/tailscale/issues/925#issuecomment-1616354736.
     tables."mullvad-tailscale" = {
       family = "inet";
