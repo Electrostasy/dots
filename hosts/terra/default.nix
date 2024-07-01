@@ -9,6 +9,7 @@
     ../../profiles/neovim
     ../../profiles/shell
     ../../profiles/ssh
+    ../luna/nfs-share.nix
     ./audio.nix
     ./gaming.nix
   ];
