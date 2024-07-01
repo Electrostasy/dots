@@ -6,6 +6,7 @@
     "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/shell
     ../../profiles/ssh
+    ./nfs-server.nix
     self.inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
@@ -70,13 +71,6 @@
       generic-extlinux-compatible.enable = true;
     };
   };
-
-  environment.systemPackages = [ pkgs.smartmontools ];
-
-  # TODO: Add the disks once testing is done.
-  # Also can't mount by UUID yet or device string:
-  # https://github.com/koverstreet/bcachefs-tools/pull/142
-  # fileSystems."/srv/pool" = { };
 
   networking = {
     dhcpcd.enable = false;

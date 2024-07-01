@@ -79,7 +79,6 @@
 
   systemd.network = {
     enable = true;
-    wait-online.anyInterface = true;
 
     networks."40-wired" = {
       name = "en*";

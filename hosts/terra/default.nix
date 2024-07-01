@@ -178,8 +178,6 @@
   systemd.network = {
     enable = true;
 
-    wait-online.timeout = 0;
-
     networks."40-wired" = {
       name = "enp*";
 

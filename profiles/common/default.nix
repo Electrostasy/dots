@@ -107,6 +107,9 @@
     };
   };
 
+  # Setting the timeout to 0 breaks mullvad-daemon, nfs mounts, a lot of things.
+  systemd.network.wait-online.anyInterface = lib.mkDefault true;
+
   security.sudo = {
     # Only enable sudo by default if we have at least 1 non-system user.
     enable = lib.mkDefault
