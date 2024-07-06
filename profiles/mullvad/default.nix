@@ -20,19 +20,31 @@
     path = [ config.services.mullvad-vpn.package ];
 
     postStart = ''
-      # Wait for mullvad-daemon to initialize.
-      while ! mullvad status 2&1> /dev/null; do
+      while ! mullvad status > /dev/null; do
+        echo "Waiting for mullvad-daemon to initialize..."
         sleep 1
       done
+      echo "mullvad-daemon initialized."
 
-      if [ "$(mullvad account get)" == 'Not logged in on any account' ]; then
-        mullvad account login $(systemd-creds cat 'mullvadAccount')
+      account="$(systemd-creds cat 'mullvadAccount')"
+      if [ "$(mullvad account get 2>&1 | head -n 1 | cut -d ':' -f 2 | tr -d ' ')" != "$account" ]; then
+        echo "Logging into Mullvad..."
+        mullvad account login "$account"
       fi
 
-      if [ $? -eq 0 ]; then
-        mullvad auto-connect set on
-        mullvad dns set default --block-ads --block-trackers --block-malware
+      if [ $? -ne 0 ]; then
+        echo "Could not log into Mullvad! Exiting..."
+        exit 1
       fi
+
+      # If this is the first time connecting after logging in, it will most likely
+      # fail, so we need to retry if necessary.
+      while
+        echo "Connecting to Mullvad..."
+        mullvad connect
+        sleep 1
+        [ "$(mullvad status | cut -d ':' -f 1)" == 'Blocked' ]
+      do true; done
     '';
   };
 
