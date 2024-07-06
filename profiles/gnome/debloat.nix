@@ -43,29 +43,29 @@
   # Most of these are optional programs added by services.gnome.core-services
   # and etc., but the module sets other useful options so it is better to
   # exclude these instead of disabling the module.
-  environment.gnome.excludePackages = with pkgs.gnome; [
-    baobab
-    epiphany
-    geary
-    gnome-backgrounds
-    gnome-bluetooth
-    gnome-characters
-    gnome-clocks
-    gnome-color-manager
-    gnome-contacts
-    gnome-font-viewer
-    gnome-logs
-    gnome-music
-    gnome-system-monitor
-    gnome-themes-extra
+  environment.gnome.excludePackages = [
     # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
+    pkgs.baobab
+    pkgs.epiphany
+    pkgs.geary
     pkgs.gnome-connections
+    pkgs.gnome-font-viewer
+    pkgs.gnome-system-monitor
     pkgs.gnome-text-editor
+    pkgs.gnome-themes-extra
     pkgs.gnome-tour
     pkgs.gnome-user-docs
+    pkgs.gnome.gnome-backgrounds
+    pkgs.gnome.gnome-bluetooth
+    pkgs.gnome.gnome-characters
+    pkgs.gnome.gnome-clocks
+    pkgs.gnome.gnome-color-manager
+    pkgs.gnome.gnome-contacts
+    pkgs.gnome.gnome-logs
+    pkgs.gnome.gnome-music
     pkgs.orca
-    simple-scan
-    totem
-    yelp
+    pkgs.simple-scan
+    pkgs.totem
+    pkgs.yelp
   ];
 }

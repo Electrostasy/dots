@@ -62,7 +62,7 @@
       morewaita-icon-theme
 
       # Nautilus extensions.
-      gnome.nautilus-python
+      nautilus-python
       nautilus-amberol
       nautilus-vimv
 
