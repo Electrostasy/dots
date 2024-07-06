@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   environment = {
@@ -25,8 +25,9 @@
     ];
 
     shellAliases = {
-      a2c = pkgs.aria2.meta.mainProgram;
-      wh = pkgs.magic-wormhole-rs.meta.mainProgram;
+      a2c = "aria2c";
+      wh = "wormhole-rs";
+      ts = lib.mkIf config.services.tailscale.enable "tailscale";
     };
 
     persistence.state.users.electro.directories = [
