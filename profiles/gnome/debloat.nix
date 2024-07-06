@@ -47,6 +47,7 @@
     # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
     pkgs.baobab
     pkgs.epiphany
+    pkgs.evince
     pkgs.geary
     pkgs.gnome-connections
     pkgs.gnome-font-viewer
