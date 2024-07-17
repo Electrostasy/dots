@@ -56,41 +56,37 @@
       phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
     });
 
-    devShells = forEverySystem (system: {
-      portable-nvim =
-        let
-          evaluatedConfig = import "${nixpkgs}/nixos/lib/eval-config.nix" {
-            specialArgs = { inherit self; };
-            inherit system;
+    apps = forEverySystem (system: {
+      nvim = {
+        type = "app";
+        program =
+          let
+            evaluatedModules = import "${nixpkgs}/nixos/lib/eval-config.nix" {
+              specialArgs = { inherit self; };
+              inherit system;
 
-            modules = [
-              ./profiles/common
-              ./profiles/neovim
-              {
-                # Add the Neovim configuration as a plugin.
-                programs.neovim.plugins = [(
-                  pkgs.vimUtils.buildVimPlugin {
-                    name = "lua-config";
-                    src = ./profiles/neovim/nvim;
+              modules = [
+                ./profiles/common
+                ./profiles/neovim
+                ({ pkgs, ... }: {
+                  # Add the Neovim configuration as a plugin.
+                  programs.neovim.plugins = [(
+                    pkgs.vimUtils.buildVimPlugin {
+                      name = "lua-config";
+                      src = ./profiles/neovim/nvim;
+                      postInstall = ''
+                        mv $out/init.lua $out/plugin/init.lua
+                      '';
+                    }
+                  )];
+                })
+              ];
+            };
 
-                    postInstall = ''
-                      mv $out/init.lua $out/plugin/init.lua
-                    '';
-                  }
-                )];
-              }
-            ];
-          };
-          inherit (evaluatedConfig) config pkgs;
-        in
-          pkgs.mkShellNoCC {
-            name = "portable-neovim-shell";
-            packages = [ config.programs.neovim.finalPackage ];
-
-            shellHook = ''
-              export EDITOR=${config.environment.variables.EDITOR}
-            '';
-          };
+            neovim = evaluatedModules.config.programs.neovim.finalPackage;
+          in
+            "${neovim}/bin/nvim";
+      };
     });
 
     nixosModules = {
