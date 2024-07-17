@@ -75,16 +75,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1719426072,
-        "narHash": "sha256-UCu4JeoCE4MuDRuhzJsYp6oP7lCUFJyaE0B+l5v47Pg=",
-        "owner": "getchoo",
+        "lastModified": 1721226275,
+        "narHash": "sha256-fwTSeMR1senkBPaKQyOkbkmFu3+8jj3UHoLZ3TcrOfw=",
+        "owner": "nix-community",
         "repo": "NixOS-WSL",
-        "rev": "2107f7845decbbd7e2f01406ffae742fc99e80cd",
+        "rev": "8ebede998342477736e0d0acdcc13ddb166a335f",
         "type": "github"
       },
       "original": {
-        "owner": "getchoo",
-        "ref": "hardware-graphics",
+        "owner": "nix-community",
+        "ref": "main",
         "repo": "NixOS-WSL",
         "type": "github"
       }
