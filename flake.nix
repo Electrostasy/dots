@@ -52,7 +52,7 @@
 
     packages = forEachSystem (system: {
       lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
-      marsImage = self.nixosConfigurations.mars.config.system.build.sdImage;
+      deimosImage = self.nixosConfigurations.deimos.config.system.build.sdImage;
       phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
     });
 

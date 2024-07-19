@@ -15,7 +15,7 @@ The table below lists the managed hosts and their descriptions:
 | **eris** | WSL | Primary PC at work |
 | **kepler** | VPS | Matrix homeserver <br/> Headscale |
 | **luna** | Raspberry Pi Compute Module 4 | NAS |
-| **mars** | Raspberry Pi Zero 2 W | - |
+| **deimos** | Raspberry Pi Zero 2 W | - |
 | **mercury** | Asus ROG Flow Z13 (2022) | Personal/work laptop |
 | **phobos** | Raspberry Pi 4 Model B | Klipper <br/> Moonraker <br/> Mainsail |
 | **terra** | Desktop | Primary PC at home |
@@ -70,19 +70,19 @@ attach it to your carrier board. For more info, read this [guide].
 </details>
 
 <details>
-<summary>mars</summary>
+<summary>deimos</summary>
 
-### mars
+### deimos
 
-The host [mars](./hosts/mars/default.nix) is a Raspberry Pi Zero 2 W, currently
+The host [deimos](./hosts/deimos/default.nix) is a Raspberry Pi Zero 2 W, currently
 unused. It can be installed on a Raspberry Pi Zero 2 W by first generating the
 SD image:
 ```sh
-nix build github:Electrostasy/dots#marsImage
+nix build github:Electrostasy/dots#deimosImage
 ```
 
 Flash the SD image to a selected microSD card (up to 32 GB in size) with the SD
-image in `./result/sd-image/mars-sd-image-...-aarch64-linux.img` and you can
+image in `./result/sd-image/deimos-sd-image-...-aarch64-linux.img` and you can
 boot straight away.
 </details>
 
