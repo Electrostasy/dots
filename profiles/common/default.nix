@@ -55,23 +55,6 @@
     config.allowAliases = false;
     overlays = [
       self.overlays.default
-
-      # Python recently got updated to default to 3.12, and that implicitly
-      # broke a lot of things:
-
-      # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/326595.
-      (final: prev: {
-        freecad = prev.freecad.override {
-          python3Packages = prev.python311Packages;
-        };
-      })
-
-      # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/326142.
-      (final: prev: {
-        kicad = prev.kicad.override {
-          python3 = prev.python311;
-        };
-      })
     ];
   };
 
