@@ -15,7 +15,7 @@
     imageBaseName = "${config.networking.hostName}-sd-image";
     compressImage = false;
 
-    populateFirmwareCommands = /* bash */ ''
+    populateFirmwareCommands = ''
       cat <<EOF > ./firmware/config.txt
       arm_64bit=1
       enable_uart=1
@@ -26,7 +26,7 @@
       cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{bootcode.bin,fixup.dat,start.elf} ./firmware
     '';
 
-    populateRootCommands = /* bash */ ''
+    populateRootCommands = ''
       mkdir -p ./files/boot
       ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
     '';

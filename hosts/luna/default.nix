@@ -16,7 +16,7 @@
     imageBaseName = "${config.networking.hostName}-sd-image";
     compressImage = false;
 
-    populateFirmwareCommands = /* bash */ ''
+    populateFirmwareCommands = ''
       cat <<EOF > ./firmware/config.txt
       armstub=armstub8-gic.bin
       enable_gic=1
@@ -38,7 +38,7 @@
       cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{fixup4.dat,start4.elf,bcm2711-rpi-cm4.dtb} ./firmware
     '';
 
-    populateRootCommands = /* bash */ ''
+    populateRootCommands = ''
       mkdir -p ./files/boot
       ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
     '';
