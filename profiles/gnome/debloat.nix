@@ -44,7 +44,15 @@
   # and etc., but the module sets other useful options so it is better to
   # exclude these instead of disabling the module.
   environment.gnome.excludePackages = [
-    # pkgs.glib # for xdg-* commands to work correctly on gnome, `gio` is needed.
+    # For xdg-* commands to work correctly on gnome, `gio` is needed, provided
+    # by glib:
+    # pkgs.glib
+
+    # https://gitlab.gnome.org/GNOME/gnome-shell-extensions/-/issues/512
+    # For `system-monitor` shell extension to work correctly, the GNOME Core
+    # program `system-monitor` is required:
+    # pkgs.gnome-system-monitor
+
     pkgs.baobab
     pkgs.epiphany
     pkgs.evince
@@ -52,7 +60,6 @@
     pkgs.gnome-connections
     pkgs.gnome-console
     pkgs.gnome-font-viewer
-    pkgs.gnome-system-monitor
     pkgs.gnome-text-editor
     pkgs.gnome-themes-extra
     pkgs.gnome-tour

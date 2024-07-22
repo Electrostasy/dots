@@ -1,25 +1,24 @@
 { config, pkgs, lib, ... }:
 
 {
-  environment = {
-    # https://github.com/fflewddur/tophat/issues/106#issuecomment-1848319826
-    variables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
-    systemPackages = [ pkgs.libgtop ] ++ (with pkgs.gnomeExtensions; [
-      blur-my-shell
-      desktop-cube
-      native-window-placement
-      panel-date-format
-      tiling-assistant
-      tophat
-    ]);
-  };
+  environment.systemPackages = with pkgs.gnomeExtensions; [
+    blur-my-shell
+    desktop-cube
+    native-window-placement
+    panel-date-format
+    tiling-assistant
+  ];
 
   programs.dconf.profiles.user.databases = [{
     settings = with lib.gvariant; {
       "org/gnome/shell".enabled-extensions =
         builtins.map
           (x: x.extensionUuid)
-          (lib.filter (p: p ? extensionUuid) config.environment.systemPackages);
+          (lib.filter (p: p ? extensionUuid) config.environment.systemPackages)
+        # For extensions packaged together with `gnome-shell-extensions`, but
+        # that do not have an individual uuid and package entry listed in nixpkgs'
+        # pkgs/desktops/gnome/extensions/extensionRenames.nix file:
+        ++ [ "system-monitor@gnome-shell-extensions.gcampax.github.com" ];
 
       "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
@@ -49,12 +48,6 @@
         tile-top-half = [ "<Super>w" ];
         tile-topleft-quarter = [ "<Alt><Super>q" ];
         tile-topright-quarter = [ "<Alt><Super>e" ];
-      };
-
-      "org/gnome/shell/extensions/tophat" = {
-        cpu-display = "both";
-        mem-display = "both";
-        show-disk = false;
       };
     };
   }];
