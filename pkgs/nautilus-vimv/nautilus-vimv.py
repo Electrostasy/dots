@@ -4,6 +4,7 @@ from pathlib import Path
 from subprocess import Popen
 from typing import List
 from urllib.parse import urlparse, unquote
+from os import environ
 
 
 class BulkRenameMenuProvider(GObject.GObject, Nautilus.MenuProvider):
@@ -32,10 +33,7 @@ class BulkRenameMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     def _open_vimv_for_entries(self, menu, files: List[Path]) -> None:
         cwd = self._find_common_cwd(files)
         cmd = [
-            "/usr/bin/env",
-            "kgx",
-            f"--working-directory={cwd}",
-            f"--title=Bulk Renaming in '{cwd}'",
+            environ["TERMINAL"],
             "--",
             "/usr/bin/env",
             "vimv",

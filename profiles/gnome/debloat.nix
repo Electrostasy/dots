@@ -50,6 +50,7 @@
     pkgs.evince
     pkgs.geary
     pkgs.gnome-connections
+    pkgs.gnome-console
     pkgs.gnome-font-viewer
     pkgs.gnome-system-monitor
     pkgs.gnome-text-editor

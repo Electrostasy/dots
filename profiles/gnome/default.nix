@@ -55,7 +55,10 @@
       ];
     };
 
-    sessionVariables.GTK_THEME = "adw-gtk3-dark";
+    sessionVariables = {
+      TERMINAL = "ptyxis";
+      GTK_THEME = "adw-gtk3-dark";
+    };
 
     systemPackages = with pkgs; [
       adw-gtk3
@@ -77,6 +80,7 @@
       freerdp
       keepassxc
       papers
+      ptyxis
       resources
       tagger
       warp
@@ -113,14 +117,14 @@
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
           gtk-enable-primary-paste = false;
+          monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
         };
 
-        "org/gnome/Console" = {
-          # Console seems to not be able to actually use the system font correctly,
-          # but Monospace also appears to be the real system monospace font.
-          use-system-font = false;
-          custom-font = "Monospace 10";
+        "org/gnome/Ptyxis/Shortcuts".close-tab = "<Shift><Control>w";
+        "org/gnome/Ptyxis" = {
+          new-tab-position = "next";
+          restore-session = false;
         };
 
         "org/gnome/desktop/media-handling".automount = false;
@@ -170,7 +174,7 @@
 
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
-          command = "/usr/bin/env kgx";
+          command = "/usr/bin/env ptyxis --new-window";
           name = "Terminal";
         };
 
