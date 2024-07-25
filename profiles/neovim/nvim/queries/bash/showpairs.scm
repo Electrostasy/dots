@@ -13,3 +13,11 @@
 (test_command (
   ("[[" @opening)
   ("]]" @closing)))
+
+(test_command (
+  ("[" @opening)
+  ("]" @closing)))
+
+(compound_statement (
+  ("{" @opening)
+  ("}" @closing)))
