@@ -1,11 +1,6 @@
 { config, lib, ... }:
 
 {
-  environment.persistence.state.files = [
-    "/etc/ssh/ssh_host_ed25519_key"
-    "/etc/ssh/ssh_host_ed25519_key.pub"
-  ];
-
   services.openssh = {
     enable = lib.mkDefault true;
 
@@ -42,16 +37,19 @@
   };
 
   programs.ssh = let sshdConfig = config.services.openssh.settings; in {
-    knownHosts = lib.filterAttrs (n: _: n != config.networking.hostName) {
-      deimos.publicKeyFile = ../../hosts/deimos/ssh_host_ed25519_key.pub;
-      kepler.publicKeyFile = ../../hosts/kepler/ssh_host_ed25519_key.pub;
-      luna.publicKeyFile = ../../hosts/luna/ssh_host_ed25519_key.pub;
-      mars.publicKeyFile = ../../hosts/mars/ssh_electro_ed25519_key.pub;
-      mercury.publicKeyFile = ../../hosts/mercury/ssh_host_ed25519_key.pub;
-      phobos.publicKeyFile = ../../hosts/phobos/ssh_host_ed25519_key.pub;
-      terra.publicKeyFile = ../../hosts/terra/ssh_host_ed25519_key.pub;
-      venus.publicKeyFile = ../../hosts/venus/ssh_host_ed25519_key.pub;
-    };
+    knownHosts = lib.pipe ../../hosts [
+      # List all the defined hosts.
+      builtins.readDir
+
+      # Assume they have a publicKeyFile in their directory.
+      (lib.mapAttrs (name: _: {
+        publicKeyFile = ../../hosts/${name}/ssh_host_ed25519_key.pub;
+      }))
+
+      # Filter for other hosts that do have a real publicKeyFile.
+      (lib.filterAttrs (name: value:
+        name != config.networking.hostName && builtins.pathExists value.publicKeyFile))
+    ];
 
     kexAlgorithms = sshdConfig.KexAlgorithms;
     ciphers = sshdConfig.Ciphers;
