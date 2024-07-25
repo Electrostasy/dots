@@ -19,10 +19,22 @@ vim.g.loaded_2html_plugin = 1
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
   'n-c-v:block-Cursor',
-  'i-ci-ve-r-o:blinkwait250-blinkon250-blinkoff250-Cursor',
+  'i-ci-v-ve-r-o:blinkwait250-blinkon250-blinkoff250-Cursor',
   'i-ci-ve:ver25-Cursor',
   'r-cr-o:hor20-Cursor'
 }
+
+-- Restore cursor for VTE based (and some other) terminal emulators:
+-- https://github.com/neovim/neovim/issues/4396#issuecomment-1377191592
+vim.api.nvim_create_augroup('RestoreGuicursor', { clear = true })
+vim.api.nvim_create_autocmd('VimLeave', {
+  group = 'RestoreGuicursor',
+  pattern = '*',
+  callback = function()
+    vim.opt.guicursor = {}
+    vim.fn.chansend(vim.v.stderr, '\x1b[ q')
+  end
+})
 
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
