@@ -98,25 +98,25 @@
 
     homeManagerModules.wayfire = import ./modules/user/wayfire;
 
-    nixosConfigurations =
-      let
-        hosts =
-          lib.filterAttrs
-            (_: value: value == "directory")
-            (builtins.readDir ./hosts);
-      in
-        lib.mapAttrs
-          (name: _:
-            lib.nixosSystem {
-              # Inject this flake into the module system.
-              specialArgs = { inherit self; };
+    nixosConfigurations = lib.pipe ./hosts [
+      # List all the defined hosts.
+      builtins.readDir
 
-              modules = [
-                { networking.hostName = name; }
-                ./hosts/${name}
-                ./profiles/common
-              ];
-            })
-          hosts;
+      # Filter specifically for directories in case there are single files.
+      (lib.filterAttrs (name: value: value == "directory"))
+
+      # Define the NixOS configurations.
+      (lib.mapAttrs (name: value:
+        lib.nixosSystem {
+          # Inject this flake into the module system.
+          specialArgs = { inherit self; };
+
+          modules = [
+            { networking.hostName = name; }
+            ./hosts/${name}
+            ./profiles/common
+          ];
+        }))
+    ];
   };
 }
