@@ -10,7 +10,8 @@
     hostPlatform = "aarch64-linux";
 
     config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "arm-trusted-firmware-rk3588"
+      # Needed for Rockchip TPL for RK3588 in u-boot.
+      "rkbin"
     ];
   };
 
@@ -21,8 +22,13 @@
       # Include the SPI NOR flash build artifact.
       filesToInstall = oldAttrs.filesToInstall ++ [ "u-boot-rockchip-spi.bin" ];
 
-      # Use blobless Boot Loader stage 3.1.
-      BL31 = "${pkgs.armTrustedFirmwareRK3588.overrideAttrs { platformCanUseHDCPBlob = false; }}/bl31.elf";
+      # Use blobless Boot Loader stage 3.1. For some reason, the ATF packages
+      # do not have an `override` function, so we have to use `overrideAttrs`.
+      BL31 = "${pkgs.armTrustedFirmwareRK3588.overrideAttrs {
+        platformCanUseHDCPBlob = false;
+
+        meta.license = lib.licenses.bsd3;
+      }}/bl31.elf";
     });
   };
 

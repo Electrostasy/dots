@@ -38,8 +38,4 @@
       fsType = "ext4";
     };
   };
-
-  installer.cloneConfig = false;
-
-  services.openssh.settings.PermitRootLogin = lib.mkImageMediaOverride "no";
 }
