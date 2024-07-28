@@ -33,7 +33,7 @@ groups.builtin = {
   ColorColumn = { bg = palette.blueGray1 },
   Conceal = { bg = palette.none },
   CurSearch = { link = 'InkSearch' },
-  Cursor = { fg = palette.background3, bg = palette.blueGray1 },
+  Cursor = { reverse = true },
   -- lCurso = {},
   -- CursorIM = {},
   CursorColumn = { bg = blend(palette.background1, palette.background2, 0.5) },
@@ -172,6 +172,10 @@ groups.treesitter = {
   -- ['@text.todo'] = { link = 'Todo' },
 
   -- ['@comment'] = { link = 'Comment' },
+  ['@comment.error.comment'] = { fg = palette.background2, bg = palette.pink3, bold = true },
+  ['@comment.note.comment'] = { fg = palette.background2, bg = palette.blue3, bold = true },
+  ['@comment.todo.comment'] = { fg = palette.background2, bg = palette.blue1, bold = true },
+  ['@comment.warning.comment'] = { fg = palette.background2, bg = palette.yellow, bold = true },
   -- ['@punctuation'] = { link = 'Delimiter' },
 
   -- ['@constant'] = { link = 'Constant' },
