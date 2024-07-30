@@ -3,7 +3,7 @@ if vim.g.loaded_showpairs then
 end
 
 local ns = vim.api.nvim_create_namespace('ShowPairs')
-local augroup = vim.api.nvim_create_augroup('ShowPairs', { clear = false })
+local augroup = vim.api.nvim_create_augroup('ShowPairs', { })
 
 local extmark_ids = {
   opening = 1,
@@ -77,7 +77,7 @@ local try_add_highlight = function()
           end
         end
 
-        -- TODO: This will not highlight the parent node of a comment for some reason.
+        -- FIXME: This will not highlight the parent node of a comment for some reason.
         if is_range_between_nodes(cursor_range, opening_match, closing_match) then
           add_highlight(opening_match, closing_match)
           return

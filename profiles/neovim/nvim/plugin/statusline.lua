@@ -3,11 +3,11 @@ if not devicons.has_loaded() then
   devicons.setup()
 end
 
--- Override the default quickfix ftplugin, that modifies the statusline.
+-- Override the default quickfix ftplugin that modifies the statusline.
 -- :h ft-qf-plugin
 vim.g.qf_disable_statusline = 1
 
-vim.api.nvim_create_augroup('StatusLine', { clear = true })
+local augroup = vim.api.nvim_create_augroup('StatusLine', { })
 
 local mode_map = {
   ['n'] = { 'Normal', 'User1' },
@@ -60,7 +60,7 @@ do
   end
 
   vim.api.nvim_create_autocmd('ColorScheme', {
-    group = 'StatusLine',
+    group = augroup,
     pattern = '*',
     callback = function()
       hl = renew_hlgroups()
@@ -71,15 +71,6 @@ do
 
   -- Define highlight groups for the statusline.
   local stl_groups = {
-    -- StatusLineUser1 = { fg = hl.StatusLine.fg, bg = blend(hl.User1.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser2 = { fg = hl.StatusLine.fg, bg = blend(hl.User2.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser3 = { fg = hl.StatusLine.fg, bg = blend(hl.User3.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser4 = { fg = hl.StatusLine.fg, bg = blend(hl.User4.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser5 = { fg = hl.StatusLine.fg, bg = blend(hl.User5.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser6 = { fg = hl.StatusLine.fg, bg = blend(hl.User6.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser7 = { fg = hl.StatusLine.fg, bg = blend(hl.User7.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser8 = { fg = hl.StatusLine.fg, bg = blend(hl.User8.bg, hl.StatusLine.bg, 0.1) },
-    -- StatusLineUser9 = { fg = hl.StatusLine.fg, bg = blend(hl.User9.bg, hl.StatusLine.bg, 0.1) },
     StatusLineLSPError = { fg = hl.DiagnosticSignError.fg, bg = hl.StatusLine.bg },
     StatusLineLSPWarn = { fg = hl.DiagnosticSignWarn.fg, bg = hl.StatusLine.bg },
     StatusLineLSPInfo = { fg = hl.DiagnosticSignInfo.fg, bg = hl.StatusLine.bg },
@@ -172,7 +163,7 @@ local progress_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧'
 local timer = vim.uv.new_timer()
 vim.api.nvim_create_autocmd('LspProgress', {
   pattern = '*',
-  group = 'StatusLine',
+  group = augroup,
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     if not client then
@@ -208,7 +199,7 @@ vim.api.nvim_create_autocmd('LspProgress', {
 -- Based on the implementation in lualine filesize.lua component.
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'BufWrite' }, {
   pattern = '*',
-  group = 'StatusLine',
+  group = augroup,
   callback = function()
     local file = vim.api.nvim_buf_get_name(0)
     if file == nil or #file == 0 then
@@ -239,16 +230,6 @@ function __StatusLine(current)
   local gutter_width = vim.fn.getwininfo()[win_nr].textoff
 
   local groups = {}
-
-  -- Fold level.
-  -- local show_foldlevel = vim.opt.foldcolumn:get() ~= 0
-  -- if show_foldlevel then
-  --   local foldlevel = vim.fn.foldlevel(cline)
-  --   if foldlevel > 0 then
-  --     table.insert(groups, foldlevel)
-  --     gutter_width = gutter_width - int_len(foldlevel)
-  --   end
-  -- end
 
   -- Max line number in gutter.
   ---@diagnostic disable-next-line: undefined-field
@@ -289,7 +270,7 @@ function __StatusLine(current)
   if ruler then
     local format = vim.opt.rulerformat:get()
     if format == '' then
-      format = '%l:%c'
+      format = '󰳂 %l:%c'
     end
     table.insert(groups, (' %s'):format(format))
   end
@@ -314,7 +295,7 @@ function __StatusLine(current)
   if vim.opt.shortmess:get().S and vim.v.hlsearch == 1 then
     local ok, count = pcall(vim.fn.searchcount, { recompute = true })
     if ok and count.current ~= nil and count.total ~= 0 then
-      local search_icon = '  '
+      local search_icon = '  '
       if count.incomplete == 1 then
         table.insert(groups, (' %s ?/?'):format(search_icon))
       else
@@ -390,7 +371,7 @@ function __StatusLine(current)
       if current == 1 then
         branch_hl = 'Normal'
       end
-      table.insert(groups, (' %s %%#%s#  '):format(branch, branch_hl))
+      table.insert(groups, (' %s %%#%s#  '):format(branch, branch_hl))
     end
   end
 
@@ -398,7 +379,7 @@ function __StatusLine(current)
 end
 
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
-  group = 'StatusLine',
+  group = augroup,
   pattern = '*',
   callback = function()
     vim.opt_local.statusline = [[%{%v:lua.__StatusLine(0)%}]]
@@ -406,7 +387,7 @@ vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'WinLeave', 'BufLeave' }, {
-  group = 'StatusLine',
+  group = augroup,
   pattern = '*',
   callback = function()
     vim.opt_local.statusline = [[%{%v:lua.__StatusLine(1)%}]]

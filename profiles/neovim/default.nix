@@ -41,7 +41,7 @@
       indent-blankline-nvim
       lsp_lines-nvim
       nvim-highlight-colors
-      nvim-treesitter.withAllGrammars
+      nvim-treesitter.withAllGrammars # for queries and parsers.
       nvim-web-devicons
 
       # Functionality.

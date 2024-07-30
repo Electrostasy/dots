@@ -73,9 +73,8 @@ vim.keymap.set('n', '<leader>d', builtin.lsp_definitions, { silent = true })
 vim.keymap.set('n', '<leader>D', builtin.lsp_type_definitions, { silent = true })
 vim.keymap.set('n', '<leader>i', builtin.lsp_implementations, { silent = true })
 
-local telescope_group = vim.api.nvim_create_augroup('TelescopeNoCursorline', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
-  group = telescope_group,
+  group = vim.api.nvim_create_augroup('TelescopeNoCursorline', { }),
   pattern = { 'TelescopePrompt', 'TelescopeResults' },
   callback = function()
     vim.opt.cursorline = false

@@ -9,6 +9,21 @@ vim.diagnostic.config({
   virtual_lines = { highlight_whole_line = false },
 })
 
+-- Enable treesitter based parameter highlighting by default.
+require('hlargs').setup()
+
+-- :h diagnostic-signs
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '',
+      [vim.diagnostic.severity.HINT] = '󰞋',
+      [vim.diagnostic.severity.INFO] = '',
+      [vim.diagnostic.severity.WARN] = '',
+    },
+  }
+})
+
 vim.keymap.set('n', '<Leader>dt', function()
   local virt_text = vim.diagnostic.config().virtual_text
   vim.diagnostic.config({
@@ -17,7 +32,8 @@ vim.keymap.set('n', '<Leader>dt', function()
   })
 end, { desc = 'Toggle line diagnostics', silent = true })
 
-vim.api.nvim_create_augroup('LspMappings', { clear = true })
+vim.api.nvim_create_augroup('LspMappings', { })
+
 vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
   group = 'LspMappings',
   pattern = '*',
@@ -125,8 +141,9 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
     else
       for _, mapping in pairs(mappings) do
         local mode, lhs, _, opts = unpack(mapping)
-        -- TODO: Skip deleting keymaps that were never made.
-        pcall(vim.keymap.del, mode, lhs, { buffer = opts.buffer })
+        if vim.fn.mapcheck(lhs, mode) ~= '' then
+          vim.keymap.del(mode, lhs, { buffer = opts.buffer })
+        end
       end
 
       require('hlargs').enable_buf(args.buf)
@@ -140,15 +157,4 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
   end
 })
 
--- :h diagnostic-signs
-vim.diagnostic.config({
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = '',
-      [vim.diagnostic.severity.HINT] = '󰞋',
-      [vim.diagnostic.severity.INFO] = '',
-      [vim.diagnostic.severity.WARN] = '',
-    },
-  }
-})
 vim.g.loaded_lsp = 1

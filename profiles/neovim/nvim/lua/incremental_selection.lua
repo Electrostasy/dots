@@ -1,6 +1,4 @@
-if vim.g.loaded_incremental_selection then
-  return
-end
+local M = {}
 
 local _select_node = function(node)
   -- If we were previously in V-Line or V-Block modes, this will make sure `gv`
@@ -32,8 +30,8 @@ end
 -- Store a history of expanded nodes for contracting the selection.
 local parent_nodes = {}
 
--- Expand visual selection to the next parent node.
-local expand = function()
+--- Expand visual selection to the next parent node
+M.expand = function()
   local child = vim.treesitter.get_node()
   if not child then
     return
@@ -63,8 +61,8 @@ local expand = function()
   end
 end
 
--- Contract visual selection to the previous parent node.
-local contract = function()
+--- Contract visual selection to the previous parent node
+M.contract = function()
   local parent
   if #parent_nodes > 1 then
     parent = table.remove(parent_nodes)
@@ -75,7 +73,4 @@ local contract = function()
   _select_node(parent)
 end
 
-vim.keymap.set('v', '<Space>', expand, { })
-vim.keymap.set('v', '<C-Space>', contract, { })
-
-vim.g.loaded_incremental_selection = true
+return M

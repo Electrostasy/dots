@@ -16,6 +16,19 @@ vim.g.loaded_matchit = 1
 vim.g.loaded_matchparen = 1
 vim.g.loaded_2html_plugin = 1
 
+vim.opt.termguicolors = true
+vim.opt.background = 'dark'
+vim.cmd.colorscheme('poimandres')
+
+vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
+vim.opt.showmode = false -- Don't show mode in command line.
+vim.opt.shortmess:append('S') -- Hide search count from message area.
+vim.opt.ignorecase = true -- Ignore case of normal letters in patterns.
+vim.opt.smartcase = true -- Ignore case when pattern contains lowercase letters only.
+vim.opt.wrap = false
+vim.opt.splitbelow = true
+vim.opt.splitright = true
+
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
   'n-c-v:block-Cursor',
@@ -26,102 +39,14 @@ vim.opt.guicursor = {
 
 -- Restore cursor for VTE based (and some other) terminal emulators:
 -- https://github.com/neovim/neovim/issues/4396#issuecomment-1377191592
-vim.api.nvim_create_augroup('RestoreGuicursor', { clear = true })
 vim.api.nvim_create_autocmd('VimLeave', {
-  group = 'RestoreGuicursor',
+  group = vim.api.nvim_create_augroup('RestoreCursor', { }),
   pattern = '*',
   callback = function()
     vim.opt.guicursor = {}
     vim.fn.chansend(vim.v.stderr, '\x1b[ q')
   end
 })
-
-vim.opt.termguicolors = true
-vim.opt.background = 'dark'
-vim.cmd.colorscheme('poimandres')
-
--- We do not need to exhaustively specify all the fields.
----@diagnostic disable-next-line: missing-fields
-require('nvim-treesitter.configs').setup({
-  highlight = { enable = true },
-  indent = { enable = true },
-})
-
--- TODO: Signs in the signcolumn ignore cursorline background.
--- :h gitsigns-config
-require('gitsigns').setup({
-  signs = {
-    add = { text = '┃' },
-    change = { text = '┃' },
-    delete = { text = '┃' },
-    topdelete = { text = '╏' },
-    changedelete = { text = '┇' },
-    untracked = { text = '┊' },
-  },
-})
-
-vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
-vim.opt.hidden = true -- Allow dirty buffers in the background.
-vim.opt.showmode = false -- Don't show mode in command line.
-vim.opt.backspace = 'indent,eol,start'
-vim.opt.number = true
-vim.opt.updatetime = 300 -- Delay after user input before plugins are activated.
-vim.opt.timeoutlen = 500
-vim.opt.ruler = true
-
--- Hide search count from message area, it is shown in the statusline.
-vim.opt.shortmess:append('S')
-
--- Highlight line containing cursor only on active buffer.
-vim.api.nvim_create_augroup('ActiveBufferCursorline', { clear = true })
-vim.api.nvim_create_autocmd({ 'BufEnter', 'WinLeave' }, {
-  group = 'ActiveBufferCursorline',
-  pattern = '*',
-  callback = function(args)
-    vim.opt_local.cursorline = args.event == 'BufEnter'
-  end
-})
-
--- Highlight yanked region.
-vim.api.nvim_create_augroup('HighlightOnYank', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  group = 'HighlightOnYank',
-  pattern = '*',
-  callback = function()
-    vim.highlight.on_yank({ timeout = 250 })
-  end,
-})
-
--- Set relativenumber when entering visual/select line/block modes, and unset
--- it when leaving them, allowing for easier range-based selections and movements.
-vim.api.nvim_create_augroup('DynamicRelativeNumber', { clear = true })
-vim.api.nvim_create_autocmd('ModeChanged', {
-  group = 'DynamicRelativeNumber',
-  pattern = '*',
-  callback = function(args)
-    vim.opt_local.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
-  end,
-})
-
-vim.opt.hlsearch = true -- Highlight search matches.
-vim.opt.incsearch = true -- Highlight search matches while typing.
-vim.opt.inccommand = 'nosplit' -- Live preview for supporting commands.
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-
-vim.opt.autoindent = true
-
-vim.opt.wrap = false
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.keymap.set('n', '<C-h>', '<C-w>h', { silent = true })
-vim.keymap.set('n', '<C-j>', '<C-w>j', { silent = true })
-vim.keymap.set('n', '<C-k>', '<C-w>k', { silent = true })
-vim.keymap.set('n', '<C-l>', '<C-w>l', { silent = true })
-vim.keymap.set('n', '<C-Left>', '<C-w>h', { silent = true })
-vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
-vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
-vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
 
 -- Better window separators.
 vim.opt.fillchars:append({
@@ -134,43 +59,100 @@ vim.opt.fillchars:append({
   verthoriz = '╋',
 })
 
--- Show listchars while in Insert mode.
 do
+  -- Visible outside of Insert mode.
   local normal_listchars = {
     extends = '»',
     precedes = '«',
+    tab = '  ',
     trail = '∙',
   }
 
+  -- Visible only in Insert mode.
   local insert_listchars = {
     eol = '¶',
-    tab = '--▸',
-    space = '·',
     lead = '·',
     nbsp = '¤',
+    space = '·',
+    tab = '··',
   }
 
   vim.opt.showbreak = '↳'
   vim.opt.list = true
   vim.opt.listchars = normal_listchars
 
-  vim.api.nvim_create_augroup('InsertModeListChars', { clear = true })
   vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
-    group = 'InsertModeListChars',
+    group = vim.api.nvim_create_augroup('InsertModeListChars', { }),
     pattern = '*',
     callback = function(args)
       if vim.tbl_contains({ 'quickfix', 'prompt' }, args.match) then
         return
       end
 
-      vim.opt_local.listchars = args.event == 'InsertEnter' and insert_listchars or normal_listchars
+      if args.event == 'InsertEnter' then
+        vim.opt_local.listchars = insert_listchars
+      else
+        vim.opt_local.listchars = normal_listchars
+      end
 
-      -- When we first enter Insert mode, the listchars in indentation are not
-      -- visible until the cursor is first moved, unless we refresh ibl first.
-      require('ibl').debounced_refresh(args.buf)
+      -- Execute `OptionSet` autocmds manually, instead of running this nested.
+      vim.api.nvim_exec_autocmds('OptionSet', {
+        group = 'IndentBlankline',
+        pattern = 'listchars',
+      })
     end
   })
 end
 
--- Parameter highlighting.
-require('hlargs').setup()
+-- Enable treesitter highlighting for supported filetypes.
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('TreesitterHighlight', { }),
+  pattern = '*',
+  callback = function(event)
+    if vim.treesitter.query.get(event.match, 'highlights') then
+      vim.treesitter.start(event.buf, event.match)
+    end
+  end,
+})
+
+-- Highlight line containing cursor only on active buffer.
+vim.api.nvim_create_autocmd({ 'BufEnter', 'WinLeave' }, {
+  group = vim.api.nvim_create_augroup('ActiveBufferCursorline', { }),
+  pattern = '*',
+  callback = function(args)
+    vim.opt_local.cursorline = args.event == 'BufEnter'
+  end
+})
+
+-- Highlight yanked region.
+vim.api.nvim_create_autocmd('TextYankPost', {
+  group = vim.api.nvim_create_augroup('HighlightOnYank', { }),
+  pattern = '*',
+  callback = function()
+    vim.highlight.on_yank({ timeout = 250 })
+  end,
+})
+
+-- Set relativenumber when entering visual/select line/block modes, and unset
+-- it when leaving them, allowing for easier range-based selections and movements.
+vim.opt.number = true
+vim.api.nvim_create_autocmd('ModeChanged', {
+  group = vim.api.nvim_create_augroup('DynamicRelativeNumber', { }),
+  pattern = '*',
+  callback = function(args)
+    vim.opt_local.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
+  end,
+})
+
+vim.keymap.set('n', '<C-h>', '<C-w>h', { silent = true })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { silent = true })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { silent = true })
+vim.keymap.set('n', '<C-Left>', '<C-w>h', { silent = true })
+vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
+
+local incremental_selection = require('incremental_selection')
+vim.keymap.set('v', '<Space>', incremental_selection.expand)
+vim.keymap.set('v', '<C-Space>', incremental_selection.contract)
