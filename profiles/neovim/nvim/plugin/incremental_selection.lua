@@ -2,9 +2,7 @@ if vim.g.loaded_incremental_selection then
   return
 end
 
-local augroup = vim.api.nvim_create_augroup('IncrementalSelection', { clear = true })
-
-local node_visual_select = function(node)
+local _select_node = function(node)
   -- If we were previously in V-Line or V-Block modes, this will make sure `gv`
   -- is run in Visual.
   if vim.fn.visualmode() ~= 'v' then
@@ -13,117 +11,71 @@ local node_visual_select = function(node)
 
   local start_row, start_col, end_row, end_col
 
-  -- Root node can have a weird range that messes up nvim_buf_set_mark. This fix
-  -- replaces the root node's end range with its last child's end range.
-  -- Seems to be an issue with the Lua parser at least.
-  -- TODO: How to detect this?
+  -- Root node can have a weird range that messes up nvim_buf_set_mark.
+  -- This seems to be an issue with at least the tree-sitter-lua parser.
   local root = node:tree():root()
   if node:id() == root:id() then
+    -- Replace the root node's end range with its last child's end range,
+    -- making the selection range what is expected by the user.
     start_row, start_col, _, _ = root:range()
     _, _, end_row, end_col = root:child(root:child_count() - 1):range()
   else
     start_row, start_col, end_row, end_col = node:range()
   end
 
+  -- Reposition the marks and reselect them. We always target the current buffer.
   vim.api.nvim_buf_set_mark(0, '<', start_row + 1, start_col, {})
   vim.api.nvim_buf_set_mark(0, '>', end_row + 1, end_col - 1, {})
-
   vim.api.nvim_feedkeys('gv', 'nx', false)
 end
 
+-- Store a history of expanded nodes for contracting the selection.
 local parent_nodes = {}
 
--- Expand visual selection to parent node.
-local expand = function(init_node)
-  return function()
-    local parent
-    if vim.tbl_isempty(parent_nodes) then
-      parent = init_node:parent()
-    else
-      parent = parent_nodes[#parent_nodes]:parent()
-    end
+-- Expand visual selection to the next parent node.
+local expand = function()
+  local child = vim.treesitter.get_node()
+  if not child then
+    return
+  end
 
-    if not parent then
+  -- On first expansion, parent_nodes is either empty or invalid (from a newly
+  -- initiated expansion).
+  if vim.tbl_isempty(parent_nodes) or not vim.treesitter.is_ancestor(child, parent_nodes[1]) then
+    parent_nodes = { child }
+  end
+
+  -- If next parent's range is the same as the previous parent's, find a parent
+  -- node that is actually bigger, selecting what is expected by the user.
+  local parent = child:parent()
+  while parent do
+    local _, _, child_start_byte, _, _, child_end_byte = child:range(true)
+    local _, _, parent_start_byte, _, _, parent_end_byte = parent:range(true)
+
+    if parent_start_byte < child_start_byte and parent_end_byte > child_end_byte then
+      table.insert(parent_nodes, parent)
+      _select_node(parent)
       return
     end
 
-    -- If next parent's range is the same as the previous parent's, find a parent
-    -- node that is actually bigger.
-    local _, _, child_start_byte, _, _, child_end_byte = parent_nodes[#parent_nodes]:range(true)
-    while parent do
-      local _, _, parent_start_byte, _, _, parent_end_byte = parent:range(true)
-
-      if parent_start_byte < child_start_byte and child_end_byte < parent_end_byte then
-        table.insert(parent_nodes, parent)
-        node_visual_select(parent)
-        return
-      end
-
-      parent = parent:parent()
-    end
+    child = parent
+    parent = parent:parent()
   end
 end
 
--- Contract visual selection to last parent node (child).
+-- Contract visual selection to the previous parent node.
 local contract = function()
-  local node
+  local parent
   if #parent_nodes > 1 then
-    node = table.remove(parent_nodes)
+    parent = table.remove(parent_nodes)
   else
-    node = parent_nodes[#parent_nodes]
+    parent = parent_nodes[1]
   end
 
-  node_visual_select(node)
+  _select_node(parent)
 end
 
--- Select current node and define keymaps for going up and down the tree.
-local enter = function()
-  -- TODO: Setting timeoutlen like this will set it globally for the duration of
-  -- incremental selection, look into making it only for the binds with vim.on_key?
-  ---@diagnostic disable-next-line: undefined-field
-  local old_timeoutlen = vim.opt.timeoutlen:get()
-  vim.opt.timeoutlen = 0
-
-  -- Select the current node at cursor.
-  local init_node = vim.treesitter.get_node()
-  node_visual_select(init_node)
-
-  parent_nodes = { init_node }
-
-  vim.keymap.set('v', '<Space>', expand(init_node), { buffer = true })
-  vim.keymap.set('v', '<C-Space>', contract, { buffer = true })
-
-  -- Setup an autocmd to clean up after ourselves.
-  local previous_modechange = nil
-  vim.api.nvim_create_autocmd('ModeChanged', {
-    group = augroup,
-    pattern = { 'v:*', '*:v' },
-    callback = function(event)
-      if previous_modechange ~= event.match and event.match:sub(event.match:len()) ~= 'v' then
-        vim.keymap.del('v', '<Space>', { buffer = true })
-        vim.keymap.del('v', '<C-Space>', { buffer = true })
-        vim.opt.timeoutlen = old_timeoutlen
-        previous_modechange = nil
-        return true
-      end
-
-      previous_modechange = event.match
-    end,
-  })
-end
-
-vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
-  group = augroup,
-  callback = function(event)
-    if not vim.treesitter.language.get_lang(vim.opt_local.filetype:get()) then
-      if vim.fn.mapcheck('<C-Space', 'n') ~= '' then
-        vim.keymap.del('n', '<C-Space>', { buffer = event.buf })
-      end
-      return
-    end
-
-    vim.keymap.set('n', '<C-Space>', enter, { buffer = event.buf })
-  end,
-})
+vim.keymap.set('v', '<Space>', expand, { })
+vim.keymap.set('v', '<C-Space>', contract, { })
 
 vim.g.loaded_incremental_selection = true
