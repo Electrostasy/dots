@@ -91,12 +91,12 @@
     });
 
     nixosModules = {
-      mpv = import ./modules/mpv;
-      neovim = import ./modules/neovim;
-      unl0kr-settings = import ./modules/unl0kr-settings;
+      mpv = ./modules/mpv;
+      neovim = ./modules/neovim;
+      unl0kr-settings = ./modules/unl0kr-settings;
     };
 
-    homeManagerModules.wayfire = import ./modules/user/wayfire;
+    homeManagerModules.wayfire = ./modules/user/wayfire;
 
     nixosConfigurations = lib.pipe ./hosts [
       # List all the defined hosts.
