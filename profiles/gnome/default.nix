@@ -121,10 +121,17 @@
           show-battery-percentage = true;
         };
 
-        "org/gnome/Ptyxis/Shortcuts".close-tab = "<Shift><Control>w";
         "org/gnome/Ptyxis" = {
           new-tab-position = "next";
           restore-session = false;
+          profile-uuids = [ "6b79e535da7cbdbf6aaf249a66a71bb1" ];
+          default-profile-uuid = "6b79e535da7cbdbf6aaf249a66a71bb1";
+        };
+
+        "org/gnome/Ptyxis/Shortcuts".close-tab = "<Shift><Control>w";
+
+        "org/gnome/Ptyxis/Profiles/6b79e535da7cbdbf6aaf249a66a71bb1" = {
+          palette = lib.optionalString config.programs.neovim.enable "poimandres";
         };
 
         "org/gnome/desktop/media-handling".automount = false;
@@ -265,6 +272,8 @@
     }];
   };
 
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.tmpfiles.settings."10-gnome-autostart" = {
     # Link the monitors.xml files together. This is not ideal, but GDM and
     # gnome-shell don't quite communicate on unified display settings yet.
@@ -362,4 +371,56 @@
       in
         "${desktopEntry}/share/applications/blur-my-shell-fix.desktop";
   };
+
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
+  systemd.user.tmpfiles.rules = [
+    # Setup terminal emulator colours based on the Neovim theme.
+    (lib.optionalString
+      config.programs.neovim.enable
+      "L+ %h/.local/share/org.gnome.Ptyxis/palettes/poimandres.palette - - - - ${
+        (pkgs.formats.ini { }).generate "poimandres.palette" {
+          Palette = {
+            Name = "poimandres";
+
+            Background = "#1b1e28";
+            Foreground = "#e4f0fb";
+            Cursor = "#ffffff";
+
+            Color0 = "#171922"; # #000000
+            Color1 = "#d0679d"; # #800000
+            Color2 = "#5fb3a1"; # #008000
+            Color3 = "#42675a"; # #808000
+            Color4 = "#7390aa"; # #000080
+            Color5 = "#767c9d"; # #800080
+            Color6 = "#91b4d5"; # #008080
+            Color7 = "#303340"; # #c0c0c0
+
+            Color8 = "#506477"; # #808080
+            Color9 = "#fcc5e9"; # #ff0000
+            Color10 = "#5de4c7"; # #00ff00
+            Color11 = "#fffac2"; # #ffff00
+            Color12 = "#add7ff"; # #0000ff
+            Color13 = "#fae4fc"; # #ff00ff
+            Color14 = "#89ddff"; # #00ffff
+            Color15 = "#e4f0fb"; # #ffffff
+          };
+        }
+      }")
+  ];
+
+  # Setup shell colours based on the Neovim theme.
+  programs.fish.interactiveShellInit = lib.optionalString config.programs.neovim.enable ''
+    set -e fish_color_cancel; set -Ux fish_color_cancel d0679d --reverse
+    set -e fish_color_command; set -Ux fish_color_command 89ddff
+    set -e fish_color_comment; set -Ux fish_color_comment 4b4f5c
+    set -e fish_color_cwd; set -Ux fish_color_cwd 5fb3a1
+    set -e fish_color_end; set -Ux fish_color_end 7390aa
+    set -e fish_color_error; set -Ux fish_color_error d0679d
+    set -e fish_color_operator; set -Ux fish_color_operator add7ff
+    set -e fish_color_param; set -Ux fish_color_param a6accd
+    set -e fish_color_quote; set -Ux fish_color_quote fffac2
+    set -e fish_color_redirection; set -Ux fish_color_redirection 7390aa
+    set -e fish_color_valid_path; set -Ux fish_color_valid_path 5fb3a1 --underline
+  '';
 }
