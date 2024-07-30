@@ -21,3 +21,7 @@
 (compound_statement (
   ("{" @opening)
   ("}" @closing)))
+
+(function_definition (
+  ("(" @opening)
+  (")" @closing)))
