@@ -74,14 +74,22 @@
       # and active).
       unl0kr = {
         enable = true;
-        settings.general.animations = true;
+        settings = {
+          general.animations = true;
+          theme = {
+            default = "adwaita-dark";
+            alternative = "adwaita-light";
+          };
+        };
       };
 
       availableKernelModules = [
         "nvme"
         "usbhid"
         "xhci_pci"
+      ];
 
+      kernelModules = [
         # Required for unl0kr.
         "evdev"
 
