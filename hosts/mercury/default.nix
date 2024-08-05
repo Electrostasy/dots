@@ -14,7 +14,10 @@
 
   nixpkgs = {
     hostPlatform = "x86_64-linux";
-    overlays = [ self.overlays.unl0kr_3_update ];
+    overlays = [
+      self.overlays.scrcpy-transforms
+      self.overlays.unl0kr_3_update
+    ];
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -305,6 +308,18 @@
     };
   };
 
+  environment.systemPackages = with pkgs; [
+    gnome-network-displays
+    scrcpy
+  ];
+
+  # Required for gnome-network-displays.
+  services.avahi.enable = lib.mkForce true;
+  networking.firewall.allowedTCPPorts = [ 7236 ];
+
+  # Required for scrcpy.
+  programs.adb.enable = true;
+
   users = {
     mutableUsers = false;
     users.electro = {
@@ -313,6 +328,7 @@
       extraGroups = [
         "wheel" # allow using `sudo` for this user.
         "networkmanager" # don't ask password when connecting to networks.
+        "adbusers" # allow using `adb` for unprivileged users.
       ];
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [ ../terra/ssh_host_ed25519_key.pub ];
