@@ -219,6 +219,7 @@
           switch-to-workspace-left = [ "<Shift><Super>a" ];
           switch-to-workspace-right = [ "<Shift><Super>d" ];
           toggle-fullscreen = [ "<Shift><Super>f" ];
+          toggle-maximized = [ "<Super>f" ];
         };
 
         "org/gnome/shell/keybindings" = {

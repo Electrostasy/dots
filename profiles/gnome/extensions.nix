@@ -6,7 +6,7 @@
     desktop-cube
     native-window-placement
     panel-date-format
-    tiling-assistant
+    tiling-shell
   ];
 
   programs.dconf.profiles.user.databases = [{
@@ -36,18 +36,43 @@
         enable-panel-dragging = true;
       };
 
-      "org/gnome/shell/extensions/tiling-assistant" = {
-        active-window-hint = mkUint32 0;
-        restore-window = [ "<Super>r" ];
-        tile-bottom-half = [ "<Super>s" ];
-        tile-bottomleft-quarter = [ "<Alt><Super>a" ];
-        tile-bottomright-quarter = [ "<Alt><Super>d" ];
-        tile-left-half = [ "<Super>a" ];
-        tile-maximize = [ "<Super>f" ];
-        tile-right-half = [ "<Super>d" ];
-        tile-top-half = [ "<Super>w" ];
-        tile-topleft-quarter = [ "<Alt><Super>q" ];
-        tile-topright-quarter = [ "<Alt><Super>e" ];
+      "org/gnome/shell/extensions/tilingshell" = {
+        enable-blur-snap-assistant = true;
+        enable-snap-assist = false;
+        inner-gaps = mkUint32 0;
+        outer-gaps = mkUint32 0;
+        selected-layouts = [ "Dual Even Split" ];
+        layouts-json = builtins.toJSON [
+          {
+            id = "Dual Little-Big Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.33; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.67; x = 0.33; y = 0; }
+            ];
+          }
+          {
+            id = "Dual Big-Little Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.67; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.33; x = 0.67; y = 0; }
+            ];
+          }
+          {
+            id = "Dual Even Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.5; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.5; x = 0.5; y = 0; }
+            ];
+          }
+          {
+            id = "Triple Even Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.333333; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.333333; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.666666; y = 0; }
+            ];
+          }
+        ];
       };
     };
   }];
