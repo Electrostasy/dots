@@ -4,6 +4,7 @@
   environment.systemPackages = with pkgs.gnomeExtensions; [
     blur-my-shell
     desktop-cube
+    fullscreen-to-empty-workspace
     native-window-placement
     panel-date-format
     tiling-shell
@@ -20,8 +21,6 @@
         # pkgs/desktops/gnome/extensions/extensionRenames.nix file:
         ++ [ "system-monitor@gnome-shell-extensions.gcampax.github.com" ];
 
-      "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
-
       "org/gnome/shell/extensions/desktop-cube" = {
         last-first-gap = false;
         window-parallax = 0.75;
@@ -35,6 +34,10 @@
         enable-overview-dragging = false;
         enable-panel-dragging = true;
       };
+
+      "org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
+
+      "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
       "org/gnome/shell/extensions/tilingshell" = {
         enable-blur-snap-assistant = true;
