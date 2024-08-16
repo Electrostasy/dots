@@ -93,6 +93,7 @@ end
 
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   group = augroup,
+  desc = 'Set up showpairs for the buffer',
   callback = function(event)
     local query = vim.treesitter.query.get(vim.opt_local.filetype:get(), 'showpairs')
     if not query then

@@ -37,14 +37,14 @@ vim.opt.guicursor = {
   'r-cr-o:hor20-Cursor'
 }
 
--- Restore cursor for VTE based (and some other) terminal emulators:
 -- https://github.com/neovim/neovim/issues/4396#issuecomment-1377191592
 vim.api.nvim_create_autocmd('VimLeave', {
   group = vim.api.nvim_create_augroup('RestoreCursor', { }),
+  desc = 'Restore cursor for VTE based (and some other) terminal emulators',
   pattern = '*',
   callback = function()
     vim.opt.guicursor = {}
-    vim.fn.chansend(vim.v.stderr, '\x1b[ q')
+    vim.api.nvim_chan_send(vim.v.stderr, '\x1b[ q')
   end
 })
 
@@ -83,6 +83,7 @@ do
 
   vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
     group = vim.api.nvim_create_augroup('InsertModeListChars', { }),
+    desc = 'Show full listchars only in Insert mode',
     pattern = '*',
     callback = function(args)
       if vim.tbl_contains({ 'quickfix', 'prompt' }, args.match) then
@@ -104,40 +105,51 @@ do
   })
 end
 
--- Enable treesitter highlighting for supported filetypes.
 vim.api.nvim_create_autocmd('FileType', {
-  group = vim.api.nvim_create_augroup('TreesitterHighlight', { }),
+  group = vim.api.nvim_create_augroup('Treesitter', { }),
+  desc = 'Enable treesitter for supported filetypes',
   pattern = '*',
   callback = function(event)
-    if vim.treesitter.query.get(event.match, 'highlights') then
-      vim.treesitter.start(event.buf, event.match)
+    local filetype = event.match
+    local ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
+    if not ok or not lang then
+      return
+    end
+
+    vim.treesitter.start(event.buf, lang)
+
+    if vim.treesitter.query.get(lang, 'folds') then
+      vim.opt.foldmethod = 'expr'
+      vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.opt.foldlevel = 99
+      vim.opt.foldtext = ''
+      vim.opt.fillchars:append({ fold = ' ' })
     end
   end,
 })
 
--- Highlight line containing cursor only on active buffer.
 vim.api.nvim_create_autocmd({ 'BufEnter', 'WinLeave' }, {
   group = vim.api.nvim_create_augroup('ActiveBufferCursorline', { }),
+  desc = 'Highlight line containing cursor only on active buffer',
   pattern = '*',
   callback = function(args)
     vim.opt_local.cursorline = args.event == 'BufEnter'
   end
 })
 
--- Highlight yanked region.
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('HighlightOnYank', { }),
+  desc = 'Highlight yanked region',
   pattern = '*',
   callback = function()
     vim.highlight.on_yank({ timeout = 250 })
   end,
 })
 
--- Set relativenumber when entering visual/select line/block modes, and unset
--- it when leaving them, allowing for easier range-based selections and movements.
 vim.opt.number = true
 vim.api.nvim_create_autocmd('ModeChanged', {
   group = vim.api.nvim_create_augroup('DynamicRelativeNumber', { }),
+  desc = 'Set relativenumber when entering visual/select line/block modes',
   pattern = '*',
   callback = function(args)
     vim.opt_local.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
