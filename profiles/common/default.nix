@@ -7,6 +7,11 @@
     ./impermanence.nix
   ];
 
+  system.switch = lib.mkDefault {
+    enable = false;
+    enableNg = true;
+  };
+
   # Every host is to be considered part of this domain, however, only `kepler`
   # is internet-facing.
   networking.domain = "0x6776.lt";
