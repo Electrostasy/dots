@@ -61,10 +61,6 @@ in
     steam = {
       enable = true;
       protontricks.enable = true;
-
-      package = pkgs.steam-small.override {
-        extraArgs = "-pipewire-dmabuf -fulldesktopres";
-      };
     };
 
     gamescope = {
