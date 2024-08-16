@@ -57,31 +57,42 @@
         enable-snap-assist = false;
         inner-gaps = mkUint32 0;
         outer-gaps = mkUint32 0;
-        selected-layouts = [ "Dual Even Split" ];
+        selected-layouts = [
+          "1/1 H-Split"
+          "1/1 V-Split"
+        ];
+
         layouts-json = builtins.toJSON [
           {
-            id = "Dual Little-Big Split";
-            tiles = [
-              { groups = [ 1 ]; height = 1; width = 0.33; x = 0; y = 0; }
-              { groups = [ 1 ]; height = 1; width = 0.67; x = 0.33; y = 0; }
-            ];
-          }
-          {
-            id = "Dual Big-Little Split";
-            tiles = [
-              { groups = [ 1 ]; height = 1; width = 0.67; x = 0; y = 0; }
-              { groups = [ 1 ]; height = 1; width = 0.33; x = 0.67; y = 0; }
-            ];
-          }
-          {
-            id = "Dual Even Split";
+            id = "1/1 H-Split";
             tiles = [
               { groups = [ 1 ]; height = 1; width = 0.5; x = 0; y = 0; }
               { groups = [ 1 ]; height = 1; width = 0.5; x = 0.5; y = 0; }
             ];
           }
           {
-            id = "Triple Even Split";
+            id = "1/1 V-Split";
+            tiles = [
+              { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0.5; }
+            ];
+          }
+          {
+            id = "1/2 H-Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.33; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.67; x = 0.33; y = 0; }
+            ];
+          }
+          {
+            id = "2/1 H-Split";
+            tiles = [
+              { groups = [ 1 ]; height = 1; width = 0.67; x = 0; y = 0; }
+              { groups = [ 1 ]; height = 1; width = 0.33; x = 0.67; y = 0; }
+            ];
+          }
+          {
+            id = "1/1/1 H-Split";
             tiles = [
               { groups = [ 1 ]; height = 1; width = 0.333333; x = 0; y = 0; }
               { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.333333; y = 0; }
