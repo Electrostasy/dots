@@ -4,8 +4,6 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
-    "${modulesPath}/profiles/minimal.nix"
-    ../../profiles/shell
     ../../profiles/ssh
     ./klipper.nix
   ];
@@ -46,6 +44,7 @@
   };
 
   boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "console=ttyS0,115200n8"
       "console=ttyAMA0,115200n8"
@@ -60,11 +59,13 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    libgpiod
-    libraspberrypi
-    vim
-  ];
+  documentation = {
+    enable = false;
+    doc.enable = false;
+    info.enable = false;
+    man.enable = false;
+    nixos.enable = false;
+  };
 
   # Raspberry Pi 4 does not have a RTC and timesyncd is fighting with resolved
   # due to DNSSEC and expired signatures, so for now just synchronize time
