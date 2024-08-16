@@ -192,7 +192,16 @@
   security.polkit.enable = true;
 
   services = {
-    mainsail.enable = true;
+    mainsail = {
+      enable = true;
+
+      # For some reason, uploads bypass moonraker and we get hit with nginx's
+      # `client intended to send too large body` error unless we increase the
+      # upload size for mainsail in the server (does not work per location).
+      nginx.extraConfig = ''
+        client_max_body_size 1024m;
+      '';
+    };
 
     moonraker = {
       enable = true;
