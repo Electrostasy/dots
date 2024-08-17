@@ -8,6 +8,7 @@
     native-window-placement
     panel-date-format
     tiling-shell
+    user-stylesheet-font
   ];
 
   # Normally, when dconf changes are made to the `user` profile, the user will
@@ -103,4 +104,11 @@
       };
     };
   }];
+
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
+  systemd.user.tmpfiles.rules = [
+    "L+ %h/.config/gtk-4.0/gtk.css - - - - ${./gtk.css}"
+    "L+ %h/.config/gnome-shell/gnome-shell.css - - - - ${./gnome-shell.css}"
+  ];
 }

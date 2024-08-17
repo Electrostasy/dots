@@ -1,0 +1,30 @@
+/* Alternating row colours for Nautilus list view. */
+.nautilus-list-view row:nth-child(even):not(:hover):not(:selected) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* macOS-like "inner glow" for decorations and menus. */
+.csd, .menu contents {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+
+.csd {
+  outline-width: 1px;
+  outline-color: rgba(255, 255, 255, 0.1);
+  outline-offset: -2px;
+}
+
+.menu contents {
+  /* Outline rules do not work for menus, so we use box-shadow instead. */
+  box-shadow:
+    /* libdawaita window shadows. */
+    0 1px 3px 3px rgba(0, 0, 0, 0.09),
+    0 2px 14px 5px rgba(0, 0, 0, 0.05),
+    0 4px 28px 12px rgba(0, 0, 0, 0.03),
+    0 6px 32px 16px rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(0, 0, 0, 0.02),
+    /* innerglow shadows. */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}

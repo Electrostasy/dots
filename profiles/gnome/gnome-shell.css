@@ -1,0 +1,9 @@
+/* macOS-like "inner glow" for shell menus. */
+.popup-menu-content {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  /* Because of https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/7655 we cannot
+   * use stacked box-shadow, so for now we disable shadows. */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
