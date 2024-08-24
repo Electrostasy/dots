@@ -14,6 +14,11 @@
     self.overlays.f3d-occt
   ];
 
+  xdg.terminal-exec = {
+    enable = true;
+    settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
+  };
+
   services.xserver = {
     desktopManager.gnome.enable = true;
     displayManager.gdm = {
@@ -59,10 +64,7 @@
       ];
     };
 
-    sessionVariables = {
-      TERMINAL = "ptyxis";
-      GTK_THEME = "adw-gtk3-dark";
-    };
+    sessionVariables.GTK_THEME = "adw-gtk3-dark";
 
     systemPackages = with pkgs; [
       adw-gtk3

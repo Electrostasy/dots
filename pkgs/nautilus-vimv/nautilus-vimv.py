@@ -33,8 +33,7 @@ class BulkRenameMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     def _open_vimv_for_entries(self, menu, files: List[Path]) -> None:
         cwd = self._find_common_cwd(files)
         cmd = [
-            environ["TERMINAL"],
-            "--",
+            "xdg-terminal-exec",
             "/usr/bin/env",
             "vimv",
         ]
