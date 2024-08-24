@@ -58,6 +58,9 @@ in
   ];
 
   programs = {
+    # Necessary to prevent stutters and audio issues.
+    cfs-zen-tweaks.enable = true;
+
     steam = {
       enable = true;
       protontricks.enable = true;
