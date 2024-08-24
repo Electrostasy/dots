@@ -25,7 +25,11 @@
   # Prefer iwd to wpa_supplicant.
   networking.networkmanager.wifi.backend = lib.mkDefault "iwd";
 
-  # Prefer pipewire to pulseaudio.
+  # Do not turn on bluetooth on boot.
+  hardware.bluetooth.powerOnBoot = false;
+
+  # Prefer pipewire to pulseaudio:
+  # https://github.com/NixOS/nixpkgs/issues/325003
   hardware.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
@@ -79,6 +83,7 @@
       fractal
       freerdp
       keepassxc
+      (makeAutostartItem { name = "org.keepassxc.KeePassXC"; package = keepassxc; })
       papers
       ptyxis
       resources
@@ -87,8 +92,44 @@
 
       # CLI utilities.
       wl-clipboard
+
+      (makeAutostartItem {
+        name = "random-wallpaper";
+        package = makeDesktopItem {
+          name = "random-wallpaper";
+          desktopName = "Select a random wallpaper on startup";
+          categories = [ "Utility" ];
+          noDisplay = true;
+          terminal = false;
+          type = "Application";
+          exec = lib.getExe (writeShellApplication {
+            name = "random-wallpaper";
+            runtimeInputs = [ xdg-user-dirs fd ];
+
+            text = ''
+              wallpaper=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$(xdg-user-dir PICTURES)/wallpapers" | shuf -n 1)
+              for key in background/picture-uri{,-dark} screensaver/picture-uri; do
+                dconf write "/org/gnome/desktop/$key" "'file://$wallpaper'"
+              done
+            '';
+          });
+        };
+      })
     ];
   };
+
+  # Normally, when dconf changes are made to the `user` profile, the user will
+  # need to log out and log in again for the changes to be applied. However,
+  # in NixOS, this is not sufficient for some cases (automatically enabling
+  # extensions), because on a live system, the /etc/dconf path is not updated
+  # to the new database on activation. This restores the intended behaviour.
+  system.activationScripts.update-dconf-path.text = /* bash */ ''
+    dconf_nix_path='${config.environment.etc.dconf.source}'
+    if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
+      ln -sf "$dconf_nix_path" /etc/dconf
+      dconf update /etc/dconf
+    fi
+  '';
 
   programs.dconf.profiles = {
     gdm.databases = [{
@@ -117,6 +158,7 @@
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
           gtk-enable-primary-paste = false;
+          icon-theme = "MoreWaita";
           monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
         };
@@ -280,97 +322,6 @@
     # gnome-shell don't quite communicate on unified display settings yet.
     "/run/gdm/.config/monitors.xml"."L+".argument =
       "${config.environment.persistence.state.persistentStoragePath}/home/electro/.config/monitors.xml";
-
-    # We need to create a directory for them first, or else we get errors
-    # about unsafe path transitions from `electro` to `root` users.
-    "/home/electro/.config/autostart"."d" = {
-      mode = "0755";
-      user = config.users.users.electro.name;
-      group = config.users.users.electro.group;
-    };
-
-    # Pick a random wallpaper at startup.
-    "/home/electro/.config/autostart/random-wallpaper.desktop"."L+".argument =
-      let
-        script = pkgs.writeShellApplication {
-          name = "random-wallpaper";
-          runtimeInputs = [
-            pkgs.xdg-user-dirs
-            pkgs.fd
-          ];
-
-          text = ''
-            PICTURES="$(xdg-user-dir PICTURES)"
-            FILE=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$PICTURES/wallpapers" | shuf -n 1)
-
-            dconf write /org/gnome/desktop/background/picture-uri "'file://$FILE'"
-            dconf write /org/gnome/desktop/background/picture-uri-dark "'file://$FILE'"
-            dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$FILE'"
-          '';
-        };
-        desktopEntry = pkgs.makeDesktopItem {
-          name = "random-wallpaper";
-          desktopName = "Select a random wallpaper on startup";
-          categories = [ "Utility" ];
-          noDisplay = true;
-          terminal = false;
-          type = "Application";
-          exec = "${script}/bin/random-wallpaper";
-        };
-      in
-        "${desktopEntry}/share/applications/random-wallpaper.desktop";
-
-    # Blur My Shell extension seems to be buggy regarding the panel when fractional
-    # scaling is enabled - only part of the panel is blurred. Turning it on and
-    # off again seems to fix it. Do that soon as the session starts.
-    "/home/electro/.config/autostart/blur-my-shell-fix.desktop"."L+".argument =
-      let
-        script = pkgs.writeShellApplication {
-          name = "blur-my-shell-fix";
-          runtimeInputs = [
-            config.systemd.package
-            pkgs.jq
-          ];
-
-          text = ''
-            function get_current_state() {
-              busctl --user call \
-                'org.gnome.Mutter.DisplayConfig' \
-                '/org/gnome/Mutter/DisplayConfig' \
-                'org.gnome.Mutter.DisplayConfig' \
-                'GetCurrentState' -j
-            }
-
-            function toggle_extension() {
-              extension_uuid="$1"
-              for method in "DisableExtension" "EnableExtension"; do
-                busctl --user call \
-                  'org.gnome.Shell.Extensions' \
-                  '/org/gnome/Shell/Extensions' \
-                  'org.gnome.Shell.Extensions' \
-                  "$method" 's' "$extension_uuid"
-
-                sleep 0.5 # wait a bit before re-enabling.
-              done
-            }
-
-            # Only run if any display has fractional scaling enabled.
-            if [ "$(get_current_state | jq '.data[2] | map(fmod(.[2]; 1) | select(. != 0)) | length')" -ne '0' ]; then
-              toggle_extension 'blur-my-shell@aunetx'
-            fi
-          '';
-        };
-        desktopEntry = pkgs.makeDesktopItem {
-          name = "blur-my-shell-fix";
-          desktopName = "Fix for Blur my Shell when used with fractional scaling";
-          categories = [ "Utility" ];
-          noDisplay = true;
-          terminal = false;
-          type = "Application";
-          exec = "${script}/bin/blur-my-shell-fix";
-        };
-      in
-        "${desktopEntry}/share/applications/blur-my-shell-fix.desktop";
   };
 
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when

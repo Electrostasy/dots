@@ -9,20 +9,47 @@
     panel-date-format
     tiling-shell
     user-stylesheet-font
-  ];
 
-  # Normally, when dconf changes are made to the `user` profile, the user will
-  # need to log out and log in again for the changes to be applied. However,
-  # in NixOS, this is not sufficient for some cases (automatically enabling
-  # extensions), because on a live system, the /etc/dconf path is not updated
-  # to the new database on activation. This restores the intended behaviour.
-  system.activationScripts.update-dconf-path.text = /* bash */ ''
-    dconf_nix_path='${config.environment.etc.dconf.source}'
-    if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
-      ln -sf "$dconf_nix_path" /etc/dconf
-      dconf update /etc/dconf
-    fi
-  '';
+    # Blur My Shell extension seems to be buggy regarding the panel when fractional
+    # scaling is enabled - only part of the panel is blurred. Turning it on and
+    # off again seems to fix it. Do that soon as the session starts.
+    (pkgs.makeAutostartItem {
+      name = "blur-my-shell-fix";
+      package = pkgs.makeDesktopItem {
+        name = "blur-my-shell-fix";
+        desktopName = "Fix for Blur my Shell when used with fractional scaling";
+        categories = [ "Utility" ];
+        noDisplay = true;
+        terminal = false;
+        type = "Application";
+        exec = lib.getExe (pkgs.writeShellApplication {
+          name = "blur-my-shell-fix";
+          runtimeInputs = [
+            config.systemd.package
+            pkgs.gnome.gnome-shell
+            pkgs.jq
+          ];
+
+          text = ''
+            function get_current_state() {
+              busctl --user call \
+                'org.gnome.Mutter.DisplayConfig' \
+                '/org/gnome/Mutter/DisplayConfig' \
+                'org.gnome.Mutter.DisplayConfig' \
+                'GetCurrentState' -j
+            }
+
+            # Only run if any display has fractional scaling enabled.
+            if [ "$(get_current_state | jq '.data[2] | map(fmod(.[2]; 1) | select(. != 0)) | length')" -ne '0' ]; then
+              gnome-extensions disable 'blur-my-shell@aunetx'
+              sleep 0.5 # wait a bit before re-enabling.
+              gnome-extensions enable 'blur-my-shell@aunetx'
+            fi
+          '';
+        });
+      };
+    })
+  ];
 
   programs.dconf.profiles.user.databases = [{
     settings = with lib.gvariant; {
@@ -58,10 +85,12 @@
         enable-snap-assist = false;
         inner-gaps = mkUint32 0;
         outer-gaps = mkUint32 0;
-        selected-layouts = [
-          "1/1 H-Split"
-          "1/1 V-Split"
-        ];
+
+        # Default to the horizontal split, override in other modules. This is
+        # because tilingshell does not identify a "main output" (which isn't
+        # really a thing in wayland anyway), so the leftmost output is the
+        # first one in the list.
+        selected-layouts = [ "1/1 H-Split" ];
 
         layouts-json = builtins.toJSON [
           {

@@ -75,9 +75,16 @@
     binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
+  programs.dconf.profiles.user.databases = [{
+    settings."org/gnome/shell/extensions/tilingshell".selected-layouts = [
+      "1/1 V-Split"
+      "1/1 H-Split"
+    ];
+  }];
+
   environment.systemPackages = with pkgs; [
     flacon
-    freecad
+    freecad-wayland
     gimp
     kicad
     libreoffice-fresh
