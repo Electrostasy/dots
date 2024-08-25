@@ -48,7 +48,7 @@
     };
   };
 
-  hardware.enableRedistributableFirmware = true;
+  hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
   networking = {
     dhcpcd.enable = false;
