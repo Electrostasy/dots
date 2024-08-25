@@ -4,7 +4,6 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
-    "${modulesPath}/profiles/minimal.nix"
     ../../profiles/shell
     ../../profiles/ssh
   ];
@@ -23,7 +22,7 @@
       EOF
 
       cp ${pkgs.ubootRaspberryPi3_64bit}/u-boot.bin ./firmware/kernel8.img
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{bootcode.bin,fixup.dat,start.elf} ./firmware
+      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{bootcode.bin,fixup.dat,start.elf,bcm2710-rpi-zero-2-w.dtb} ./firmware
     '';
 
     populateRootCommands = ''
@@ -48,9 +47,70 @@
     };
   };
 
+  documentation = {
+    enable = false;
+    doc.enable = false;
+    info.enable = false;
+    man.enable = false;
+    nixos.enable = false;
+  };
+
+  hardware.enableRedistributableFirmware = true;
+
+  networking = {
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+
+    networkmanager = {
+      enable = true;
+
+      ensureProfiles = {
+        environmentFiles = [ config.sops.secrets.networkmanager.path ];
+
+        profiles.home-wifi = {
+          ipv4.method = "auto";
+          connection = {
+            id = "Sukceno";
+            type = "wifi";
+            autoconnect = true;
+          };
+          wifi.ssid = "Sukceno";
+          wifi-security = {
+            auth-alg = "open";
+            key-mgmt = "wpa-psk";
+            psk = "$PSK_SUKCENO";
+          };
+        };
+      };
+    };
+  };
+
+  systemd.network = {
+    enable = true;
+
+    networks."40-wireless" = {
+      name = "wl*";
+
+      DHCP = "yes";
+      dns = [ "9.9.9.9" ];
+
+      networkConfig = {
+        IgnoreCarrierLoss = "yes";
+        LinkLocalAddressing = "no";
+      };
+
+      dhcpV4Config = {
+        Anonymize = true;
+        RouteMetric = 20;
+      };
+    };
+  };
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
     secrets = {
+      networkmanager = {};
       electroPassword.neededForUsers = true;
       electroIdentity = {
         mode = "0400";
