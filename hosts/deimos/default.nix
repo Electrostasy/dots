@@ -4,6 +4,7 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
+    ../../profiles/minimal
     ../../profiles/shell
     ../../profiles/ssh
   ];
@@ -45,14 +46,6 @@
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
     };
-  };
-
-  documentation = {
-    enable = false;
-    doc.enable = false;
-    info.enable = false;
-    man.enable = false;
-    nixos.enable = false;
   };
 
   hardware.enableRedistributableFirmware = true;

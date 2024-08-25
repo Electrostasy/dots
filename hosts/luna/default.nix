@@ -4,6 +4,7 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
+    ../../profiles/minimal
     ../../profiles/shell
     ../../profiles/ssh
     ./nfs-server.nix

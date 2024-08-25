@@ -4,6 +4,7 @@
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
+    ../../profiles/minimal
     ../../profiles/ssh
     ./klipper.nix
   ];
@@ -57,14 +58,6 @@
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
     };
-  };
-
-  documentation = {
-    enable = false;
-    doc.enable = false;
-    info.enable = false;
-    man.enable = false;
-    nixos.enable = false;
   };
 
   # Raspberry Pi 4 does not have a RTC and timesyncd is fighting with resolved

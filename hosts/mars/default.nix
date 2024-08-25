@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../profiles/minimal
     ../../profiles/shell
     ../../profiles/ssh
   ];
