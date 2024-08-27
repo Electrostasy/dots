@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 let
   inherit (config.users.users.electro) name group;
@@ -51,7 +51,7 @@ in
     ];
   };
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+  nixpkgs.allowUnfreePackages = [
     "steam"
     "steam-original"
     "steam-run"

@@ -10,10 +10,8 @@
   nixpkgs = {
     hostPlatform = "aarch64-linux";
 
-    config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      # Needed for Rockchip TPL for RK3588 in u-boot.
-      "rkbin"
-    ];
+    # Needed for Rockchip TPL for RK3588 in u-boot.
+    allowUnfreePackages = [ "rkbin" ];
   };
 
   system = {
