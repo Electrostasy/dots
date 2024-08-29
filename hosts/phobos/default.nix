@@ -1,9 +1,7 @@
-{ config, pkgs, lib, modulesPath, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
-    "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/minimal
     ../../profiles/ssh
     ./dendrite.nix
@@ -12,39 +10,6 @@
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
-
-  sdImage = {
-    imageBaseName = "${config.networking.hostName}-sd-image";
-    compressImage = false;
-
-    populateFirmwareCommands = ''
-      cat <<EOF > ./firmware/config.txt
-      armstub=armstub8-gic.bin
-      enable_gic=1
-
-      # HDMI display.
-      hdmi_group=2
-      hdmi_mode=87
-      hdmi_cvt=1024 600 60 6 0 0 0
-      disable_overscan=1
-
-      enable_uart=1
-      avoid_warnings=1
-      EOF
-
-      cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin ./firmware/armstub8-gic.bin
-      cp ${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin ./firmware/kernel8.img
-      # FDT binary for the Raspberry Pi 4B is required to boot. Pi 4 firmware
-      # loads and modifies the device tree, and does not seem capable of
-      # getting it from U-Boot.
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{fixup4.dat,start4.elf,bcm2711-rpi-4-b.dtb} ./firmware
-    '';
-
-    populateRootCommands = ''
-      mkdir -p ./files/boot
-      ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
-    '';
-  };
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -59,6 +24,63 @@
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
+    };
+  };
+
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-label/NIXOS_SD";
+      fsType = "ext4";
+    };
+
+    "/var/lib/dendrite" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=dendrite"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+      ];
+    };
+
+    "/var/lib/postgresql" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=postgresql"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${config.users.users.postgres.name}"
+        "X-mount.group=${config.users.groups.postgres.name}"
+      ];
+    };
+
+    "/srv/http/static" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=static"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${config.users.users.electro.name}"
+        "X-mount.group=${config.users.groups.users.name}"
+      ];
+    };
+
+    "/var/lib/headscale" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=headscale"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${config.users.users.headscale.name}"
+        "X-mount.group=${config.users.groups.headscale.name}"
+      ];
     };
   };
 

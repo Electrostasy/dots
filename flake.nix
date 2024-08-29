@@ -54,7 +54,7 @@
       deimosImage = self.nixosConfigurations.deimos.config.system.build.sdImage;
       lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
       marsImage = (self.nixosConfigurations.mars.extendModules { modules = [ ./hosts/mars/image.nix ]; }).config.system.build.sdImage;
-      phobosImage = self.nixosConfigurations.phobos.config.system.build.sdImage;
+      phobosImage = (self.nixosConfigurations.phobos.extendModules { modules = [ ./hosts/phobos/image.nix ]; }).config.system.build.sdImage;
     });
 
     apps = forEverySystem (system: {

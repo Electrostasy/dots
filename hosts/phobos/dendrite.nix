@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   networking.firewall = {
@@ -39,6 +39,8 @@
 
   sops.secrets.matrix_key = { };
 
+  environment.systemPackages = [ pkgs.dendrite ];
+
   services.dendrite = {
     enable = true;
 
@@ -65,15 +67,25 @@
         language = "en";
       };
 
-      # Add new users on the host system using:
-      # $ dendrite --command create-account -config /run/dendrite/dendrite.yaml -username electro
+      # Have to explicitly disable these or else the global connection_string is
+      # ignored, and dendrite creates sqlite databases:
+      # https://github.com/NixOS/nixpkgs/pull/195376
+      app_service_api.database.connection_string = "";
+      federation_api.database.connection_string = "";
+      key_server.database.connection_string = "";
+      media_api.database.connection_string = "";
+      mscs.database.connection_string = "";
+      relay_api.database.connection_string = "";
+      room_server.database.connection_string = "";
+      sync_api.database.connection_string = "";
+      user_api.account_database.connection_string = "";
+      user_api.device_database.connection_string = "";
+
+      # Add new users on the host system using (requires shared secret registration):
+      # $ create-account -config /run/dendrite/dendrite.yaml -username electro
       client_api.registration_disabled = true;
 
-      logging = [
-        { type = "std";
-          level = "error";
-        }
-      ];
+      logging = [ { type = "std"; level = "error"; } ];
     };
   };
 
