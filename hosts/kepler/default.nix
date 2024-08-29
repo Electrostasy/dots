@@ -7,9 +7,6 @@
     "${modulesPath}/profiles/qemu-guest.nix"
     ../../profiles/shell
     ../../profiles/ssh
-    ./dendrite.nix
-    ./fileserver.nix
-    ./headscale.nix
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";

@@ -1,4 +1,4 @@
-function kepler-up -d "Upload files to kepler for public sharing"
+function phobos-up -d "Upload files to phobos for public sharing"
   # Avoid uploading directories.
   set -l files
   for arg in $argv
@@ -10,7 +10,7 @@ function kepler-up -d "Upload files to kepler for public sharing"
   end
 
   if test (count $files) -gt 0
-    if rsync --compress --progress --chown=nginx:nginx --perms --chmod=D440,F440 $files root@kepler:/srv/http/static
+    if rsync --compress --progress --chown=nginx:nginx --perms --chmod=D440,F440 $files phobos:/srv/http/static
       printf "\nUpload finished successfully!\n"
     else
       printf '\nUpload failed due to errors!\n'

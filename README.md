@@ -32,18 +32,18 @@ installation.
 
 The table below lists the managed hosts and their descriptions:
 
-| **Hostname** | **Device type**               | **Description**                   |
-|:--           | :--                           | :--                               |
-| ceres        | Desktop                       | Secondary PC at work              |
-| deimos       | Raspberry Pi Zero 2 W         | Klipper host for 3D printer       |
-| eris         | WSL                           | Primary PC at work                |
-| kepler       | VPS                           | Matrix homeserver <br/> Headscale |
-| luna         | Raspberry Pi Compute Module 4 | NAS                               |
-| mars         | FriendlyElec NanoPC-T6 LTS    | -                                 |
-| mercury      | Asus ROG Flow Z13 (2022)      | Personal/work laptop              |
-| phobos       | Raspberry Pi 4 Model B        | -                                 |
-| terra        | Desktop                       | Primary PC at home                |
-| venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                   |
+| **Hostname** | **Device type**               | **Description**                                |
+|:--           | :--                           | :--                                            |
+| ceres        | Desktop                       | Secondary PC at work                           |
+| deimos       | Raspberry Pi Zero 2 W         | Klipper host for 3D printer                    |
+| eris         | WSL                           | Primary PC at work                             |
+| kepler       | VPS                           | -                                              |
+| luna         | Raspberry Pi Compute Module 4 | NAS                                            |
+| mars         | FriendlyElec NanoPC-T6 LTS    | -                                              |
+| mercury      | Asus ROG Flow Z13 (2022)      | Personal/work laptop                           |
+| phobos       | Raspberry Pi 4 Model B        | Dendrite Matrix homeserver </br> Headscale VPN |
+| terra        | Desktop                       | Primary PC at home                             |
+| venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                                |
 
 [sops-nix]: https://github.com/Mic92/sops-nix
 [`age`]: https://age-encryption.org/v1
@@ -218,7 +218,9 @@ In order to install NixOS to eMMC on a running system, you have to target
 
 ## phobos
 
-The host [phobos] is a Raspberry Pi 4 Model B, currently unused.
+The host [phobos] is a Raspberry Pi 4 Model B, used to host the dendrite Matrix
+homeserver and the headscale coordination server for Tailscale VPN to link my
+devices together.
 
 [phobos]: ./hosts/phobos/default.nix
 

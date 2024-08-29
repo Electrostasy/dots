@@ -6,6 +6,9 @@
     "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/minimal
     ../../profiles/ssh
+    ./dendrite.nix
+    ./fileserver.nix
+    ./headscale.nix
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";

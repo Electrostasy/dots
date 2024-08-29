@@ -12,14 +12,14 @@
     enableNg = true;
   };
 
-  # Every host is to be considered part of this domain, however, only `kepler`
+  # Every host is to be considered part of this domain, however, only `phobos`
   # is internet-facing.
   networking.domain = "0x6776.lt";
 
   # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
-  # control server running on `kepler`.
+  # control server running on `phobos`.
   sops.secrets = lib.mkIf config.services.tailscale.enable {
-    tailscaleKey.sopsFile = ../../hosts/kepler/secrets.yaml;
+    tailscaleKey.sopsFile = ../../hosts/phobos/secrets.yaml;
   };
 
   services.tailscale = {
