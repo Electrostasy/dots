@@ -7,6 +7,7 @@
     ../../profiles/minimal
     ../../profiles/shell
     ../../profiles/ssh
+    ./klipper.nix
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";

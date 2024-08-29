@@ -32,18 +32,18 @@ installation.
 
 The table below lists the managed hosts and their descriptions:
 
-| **Hostname** | **Device type**               | **Description**                       |
-|:--           | :--                           | :--                                   |
-| ceres        | Desktop                       | Secondary PC at work                  |
-| deimos       | Raspberry Pi Zero 2 W         | -                                     |
-| eris         | WSL                           | Primary PC at work                    |
-| kepler       | VPS                           | Matrix homeserver <br/> Headscale     |
-| luna         | Raspberry Pi Compute Module 4 | NAS                                   |
-| mars         | FriendlyElec NanoPC-T6 LTS    | -                                     |
-| mercury      | Asus ROG Flow Z13 (2022)      | Personal/work laptop                  |
-| phobos       | Raspberry Pi 4 Model B        | Klipper <br/> Moonraker<br/> Mainsail |
-| terra        | Desktop                       | Primary PC at home                    |
-| venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                       |
+| **Hostname** | **Device type**               | **Description**                   |
+|:--           | :--                           | :--                               |
+| ceres        | Desktop                       | Secondary PC at work              |
+| deimos       | Raspberry Pi Zero 2 W         | Klipper host for 3D printer       |
+| eris         | WSL                           | Primary PC at work                |
+| kepler       | VPS                           | Matrix homeserver <br/> Headscale |
+| luna         | Raspberry Pi Compute Module 4 | NAS                               |
+| mars         | FriendlyElec NanoPC-T6 LTS    | -                                 |
+| mercury      | Asus ROG Flow Z13 (2022)      | Personal/work laptop              |
+| phobos       | Raspberry Pi 4 Model B        | -                                 |
+| terra        | Desktop                       | Primary PC at home                |
+| venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                   |
 
 [sops-nix]: https://github.com/Mic92/sops-nix
 [`age`]: https://age-encryption.org/v1
@@ -73,7 +73,9 @@ section.
 
 ## deimos
 
-The host [deimos] is a Raspberry Pi Zero 2 W, currently unused.
+The host [deimos] is a Raspberry Pi Zero 2 W, used for controlling the Original
+Prusa MK3S+ 3D printer flashed with Klipper firmware. It serves a Mainsail web
+interface for remote monitoring and management of the 3D printer.
 
 [deimos]: ./hosts/deimos/default.nix
 
@@ -216,10 +218,7 @@ In order to install NixOS to eMMC on a running system, you have to target
 
 ## phobos
 
-The host [phobos] is a Raspberry Pi 4 Model B, used for controlling the Original
-Prusa MK3S+ 3D printer flashed with Klipper firmware. It serves a Mainsail web
-interface for remote monitoring and management of the 3D printer, and has a
-Raspberry Pi Camera Module 3 Wide connected over CSI interface.
+The host [phobos] is a Raspberry Pi 4 Model B, currently unused.
 
 [phobos]: ./hosts/phobos/default.nix
 

@@ -6,7 +6,6 @@
     "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/minimal
     ../../profiles/ssh
-    ./klipper.nix
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
