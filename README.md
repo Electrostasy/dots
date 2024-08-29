@@ -37,7 +37,6 @@ The table below lists the managed hosts and their descriptions:
 | ceres        | Desktop                       | Secondary PC at work                           |
 | deimos       | Raspberry Pi Zero 2 W         | Klipper host for 3D printer                    |
 | eris         | WSL                           | Primary PC at work                             |
-| kepler       | VPS                           | -                                              |
 | luna         | Raspberry Pi Compute Module 4 | NAS                                            |
 | mars         | FriendlyElec NanoPC-T6 LTS    | -                                              |
 | mercury      | Asus ROG Flow Z13 (2022)      | Personal/work laptop                           |
