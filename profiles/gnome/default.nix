@@ -68,6 +68,7 @@
       # Nautilus extensions.
       nautilus-python
       nautilus-amberol
+      nautilus-open-any-terminal
       nautilus-vimv
 
       # Thumbnailers.
@@ -158,6 +159,11 @@
           icon-theme = "MoreWaita";
           monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
+        };
+
+        "com/github/stunkymonkey/nautilus-open-any-terminal" = {
+          terminal = "ptyxis";
+          use-generic-terminal-name = true;
         };
 
         "org/gnome/Ptyxis" = {
