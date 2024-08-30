@@ -14,11 +14,6 @@
     self.overlays.f3d-occt
   ];
 
-  xdg.terminal-exec = {
-    enable = true;
-    settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
-  };
-
   services.xserver = {
     desktopManager.gnome.enable = true;
     displayManager.gdm = {

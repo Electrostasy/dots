@@ -17,7 +17,7 @@ class BulkRenameMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     def _open_vimv_for_entries(self, menu, files: list[Path]) -> None:
         cwd = os.path.commonpath(files)
         cmd = [
-            "xdg-terminal-exec",
+            "ptyxis", "--new-window", "--",
             "/usr/bin/env",
             "vimv",
         ]
