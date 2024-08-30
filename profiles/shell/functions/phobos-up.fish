@@ -10,7 +10,8 @@ function phobos-up -d "Upload files to phobos for public sharing"
   end
 
   if test (count $files) -gt 0
-    if rsync --compress --progress --chown=nginx:nginx --perms --chmod=D440,F440 $files phobos:/srv/http/static
+    # Nginx needs to be able to read the files.
+    if rsync --compress --progress --chmod=D440,F664 $files phobos:/srv/http/static
       printf "\nUpload finished successfully!\n"
     else
       printf '\nUpload failed due to errors!\n'

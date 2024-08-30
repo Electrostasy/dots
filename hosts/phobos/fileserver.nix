@@ -1,6 +1,10 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
+  # `rsync` has to be installed on the remote in order for uploads initialized
+  # with it to work (such as `phobos-up` script).
+  environment.systemPackages = [ pkgs.rsync ];
+
   networking.firewall = {
     enable = true;
 
