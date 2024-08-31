@@ -34,7 +34,6 @@
       gnome-browser-connector.enable = false;
       gnome-initial-setup.enable = false;
       gnome-online-accounts.enable = lib.mkForce false;
-      gnome-online-miners.enable = lib.mkForce false;
       gnome-user-share.enable = false;
       rygel.enable = false;
     };
@@ -64,14 +63,14 @@
     pkgs.gnome-themes-extra
     pkgs.gnome-tour
     pkgs.gnome-user-docs
-    pkgs.gnome.gnome-backgrounds
+    pkgs.gnome-backgrounds
     pkgs.gnome.gnome-bluetooth
-    pkgs.gnome.gnome-characters
-    pkgs.gnome.gnome-clocks
-    pkgs.gnome.gnome-color-manager
-    pkgs.gnome.gnome-contacts
-    pkgs.gnome.gnome-logs
-    pkgs.gnome.gnome-music
+    pkgs.gnome-characters
+    pkgs.gnome-clocks
+    pkgs.gnome-color-manager
+    pkgs.gnome-contacts
+    pkgs.gnome-logs
+    pkgs.gnome-music
     pkgs.orca
     pkgs.simple-scan
     pkgs.totem
