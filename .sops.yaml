@@ -1,5 +1,5 @@
 keys:
-- &electrostasy age1teutywnl8gnqptetmjygakw3w6m2fsj2fnjaduu6thls2zu4y4yqswkr4r
+- &electrostasy age1u0h3ss4sp288ul6suxw99qst073tnddxsmfkx6f6z2ka0a07jpyqr4qgzd
 creation_rules:
   # Per-host secrets
   - path_regex: hosts\/.+\/secrets.yaml

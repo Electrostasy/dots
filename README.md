@@ -13,22 +13,16 @@ installation.
 [NixOS]:https://nixos.org/guides/how-nix-works.html#nixos
 
 
-# Hosts
+## Hosts Overview
 
 > [!CAUTION]
 >
 > These configurations contain encrypted secrets managed by [sops-nix] and care
 > should be taken when building and activating them.
 >
-> Specifically, the configurations cannot be successfully activated on machines
-> that do not have a `/var/lib/sops-nix/keys.txt` file containing the [`age`]
-> private key corresponding to an `age` public key in the root [.sops.yaml]
-> file.
->
-> The `age` private key is used for decrypting secrets encrypted with the public
-> key on NixOS system activation. If the key is unavailable, you will not be
-> able to login and certain services will not function correctly. See [sops-nix]
-> for details.
+> The configurations cannot be successfully activated on machines that do not
+> have a `/var/lib/sops-nix/keys.txt` file containing the [`age`] private key
+> corresponding to an `age` public key in the root [.sops.yaml] file.
 
 The table below lists the managed hosts and their descriptions:
 
@@ -44,9 +38,44 @@ The table below lists the managed hosts and their descriptions:
 | terra        | Desktop                       | Primary PC at home                             |
 | venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                                |
 
-[sops-nix]: https://github.com/Mic92/sops-nix
 [`age`]: https://age-encryption.org/v1
 [.sops.yaml]: ./.sops.yaml
+
+
+## Key Rotation Notes
+
+The `age` private key is used for decrypting secrets encrypted with the public
+key on NixOS system activation. If the key is unavailable, you will not be able
+to login and certain services will not function correctly. See [sops-nix] for
+details.
+
+As mentioned above, the `age` private key is located in
+`/var/lib/sops-nix/keys.txt`, and has to be generated before secrets can be
+decrypted or rotated. The `age` private key can be generated using the
+following command:
+
+```sh
+rage-keygen -o ~/keys.txt
+```
+
+In order to make key rotation easier, the following commands will re-encrypt all
+secret files in this repository, when executed from its root, using the new key:
+
+```sh
+SECRET_FILES_REGEX=$(REGEXES=($(rg 'path_regex: (.*)$' -Nor '$1' .sops.yaml)); IFS='|'; echo "(${REGEXES[*]})")
+AGE_PUBLIC_KEY="$(rg '# public key: (.*)' -or '$1' /var/lib/sops-nix/keys.txt)"
+AGE_PUBLIC_KEY_NEW="$(rg '# public key: (.*)' -or '$1' ~/keys.txt)"
+
+fd --full-path "$SECRET_FILES_REGEX" -x sops rotate -i --add-age "$AGE_PUBLIC_KEY_NEW" --rm-age "$AGE_PUBLIC_KEY"
+```
+
+Afterwards, the only things left to do are:
+1. update the public key in the `.sops.yaml` configuration file
+2. and move the new private key in `~/keys.txt` to `/var/lib/sops-nix/keys.txt`.
+
+The new private key has to be deployed to each host manually.
+
+[sops-nix]: https://github.com/Mic92/sops-nix
 
 
 # Installation Guides
@@ -65,7 +94,7 @@ section.
 > A command is available to mount a partition and open a shell at its root in
 > order to add, remove or change files:
 >
-> ```shell
+> ```sh
 > nix run github:Electrostasy/dots#mountImage -- -i mars-sd-image*.img
 > ```
 
@@ -83,7 +112,7 @@ interface for remote monitoring and management of the 3D printer.
 
 The NixOS SD image to be flashed can be built using the following command:
 
-```shell
+```sh
 nix build github:Electrostasy/dots#deimosImage
 ```
 
@@ -93,7 +122,7 @@ nix build github:Electrostasy/dots#deimosImage
 The NixOS SD image may be flashed to a selected microSD card (up to 32 GB in
 size) using the following command:
 
-```shell
+```sh
 dd if=deimos-sd-image*.img of=/dev/sda bs=1M status=progress
 ```
 
@@ -111,7 +140,7 @@ Interceptor] carrier board, serving as Network Attached Storage.
 
 The NixOS SD image to be flashed can be built using the following command:
 
-```shell
+```sh
 nix build github:Electrostasy/dots#nixosConfigurations.lunaImage
 ```
 
@@ -126,13 +155,13 @@ Board for flashing the CM4:
 3. Power on the IO Board.
 4. Run `rpiboot` on the host PC to see eMMC storage as a block device:
 
-   ```shell
+   ```sh
    sudo rpiboot
    ```
 
 5. Flash the image to it:
 
-   ```shell
+   ```sh
    sudo dd if=luna-sd-image*.img of=/dev/sda bs=1M conv=fsync status=progress
    ```
 
@@ -177,7 +206,7 @@ of externally over USB.
 The NixOS installer SD image to be flashed can be built using the following
 command:
 
-```shell
+```sh
 NIXPKGS_ALLOW_UNFREE=1 nix build --impure github:Electrostasy/dots#marsImage
 ```
 
@@ -195,7 +224,7 @@ NIXPKGS_ALLOW_UNFREE=1 nix build --impure github:Electrostasy/dots#marsImage
 The NixOS installer SD image may be flashed to a selected microSD card or USB
 flash drive using the following command:
 
-```shell
+```sh
 dd if=mars-sd-image*.img of=/dev/sda bs=1M status=progress
 ```
 
@@ -207,7 +236,7 @@ proper `u-boot.itb` files concatenated at their expected offsets.
 In order to flash `u-boot` to SPI on a running system, use the following
 command:
 
-```shell
+```sh
 flashcp -v -p u-boot-rockchip-spi.bin /dev/mtd0
 ```
 
@@ -228,7 +257,7 @@ devices together.
 
 The NixOS SD image to be flashed can be built using the following command:
 
-```shell
+```sh
 nix build github:Electrostasy/dots#phobosImage
 ```
 
@@ -237,6 +266,6 @@ nix build github:Electrostasy/dots#phobosImage
 
 Flash the SD image to a selected microSD card using the following command:
 
-```shell
+```sh
 dd if=phobos-sd-image*.img of=/dev/sda bs=1M status=progress
 ```
