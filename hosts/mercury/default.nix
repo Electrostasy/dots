@@ -331,7 +331,7 @@
         "adbusers" # allow using `adb` for unprivileged users.
       ];
       uid = 1000;
-      openssh.authorizedKeys.keyFiles = [ ../terra/ssh_host_ed25519_key.pub ];
+      openssh.authorizedKeys.keyFiles = [ ../terra/id_ed25519.pub ];
     };
   };
 

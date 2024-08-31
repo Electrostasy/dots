@@ -272,7 +272,7 @@
       extraGroups = [ "wheel" ];
       uid = 1000;
       openssh.authorizedKeys.keyFiles = [
-        ../terra/ssh_host_ed25519_key.pub
+        ../terra/id_ed25519.pub
       ];
     };
   };
