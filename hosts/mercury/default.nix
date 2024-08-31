@@ -305,6 +305,7 @@
 
   environment.systemPackages = with pkgs; [
     gnome-network-displays
+    rnote
     scrcpy
   ];
 
