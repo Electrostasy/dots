@@ -22,11 +22,7 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  nixpkgs.allowUnfreePackages = [
-    "nvidia-x11"
-    "nvidia-settings"
-    "nvidia-persistenced"
-  ];
+  nixpkgs.allowUnfreePackages = [ "nvidia-x11" ];
 
   hardware = {
     enableRedistributableFirmware = true;
@@ -36,10 +32,9 @@
     graphics.enable = true;
 
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
-
-      modesetting.enable = true;
+      open = true;
       nvidiaSettings = false;
+
       powerManagement = {
         enable = true;
         finegrained = true;
