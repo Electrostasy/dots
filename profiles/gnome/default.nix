@@ -327,6 +327,10 @@
       "${config.environment.persistence.state.persistentStoragePath}/home/electro/.config/monitors.xml";
   };
 
+  programs.firefox.autoConfig = ''
+    pref("widget.gtk.rounded-bottom-corners.enabled", true);
+  '';
+
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.user.tmpfiles.rules = [

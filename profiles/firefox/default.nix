@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
 let
   # To add new extensions in Firefox:
@@ -36,7 +36,6 @@ in
           lockPref("permissions.memory_only", true); // Session-only permission changes.
           lockPref("signon.rememberSignons", false); // Disable built-in password manager.
           lockPref("browser.eme.ui.enabled", false); // Disable DRM prompt/banner.
-          lockPref("webgl.disabled", false); // WebGL is useful for previewing 3D model meshes.
         '')
       ];
     };
@@ -104,28 +103,24 @@ in
       pref("network.trr.uri", "https://dns.quad9.net/dns-query");
       pref("browser.tabs.insertAfterCurrent", true); // Insert new tabs after current tab.
       pref("extensions.pocket.enabled", false); // Disable Pocket.
-      pref("ui.systemUsesDarkTheme", 1); // Force dark mode in the user interface.
       pref("general.autoScroll", true); // Enable scrolling using the middle-click.
       pref("media.videocontrols.picture-in-picture.enabled", false); // Disable PIP.
       pref("browser.tabs.firefox-view", false); // Disable Firefox View.
       pref("identity.fxaccounts.enabled", false); // Disable Firefox Accounts and Sync.
       pref("browser.bookmarks.addedImportButton", true); // Disable 'Import bookmarks...' toolbar button.
       pref("browser.toolbars.bookmarks.visibility", "always"); // Always show the bookmarks toolbar.
-      pref("browser.urlbar.shortcuts.bookmarks", false); // Hide search shortcuts and suggestions.
+      pref("pref.general.disable_button.default_browser", true); // Default browser is managed by NixOS.
+
+      // Hide suggestions in urlbar, we can use * for bookmarks, % for tabs and ^
+      // for history instead.
+      pref("browser.urlbar.shortcuts.bookmarks", false);
       pref("browser.urlbar.shortcuts.history", false);
       pref("browser.urlbar.showSearchSuggestionsFirst", false);
       pref("browser.urlbar.suggest.bookmark", false);
       pref("browser.urlbar.suggest.history", false);
       pref("browser.urlbar.suggest.searches", false);
+      pref("browser.urlbar.suggest.recentsearches", false);
       pref("browser.urlbar.suggest.topsites", false);
-      pref("pref.general.disable_button.default_browser", true); // Default browser is managed by NixOS.
-
-      ${
-        # Disable the GTK client side decorations if not on GNOME.
-        lib.optionalString config.services.xserver.desktopManager.gnome.enable ''
-          pref("widget.gtk.rounded-bottom-corners.enabled", true);
-        ''
-      }
 
       // UI customisation.
       pref("browser.uiCustomization.state", "${lib.escape [ "\"" ] (builtins.toJSON {
