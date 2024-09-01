@@ -16,26 +16,33 @@ let
 in
 
 {
-  environment.persistence.state.users.electro.directories = [
-    ".mozilla/firefox"
-    ".mozilla/native-messaging-hosts"
-  ];
+  environment.persistence.state.users.electro.directories = [ ".mozilla/firefox" ];
 
   programs.firefox = {
     enable = true;
 
     package = pkgs.firefox.override {
+      nativeMessagingHosts = [ pkgs.keepassxc ];
+
       extraPrefsFiles = [
         "${pkgs.arkenfox-userjs}/user.cfg"
 
         (pkgs.writeText "arkenfox-userjs-overrides.cfg" /* javascript */ ''
           /// arkenfox user.js overrides.
-          lockPref("privacy.clearOnShutdown.history", false); // Session restore requires keeping history.
+          // We want session restore to work, for that we need to save history:
+          // https://github.com/arkenfox/user.js/issues/1080#issue-774750296
           lockPref("browser.startup.page", 3);
-          lockPref("browser.download.useDownloadDir", true); // Don't always ask where to save files.
-          lockPref("permissions.memory_only", true); // Session-only permission changes.
-          lockPref("signon.rememberSignons", false); // Disable built-in password manager.
-          lockPref("browser.eme.ui.enabled", false); // Disable DRM prompt/banner.
+          lockPref("privacy.clearOnShutdown.history", false);
+          lockPref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
+
+          // Disable all DRM content.
+          lockPref("media.eme.enabled", false);
+          lockPref("browser.eme.ui.enabled", false);
+
+          // Misc prefs.
+          lockPref("browser.download.useDownloadDir", true); // do not always ask where to save files.
+          lockPref("permissions.memory_only", true); // session-only permission changes.
+          lockPref("signon.rememberSignons", false); // disable built-in password manager.
         '')
       ];
     };
@@ -99,22 +106,17 @@ in
 
     autoConfig = /* javascript */ ''
       /// First line HAS to be a comment.
-      pref("network.trr.mode", 2); // Enable DNS over HTTPS (DoH).
-      pref("network.trr.uri", "https://dns.quad9.net/dns-query");
-      pref("browser.tabs.insertAfterCurrent", true); // Insert new tabs after current tab.
-      pref("extensions.pocket.enabled", false); // Disable Pocket.
-      pref("general.autoScroll", true); // Enable scrolling using the middle-click.
-      pref("media.videocontrols.picture-in-picture.enabled", false); // Disable PIP.
-      pref("browser.tabs.firefox-view", false); // Disable Firefox View.
-      pref("identity.fxaccounts.enabled", false); // Disable Firefox Accounts and Sync.
-      pref("browser.bookmarks.addedImportButton", true); // Disable 'Import bookmarks...' toolbar button.
-      pref("browser.toolbars.bookmarks.visibility", "always"); // Always show the bookmarks toolbar.
-      pref("pref.general.disable_button.default_browser", true); // Default browser is managed by NixOS.
+      pref("browser.tabs.insertAfterCurrent", true); // insert new tabs after current tab.
+      pref("extensions.pocket.enabled", false); // disable Pocket.
+      pref("general.autoScroll", true); // enable scrolling using the middle-click.
+      pref("media.videocontrols.picture-in-picture.enabled", false); // disable PIP.
+      pref("browser.tabs.firefox-view", false); // disable Firefox View.
+      pref("identity.fxaccounts.enabled", false); // disable Firefox Accounts and Sync.
+      pref("browser.bookmarks.addedImportButton", true); // disable 'Import bookmarks...' toolbar button.
+      pref("browser.toolbars.bookmarks.visibility", "always"); // always show the bookmarks toolbar.
+      pref("pref.general.disable_button.default_browser", true); // default browser is managed by NixOS.
 
-      // Hide suggestions in urlbar, we can use * for bookmarks, % for tabs and ^
-      // for history instead.
-      pref("browser.urlbar.shortcuts.bookmarks", false);
-      pref("browser.urlbar.shortcuts.history", false);
+      // Hide suggestions in urlbar.
       pref("browser.urlbar.showSearchSuggestionsFirst", false);
       pref("browser.urlbar.suggest.bookmark", false);
       pref("browser.urlbar.suggest.history", false);
@@ -156,12 +158,7 @@ in
                 extension)
               + "-browser-action")
             (builtins.attrNames extensions);
-
-        # No idea what these are for, but this pref is not loaded correctly
-        # without them.
-        dirtyAreaCache = [];
         currentVersion = 19;
-        newElementCount = 0;
       })}");
     '';
   };
