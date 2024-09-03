@@ -1,6 +1,20 @@
 { config, pkgs, ... }:
 
 {
+  boot.kernelParams = [
+    # IPv6 seems to (often silently) break Tailscale and DNS in various ways:
+    # - unable to resolve public DNS servers (even on Tailscale clients after
+    #   disconnecting)
+    # - unable to resolve sol.0x6776.lt (even on this Pi)
+    # - even flushing DNS caches doesn't fix this
+    # - queries outside the VPN network show everything is fine
+    # Better to just take a big hammer and disable it for all interfaces, save
+    # myself the trouble.
+    # NOTE: `ipv6.disable=1`, which disables the IPv6 stack in general, does NOT
+    # fix this, apparently.
+    "net.ipv6.conf.all.disable_ipv6=1"
+  ];
+
   networking.firewall = {
     enable = true;
 
@@ -32,8 +46,6 @@
     };
   };
 
-  # Headscale does not support LoadCredential, so set permissions for the
-  # secret accordingly.
   sops.secrets.headscaleKey = {
     mode = "0440";
     owner = config.users.users.headscale.name;
