@@ -26,17 +26,32 @@ in
     };
   };
 
-  fileSystems."/home/electro/.local/share/Steam" = {
-    device = "/dev/disk/by-label/games";
-    fsType = "btrfs";
-    options = [
-      "subvol=steam"
-      "noatime"
-      "compress-force=zstd:1"
-      "discard=async"
-      "X-mount.owner=${name}"
-      "X-mount.group=${group}"
-    ];
+  fileSystems = {
+    "/home/electro/.local/share/Steam" = {
+      device = "/dev/disk/by-label/games";
+      fsType = "btrfs";
+      options = [
+        "subvol=steam"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${name}"
+        "X-mount.group=${group}"
+      ];
+    };
+
+    "/home/electro/.local/share/bottles" = {
+      device = "/dev/disk/by-label/games";
+      fsType = "btrfs";
+      options = [
+        "subvol=bottles"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${name}"
+        "X-mount.group=${group}"
+      ];
+    };
   };
 
   environment = {
@@ -45,6 +60,7 @@ in
     persistence.state.users.electro.directories = [ ".cache/mesa_shader_cache" ];
 
     systemPackages = with pkgs; [
+      bottles
       # depotdownloader
       gpu-screen-recorder-gtk
       mangohud
