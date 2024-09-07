@@ -1,4 +1,4 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [ "${modulesPath}/installer/sd-card/sd-image.nix" ];
@@ -27,4 +27,10 @@
       ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
     '';
   };
+
+  # `auto-allocate-uids` breaks rebuilding in a booted up NixOS image, we can
+  # disable it via the `nixos-rebuild` flag `--option auto-allocate-uids false`
+  # or just override it to `false` in the image media:
+  # https://github.com/NixOS/nix/issues/8911
+  nix.settings.auto-allocate-uids = lib.mkImageMediaOverride false;
 }

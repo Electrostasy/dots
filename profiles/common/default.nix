@@ -6,13 +6,8 @@
     ./sops.nix
     ./impermanence.nix
     "${modulesPath}/profiles/perlless.nix"
+    ./fixes.nix
   ];
-
-  # perlless profile is too heavy-handed with this, so we unset it.
-  system.forbiddenDependenciesRegexes = lib.mkForce [];
-
-  # https://github.com/nix-community/impermanence/issues/210
-  system.etc.overlay.mutable = config.environment.persistence.state.enable;
 
   # Every host is to be considered part of this domain, however, only `phobos`
   # is internet-facing.
@@ -69,9 +64,6 @@
     enable = true;
 
     config = {
-      # https://github.com/NixOS/nixpkgs/issues/169193#issuecomment-1103816735
-      safe.directory = "/etc/nixos";
-
       url = {
         "https://github.com/".insteadOf = [ "gh:" "github:" ];
         "https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
@@ -101,26 +93,20 @@
 
     settings = {
       experimental-features = [
-        "auto-allocate-uids" # Don't create `nixbld*` user accounts for builds.
-        "cgroups" # Allow Nix to execute builds inside cgroups.
-        "flakes" # Enable flakes.
-        "nix-command" # Enable `nix {build,repl,shell,develop,...}` subcommands.
-        "no-url-literals" # Disallow unquoted URLs in Nix language syntax.
+        "auto-allocate-uids" # don't create `nixbld*` user accounts for builds.
+        "cgroups" # allow Nix to execute builds inside cgroups.
+        "flakes" # enable flakes.
+        "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
+        "no-url-literals" # disallow unquoted URLs in Nix language syntax.
       ];
       auto-allocate-uids = true;
       use-cgroups = true;
 
       # TODO: Make configuration buildable with IFD disabled.
-      allow-import-from-derivation = true; # Enable IFD by default.
-      use-xdg-base-directories = true; # Don't clutter $HOME.
-
-      # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
-      trusted-users = [ "@wheel" ];
+      # allow-import-from-derivation = false; # disable IFD by default.
+      use-xdg-base-directories = true; # don't clutter $HOME.
     };
   };
-
-  # Setting the timeout to 0 breaks mullvad-daemon, nfs mounts, a lot of things.
-  systemd.network.wait-online.anyInterface = lib.mkDefault true;
 
   security.sudo = {
     # Only enable sudo by default if we have at least 1 non-system user.

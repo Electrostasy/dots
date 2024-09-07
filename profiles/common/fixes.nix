@@ -1,0 +1,27 @@
+{ config, lib, ... }:
+
+{
+  # perlless profile is too heavy-handed with this, so we unset it, because
+  # some programs like tlp have no perlless alternative.
+  system.forbiddenDependenciesRegexes = lib.mkForce [];
+
+  # impermanence conflicts with /etc read-only overlay, making bind mounts fail:
+  # https://github.com/nix-community/impermanence/issues/210
+  system.etc.overlay.mutable = config.environment.persistence.state.enable;
+
+  # Since git 2.35.2, rebuilding from repositories owned by non-root users will
+  # break `nixos-rebuild`, unless we run `nixos-rebuild` with the `--use-remote-sudo`
+  # commandline flag: https://github.com/NixOS/nixpkgs/issues/169193#issuecomment-1103816735
+  programs.git.config.safe.directory = "/etc/nixos";
+
+  # When deploying NixOS configurations with `nixos-rebuild --target-host`, we
+  # can get an error on missing valid signatures for store paths built on the
+  # build host, the solution is to add the user (or group) on the remote end to
+  # trusted-users or sign the store paths with valid signatures:
+  # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
+  nix.settings.trusted-users = [ "@wheel" ];
+
+  # Setting the timeout to 0 breaks mullvad-daemon, nfs mounts, a lot of things,
+  # and I cannot find any reason why we would want it off by default.
+  systemd.network.wait-online.anyInterface = lib.mkDefault true;
+}
