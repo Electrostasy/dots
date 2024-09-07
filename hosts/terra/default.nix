@@ -120,7 +120,8 @@
     picard
     prusa-slicer
     pt-p300bt-labelmaker
-    spek
+    sonic-lineup
+    sonic-visualiser
     via
   ];
 
