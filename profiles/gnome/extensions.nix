@@ -26,7 +26,7 @@
           name = "blur-my-shell-fix";
           runtimeInputs = [
             config.systemd.package
-            pkgs.gnome.gnome-shell
+            pkgs.gnome-shell
             pkgs.jq
           ];
 

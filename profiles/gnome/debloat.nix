@@ -64,7 +64,7 @@
     pkgs.gnome-tour
     pkgs.gnome-user-docs
     pkgs.gnome-backgrounds
-    pkgs.gnome.gnome-bluetooth
+    pkgs.gnome-bluetooth
     pkgs.gnome-characters
     pkgs.gnome-clocks
     pkgs.gnome-color-manager
