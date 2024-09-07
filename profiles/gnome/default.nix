@@ -27,9 +27,6 @@
     };
   };
 
-  # Prefer iwd to wpa_supplicant.
-  networking.networkmanager.wifi.backend = lib.mkDefault "iwd";
-
   # Do not turn on bluetooth on boot.
   hardware.bluetooth.powerOnBoot = false;
 

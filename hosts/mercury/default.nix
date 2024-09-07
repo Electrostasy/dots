@@ -181,121 +181,100 @@
     };
   };
 
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    useNetworkd = true;
+  networking.networkmanager.ensureProfiles = {
+    environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
-    networkmanager = {
-      # With the iwd backend, autoconnect does not work, even if we set
-      # `wifi.iwd.autoconnect = false`. As networks are managed with NetworkManager,
-      # iwd is not aware of them without converting them to iwd's format, but not
-      # using iwd's autoconnect functionality is not working either.
-      wifi.backend = "wpa_supplicant";
+    profiles = {
+      home-wifi = {
+        ipv4.method = "auto";
+        connection = {
+          id = "Sukceno";
+          type = "wifi";
+          autoconnect = true;
+        };
+        wifi.ssid = "Sukceno";
+        wifi-security = {
+          auth-alg = "open";
+          key-mgmt = "wpa-psk";
+          psk = "$PSK_SUKCENO";
+        };
+      };
 
-      dns = "systemd-resolved";
+      home-wifi-fast = {
+        ipv4.method = "auto";
+        connection = {
+          id = "Sukceno5G";
+          type = "wifi";
+          autoconnect = true;
+        };
+        wifi.ssid = "Sukceno5G";
+        wifi-security = {
+          auth-alg = "open";
+          key-mgmt = "wpa-psk";
+          psk = "$PSK_SUKCENO5G";
+        };
+      };
 
-      ensureProfiles = {
-        environmentFiles = [ config.sops.secrets.networkmanager.path ];
-        profiles = {
-          home-wifi = {
-            ipv4.method = "auto";
-            connection = {
-              id = "Sukceno";
-              type = "wifi";
-              autoconnect = true;
-            };
-            wifi.ssid = "Sukceno";
-            wifi-security = {
-              auth-alg = "open";
-              key-mgmt = "wpa-psk";
-              psk = "$PSK_SUKCENO";
-            };
-          };
+      work-3 = {
+        ipv4.method = "auto";
+        connection = {
+          id = "L19A3A";
+          type = "wifi";
+          autoconnect = true;
+        };
+        wifi.ssid = "L19A3A";
+        wifi-security = {
+          auth-alg = "open";
+          key-mgmt = "wpa-psk";
+          psk = "$PSK_L19A3A";
+        };
+      };
 
-          home-wifi-fast = {
-            ipv4.method = "auto";
-            connection = {
-              id = "Sukceno5G";
-              type = "wifi";
-              autoconnect = true;
-            };
-            wifi.ssid = "Sukceno5G";
-            wifi-security = {
-              auth-alg = "open";
-              key-mgmt = "wpa-psk";
-              psk = "$PSK_SUKCENO5G";
-            };
-          };
-
-          work-3 = {
-            ipv4.method = "auto";
-            connection = {
-              id = "L19A3A";
-              type = "wifi";
-              autoconnect = true;
-            };
-            wifi.ssid = "L19A3A";
-            wifi-security = {
-              auth-alg = "open";
-              key-mgmt = "wpa-psk";
-              psk = "$PSK_L19A3A";
-            };
-          };
-
-          work-4 = {
-            ipv4.method = "auto";
-            connection = {
-              id = "L19A";
-              type = "wifi";
-              autoconnect = true;
-            };
-            wifi.ssid = "L19A";
-            wifi-security = {
-              auth-alg = "open";
-              key-mgmt = "wpa-psk";
-              psk = "$PSK_L19A";
-            };
-          };
+      work-4 = {
+        ipv4.method = "auto";
+        connection = {
+          id = "L19A";
+          type = "wifi";
+          autoconnect = true;
+        };
+        wifi.ssid = "L19A";
+        wifi-security = {
+          auth-alg = "open";
+          key-mgmt = "wpa-psk";
+          psk = "$PSK_L19A";
         };
       };
     };
   };
 
-  systemd.network = {
-    enable = true;
+  systemd.network.networks = {
+    "40-wireless" = {
+      name = "wl*";
+      DHCP = "yes";
+      dns = [ "9.9.9.9" ];
 
-    networks = {
-      "40-wireless" = {
-        name = "wl*";
-
-        DHCP = "yes";
-        dns = [ "9.9.9.9" ];
-
-        networkConfig = {
-          IgnoreCarrierLoss = "yes";
-          LinkLocalAddressing = "no";
-        };
-
-        dhcpV4Config = {
-          Anonymize = true;
-          RouteMetric = 20;
-        };
+      networkConfig = {
+        IgnoreCarrierLoss = "yes";
+        LinkLocalAddressing = "no";
       };
 
-      "40-tethered" = {
-        name = "enp*";
-
-        DHCP = "yes";
-        dns = [ "9.9.9.9" ];
-
-        networkConfig = {
-          IgnoreCarrierLoss = "yes";
-          LinkLocalAddressing = "no";
-        };
-
-        dhcpV4Config.RouteMetric = 30;
+      dhcpV4Config = {
+        Anonymize = true;
+        RouteMetric = 20;
       };
+    };
+
+    "40-tethered" = {
+      name = "enp*";
+      DHCP = "yes";
+      dns = [ "9.9.9.9" ];
+
+      networkConfig = {
+        IgnoreCarrierLoss = "yes";
+        LinkLocalAddressing = "no";
+      };
+
+      dhcpV4Config.RouteMetric = 30;
     };
   };
 

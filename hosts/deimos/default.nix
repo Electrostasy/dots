@@ -49,53 +49,42 @@
 
   hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    useNetworkd = true;
+  networking.networkmanager = {
+    enable = true;
 
-    networkmanager = {
-      enable = true;
+    ensureProfiles = {
+      environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
-      ensureProfiles = {
-        environmentFiles = [ config.sops.secrets.networkmanager.path ];
-
-        profiles.home-wifi = {
-          ipv4.method = "auto";
-          connection = {
-            id = "Sukceno";
-            type = "wifi";
-            autoconnect = true;
-          };
-          wifi.ssid = "Sukceno";
-          wifi-security = {
-            auth-alg = "open";
-            key-mgmt = "wpa-psk";
-            psk = "$PSK_SUKCENO";
-          };
+      profiles.home-wifi = {
+        ipv4.method = "auto";
+        connection = {
+          id = "Sukceno";
+          type = "wifi";
+          autoconnect = true;
+        };
+        wifi.ssid = "Sukceno";
+        wifi-security = {
+          auth-alg = "open";
+          key-mgmt = "wpa-psk";
+          psk = "$PSK_SUKCENO";
         };
       };
     };
   };
 
-  systemd.network = {
-    enable = true;
+  systemd.network.networks."40-wireless" = {
+    name = "wl*";
+    DHCP = "yes";
+    dns = [ "9.9.9.9" ];
 
-    networks."40-wireless" = {
-      name = "wl*";
+    networkConfig = {
+      IgnoreCarrierLoss = "yes";
+      LinkLocalAddressing = "no";
+    };
 
-      DHCP = "yes";
-      dns = [ "9.9.9.9" ];
-
-      networkConfig = {
-        IgnoreCarrierLoss = "yes";
-        LinkLocalAddressing = "no";
-      };
-
-      dhcpV4Config = {
-        Anonymize = true;
-        RouteMetric = 20;
-      };
+    dhcpV4Config = {
+      Anonymize = true;
+      RouteMetric = 20;
     };
   };
 

@@ -21,6 +21,8 @@
     useWindowsDriver = true;
   };
 
+  services.resolved.enable = false; # resolv.conf is managed by WSL.
+
   services.tailscale.enable = false;
 
   environment.systemPackages = with pkgs; [

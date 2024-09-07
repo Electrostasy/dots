@@ -200,21 +200,10 @@
     };
   };
 
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    useNetworkd = true;
-  };
-
-  systemd.network = {
-    enable = true;
-
-    networks."40-wired" = {
-      name = "enp*";
-
-      DHCP = "yes";
-      dns = [ "9.9.9.9" ];
-    };
+  systemd.network.networks."40-wired" = {
+    name = "enp*";
+    DHCP = "yes";
+    dns = [ "9.9.9.9" ];
   };
 
   sops = {

@@ -24,4 +24,10 @@
   # Setting the timeout to 0 breaks mullvad-daemon, nfs mounts, a lot of things,
   # and I cannot find any reason why we would want it off by default.
   systemd.network.wait-online.anyInterface = lib.mkDefault true;
+
+  # With the iwd backend, autoconnect does not work, even if we set
+  # `wifi.iwd.autoconnect = false`. If networks are managed with NetworkManager,
+  # iwd is not aware of them without converting them to iwd's format, but not
+  # using iwd's autoconnect functionality is not working either.
+  networking.networkmanager.wifi.backend = "wpa_supplicant";
 }

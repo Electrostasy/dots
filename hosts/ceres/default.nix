@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -77,14 +77,16 @@
   ];
 
   networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
+    # TODO: Switch to systemd-network.
+    useNetworkd = lib.mkForce false;
 
     defaultGateway = "192.168.100.1";
+
     nameservers = [
       "192.168.100.10"
       "212.59.1.1"
     ];
+
     interfaces.eno0.ipv4.addresses = [
       { address = "192.168.100.80"; prefixLength = 24; }
     ];

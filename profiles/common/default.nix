@@ -11,9 +11,18 @@
 
   boot.tmp.useTmpfs = true;
 
-  # Every host is to be considered part of this domain, however, only `phobos`
-  # is internet-facing.
-  networking.domain = "0x6776.lt";
+  networking = {
+    # Every host is to be considered part of this domain, however, only `phobos`
+    # is internet-facing.
+    domain = "0x6776.lt";
+
+    # Use systemd-networkd by default.
+    dhcpcd.enable = false;
+    useDHCP = false;
+    useNetworkd = true;
+  };
+
+  systemd.network.enable = true;
 
   # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
   # control server running on `phobos`.

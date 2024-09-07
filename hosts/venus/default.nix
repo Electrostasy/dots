@@ -181,29 +181,10 @@
     xournalpp
   ];
 
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    useNetworkd = true;
-    wireless.iwd = {
-      enable = true;
-
-      settings = {
-        Settings.AutoConnect = true;
-        General.EnableNetworkConfiguration = false;
-        Network.EnableIPv6 = false;
-        Scan.DisablePeriodicScan = true;
-      };
-    };
-  };
-
   systemd.network = {
-    enable = true;
-
     networks = {
       "40-wired" = {
         name = "eno0";
-
         DHCP = "yes";
         dns = [ "9.9.9.9" ];
 
@@ -213,7 +194,6 @@
 
       "40-wireless" = {
         name = "wlan0";
-
         DHCP = "yes";
         dns = [ "9.9.9.9" ];
 
@@ -230,7 +210,6 @@
 
       "40-tethered" = {
         name = "enp0s2*";
-
         DHCP = "yes";
         dns = [ "9.9.9.9" ];
 
