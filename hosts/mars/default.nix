@@ -39,8 +39,6 @@
       "console=tty0"
     ];
 
-    tmp.useTmpfs = true;
-
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;

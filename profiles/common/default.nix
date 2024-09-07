@@ -9,6 +9,8 @@
     ./fixes.nix
   ];
 
+  boot.tmp.useTmpfs = true;
+
   # Every host is to be considered part of this domain, however, only `phobos`
   # is internet-facing.
   networking.domain = "0x6776.lt";

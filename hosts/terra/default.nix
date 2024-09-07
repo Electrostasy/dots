@@ -87,12 +87,7 @@
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
 
-    tmp = {
-      useTmpfs = true;
-      # Use a higher than default (50%) upper limit for /tmp to not run out of
-      # space compiling programs.
-      tmpfsSize = "75%";
-    };
+    tmp.tmpfsSize = "75%";
 
     loader = {
       systemd-boot.enable = true;

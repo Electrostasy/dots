@@ -25,7 +25,6 @@
     ];
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    tmp.useTmpfs = true;
 
     loader.grub = {
       enable = true;

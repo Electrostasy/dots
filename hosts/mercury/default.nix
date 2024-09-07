@@ -102,10 +102,7 @@
       systemd-boot.enable = true;
     };
 
-    tmp = {
-      useTmpfs = true;
-      tmpfsSize = "75%";
-    };
+    tmp.tmpfsSize = "75%";
   };
 
   environment.persistence.state = {

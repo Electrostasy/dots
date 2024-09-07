@@ -47,7 +47,6 @@
       "iwlwifi.power_save=1"
     ];
 
-    tmp.useTmpfs = true;
     loader.grub = {
       enable = true;
       device = "/dev/sda";
