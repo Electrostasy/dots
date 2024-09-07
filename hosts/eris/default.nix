@@ -6,8 +6,6 @@
     ../../profiles/shell
   ];
 
-  system.stateVersion = "22.05";
-
   nixpkgs = {
     hostPlatform = "x86_64-linux";
     overlays = [ self.overlays.libewf-fuse ];
@@ -45,4 +43,6 @@
     xlsx2csv
     xsv
   ];
+
+  system.stateVersion = "22.05";
 }

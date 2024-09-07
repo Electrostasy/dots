@@ -13,7 +13,17 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  system.stateVersion = "23.11";
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
 
   boot = {
     initrd = {
@@ -228,27 +238,23 @@
     };
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
+
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+      "networkmanager" # don't ask password when connecting to networks.
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      ../terra/id_ed25519.pub
+    ];
   };
 
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [
-        ../terra/id_ed25519.pub
-      ];
-    };
-  };
+  system.stateVersion = "23.11";
 }

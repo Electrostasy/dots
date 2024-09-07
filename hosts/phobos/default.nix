@@ -11,6 +11,18 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
+
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
@@ -93,30 +105,23 @@
     dns = [ "9.9.9.9" ];
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
 
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [
-        ../mercury/id_ed25519.pub
-        ../terra/id_ed25519.pub
-        ../venus/id_ed25519.pub
-      ];
-    };
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      ../mercury/id_ed25519.pub
+      ../terra/id_ed25519.pub
+      ../venus/id_ed25519.pub
+    ];
   };
 
   system.stateVersion = "24.05";

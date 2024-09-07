@@ -1,7 +1,6 @@
 { config, pkgs, modulesPath, self, ... }:
 
 {
-  disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
   imports = [
     "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/minimal
@@ -11,7 +10,21 @@
     self.inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
+  disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
+
   nixpkgs.hostPlatform = "aarch64-linux";
+
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
 
   sdImage = {
     imageBaseName = "${config.networking.hostName}-sd-image";
@@ -80,30 +93,23 @@
     dhcpV4Config.RouteMetric = 10;
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
 
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [
-        ../mercury/id_ed25519.pub
-        ../terra/id_ed25519.pub
-        ../venus/id_ed25519.pub
-      ];
-    };
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      ../mercury/id_ed25519.pub
+      ../terra/id_ed25519.pub
+      ../venus/id_ed25519.pub
+    ];
   };
 
   system.stateVersion = "24.05";

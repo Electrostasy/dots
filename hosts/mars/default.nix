@@ -14,6 +14,18 @@
     allowUnfreePackages = [ "rkbin" ];
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
+
   system = {
     checks = [ config.system.build.uboot ];
 
@@ -154,30 +166,16 @@
     };
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
-
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [
-        ../mercury/id_ed25519.pub
-        ../terra/id_ed25519.pub
-        ../venus/id_ed25519.pub
-      ];
-    };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+    extraGroups = [ "wheel" ];
+    openssh.authorizedKeys.keyFiles = [
+      ../mercury/id_ed25519.pub
+      ../terra/id_ed25519.pub
+      ../venus/id_ed25519.pub
+    ];
   };
 
   system.stateVersion = "24.11";

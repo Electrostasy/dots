@@ -20,6 +20,19 @@
     ];
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      networkmanager = {};
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
+
   services.xserver.videoDrivers = [ "nvidia" ];
 
   nixpkgs.allowUnfreePackages = [ "nvidia-x11" ];
@@ -168,19 +181,6 @@
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = true;
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      networkmanager = {};
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
-
   networking.networkmanager.ensureProfiles = {
     environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
@@ -291,19 +291,24 @@
   # Required for scrcpy.
   programs.adb.enable = true;
 
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [
-        "wheel" # allow using `sudo` for this user.
-        "networkmanager" # don't ask password when connecting to networks.
-        "adbusers" # allow using `adb` for unprivileged users.
-      ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [ ../terra/id_ed25519.pub ];
-    };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
+
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+      "networkmanager" # don't ask password when connecting to networks.
+      "adbusers" # allow using `adb` for unprivileged users.
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      ../terra/id_ed25519.pub
+      ../venus/id_ed25519.pub
+    ];
   };
 
   system.stateVersion = "24.05";

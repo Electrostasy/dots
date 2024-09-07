@@ -9,9 +9,12 @@
     ../../profiles/shell
   ];
 
-  system.stateVersion = "22.05";
-
   nixpkgs.hostPlatform = "x86_64-linux";
+
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets.electroPassword.neededForUsers = true;
+  };
 
   boot = {
     initrd.availableKernelModules = [
@@ -99,22 +102,17 @@
     qemu.package = pkgs.qemu_kvm;
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets.electroPassword.neededForUsers = true;
-  };
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
 
-  users = {
-    mutableUsers = false;
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [
-        "wheel"
-        "libvirtd"
-      ];
-      uid = 1000;
-    };
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+      "networkmanager" # don't ask password when connecting to networks.
+      "libvirtd" # allow passwordless access to the `libvirt` daemon.
+    ];
   };
 
   services.samba = {
@@ -146,4 +144,6 @@
       "directory mask" = 0777;
     };
   };
+
+  system.stateVersion = "22.05";
 }

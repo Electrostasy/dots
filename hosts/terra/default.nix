@@ -16,6 +16,18 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+
+    secrets = {
+      electroPassword.neededForUsers = true;
+      electroIdentity = {
+        mode = "0400";
+        owner = config.users.users.electro.name;
+      };
+    };
+  };
+
   boot = {
     initrd = {
       luks.devices."cryptroot" = {
@@ -206,32 +218,23 @@
     dns = [ "9.9.9.9" ];
   };
 
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
-
-  users = {
-    mutableUsers = false;
+  users.users.electro = {
+    isNormalUser = true;
+    uid = 1000;
 
     # Change password using:
     # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
-    users.electro = {
-      isNormalUser = true;
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-      extraGroups = [ "wheel" ];
-      uid = 1000;
-      openssh.authorizedKeys.keyFiles = [
-        ../mercury/id_ed25519.pub
-        ../venus/id_ed25519.pub
-      ];
-    };
+    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+      "networkmanager" # don't ask password when connecting to networks.
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      ../mercury/id_ed25519.pub
+      ../venus/id_ed25519.pub
+    ];
   };
 
   system.stateVersion = "24.11";
