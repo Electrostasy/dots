@@ -19,10 +19,10 @@ in
         "z3fold"
       ];
 
-      preDeviceCommands = ''
-        echo lz4hc > /sys/module/zswap/parameters/compressor
-        echo z3fold > /sys/module/zswap/parameters/zpool
-      '';
+      systemd.tmpfiles.settings."10-zswap" = {
+        "/sys/module/zswap/parameters/compressor".w.argument = "lz4hc";
+        "/sys/module/zswap/parameters/zpool".w.argument = "z3fold";
+      };
     };
   };
 

@@ -21,31 +21,58 @@
       luks.devices."cryptroot" = {
         device = "/dev/disk/by-partuuid/6e31b86f-1d1d-4cd8-91b3-79af16dda198";
         allowDiscards = true;
+      };
 
-        # In order to restore the root subvolume from an empty snapshot, first
-        # the lower level subvolumes under /root which seem to get created by
-        # systemd need to be deleted.
-        postOpenCommands = ''
-          mkdir -p /mnt
-          mount -o subvol=/ /dev/mapper/cryptroot /mnt
+      systemd = {
+        # https://github.com/NixOS/nixpkgs/issues/309316
+        storePaths = with pkgs; [
+          "${util-linux}/bin/mount"
+          "${util-linux}/bin/umount"
+          "${btrfs-progs}/bin/btrfs"
+          "${coreutils}/bin/cut"
+        ];
 
-          for subvolume in $(btrfs subvolume list -o /mnt/root | cut -f9 -d' '); do
-            echo "Deleting /$subvolume subvolume..."
-            btrfs subvolume delete "/mnt/$subvolume"
-          done
+        services.cryptroot-restore = {
+          description = "Restore root filesystem for impermanent btrfs root";
+          wantedBy = [ "sysinit.target" ];
 
-          if [ $? -eq 0 ]; then
-            echo "Deleting /root subvolume..."
-            btrfs subvolume delete /mnt/root
+          after = [ "cryptsetup.target" ]; # after /dev/mapper/cryptroot is available.
+          before = [ "local-fs-pre.target" ]; # before filesystems are mounted.
 
-            echo "Restoring /root subvolume from blank snapshot..."
-            btrfs subvolume snapshot /mnt/root-blank /mnt/root
-          else
-            echo "Failed to delete subvolumes under /mnt/root!"
-          fi
+          path = with pkgs; [
+            util-linux
+            btrfs-progs
+            coreutils
+          ];
 
-          umount /mnt
-        '';
+          unitConfig.DefaultDependencies = "no";
+          serviceConfig.Type = "oneshot";
+
+          # In order to restore the root subvolume from an empty snapshot, first
+          # the lower level subvolumes under /root need to be deleted, which seem
+          # to get created by systemd.
+          script = ''
+            mkdir -p /mnt
+            mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
+
+            for subvolume in $(btrfs subvolume list -o /mnt/root | cut -f9 -d' '); do
+              echo "Deleting /$subvolume subvolume..."
+              btrfs subvolume delete "/mnt/$subvolume"
+            done
+
+            if [ $? -eq 0 ]; then
+              echo "Deleting /root subvolume..."
+              btrfs subvolume delete /mnt/root
+
+              echo "Restoring /root subvolume from blank snapshot..."
+              btrfs subvolume snapshot /mnt/root-blank /mnt/root
+            else
+              echo "Failed to delete subvolumes under /mnt/root!"
+            fi
+
+            umount /mnt
+          '';
+        };
       };
 
       availableKernelModules = [

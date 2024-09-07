@@ -17,9 +17,6 @@
 
   boot = {
     initrd = {
-      # Required for Plymouth to show graphical password prompt on boot.
-      systemd.enable = true;
-
       availableKernelModules = [
         "ahci"
         "ehci_pci"

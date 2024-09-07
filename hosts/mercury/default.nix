@@ -63,8 +63,6 @@
     ];
 
     initrd = {
-      systemd.enable = true;
-
       luks.devices."cryptroot".device = "/dev/disk/by-uuid/eea26205-2ae5-4d2c-9a13-32c7d9ae2421";
 
       # Panel orientation detection does not work (is it even supported?), and
@@ -72,6 +70,7 @@
       # and active).
       unl0kr = {
         enable = true;
+
         settings = {
           general.animations = true;
           theme = {

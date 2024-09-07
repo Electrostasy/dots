@@ -1,16 +1,18 @@
-{ config, pkgs, lib, self, ... }:
+{ config, pkgs, lib, modulesPath, self, ... }:
 
 {
   imports = (lib.attrValues self.nixosModules) ++ [
     self.inputs.nixos-wsl.nixosModules.wsl
     ./sops.nix
     ./impermanence.nix
+    "${modulesPath}/profiles/perlless.nix"
   ];
 
-  system.switch = lib.mkDefault {
-    enable = false;
-    enableNg = true;
-  };
+  # perlless profile is too heavy-handed with this, so we unset it.
+  system.forbiddenDependenciesRegexes = lib.mkForce [];
+
+  # https://github.com/nix-community/impermanence/issues/210
+  system.etc.overlay.mutable = config.environment.persistence.state.enable;
 
   # Every host is to be considered part of this domain, however, only `phobos`
   # is internet-facing.
