@@ -1,7 +1,13 @@
 { config, pkgs, ... }:
 
 let
-  inherit (config.users.users.electro) name group;
+  mkOptionsWith = extraOptions: [
+    "noatime"
+    "compress-force=zstd:1"
+    "discard=async"
+    "X-mount.owner=${config.users.users.electro.name}"
+    "X-mount.group=${config.users.users.electro.group}"
+  ] ++ extraOptions;
 in
 
 {
@@ -30,27 +36,19 @@ in
     "/home/electro/.local/share/Steam" = {
       device = "/dev/disk/by-label/games";
       fsType = "btrfs";
-      options = [
-        "subvol=steam"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-        "X-mount.owner=${name}"
-        "X-mount.group=${group}"
-      ];
+      options = mkOptionsWith [ "subvol=steam" ];
     };
 
     "/home/electro/.local/share/bottles" = {
       device = "/dev/disk/by-label/games";
       fsType = "btrfs";
-      options = [
-        "subvol=bottles"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-        "X-mount.owner=${name}"
-        "X-mount.group=${group}"
-      ];
+      options = mkOptionsWith [ "subvol=bottles" ];
+    };
+
+    "/home/electro/.local/share/dolphin-emu" = {
+      device = "/dev/disk/by-label/games";
+      fsType = "btrfs";
+      options = mkOptionsWith [ "subvol=dolphin-emu" ];
     };
   };
 
@@ -59,8 +57,30 @@ in
     # overriden by setting $MESA_SHADER_CACHE_DIR.
     persistence.state.users.electro.directories = [ ".cache/mesa_shader_cache" ];
 
+    # Keep configs, state, etc. all in the same place.
+    sessionVariables.DOLPHIN_EMU_USERPATH = "\${XDG_DATA_HOME:-$HOME/.local/share}/dolphin-emu";
+
+    # TODO: Convert to module.
+    etc."MangoHud.conf".text = ''
+      toggle_hud=F12
+      fps_color_change
+      frame_timing
+      cpu_load_change
+      cpu_temp
+      gpu_junction_temp
+      gpu_load_change
+      gpu_temp
+      ram
+      vram
+      swap
+      graphs=gpu_load,cpu_load
+      histogram
+      throttling_status_graph
+    '';
+
     systemPackages = with pkgs; [
       bottles
+      dolphin-emu
       # depotdownloader
       gpu-screen-recorder-gtk
       mangohud
@@ -72,6 +92,10 @@ in
     "steam-original"
     "steam-run"
   ];
+
+  # Steam's fhs wrapper looks for this, and fails to launch if it is not present.
+  # Possibly related to etc overlay?
+  systemd.tmpfiles.settings."10-steam"."/etc/NIXOS".d = { };
 
   programs = {
     # Necessary to prevent stutters and audio issues.
