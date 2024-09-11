@@ -34,12 +34,14 @@
     imagemagick
     john
     libewf
+    qpdf
     repgrep
     ripgrep-all
     sleuthkit # mmls, fls, fsstat, icat
     stegseek
     testdisk # photorec
     unixtools.xxd
+    untrunc-anthwlock
     xlsx2csv
     xsv
   ];
