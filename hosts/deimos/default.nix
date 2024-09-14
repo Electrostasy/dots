@@ -1,15 +1,12 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
-    "${modulesPath}/installer/sd-card/sd-image.nix"
     ../../profiles/minimal
     ../../profiles/shell
     ../../profiles/ssh
     ./klipper.nix
   ];
-
-  disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
@@ -26,28 +23,12 @@
     };
   };
 
-  sdImage = {
-    imageBaseName = "${config.networking.hostName}-sd-image";
-    compressImage = false;
-
-    populateFirmwareCommands = ''
-      cat <<EOF > ./firmware/config.txt
-      arm_64bit=1
-      enable_uart=1
-      avoid_warnings=1
-      EOF
-
-      cp ${pkgs.ubootRaspberryPi3_64bit}/u-boot.bin ./firmware/kernel8.img
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/{bootcode.bin,fixup.dat,start.elf,bcm2710-rpi-zero-2-w.dtb} ./firmware
-    '';
-
-    populateRootCommands = ''
-      mkdir -p ./files/boot
-      ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
-    '';
-  };
-
   boot = {
+    loader = {
+      grub.enable = false;
+      generic-extlinux-compatible.enable = true;
+    };
+
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       # Required to enable serial console:
@@ -55,10 +36,17 @@
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
     ];
+  };
 
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "ext4";
+    };
+
+    "/boot" = {
+      device = "/dev/disk/by-label/BOOT";
+      fsType = "vfat";
     };
   };
 
