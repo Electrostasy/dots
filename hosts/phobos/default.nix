@@ -101,8 +101,7 @@
 
   systemd.network.networks."40-wired" = {
     name = "en*";
-    DHCP = "yes";
-    dns = [ "9.9.9.9" ];
+    networkConfig.DHCP = true;
   };
 
   users.users.electro = {

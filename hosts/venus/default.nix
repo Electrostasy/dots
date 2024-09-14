@@ -195,21 +195,22 @@
     networks = {
       "40-wired" = {
         name = "eno0";
-        DHCP = "yes";
-        dns = [ "9.9.9.9" ];
 
-        networkConfig.LinkLocalAddressing = "no";
+        networkConfig = {
+          DHCP = true;
+          LinkLocalAddressing = false;
+        };
+
         dhcpV4Config.RouteMetric = 10;
       };
 
       "40-wireless" = {
         name = "wlan0";
-        DHCP = "yes";
-        dns = [ "9.9.9.9" ];
 
         networkConfig = {
-          IgnoreCarrierLoss = "yes";
-          LinkLocalAddressing = "no";
+          DHCP = true;
+          IgnoreCarrierLoss = true;
+          LinkLocalAddressing = false;
         };
 
         dhcpV4Config = {
@@ -220,12 +221,11 @@
 
       "40-tethered" = {
         name = "enp0s2*";
-        DHCP = "yes";
-        dns = [ "9.9.9.9" ];
 
         networkConfig = {
-          IgnoreCarrierLoss = "yes";
-          LinkLocalAddressing = "no";
+          DHCP = true;
+          IgnoreCarrierLoss = true;
+          LinkLocalAddressing = false;
         };
 
         dhcpV4Config.RouteMetric = 30;

@@ -277,9 +277,8 @@
   };
 
   systemd.network.networks."40-wired" = {
-    name = "enp*";
-    DHCP = "yes";
-    dns = [ "9.9.9.9" ];
+    name = "en*";
+    networkConfig.DHCP = true;
   };
 
   users.users.electro = {

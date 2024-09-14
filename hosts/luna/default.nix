@@ -85,11 +85,13 @@
   };
 
   systemd.network.networks."40-wired" = {
-    name = "end0";
-    DHCP = "yes";
-    dns = [ "9.9.9.9" ];
+    name = "en*";
 
-    networkConfig.LinkLocalAddressing = "no";
+    networkConfig = {
+      DHCP = true;
+      LinkLocalAddressing = false;
+    };
+
     dhcpV4Config.RouteMetric = 10;
   };
 

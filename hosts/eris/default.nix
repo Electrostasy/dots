@@ -1,4 +1,4 @@
-{ pkgs, self, ... }:
+{ pkgs, lib, self, ... }:
 
 {
   imports = [
@@ -19,7 +19,9 @@
     useWindowsDriver = true;
   };
 
-  services.resolved.enable = false; # resolv.conf is managed by WSL.
+  # `resolv.conf` is managed by WSL.
+  services.resolved.enable = false;
+  networking.nameservers = lib.mkForce [ ];
 
   services.tailscale.enable = false;
 

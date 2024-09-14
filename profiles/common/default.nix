@@ -16,6 +16,15 @@
     # is internet-facing.
     domain = "0x6776.lt";
 
+    nameservers = [
+      # Quad9 DNS server:
+      # https://www.quad9.net/
+      "9.9.9.9"
+
+      # Cloudflare DNS server:
+      "1.1.1.1"
+    ];
+
     # Use systemd-networkd by default.
     dhcpcd.enable = false;
     useDHCP = false;
