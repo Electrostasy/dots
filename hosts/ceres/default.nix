@@ -97,6 +97,38 @@
 
   services.tailscale.enable = false;
 
+  services.samba = {
+    enable = true;
+    openFirewall = true;
+
+    settings = {
+      global = {
+        "map to guest" = "bad user";
+        "load printers" = "no";
+        "printcap name" = "/dev/null";
+
+        "log file" = "/var/log/samba/client.%I";
+        "log level" = 2;
+      };
+
+      Visiems = {
+        "path" = "/home/electro/Visiems";
+        "browseable" = true;
+        "writable" = true;
+        "public" = true;
+
+        # Allow everyone to add/remove/modify files/directories.
+        "guest ok" = "yes";
+        "force user" = "nobody";
+        "force group" = "nogroup";
+
+        # Default permissions for files/directories.
+        "create mask" = 0666;
+        "directory mask" = 0777;
+      };
+    };
+  };
+
   virtualisation.libvirtd = {
     enable = true;
     qemu.package = pkgs.qemu_kvm;
@@ -113,36 +145,6 @@
       "networkmanager" # don't ask password when connecting to networks.
       "libvirtd" # allow passwordless access to the `libvirt` daemon.
     ];
-  };
-
-  services.samba = {
-    enable = true;
-    openFirewall = true;
-
-    extraConfig = ''
-      map to guest = bad user
-      load printers = no
-      printcap name = /dev/null
-
-      log file = /var/log/samba/client.%I
-      log level = 2
-    '';
-
-    shares."Visiems" = {
-      path = "/home/electro/Visiems";
-      browseable = true;
-      writable = true;
-      public = true;
-
-      # Allow everyone to add/remove/modify files/directories
-      "guest ok" = "yes";
-      "force user" = "nobody";
-      "force group" = "nogroup";
-
-      # Default permissions for files/directories
-      "create mask" = 0666;
-      "directory mask" = 0777;
-    };
   };
 
   system.stateVersion = "22.05";
