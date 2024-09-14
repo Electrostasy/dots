@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, ... }:
 
 {
   # Building in /tmp can make the tmpfs fill up with build artifacts, which is
@@ -15,7 +15,8 @@
 
   # impermanence conflicts with /etc read-only overlay, making bind mounts fail:
   # https://github.com/nix-community/impermanence/issues/210
-  system.etc.overlay.mutable = config.environment.persistence.state.enable;
+  # Seems to break a lot of other things too.
+  system.etc.overlay.mutable = true;
 
   # Since git 2.35.2, rebuilding from repositories owned by non-root users will
   # break `nixos-rebuild`, unless we run `nixos-rebuild` with the `--use-remote-sudo`
