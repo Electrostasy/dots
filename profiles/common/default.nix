@@ -103,19 +103,16 @@
     package = pkgs.nixVersions.latest;
 
     settings = {
+      use-xdg-base-directories = true; # don't clutter $HOME.
+
       experimental-features = [
-        "auto-allocate-uids" # don't create `nixbld*` user accounts for builds.
         "cgroups" # allow Nix to execute builds inside cgroups.
         "flakes" # enable flakes.
         "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
         "no-url-literals" # disallow unquoted URLs in Nix language syntax.
       ];
-      auto-allocate-uids = true;
-      use-cgroups = true;
 
-      # TODO: Make configuration buildable with IFD disabled.
-      # allow-import-from-derivation = false; # disable IFD by default.
-      use-xdg-base-directories = true; # don't clutter $HOME.
+      use-cgroups = true;
     };
   };
 
