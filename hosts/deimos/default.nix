@@ -50,9 +50,10 @@
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      "console=ttyS0,115200n8"
-      "console=ttyAMA0,115200n8"
-      "console=tty0"
+      # Required to enable serial console:
+      # https://forums.raspberrypi.com/viewtopic.php?t=246215#p1659905
+      "8250.nr_uarts=1"
+      "console=ttyS0,115200"
     ];
 
     loader = {
