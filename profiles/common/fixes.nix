@@ -1,6 +1,14 @@
 { config, lib, ... }:
 
 {
+  # Building in /tmp can make the tmpfs fill up with build artifacts, which is
+  # also meant to be cleaned up on boot:
+  # https://github.com/NixOS/nix/issues/11477
+  # https://github.com/NixOS/nixpkgs/pull/338181#issuecomment-2349833045
+  nix.settings.build-dir = "/var/tmp";
+  systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
+  environment.persistence.state.directories = [ "/var/tmp" ];
+
   # perlless profile is too heavy-handed with this, so we unset it, because
   # some programs like tlp have no perlless alternative.
   system.forbiddenDependenciesRegexes = lib.mkForce [];

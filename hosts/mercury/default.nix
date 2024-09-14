@@ -114,8 +114,6 @@
       efi.canTouchEfiVariables = true;
       systemd-boot.enable = true;
     };
-
-    tmp.tmpfsSize = "75%";
   };
 
   environment.persistence.state = {

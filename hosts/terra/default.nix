@@ -99,8 +99,6 @@
     kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
 
-    tmp.tmpfsSize = "75%";
-
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
