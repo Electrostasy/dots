@@ -17,7 +17,7 @@
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
-      networkmanager = {};
+      wpa_supplicant = {};
       electroPassword.neededForUsers = true;
       electroIdentity = {
         mode = "0400";
@@ -64,27 +64,22 @@
 
   hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
-  networking.networkmanager = {
+  networking.wireless = {
     enable = true;
 
-    ensureProfiles = {
-      environmentFiles = [ config.sops.secrets.networkmanager.path ];
-
-      profiles.home-wifi = {
-        ipv4.method = "auto";
-        connection = {
-          id = "Sukceno";
-          type = "wifi";
-          autoconnect = true;
-        };
-        wifi.ssid = "Sukceno";
-        wifi-security = {
-          auth-alg = "open";
-          key-mgmt = "wpa-psk";
-          psk = "$PSK_SUKCENO";
-        };
-      };
+    secretsFile = config.sops.secrets.wpa_supplicant.path;
+    networks = {
+      Sukceno.pskRaw = "ext:psk_Sukceno";
+      Sukceno5G.pskRaw = "ext:psk_Sukceno5G";
     };
+
+    # On disconnected or inactive state, have wpa_supplicant try to periodically
+    # reconnect.
+    extraConfig = ''
+      ap_scan=1
+      autoscan=periodic:10
+      disable_scan_offload=1
+    '';
   };
 
   systemd.network.networks."40-wireless" = {
