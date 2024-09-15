@@ -44,29 +44,31 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "console=ttyS0,1500000n8"
-      "console=ttyAMA0,1500000n8"
-      "console=tty0"
-    ];
-
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
     };
+
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      # Enable serial console over USB-C debug UART port.
+      "8250.nr_uarts=1"
+      "console=ttyS0,1500000"
+    ];
   };
 
   environment.systemPackages = with pkgs; [
-    mtdutils # flashcp
-    pciutils # lspci
-    usbutils # lsusb
+    mtdutils # `flashcp`.
+    pciutils # `lspci`.
+    usbutils # `lsusb`.
   ];
 
   # TODO:
-  # - On-board USB 3.0 Type-A does not work (unpowered?);
-  # - On-board USB/DP 3.0 Type-C does not work (has power?);
-  # - On-board USB 2.0 Type-A x2 does not work (unpowered?).
+  # - On-board USB 3.0 Type-A does not work
+  # - On-board USB/DP 3.0 Type-C does not work
+  # - On-board USB 2.0 Type-A x2 does not work
+  # Track these patches to hopefully fix the above:
+  # https://patchwork.kernel.org/project/linux-rockchip/list/?series=884740
   hardware.deviceTree = {
     filter = "rk3588-nanopc-t6.dtb";
     overlays = [
@@ -86,66 +88,13 @@
             spi_flash: spi-flash@0 {
               compatible = "jedec,spi-nor";
               reg = <0>;
-              spi-max-frequency = <50000000>;
+              spi-max-frequency = <104000000>;
               spi-rx-bus-width = <4>;
               spi-tx-bus-width = <1>;
             };
           };
         '';
       }
-
-      # {
-      #   name = "enable-usb3.0-port-overlay";
-      #   dtsText = ''
-      #     /dts-v1/;
-      #     /plugin/;
-      #
-      #     #include <dt-bindings/gpio/gpio.h>
-      #     #include <dt-bindings/pinctrl/rockchip.h>
-      #
-      #     / {
-      #       compatible = "friendlyarm,nanopc-t6", "rockchip,rk3588";
-      #
-      #       vcc5v0_host_30: vcc5v0-host-30 {
-      #         compatible = "regulator-fixed";
-      #         enable-active-high;
-      #         gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
-      #         pinctrl-names = "default";
-      #         pinctrl-0 = <&vcc5v0_host30_en>;
-      #         regulator-min-microvolt = <5000000>;
-      #         regulator-max-microvolt = <5000000>;
-      #         regulator-name = "vcc5v0_host_30";
-      #         vin-supply = <&vcc5v0_sys>;
-      #       };
-      #     };
-      #
-      #     &pinctrl {
-      #       usb {
-      #         vcc5v0_host30_en: vcc5v0-host30-en {
-      #           rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
-      #         };
-      #       };
-      #     };
-      #
-      #     &u2phy1 {
-      #       status = "okay";
-      #     };
-      #
-      #     &u2phy1_otg {
-      #       phy-supply = <&vcc5v0_host_30>;
-      #       status = "okay";
-      #     };
-      #
-      #     &usbdp_phy1 {
-      #       status = "okay";
-      #     };
-      #
-      #     &usb_host1_xhci {
-      #       dr_mode = "host";
-      #       status = "okay";
-      #     };
-      #   '';
-      # }
     ];
   };
 
@@ -166,11 +115,23 @@
     };
   };
 
+  systemd.network.networks."40-wired" = {
+    name = "en*";
+    networkConfig.DHCP = true;
+  };
+
   users.users.electro = {
     isNormalUser = true;
     uid = 1000;
+
+    # Change password using:
+    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
     hashedPasswordFile = config.sops.secrets.electroPassword.path;
-    extraGroups = [ "wheel" ];
+
+    extraGroups = [
+      "wheel" # allow using `sudo` for this user.
+    ];
+
     openssh.authorizedKeys.keyFiles = [
       ../mercury/id_ed25519.pub
       ../terra/id_ed25519.pub
