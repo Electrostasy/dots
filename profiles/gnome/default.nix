@@ -30,14 +30,6 @@
   # Do not turn on bluetooth on boot.
   hardware.bluetooth.powerOnBoot = false;
 
-  # Prefer pipewire to pulseaudio:
-  # https://github.com/NixOS/nixpkgs/issues/325003
-  hardware.pulseaudio.enable = false;
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
-  };
-
   environment = {
     persistence.state.users.electro = {
       files = [
