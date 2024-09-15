@@ -93,10 +93,6 @@ in
     "steam-run"
   ];
 
-  # Steam's fhs wrapper looks for this, and fails to launch if it is not present.
-  # Possibly related to etc overlay?
-  systemd.tmpfiles.settings."10-steam"."/etc/NIXOS".d = { };
-
   programs = {
     # Necessary to prevent stutters and audio issues.
     cfs-zen-tweaks.enable = true;
