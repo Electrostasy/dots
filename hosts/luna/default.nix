@@ -70,18 +70,14 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    loader.generic-extlinux-compatible.enable = true;
 
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "console=ttyS0,115200n8"
       "console=ttyAMA0,115200n8"
       "console=tty0"
     ];
-
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
-    };
   };
 
   systemd.network.networks."40-wired" = {

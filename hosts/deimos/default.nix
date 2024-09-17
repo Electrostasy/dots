@@ -24,10 +24,7 @@
   };
 
   boot = {
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
-    };
+    loader.generic-extlinux-compatible.enable = true;
 
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
