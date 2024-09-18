@@ -73,6 +73,10 @@
       # reboot and shutdown will be stalled or crash (often with null pointer
       # dereferences); with this we can shutdown and reboot fast again.
       "pci=nommconf"
+
+      # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
+      # on this device than s2idle (suspend to idle).
+      "mem_sleep_default=deep"
     ];
 
     initrd = {
