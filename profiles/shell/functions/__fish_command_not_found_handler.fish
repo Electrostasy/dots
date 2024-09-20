@@ -1,10 +1,4 @@
 function __fish_command_not_found_handler --on-event fish_command_not_found
-  # TODO: Ideally, we should probe for hyperlink support and print full URL in TTY.
-  # Example implementation: https://github.com/zkat/supports-hyperlinks/tree/main
-  function _hyperlink -a uri text
-    printf '\e]8;;%s\e\\\%s\e]8;;\e\\' $uri $text
-  end
-
   # On newly installed systems, we may not have access to a database.
   set -l db_locations '$NIX_INDEX_DATABASE' '$XDG_CACHE_HOME/nix-index/files' '~/.cache/nix-index/files'
   for db_location in $db_locations
@@ -22,7 +16,7 @@ function __fish_command_not_found_handler --on-event fish_command_not_found
     if contains $current_arch $supported_archs
       set -l uri "https://github.com/nix-community/nix-index-database/releases/latest/download/index-$current_arch"
       set -l text "Community maintained packages index is available"
-      printf '\n%s.\n' (_hyperlink $uri $text)
+      printf '\n%s.\n' (hyperlink $uri $text)
     end
 
     return 1
@@ -33,7 +27,7 @@ function __fish_command_not_found_handler --on-event fish_command_not_found
 
   # Pretty-print the output.
   set -l program (set_color $fish_color_error; printf $argv[1]; set_color $fish_color_normal)
-  set -l linked_program (_hyperlink "https://search.nixos.org/packages?channel=unstable&query=$argv[1]" $program)
+  set -l linked_program (hyperlink "https://search.nixos.org/packages?channel=unstable&query=$argv[1]" $program)
   printf 'The program \'%s\' is not installed.' $linked_program
   if set -q packages[1]
     if test (count $packages) -gt 1
