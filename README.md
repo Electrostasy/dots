@@ -123,7 +123,7 @@ The NixOS SD image may be flashed to a selected microSD card (up to 32 GB in
 size) using the following command:
 
 ```sh
-dd if=deimos-sd-image*.img of=/dev/sda bs=1M status=progress
+dd if=deimos-image*.img of=/dev/sda bs=1M status=progress oflag=direct
 ```
 
 
@@ -162,7 +162,7 @@ Board for flashing the CM4:
 5. Flash the image to it:
 
    ```sh
-   sudo dd if=luna-sd-image*.img of=/dev/sda bs=1M conv=fsync status=progress
+   sudo dd if=luna-image*.img of=/dev/sda bs=1M status=progress oflag=direct
    ```
 
 6. Disconnect the micro USB cable from the host PC.
@@ -225,7 +225,7 @@ The NixOS installer SD image may be flashed to a selected microSD card or USB
 flash drive using the following command:
 
 ```sh
-dd if=mars-sd-image*.img of=/dev/sda bs=1M status=progress
+dd if=mars-sd-image*.img of=/dev/sda bs=1M status=progress oflag=direct
 ```
 
 Then, when it is booted, we can write `u-boot` to SPI flash and install NixOS to
@@ -267,5 +267,5 @@ nix build github:Electrostasy/dots#phobosImage
 Flash the SD image to a selected microSD card using the following command:
 
 ```sh
-dd if=phobos-sd-image*.img of=/dev/sda bs=1M status=progress
+dd if=phobos-sd-image*.img of=/dev/sda bs=1M status=progress oflag=direct
 ```

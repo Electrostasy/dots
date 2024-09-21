@@ -60,12 +60,8 @@
     usbutils # `lsusb`.
   ];
 
-  # TODO:
-  # - On-board USB 3.0 Type-A does not work
-  # - On-board USB/DP 3.0 Type-C does not work
-  # - On-board USB 2.0 Type-A x2 does not work
-  # Track these patches to hopefully fix the above:
-  # https://patchwork.kernel.org/project/linux-rockchip/list/?series=884740
+  # TODO: Remove in Linux 6.12, as NanoPC-T6 LTS got official support:
+  # https://lkml.org/lkml/2024/9/16/842
   hardware.deviceTree = {
     filter = "rk3588-nanopc-t6.dtb";
     overlays = [

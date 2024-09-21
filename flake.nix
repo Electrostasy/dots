@@ -5,7 +5,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -52,7 +51,7 @@
 
     packages = forEachSystem (system: {
       deimosImage = (self.nixosConfigurations.deimos.extendModules { modules = [ ./hosts/deimos/image.nix ]; }).config.system.build.image-hybrid;
-      lunaImage = self.nixosConfigurations.luna.config.system.build.sdImage;
+      lunaImage = (self.nixosConfigurations.luna.extendModules { modules = [ ./hosts/luna/image.nix ]; }).config.system.build.image;
       marsImage = (self.nixosConfigurations.mars.extendModules { modules = [ ./hosts/mars/image.nix ]; }).config.system.build.sdImage;
       phobosImage = (self.nixosConfigurations.phobos.extendModules { modules = [ ./hosts/phobos/image.nix ]; }).config.system.build.sdImage;
     });
