@@ -248,6 +248,7 @@
           close = [ "<Shift><Super>w" ];
           move-to-workspace-left = [ "<Control><Super>a" ];
           move-to-workspace-right = [ "<Control><Super>d" ];
+          toggle-on-all-workspaces = [ "<Control><Super>s" ];
           panel-run-dialog = [ "<Alt>space" ];
           switch-input-source = [ "<Alt>Shift_L" ]; # https://unix.stackexchange.com/a/436347
           switch-input-source-backward = mkEmptyArray type.string;
