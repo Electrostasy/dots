@@ -1,8 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [
-    ../../profiles/minimal
+    "${modulesPath}/profiles/minimal.nix"
     ../../profiles/shell
     ../../profiles/ssh
   ];
