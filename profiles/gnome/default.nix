@@ -12,6 +12,14 @@
     self.overlays.f3d-assimp
     self.overlays.f3d-interactive
     self.overlays.f3d-occt
+
+    # We need the old 5.3 version of adw-gtk3 because 5.4 only supports GNOME 47:
+    # https://github.com/lassekongo83/adw-gtk3/issues/271
+    # Without this downgrade, when using adw-gtk3 theme, everything has a
+    # transparent background and titlebar for some reason, even gtk4 programs.
+    # TODO: Remove when GNOME 47 is merged in nixpkgs:
+    # https://github.com/NixOS/nixpkgs/pull/333911
+    self.overlays.adw-gtk3-5_3
   ];
 
   xdg.terminal-exec = {
