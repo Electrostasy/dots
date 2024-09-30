@@ -18,10 +18,6 @@
   # Seems to break a lot of other things too.
   system.etc.overlay.mutable = true;
 
-  # `system.etc.overlay` does not create `/etc/NIXOS` file:
-  # https://github.com/NixOS/nixpkgs/issues/341453
-  systemd.tmpfiles.settings."10-etc-overlay"."/etc/NIXOS".f = { };
-
   # Since git 2.35.2, rebuilding from repositories owned by non-root users will
   # break `nixos-rebuild`, unless we run `nixos-rebuild` with the `--use-remote-sudo`
   # commandline flag: https://github.com/NixOS/nixpkgs/issues/169193#issuecomment-1103816735
