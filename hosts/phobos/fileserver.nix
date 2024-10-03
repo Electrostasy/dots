@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  # `rsync` has to be installed on the remote in order for uploads initialized
-  # with it to work (such as `phobos-up` script).
-  environment.systemPackages = [ pkgs.rsync ];
-
   networking.firewall = {
     enable = true;
 
@@ -14,10 +10,27 @@
     ];
   };
 
+  fileSystems."/srv/http/static" = {
+    device = "/dev/disk/by-label/pidata";
+    fsType = "btrfs";
+    options = [
+      "subvol=static"
+      "noatime"
+      "compress-force=zstd:1"
+      "discard=async"
+      "X-mount.owner=${config.users.users.electro.name}"
+      "X-mount.group=${config.users.groups.users.name}"
+    ];
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "steamykins@gmail.com";
   };
+
+  # `rsync` has to be installed on the remote in order for uploads initialized
+  # with it to work (such as `phobos-up` script).
+  environment.systemPackages = [ pkgs.rsync ];
 
   services.nginx = {
     enable = true;

@@ -28,66 +28,20 @@
 
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      "console=ttyS0,115200n8"
-      "console=ttyAMA0,115200n8"
-      "console=tty0"
+      "8250.nr_uarts=1"
+      "console=ttyS0,115200"
     ];
   };
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
+      device = "/dev/disk/by-label/nixos";
       fsType = "ext4";
     };
 
-    "/var/lib/dendrite" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=dendrite"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
-    };
-
-    "/var/lib/postgresql" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=postgresql"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-        "X-mount.owner=${config.users.users.postgres.name}"
-        "X-mount.group=${config.users.groups.postgres.name}"
-      ];
-    };
-
-    "/srv/http/static" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=static"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-        "X-mount.owner=${config.users.users.electro.name}"
-        "X-mount.group=${config.users.groups.users.name}"
-      ];
-    };
-
-    "/var/lib/headscale" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=headscale"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-        "X-mount.owner=${config.users.users.headscale.name}"
-        "X-mount.group=${config.users.groups.headscale.name}"
-      ];
+    "/boot" = {
+      device = "/dev/disk/by-label/BOOT";
+      fsType = "vfat";
     };
   };
 

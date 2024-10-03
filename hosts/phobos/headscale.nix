@@ -24,6 +24,19 @@
     ];
   };
 
+  fileSystems."/var/lib/headscale" = {
+    device = "/dev/disk/by-label/pidata";
+    fsType = "btrfs";
+    options = [
+      "subvol=headscale"
+      "noatime"
+      "compress-force=zstd:1"
+      "discard=async"
+      "X-mount.owner=${config.users.users.headscale.name}"
+      "X-mount.group=${config.users.groups.headscale.name}"
+    ];
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "steamykins@gmail.com";
@@ -53,6 +66,7 @@
   };
 
   environment.systemPackages = [ config.services.headscale.package ];
+
   services.headscale = {
     enable = true;
 

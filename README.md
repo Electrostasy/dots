@@ -267,5 +267,5 @@ nix build github:Electrostasy/dots#phobosImage
 Flash the SD image to a selected microSD card using the following command:
 
 ```sh
-dd if=phobos-sd-image*.img of=/dev/sda bs=1M status=progress oflag=direct
+dd if=phobos-image*.img of=/dev/sda bs=1M status=progress oflag=direct
 ```

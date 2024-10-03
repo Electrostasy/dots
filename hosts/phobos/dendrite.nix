@@ -10,6 +10,32 @@
     ];
   };
 
+  fileSystems = {
+    "/var/lib/dendrite" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=dendrite"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+      ];
+    };
+
+    "/var/lib/postgresql" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=postgresql"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
+        "X-mount.owner=${config.users.users.postgres.name}"
+        "X-mount.group=${config.users.groups.postgres.name}"
+      ];
+    };
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "steamykins@gmail.com";
