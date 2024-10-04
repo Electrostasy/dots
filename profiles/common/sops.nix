@@ -1,12 +1,10 @@
-{ config, pkgs, lib, self, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   keyFile = "/var/lib/sops-nix/keys.txt";
 in
 
 {
-  imports = [ self.inputs.sops-nix.nixosModules.default ];
-
   config = lib.mkIf (config.sops.secrets != { }) {
     # This is required for `nixos-rebuild build-vm` to work correctly.
     virtualisation.vmVariant = {

@@ -1,4 +1,4 @@
-{ config, lib, self, ... }:
+{ config, lib, ... }:
 
 let
   # Guard against tmpfs root issues, namely lack of state management. Does not
@@ -15,8 +15,6 @@ let
 in
 
 {
-  imports = [ self.inputs.impermanence.nixosModule ];
-
   warnings = lib.optionals (hasStatelessRoot && !hasImpermanence) [
     ''
       You have a root on tmpfs configuration without persistence enabled on ${config.environment.persistence.state.persistentStoragePath} for host "${config.networking.hostName}".

@@ -1,8 +1,7 @@
 { config, pkgs, lib, modulesPath, self, ... }:
 
 {
-  imports = (lib.attrValues self.nixosModules) ++ [
-    self.inputs.nixos-wsl.nixosModules.wsl
+  imports = [
     ./sops.nix
     ./impermanence.nix
     "${modulesPath}/profiles/perlless.nix"
