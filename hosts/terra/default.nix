@@ -151,6 +151,7 @@
     "/boot" = {
       device = "/dev/disk/by-partuuid/ed8ad820-1751-48ca-af62-4f671f64f0f4";
       fsType = "vfat";
+      options = [ "umask=0077" ];
     };
 
     "/nix" = {
