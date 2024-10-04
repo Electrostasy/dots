@@ -70,17 +70,7 @@
 
   systemd.network.networks."40-wireless" = {
     name = "wl*";
-
-    networkConfig = {
-      DHCP = true;
-      IgnoreCarrierLoss = true;
-      LinkLocalAddressing = false;
-    };
-
-    dhcpV4Config = {
-      Anonymize = true;
-      RouteMetric = 20;
-    };
+    networkConfig.IgnoreCarrierLoss = true;
   };
 
   users.users.electro = {

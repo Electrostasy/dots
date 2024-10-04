@@ -51,10 +51,7 @@
   # with local network router ("DNSSEC validation failed: signature-expired").
   services.timesyncd.servers = lib.mkForce [ "192.168.205.1" ];
 
-  systemd.network.networks."40-wired" = {
-    name = "en*";
-    networkConfig.DHCP = true;
-  };
+  systemd.network.networks."40-wired".name = "en*";
 
   users.users.electro = {
     isNormalUser = true;

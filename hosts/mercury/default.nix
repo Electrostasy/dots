@@ -250,32 +250,16 @@
     };
   };
 
-  systemd.network.networks = {
-    "40-wireless" = {
+  systemd.network = {
+    networks."40-wireless" = {
       name = "wl*";
-
-      networkConfig = {
-        DHCP = true;
-        IgnoreCarrierLoss = true;
-        LinkLocalAddressing = false;
-      };
-
-      dhcpV4Config = {
-        Anonymize = true;
-        RouteMetric = 20;
-      };
+      networkConfig.IgnoreCarrierLoss = true;
+      dhcpV4Config.Anonymize = true;
     };
 
-    "40-tethered" = {
-      name = "en*";
-
-      networkConfig = {
-        DHCP = true;
-        IgnoreCarrierLoss = true;
-        LinkLocalAddressing = false;
-      };
-
-      dhcpV4Config.RouteMetric = 30;
+    links."40-wireless-random-mac" = {
+      matchConfig.Type = "wl*";
+      linkConfig.MACAddressPolicy = "random";
     };
   };
 

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -79,20 +79,11 @@
     virt-manager
   ];
 
-  networking = {
-    # TODO: Switch to systemd-network.
-    useNetworkd = lib.mkForce false;
-
-    defaultGateway = "192.168.100.1";
-
-    nameservers = [
-      "192.168.100.10"
-      "212.59.1.1"
-    ];
-
-    interfaces.eno0.ipv4.addresses = [
-      { address = "192.168.100.80"; prefixLength = 24; }
-    ];
+  systemd.network.networks."40-wired" = {
+    name = "en*";
+    gateway = [ "192.168.100.1" ];
+    address = [ "192.168.100.80/24" ];
+    dns = [ "192.168.100.10" "212.59.1.1" ];
   };
 
   services.tailscale.enable = false;

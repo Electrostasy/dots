@@ -86,10 +86,7 @@
     ];
   };
 
-  systemd.network.networks."40-wired" = {
-    name = "en*";
-    networkConfig.DHCP = true;
-  };
+  systemd.network.networks."40-wired".name = "en*";
 
   fileSystems = {
     "/" = {

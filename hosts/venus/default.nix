@@ -193,47 +193,16 @@
 
   systemd.network = {
     networks = {
-      "40-wired" = {
-        name = "eno0";
-
-        networkConfig = {
-          DHCP = true;
-          LinkLocalAddressing = false;
-        };
-
-        dhcpV4Config.RouteMetric = 10;
-      };
+      "40-wired".name = "en*";
 
       "40-wireless" = {
         name = "wlan0";
-
-        networkConfig = {
-          DHCP = true;
-          IgnoreCarrierLoss = true;
-          LinkLocalAddressing = false;
-        };
-
-        dhcpV4Config = {
-          Anonymize = true;
-          RouteMetric = 20;
-        };
-      };
-
-      "40-tethered" = {
-        name = "enp0s2*";
-
-        networkConfig = {
-          DHCP = true;
-          IgnoreCarrierLoss = true;
-          LinkLocalAddressing = false;
-        };
-
-        dhcpV4Config.RouteMetric = 30;
+        dhcpV4Config.Anonymize = true;
       };
     };
 
     links."40-wireless-random-mac" = {
-      matchConfig.Type = "wlan0";
+      matchConfig.Type = "wl*";
       linkConfig.MACAddressPolicy = "random";
     };
   };

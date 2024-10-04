@@ -9,53 +9,16 @@
     ./fixes.nix
   ];
 
-  boot.tmp.useTmpfs = true;
-
-  networking = {
-    # Every host is to be considered part of this domain, however, only `phobos`
-    # is internet-facing.
-    domain = "0x6776.lt";
-
-    nameservers = [
-      # Quad9 DNS server:
-      # https://www.quad9.net/
-      "9.9.9.9"
-
-      # Cloudflare DNS server:
-      "1.1.1.1"
-    ];
-
-    # Use systemd-networkd by default.
-    dhcpcd.enable = false;
-    useDHCP = false;
-    useNetworkd = true;
+  nixpkgs = {
+    config.allowAliases = false;
+    overlays = [ self.overlays.default ];
   };
 
-  systemd.network.enable = true;
-
-  # Sets up a VPN mesh overlay network "sol" across all hosts, connecting to the
-  # control server running on `phobos`.
   sops.secrets = lib.mkIf config.services.tailscale.enable {
     tailscaleKey.sopsFile = ../../hosts/phobos/secrets.yaml;
   };
 
-  services.tailscale = {
-    enable = lib.mkDefault true;
-
-    # Generate new keys on the host running headscale using:
-    # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
-    authKeyFile = config.sops.secrets.tailscaleKey.path;
-    extraUpFlags = [
-      "--login-server" "https://sol.${config.networking.domain}"
-
-      # https://tailscale.com/kb/1098/machine-names#renaming-a-machine-in-the-cli
-      "--hostname" config.networking.hostName
-
-      # On shutdowns, the nodes remain in headscale even if they are ephemeral.
-      # Either a logout before shutdown, or a reauth on connect is necessary.
-      "--force-reauth"
-    ];
-  };
+  boot.tmp.useTmpfs = true;
 
   # Cannot mess with locales on WSL, so do not customize them there.
   i18n = lib.mkIf (!config.wsl.enable) {
@@ -73,10 +36,59 @@
 
   time.timeZone = lib.mkDefault "Europe/Vilnius";
 
-  nixpkgs = {
-    config.allowAliases = false;
-    overlays = [
-      self.overlays.default
+  networking = {
+    domain = "0x6776.lt";
+
+    nameservers = [
+      "9.9.9.9"
+      "1.1.1.1"
+    ];
+
+    timeServers = [
+      "1.europe.pool.ntp.org"
+      "1.lt.pool.ntp.org"
+      "2.europe.pool.ntp.org"
+    ];
+
+    useNetworkd = true;
+  };
+
+  systemd.network = {
+    enable = true;
+
+    wait-online.anyInterface = true;
+
+    networks = {
+      "99-local-dhcp" = {
+        matchConfig.Name = [ "en*" "eth*" ];
+        networkConfig.DHCP = "ipv4";
+      };
+
+      "99-wireless-dhcp" = {
+        matchConfig.WLANInterfaceType = "station";
+        dhcpV4Config.RouteMetric = 1025; # 1024 is default, so prefer wired if available.
+      };
+    };
+  };
+
+  security.sudo.wheelNeedsPassword = false;
+
+  services.tailscale = {
+    enable = lib.mkDefault true;
+
+    # Generate new keys on the host running headscale using:
+    # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
+    authKeyFile = config.sops.secrets.tailscaleKey.path;
+    extraUpFlags = [
+      "--login-server" "https://sol.${config.networking.domain}"
+
+      # https://tailscale.com/kb/1098/machine-names#renaming-a-machine-in-the-cli
+      "--hostname" config.networking.hostName
+
+      # On shutdowns, the nodes remain in headscale even if they are ephemeral.
+      # Either a logout before shutdown, or a reauth on connect is necessary.
+      "--force-reauth"
+      "--reset"
     ];
   };
 
@@ -92,8 +104,8 @@
 
       credential.helper =
         lib.mkIf
-          (config.services.xserver.enable or config.hardware.graphics.enable)
-          "${pkgs.git-credential-keepassxc}/bin/git-credential-keepassxc --git-groups";
+          config.services.graphical-desktop.enable
+          "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
 
       user = {
         name = "Gediminas Valys";
@@ -101,12 +113,6 @@
       };
     };
   };
-
-  services.timesyncd.servers = [
-    "1.europe.pool.ntp.org"
-    "1.lt.pool.ntp.org"
-    "2.europe.pool.ntp.org"
-  ];
 
   nix = {
     package = pkgs.nixVersions.latest;
@@ -123,13 +129,5 @@
 
       use-cgroups = true;
     };
-  };
-
-  security.sudo = {
-    # Only enable sudo by default if we have at least 1 non-system user.
-    enable = lib.mkDefault
-      (lib.filterAttrs (_: user: user.isNormalUser) config.users.users != { });
-
-    wheelNeedsPassword = false;
   };
 }
