@@ -13,10 +13,9 @@
 
   wsl = {
     enable = true;
-    startMenuLaunchers = false;
 
-    # OpenGL/CUDA from Windows instead.
-    useWindowsDriver = true;
+    startMenuLaunchers = false;
+    useWindowsDriver = true; # use OpenGL/CUDA from Windows.
   };
 
   # `resolv.conf` is managed by WSL.
@@ -29,21 +28,22 @@
     bintools-unwrapped
     binwalk
     dos2unix
-    evtx # evtx-dump
+    evtx # `evtx-dump`.
     exiftool
     ffmpeg
     hashcat
     imagemagick
     john
     libewf
+    mkvtoolnix-cli # `mkvextract`, `mkvinfo`, `mkvmerge`, `mkvpropedit`.
     qpdf
     repgrep
     ripgrep-all
-    sleuthkit # mmls, fls, fsstat, icat
+    sleuthkit # `mmls`, `fls`, `fsstat`, `icat`, ...
     stegseek
-    testdisk # photorec
+    testdisk # `fidentify`, `photorec`, `testdisk`.
     unixtools.xxd
-    untrunc-anthwlock
+    untrunc-anthwlock # `untrunc`.
     xlsx2csv
     xsv
   ];
