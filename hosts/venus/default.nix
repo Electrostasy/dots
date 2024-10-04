@@ -27,6 +27,12 @@
 
   boot = {
     initrd = {
+      luks.devices."cryptroot" = {
+        device = "/dev/disk/by-uuid/a408f4d3-eff8-455f-81d3-150b53265f40";
+        allowDiscards = true;
+        bypassWorkqueues = true;
+      };
+
       availableKernelModules = [
         "ahci"
         "ehci_pci"
@@ -35,20 +41,14 @@
         "usb_storage"
         "xhci_pci"
       ];
-
-      luks.devices."cryptroot" = {
-        device = "/dev/disk/by-uuid/a408f4d3-eff8-455f-81d3-150b53265f40";
-        allowDiscards = true;
-      };
     };
 
     plymouth.enable = true;
 
-    kernelModules = [
-      "i915"
-      "kvm-intel"
-    ];
     kernelPackages = pkgs.linuxPackages_latest;
+
+    kernelModules = [ "i915" ];
+
     kernelParams = [
       "acpi.ec_no_wakeup=1"
       "i915.disable_power_well=1"

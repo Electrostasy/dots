@@ -33,6 +33,7 @@
       luks.devices."cryptroot" = {
         device = "/dev/disk/by-partuuid/6e31b86f-1d1d-4cd8-91b3-79af16dda198";
         allowDiscards = true;
+        bypassWorkqueues = true;
       };
 
       systemd = {
@@ -96,7 +97,6 @@
       ];
     };
 
-    kernelModules = [ "kvm-intel" ];
     kernelPackages = pkgs.linuxPackages_latest;
 
     loader = {

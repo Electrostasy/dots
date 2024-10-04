@@ -66,21 +66,12 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "kvm-intel" ];
-    kernelParams = [
-      # Disable memory mapped PCI configuration registers, without this every
-      # reboot and shutdown will be stalled or crash (often with null pointer
-      # dereferences); with this we can shutdown and reboot fast again.
-      "pci=nommconf"
-
-      # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
-      # on this device than s2idle (suspend to idle).
-      "mem_sleep_default=deep"
-    ];
-
     initrd = {
-      luks.devices."cryptroot".device = "/dev/disk/by-uuid/eea26205-2ae5-4d2c-9a13-32c7d9ae2421";
+      luks.devices."cryptroot" = {
+        device = "/dev/disk/by-uuid/eea26205-2ae5-4d2c-9a13-32c7d9ae2421";
+        allowDiscards = true;
+        bypassWorkqueues = true;
+      };
 
       # Panel orientation detection does not work (is it even supported?), and
       # hardware keyboard's state is not detected (folded and inactive/unfolded
@@ -114,9 +105,21 @@
       ];
     };
 
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      # Disable memory mapped PCI configuration registers, without this every
+      # reboot and shutdown will be stalled or crash (often with null pointer
+      # dereferences); with this we can shutdown and reboot fast again.
+      "pci=nommconf"
+
+      # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
+      # on this device than s2idle (suspend to idle).
+      "mem_sleep_default=deep"
+    ];
+
     loader = {
-      efi.canTouchEfiVariables = true;
       systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
     };
   };
 
