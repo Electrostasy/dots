@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 {
   # Building in /tmp can make the tmpfs fill up with build artifacts, which is
@@ -35,4 +35,19 @@
   # iwd is not aware of them without converting them to iwd's format, but not
   # using iwd's autoconnect functionality is not working either.
   networking.networkmanager.wifi.backend = "wpa_supplicant";
+
+  # Normally, when dconf changes are made to the `user` profile, the user will
+  # need to log out and log in again for the changes to be applied. However,
+  # in NixOS, this is not sufficient for some cases (automatically enabling
+  # extensions), because on a live system, the /etc/dconf path is not updated
+  # to the new database on activation. This restores the intended behaviour.
+  system.activationScripts.update-dconf-path = lib.mkIf config.programs.dconf.enable {
+    text = ''
+      dconf_nix_path='${config.environment.etc.dconf.source}'
+      if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
+        ln -sf "$dconf_nix_path" /etc/dconf
+        dconf update /etc/dconf
+      fi
+    '';
+  };
 }

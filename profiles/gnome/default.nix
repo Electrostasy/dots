@@ -118,19 +118,6 @@
     ];
   };
 
-  # Normally, when dconf changes are made to the `user` profile, the user will
-  # need to log out and log in again for the changes to be applied. However,
-  # in NixOS, this is not sufficient for some cases (automatically enabling
-  # extensions), because on a live system, the /etc/dconf path is not updated
-  # to the new database on activation. This restores the intended behaviour.
-  system.activationScripts.update-dconf-path.text = /* bash */ ''
-    dconf_nix_path='${config.environment.etc.dconf.source}'
-    if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
-      ln -sf "$dconf_nix_path" /etc/dconf
-      dconf update /etc/dconf
-    fi
-  '';
-
   programs.dconf.profiles = {
     gdm.databases = [{
       settings = {
