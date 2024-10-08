@@ -60,8 +60,18 @@ in
     # Keep configs, state, etc. all in the same place.
     sessionVariables.DOLPHIN_EMU_USERPATH = "\${XDG_DATA_HOME:-$HOME/.local/share}/dolphin-emu";
 
-    # TODO: Convert to module.
-    etc."MangoHud.conf".text = ''
+    systemPackages = with pkgs; [
+      bottles
+      dolphin-emu
+      mangohud
+    ];
+  };
+
+  # TODO: Convert to dedicated MangoHud NixOS module.
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
+  systemd.user.tmpfiles.rules = [
+    "L+ %h/.config/MangoHud/MangoHud.conf - - - - ${pkgs.writeText "MangoHud.conf" ''
       toggle_hud=F12
       fps_color_change
       frame_timing
@@ -76,14 +86,8 @@ in
       graphs=gpu_load,cpu_load
       histogram
       throttling_status_graph
-    '';
-
-    systemPackages = with pkgs; [
-      bottles
-      dolphin-emu
-      mangohud
-    ];
-  };
+    ''}"
+  ];
 
   nixpkgs.allowUnfreePackages = [
     "steam"
