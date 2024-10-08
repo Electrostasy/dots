@@ -81,8 +81,6 @@ in
     systemPackages = with pkgs; [
       bottles
       dolphin-emu
-      # depotdownloader
-      gpu-screen-recorder-gtk
       mangohud
     ];
   };
@@ -97,8 +95,11 @@ in
     # Necessary to prevent stutters and audio issues.
     cfs-zen-tweaks.enable = true;
 
+    gpu-screen-recorder.enable = true;
+
     steam = {
       enable = true;
+
       protontricks.enable = true;
     };
 
@@ -106,7 +107,7 @@ in
       enable = true;
 
       # https://github.com/NixOS/nixpkgs/issues/217119
-      # capSysNice = true;
+      capSysNice = false;
     };
 
     gamemode = {
