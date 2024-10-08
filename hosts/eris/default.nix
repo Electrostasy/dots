@@ -1,5 +1,20 @@
 { pkgs, lib, self, ... }:
 
+# Currently, WSL with native systemd does not start the systemd user session:
+# https://github.com/nix-community/NixOS-WSL/issues/375
+# Fix is adapted from https://github.com/microsoft/WSL/issues/8842#issuecomment-2346387618
+# into the WSL startup command as a single line (continuations added for readability):
+#
+# C:\WINDOWS\system32\wsl.exe -d NixOS -u root fish -c \
+# "while not test -S /run/dbus/system_bus_socket; \
+# sleep 1; \
+# end; \
+# systemctl restart user@1000; \
+# export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/user/1000/bus'; \
+# exec sudo --preserve-env=DBUS_SESSION_BUS_ADDRESS --user nixos fish"
+#
+# This does not seem to work in any shell init code.
+
 {
   imports = [
     ../../profiles/neovim
@@ -14,7 +29,6 @@
   wsl = {
     enable = true;
 
-    startMenuLaunchers = false;
     useWindowsDriver = true; # use OpenGL/CUDA from Windows.
   };
 
@@ -54,5 +68,5 @@
     xsv
   ];
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "24.11";
 }
