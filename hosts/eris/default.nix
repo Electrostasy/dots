@@ -22,6 +22,12 @@
   services.resolved.enable = false;
   networking.nameservers = lib.mkForce [ ];
 
+  # DHCP is handled by Windows.
+  systemd.network.networks."10-windows-dhcp" = {
+    matchConfig.Name = [ "eth*" ];
+    networkConfig.DHCP = "no";
+  };
+
   services.tailscale.enable = false;
 
   environment.systemPackages = with pkgs; [
