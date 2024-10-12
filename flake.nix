@@ -82,7 +82,6 @@
       mpv = ./modules/mpv;
       neovim = ./modules/neovim;
       unfree = ./modules/unfree;
-      unl0kr-settings = ./modules/unl0kr-settings;
     };
 
     nixosConfigurations = lib.mapAttrs (name: _:
