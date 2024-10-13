@@ -84,6 +84,8 @@
     gateway = [ "192.168.100.1" ];
     address = [ "192.168.100.80/24" ];
     dns = [ "192.168.100.10" "212.59.1.1" ];
+
+    networkConfig.DHCP = false;
   };
 
   services.tailscale.enable = false;

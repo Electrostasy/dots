@@ -68,11 +68,6 @@
     '';
   };
 
-  systemd.network.networks."40-wireless" = {
-    name = "wl*";
-    networkConfig.IgnoreCarrierLoss = true;
-  };
-
   users.users.electro = {
     isNormalUser = true;
     uid = 1000;

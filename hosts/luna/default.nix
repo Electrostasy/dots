@@ -86,8 +86,6 @@
     ];
   };
 
-  systemd.network.networks."40-wired".name = "en*";
-
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/nixos";

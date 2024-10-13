@@ -192,17 +192,13 @@
   ];
 
   systemd.network = {
-    networks = {
-      "40-wired".name = "en*";
-
-      "40-wireless" = {
-        name = "wlan0";
-        dhcpV4Config.Anonymize = true;
-      };
+    networks."40-wireless" = {
+      matchConfig.WLANInterfaceType = "station";
+      dhcpV4Config.Anonymize = true;
     };
 
-    links."40-wireless-random-mac" = {
-      matchConfig.Type = "wl*";
+    links."40-wireless" = {
+      matchConfig.WLANInterfaceType = "station";
       linkConfig.MACAddressPolicy = "random";
     };
   };

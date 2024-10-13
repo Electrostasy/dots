@@ -277,8 +277,6 @@
     };
   };
 
-  systemd.network.networks."40-wired".name = "en*";
-
   users.users.electro = {
     isNormalUser = true;
     uid = 1000;

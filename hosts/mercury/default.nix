@@ -255,13 +255,12 @@
 
   systemd.network = {
     networks."40-wireless" = {
-      name = "wl*";
-      networkConfig.IgnoreCarrierLoss = true;
+      matchConfig.WLANInterfaceType = "station";
       dhcpV4Config.Anonymize = true;
     };
 
     links."40-wireless-random-mac" = {
-      matchConfig.Type = "wl*";
+      matchConfig.WLANInterfaceType = "station";
       linkConfig.MACAddressPolicy = "random";
     };
   };

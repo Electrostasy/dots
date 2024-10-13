@@ -49,22 +49,31 @@
       "2.europe.pool.ntp.org"
     ];
 
-    useNetworkd = true;
+    useNetworkd = true; # translate `networking.*` options into systemd-networkd.
   };
 
   systemd.network = {
-    enable = true;
-
     wait-online.anyInterface = true;
 
+    # Default to DHCP for physical wired and wireless interfaces.
     networks = {
-      "99-local-dhcp" = {
-        matchConfig.Name = [ "en*" "eth*" ];
+      "99-wired-dhcp" = {
+        matchConfig = {
+          Type = "ether";
+          Kind = "!*";
+        };
+
         networkConfig.DHCP = "ipv4";
       };
 
       "99-wireless-dhcp" = {
         matchConfig.WLANInterfaceType = "station";
+
+        networkConfig = {
+          DHCP = "ipv4";
+          IgnoreCarrierLoss = "3s";
+        };
+
         dhcpV4Config.RouteMetric = 1025; # 1024 is default, so prefer wired if available.
       };
     };
