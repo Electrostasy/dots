@@ -1,6 +1,18 @@
-{ config, pkgs, ... }:
+{ config, pkgs, modulesPath, self, ... }:
 
 {
+  # With the update to headscale 0.23.0, the module is out of date.
+  # TODO: Remove when this is merged:
+  # https://github.com/NixOS/nixpkgs/pull/347991
+  disabledModules = [ "${modulesPath}/services/networking/headscale.nix" ];
+  imports = [ "${self.inputs.nixpkgs-347991}/nixos/modules/services/networking/headscale.nix" ];
+
+  sops.secrets.headscaleKey = {
+    mode = "0440";
+    owner = config.users.users.headscale.name;
+    group = config.users.groups.headscale.name;
+  };
+
   boot.kernelParams = [
     # IPv6 seems to (often silently) break Tailscale and DNS in various ways:
     # - unable to resolve public DNS servers (even on Tailscale clients after
@@ -59,23 +71,10 @@
     };
   };
 
-  sops.secrets.headscaleKey = {
-    mode = "0440";
-    owner = config.users.users.headscale.name;
-    group = config.users.groups.headscale.name;
-  };
-
-  environment.systemPackages = [ config.services.headscale.package ];
-
   services.headscale = {
     enable = true;
 
-    address = "0.0.0.0";
-
     settings = {
-      server_url = "https://sol.${config.networking.domain}";
-      ip_prefixes = [ "100.64.0.0/10" ];
-
       # Generate new keys on a host running headscale using:
       # $ headscale generate private-key
       private_key_path = config.sops.secrets.headscaleKey.path;
@@ -83,19 +82,11 @@
       # Remove ephemeral nodes as soon as possible (1m5s is non-inclusive minimum).
       ephemeral_node_inactivity_timeout = "1m6s";
 
-      dns_config = {
-        base_domain = config.networking.domain;
+      dns = {
+        base_domain = "sol." + config.networking.domain;
         magic_dns = true;
       };
     };
-  };
-
-  services.tailscale = {
-    enable = true;
-
-    openFirewall = true;
-    useRoutingFeatures = "both";
-    extraUpFlags = [ "--advertise-exit-node" ];
   };
 
   # Ensure that the `sol` namespace always exists with the configured preauthkey.
@@ -127,12 +118,10 @@
       if [ -z "$namespaces" ]; then
         headscale namespaces create sol
 
-        query='INSERT INTO pre_auth_keys '
-        query+='(key, user_id, ephemeral, created_at, expiration) '
-        query+='VALUES '
-        query+="('$(systemd-creds cat 'tailscaleKey')', 1, 1, datetime('now'), datetime('now', '+1 year'));"
-
-        sqlite3 ${config.users.users.headscale.home}/db.sqlite "$query"
+        sqlite3 ${config.users.users.headscale.home}/db.sqlite << EOF
+INSERT INTO pre_auth_keys (key, user_id, reusable, ephemeral, created_at, expiration)
+VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 1, datetime('now'), datetime('now', '+1 year'));
+EOF
       fi
     '';
   };

@@ -6,6 +6,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    # Remove when this is merged, see `./hosts/phobos/headscale.nix`:
+    # https://github.com/NixOS/nixpkgs/pull/347991
+    nixpkgs-347991.url = "github:dotlambda/nixpkgs/headscale";
+
     impermanence.url = "github:nix-community/impermanence/master";
 
     nixos-wsl = {

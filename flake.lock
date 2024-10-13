@@ -89,11 +89,28 @@
         "type": "github"
       }
     },
+    "nixpkgs-347991": {
+      "locked": {
+        "lastModified": 1728782897,
+        "narHash": "sha256-Zzj7zB1mulQqQL1e/Yk63UK1BYZsZ/XqDrYusMk/jNQ=",
+        "owner": "dotlambda",
+        "repo": "nixpkgs",
+        "rev": "cc4d29d3532c5ff5ff832aecfbc7f06fe749f2cc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dotlambda",
+        "ref": "headscale",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "impermanence": "impermanence",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-347991": "nixpkgs-347991",
         "sops-nix": "sops-nix"
       }
     },
