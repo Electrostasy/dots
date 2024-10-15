@@ -287,7 +287,6 @@
 
     extraGroups = [
       "wheel" # allow using `sudo` for this user.
-      "networkmanager" # don't ask password when connecting to networks.
     ];
 
     openssh.authorizedKeys.keyFiles = [

@@ -30,6 +30,10 @@
   # Do not turn on bluetooth on boot.
   hardware.bluetooth.powerOnBoot = false;
 
+  users.users.electro.extraGroups = [
+    "networkmanager" # don't ask password when connecting to networks.
+  ];
+
   environment = {
     persistence.state.users.electro = {
       files = [
@@ -265,6 +269,8 @@
         };
 
         # https://www.jwestman.net/2024/02/10/new-look-for-gnome-maps.html
+        # TODO: Remove when GNOME 47 is merged in nixpkgs, vector source is
+        # the default now.
         "org/gnome/maps".map-type = "MapsVectorSource";
 
         # Weather shown in the panel's date/notification menu.

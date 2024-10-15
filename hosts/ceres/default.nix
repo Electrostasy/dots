@@ -135,7 +135,6 @@
 
     extraGroups = [
       "wheel" # allow using `sudo` for this user.
-      "networkmanager" # don't ask password when connecting to networks.
       "libvirtd" # allow passwordless access to the `libvirt` daemon.
     ];
   };
