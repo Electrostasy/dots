@@ -1,12 +1,6 @@
-{ config, pkgs, modulesPath, self, ... }:
+{ config, pkgs, ... }:
 
 {
-  # With the update to headscale 0.23.0, the module is out of date.
-  # TODO: Remove when this is merged:
-  # https://github.com/NixOS/nixpkgs/pull/347991
-  disabledModules = [ "${modulesPath}/services/networking/headscale.nix" ];
-  imports = [ "${self.inputs.nixpkgs-347991}/nixos/modules/services/networking/headscale.nix" ];
-
   sops.secrets.headscaleKey = {
     mode = "0440";
     owner = config.users.users.headscale.name;
