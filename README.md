@@ -1,7 +1,7 @@
 # dots
 
 This repository contains a [Nix] [flake] for packages, [NixOS] modules &
-configurations across my various devices. This README can be considered as
+configurations across my various devices. This README is to be considered
 documentation for this flake and the managed devices.
 
 The other sections describe what hosts are managed by this flake, the devices
@@ -20,11 +20,11 @@ installation.
 > These configurations contain encrypted secrets managed by [sops-nix] and care
 > should be taken when building and activating them.
 >
-> The configurations cannot be successfully activated on machines that do not
-> have a `/var/lib/sops-nix/keys.txt` file containing the [`age`] private key
-> corresponding to an `age` public key in the root [.sops.yaml] file.
+> Most of these configurations cannot be successfully activated on machines that
+> do not have a `/var/lib/sops-nix/keys.txt` file containing the [`age`] private
+> key corresponding to an `age` public key in the root [.sops.yaml] file.
 
-The table below lists the managed hosts and their descriptions:
+The managed hosts and their descriptions are listed in the following table:
 
 | **Hostname** | **Device type**               | **Description**                                |
 |:--           | :--                           | :--                                            |
@@ -38,6 +38,7 @@ The table below lists the managed hosts and their descriptions:
 | terra        | Desktop                       | Primary PC at home                             |
 | venus        | Lenovo ThinkPad X230 Tablet   | Personal laptop                                |
 
+[sops-nix]: https://github.com/Mic92/sops-nix
 [`age`]: https://age-encryption.org/v1
 [.sops.yaml]: ./.sops.yaml
 
@@ -46,12 +47,9 @@ The table below lists the managed hosts and their descriptions:
 
 The `age` private key is used for decrypting secrets encrypted with the public
 key on NixOS system activation. If the key is unavailable, you will not be able
-to login and certain services will not function correctly. See [sops-nix] for
-details.
-
-As mentioned above, the `age` private key is located in
-`/var/lib/sops-nix/keys.txt`, and has to be generated before secrets can be
-decrypted or rotated. The `age` private key can be generated using the
+to login and certain services will not function correctly. The `age` private key
+has to be generated and placed in `/var/lib/sops-nix/keys.txt` before secrets
+can be decrypted or rotated. The `age` private key can be generated using the
 following command:
 
 ```sh
@@ -69,13 +67,8 @@ AGE_PUBLIC_KEY_NEW="$(rg '# public key: (.*)' -or '$1' ~/keys.txt)"
 fd --full-path "$SECRET_FILES_REGEX" -x sops rotate -i --add-age "$AGE_PUBLIC_KEY_NEW" --rm-age "$AGE_PUBLIC_KEY"
 ```
 
-Afterwards, the only things left to do are:
-1. update the public key in the `.sops.yaml` configuration file
-2. and move the new private key in `~/keys.txt` to `/var/lib/sops-nix/keys.txt`.
-
-The new private key has to be deployed to each host manually.
-
-[sops-nix]: https://github.com/Mic92/sops-nix
+The public key in the `.sops.yaml` configuration file and the
+private key in `/var/lib/sops-nix/keys.txt` have to be updated manually.
 
 
 # Installation Guides
@@ -119,8 +112,8 @@ nix build github:Electrostasy/dots#deimosImage
 
 ### Flashing the image
 
-The NixOS SD image may be flashed to a selected microSD card (up to 32 GB in
-size) using the following command:
+The NixOS SD image may be flashed to a selected microSD card using the following
+command:
 
 ```sh
 dd if=deimos-image*.img of=/dev/sda bs=1M status=progress oflag=direct
@@ -141,7 +134,7 @@ Interceptor] carrier board, serving as Network Attached Storage.
 The NixOS SD image to be flashed can be built using the following command:
 
 ```sh
-nix build github:Electrostasy/dots#nixosConfigurations.lunaImage
+nix build github:Electrostasy/dots#lunaImage
 ```
 
 
@@ -169,13 +162,6 @@ Board for flashing the CM4:
 7. Power off the IO Board.
 8. Detach the CM4 and attach it to your carrier board.
 
-> [!TIP]
->
-> For more information on interacting with and flashing a Raspberry Pi Compute
-> Module 4, refer to this [guide].
-
-[guide]: https://www.jeffgeerling.com/blog/2020/how-flash-raspberry-pi-os-compute-module-4-emmc-usbboot
-
 
 ## mars
 
@@ -189,16 +175,9 @@ between SPI and eMMC flash memory when flashing. Because of this, we build an
 installer image with `u-boot` included, and flash on the target system instead
 of externally over USB.
 
-> [!TIP]
->
-> For more information, see the comprehensive [Collabora guide] on hardware
-> enablement for the RK3588 platform, primarily targeted towards the Radxa ROCK
-> 5B SBC.
-
 [mars]: ./hosts/mars/default.nix
 [FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
 [limitations]: https://github.com/rockchip-linux/rkdeveloptool/issues/94
-[Collabora guide]: https://gitlab.collabora.com/hardware-enablement/rockchip-3588/notes-for-rockchip-3588/-/blob/7338fa2891fbc37129d62b2809b159a33db6b687/upstream_uboot.md#writing-binaries-to-sd-card-for-booting-from-sd-card
 
 
 ### Building the image
@@ -209,14 +188,6 @@ command:
 ```sh
 NIXPKGS_ALLOW_UNFREE=1 nix build --impure github:Electrostasy/dots#marsImage
 ```
-
-> [!TIP]
->
-> Since the Rockchip proprietary bootloader blobs (TPL) for RK3588 are unfree,
-> which are used to build u-boot, unfree packages need to be allowed. A simple
-> way to do that is to export the environment variable `NIXPKGS_ALLOW_UNFREE=1`,
-> which is detected in builds only with the `--impure` flag, making the builds
-> impure.
 
 
 ### Flashing the image
