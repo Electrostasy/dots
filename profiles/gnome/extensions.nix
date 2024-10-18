@@ -7,7 +7,6 @@
     native-window-placement
     panel-date-format
     tiling-shell
-    user-stylesheet-font
     unblank
 
     # Blur My Shell extension seems to be buggy regarding the panel when fractional
@@ -49,6 +48,16 @@
         });
       };
     })
+
+    (pkgs.runCommandLocal "electrostasy-shell-theme" { } ''
+      install -D ${./gnome-shell.css} $out/share/themes/electrostasy/gnome-shell/gnome-shell.css
+    '')
+  ];
+
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
+  systemd.user.tmpfiles.rules = [
+    "L+ %h/.config/gtk-4.0/gtk.css - - - - ${./gtk.css}"
   ];
 
   programs.dconf.profiles.user.databases = [{
@@ -60,7 +69,12 @@
         # For extensions packaged together with `gnome-shell-extensions`, but
         # that do not have an individual uuid and package entry listed in nixpkgs'
         # pkgs/desktops/gnome/extensions/extensionRenames.nix file:
-        ++ [ "system-monitor@gnome-shell-extensions.gcampax.github.com" ];
+        ++ [
+          "system-monitor@gnome-shell-extensions.gcampax.github.com"
+          "user-theme@gnome-shell-extensions.gcampax.github.com"
+        ];
+
+      "org/gnome/shell/extensions/user-theme".name = "electrostasy";
 
       "org/gnome/shell/extensions/desktop-cube" = {
         last-first-gap = false;
@@ -131,11 +145,4 @@
       };
     };
   }];
-
-  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
-  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
-  systemd.user.tmpfiles.rules = [
-    "L+ %h/.config/gtk-4.0/gtk.css - - - - ${./gtk.css}"
-    "L+ %h/.config/gnome-shell/gnome-shell.css - - - - ${./gnome-shell.css}"
-  ];
 }
