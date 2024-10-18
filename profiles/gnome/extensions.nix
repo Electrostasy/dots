@@ -8,6 +8,7 @@
     panel-date-format
     tiling-shell
     user-stylesheet-font
+    unblank
 
     # Blur My Shell extension seems to be buggy regarding the panel when fractional
     # scaling is enabled - only part of the panel is blurred. Turning it on and
