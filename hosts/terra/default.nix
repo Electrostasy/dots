@@ -138,7 +138,11 @@
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
+      # Ensure time out appears when the actual physical device fails to appear,
+      # otherwise, systemd cannot set the infinite timeout (such as when using
+      # /dev/disk/by-* symlinks) for entering the passphrase:
+      # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
+      device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=root"
@@ -149,13 +153,13 @@
     };
 
     "/boot" = {
-      device = "/dev/disk/by-partuuid/ed8ad820-1751-48ca-af62-4f671f64f0f4";
+      device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";
       options = [ "umask=0077" ];
     };
 
     "/nix" = {
-      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
+      device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=nix"
@@ -166,7 +170,7 @@
     };
 
     "/state" = {
-      device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
+      device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=state"

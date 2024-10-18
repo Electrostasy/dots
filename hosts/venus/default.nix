@@ -147,8 +147,12 @@
       fsType = "ext4";
     };
 
+    # Ensure time out appears when the actual physical device fails to appear,
+    # otherwise, systemd cannot set the infinite timeout (such as when using
+    # /dev/disk/by-* symlinks) for entering the passphrase:
+    # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
     "/nix" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=nix"
@@ -159,7 +163,7 @@
     };
 
     "/state" = {
-      device = "/dev/disk/by-label/nixos";
+      device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=state"
