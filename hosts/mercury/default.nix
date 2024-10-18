@@ -270,10 +270,16 @@
   };
 
   environment.systemPackages = with pkgs; [
+    gnomeExtensions.fullscreen-to-empty-workspace
+
     gnome-network-displays
     rnote
     scrcpy
   ];
+
+  programs.dconf.profiles.user.databases = [{
+    settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
+  }];
 
   # Required for gnome-network-displays.
   services.avahi.enable = lib.mkForce true;

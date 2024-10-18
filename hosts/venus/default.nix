@@ -186,14 +186,15 @@
   };
 
   environment.systemPackages = with pkgs; [
-    imv
-    keepassxc
+    gnomeExtensions.fullscreen-to-empty-workspace
+
     libreoffice-fresh
-    mepo
-    nurl
     rnote
-    xournalpp
   ];
+
+  programs.dconf.profiles.user.databases = [{
+    settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
+  }];
 
   systemd.network = {
     networks."40-wireless" = {
