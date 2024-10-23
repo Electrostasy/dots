@@ -5,13 +5,13 @@
 
 vimUtils.buildVimPlugin {
   pname = "hlargs-nvim";
-  version = "unstable-2024-05-18";
+  version = "0-unstable-2024-09-06";
 
   src = fetchFromGitHub {
     owner = "m-demare";
     repo = "hlargs.nvim";
-    rev = "30fe1b3de2b7614f061be4fc9c71984a2b87e50a";
-    hash = "sha256-V3XG1SCBz+EvObW7JSNIUxGZLv6zoRXyap7nRETmUA8=";
+    rev = "53ec5d8ca6ed012de5545ba83ea1eb3d636b09fb";
+    hash = "sha256-K4hoTSYtriCNOz43Xl3KPeR3K9MNw8euY8QLYwBGQE4=";
   };
 
   meta = {
