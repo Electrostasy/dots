@@ -9,46 +9,6 @@
     tiling-shell
     unblank
 
-    # Blur My Shell extension seems to be buggy regarding the panel when fractional
-    # scaling is enabled - only part of the panel is blurred. Turning it on and
-    # off again seems to fix it. Do that soon as the session starts.
-    (pkgs.makeAutostartItem {
-      name = "blur-my-shell-fix";
-      package = pkgs.makeDesktopItem {
-        name = "blur-my-shell-fix";
-        desktopName = "Fix for Blur my Shell when used with fractional scaling";
-        categories = [ "Utility" ];
-        noDisplay = true;
-        terminal = false;
-        type = "Application";
-        exec = lib.getExe (pkgs.writeShellApplication {
-          name = "blur-my-shell-fix";
-          runtimeInputs = [
-            config.systemd.package
-            pkgs.gnome-shell
-            pkgs.jq
-          ];
-
-          text = ''
-            function get_current_state() {
-              busctl --user call \
-                'org.gnome.Mutter.DisplayConfig' \
-                '/org/gnome/Mutter/DisplayConfig' \
-                'org.gnome.Mutter.DisplayConfig' \
-                'GetCurrentState' -j
-            }
-
-            # Only run if any display has fractional scaling enabled.
-            if [ "$(get_current_state | jq '.data[2] | map(fmod(.[2]; 1) | select(. != 0)) | length')" -ne '0' ]; then
-              gnome-extensions disable 'blur-my-shell@aunetx'
-              sleep 0.5 # wait a bit before re-enabling.
-              gnome-extensions enable 'blur-my-shell@aunetx'
-            fi
-          '';
-        });
-      };
-    })
-
     (pkgs.runCommandLocal "electrostasy-shell-theme" { } ''
       install -D ${./gnome-shell.css} $out/share/themes/electrostasy/gnome-shell/gnome-shell.css
     '')
