@@ -215,6 +215,83 @@ In order to install NixOS to eMMC on a running system, you have to target
 `/dev/mmcblk0` as the target installation device.
 
 
+## mercury (and terra)
+
+The host [mercury] (and [terra]) has an [erase-your-darlings] inspired
+encrypted btrfs root setup, where on every boot the root subvolume is rolled
+back to an empty snapshot. Rollbacks are accomplished using a systemd service
+in the initrd.
+
+### Partitioning
+
+The below commands detail the partitioning process for the host [mercury]:
+
+```sh
+# Create 1G ESP, LUKS root and 16G swap partitions.
+sgdisk -n 1::+1G -t 1:ef00 -n 2::-16G -t 2:8309 -n 3::0 -t 3:8200 /dev/nvme0n1
+
+# Format the ESP.
+mkfs.vfat -F 32 -n BOOT /dev/nvme0n1p1
+
+# Format the root partition.
+cryptsetup luksFormat --uuid eea26205-2ae5-4d2c-9a13-32c7d9ae2421 /dev/nvme0n1p2
+cryptsetup luksOpen /dev/nvme0n1p2 cryptroot
+mkfs.btrfs -L nixos /dev/mapper/cryptroot
+
+# Format the swap partition.
+mkswap -L swap /dev/nvme0n1p3
+
+# Set up the btrfs subvolumes.
+mount /dev/mapper/cryptroot -o compress-force=zstd:1,noatime /mnt
+btrfs subvolume create /mnt/root
+btrfs subvolume create /mnt/nix
+btrfs subvolume create /mnt/state
+btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
+umount /mnt
+```
+
+### Installation
+
+The below commands detail the installation process for the host [mercury]:
+
+```sh
+mount /dev/mapper/cryptroot -o subvol=root,compress-force=zstd:1,noatime /mnt
+mkdir -p /mnt/{nix,state,boot,var/log,var/lib/sops-nix,etc/nixos}
+
+mount /dev/mapper/cryptroot -o subvol=nix,compress-force=zstd:1,noatime /mnt/nix
+mount /dev/mapper/cryptroot -o subvol=state,compress-force=zstd:1,noatime /mnt/state
+mount /dev/nvme0n1p1 /mnt/boot
+mkdir -p /mnt/state/{var/log,var/lib/sops-nix,etc/nixos}
+mount -o bind /mnt/state/var/log /mnt/var/log
+# IMPORTANT: don't forget to populate /mnt/var/lib/sops-nix/keys.txt!
+mount -o bind /mnt/state/var/lib/sops-nix /mnt/var/lib/sops-nix
+mount -o bind /mnt/state/etc/nixos /mnt/etc/nixos
+
+# Download the NixOS configuration to install into its directory.
+git clone https://github.com/Electrostasy/dots /mnt/etc/nixos
+
+nixos-install --flake /mnt/etc/nixos#mercury --root /mnt --no-root-passwd
+```
+
+Due to [`system.etc.overlay`], the installation currently will fail if it is
+enabled. As a workaround, the following commands need to be run before
+running `nixos-install` again:
+
+```sh
+mkdir /mnt/tmp
+mount -o bind /tmp /mnt/tmp
+mount -o bind /proc /mnt/proc
+mount -o bind /sys /mnt/sys
+mount -o bind /dev /mnt/dev
+cp /etc/os-release /mnt/etc/
+```
+
+[terra]: ./hosts/terra/default.nix
+[mercury]: ./hosts/mercury/default.nix
+[erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
+[`system.etc.overlay`]: https://github.com/NixOS/nixpkgs/issues/319533
+
+
 ## phobos
 
 The host [phobos] is a Raspberry Pi 4 Model B, used to host the dendrite Matrix
