@@ -1,8 +1,13 @@
 { config, lib, modulesPath, ... }:
 
 {
+  # We cannot use the `image.repart` module here, because systemd-repart does
+  # not support setting the GPT table length or adding holes in the GPT table.
+  # RK3588 expects u-boot to be present at offset 0x00008000, but the best
+  # we can do with systemd-repart is offset 0x00100000.
   imports = [ "${modulesPath}/installer/sd-card/sd-image.nix" ];
 
+  # `sd-image.nix` brings in `all-hardware.nix` which we do not need.
   disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
 
   sdImage = {

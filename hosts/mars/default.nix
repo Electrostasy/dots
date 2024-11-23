@@ -30,6 +30,15 @@
     checks = [ config.system.build.uboot ];
 
     build.uboot = pkgs.ubootNanoPCT6.override (oldAttrs: {
+      version = "2025.01-rc2";
+
+      # 2025.01 contains the NanoPC-T6 LTS DTB using the same defconfig. This will
+      # allow loading the correct DTB during boot.
+      src = pkgs.fetchurl {
+        url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.01-rc2.tar.bz2";
+        hash = "sha256-RVaXQ+3SJaKf50OdejBbmzEI+yYF6Zwad6+B/PQhVJo=";
+      };
+
       # Include the SPI NOR flash build artifact.
       filesToInstall = oldAttrs.filesToInstall ++ [ "u-boot-rockchip-spi.bin" ];
 
@@ -59,37 +68,6 @@
     pciutils # `lspci`.
     usbutils # `lsusb`.
   ];
-
-  # TODO: Remove in Linux 6.12, as NanoPC-T6 LTS got official support:
-  # https://lkml.org/lkml/2024/9/16/842
-  hardware.deviceTree = {
-    filter = "rk3588-nanopc-t6.dtb";
-    overlays = [
-      {
-        name = "enable-sfc-spi-nor-overlay";
-        dtsText = ''
-          /dts-v1/;
-          /plugin/;
-
-          / {
-            compatible = "friendlyarm,nanopc-t6", "rockchip,rk3588";
-          };
-
-          &sfc {
-            status = "okay";
-
-            spi_flash: spi-flash@0 {
-              compatible = "jedec,spi-nor";
-              reg = <0>;
-              spi-max-frequency = <104000000>;
-              spi-rx-bus-width = <4>;
-              spi-tx-bus-width = <1>;
-            };
-          };
-        '';
-      }
-    ];
-  };
 
   fileSystems = {
     "/" = {
