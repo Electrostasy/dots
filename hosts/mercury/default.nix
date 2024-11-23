@@ -1,4 +1,4 @@
-{ config, pkgs, lib, self, ... }:
+{ config, pkgs, self, ... }:
 
 {
   imports = [
@@ -14,10 +14,10 @@
 
   nixpkgs = {
     hostPlatform = "x86_64-linux";
-    overlays = [
-      self.overlays.scrcpy-transforms
-      self.overlays.unl0kr_3_update
-    ];
+
+    allowUnfreePackages = [ "nvidia-x11" ];
+
+    overlays = [ self.overlays.unl0kr_3_update ];
   };
 
   sops = {
@@ -35,16 +35,14 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  nixpkgs.allowUnfreePackages = [ "nvidia-x11" ];
-
   hardware = {
     enableRedistributableFirmware = true;
     bluetooth.powerOnBoot = false;
     sensor.iio.enable = true; # orientation detection for auto-rotate.
 
-    graphics.enable = true;
-
     nvidia = {
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
+
       open = true;
       nvidiaSettings = false;
 
@@ -54,8 +52,8 @@
       };
 
       prime = {
-        intelBusId = "PCI:0:0:2";
-        nvidiaBusId = "PCI:0:1:0";
+        intelBusId = "PCI:0:2:0";
+        nvidiaBusId = "PCI:1:0:0";
 
         offload = {
           enable = true;
@@ -73,6 +71,58 @@
         bypassWorkqueues = true;
       };
 
+      systemd = {
+        # https://github.com/NixOS/nixpkgs/issues/309316
+        storePaths = with pkgs; [
+          "${util-linux}/bin/mount"
+          "${util-linux}/bin/umount"
+          "${btrfs-progs}/bin/btrfs"
+          "${coreutils}/bin/cut"
+        ];
+
+        services.cryptroot-restore = {
+          description = "Restore root filesystem for impermanent btrfs root";
+          wantedBy = [ "sysinit.target" ];
+
+          after = [ "cryptsetup.target" ]; # after /dev/mapper/cryptroot is available.
+          before = [ "local-fs-pre.target" ]; # before filesystems are mounted.
+
+          path = with pkgs; [
+            util-linux
+            btrfs-progs
+            coreutils
+          ];
+
+          unitConfig.DefaultDependencies = "no";
+          serviceConfig.Type = "oneshot";
+
+          # In order to restore the root subvolume from an empty snapshot, first
+          # the lower level subvolumes under /root need to be deleted, which seem
+          # to get created by systemd.
+          script = ''
+            mkdir -p /mnt
+            mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
+
+            for subvolume in $(btrfs subvolume list -o /mnt/root | cut -f9 -d' '); do
+              echo "Deleting /$subvolume subvolume..."
+              btrfs subvolume delete "/mnt/$subvolume"
+            done
+
+            if [ $? -eq 0 ]; then
+              echo "Deleting /root subvolume..."
+              btrfs subvolume delete /mnt/root
+
+              echo "Restoring /root subvolume from blank snapshot..."
+              btrfs subvolume snapshot /mnt/root-blank /mnt/root
+            else
+              echo "Failed to delete subvolumes under /mnt/root!"
+            fi
+
+            umount /mnt
+          '';
+        };
+      };
+
       # Panel orientation detection does not work (is it even supported?), and
       # hardware keyboard's state is not detected (folded and inactive/unfolded
       # and active).
@@ -82,8 +132,8 @@
         settings = {
           general.animations = true;
           theme = {
-            default = "adwaita-dark";
-            alternative = "adwaita-light";
+            default = "pmos-dark";
+            alternative = "pmos-light";
           };
         };
       };
@@ -105,13 +155,11 @@
       ];
     };
 
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      # Disable memory mapped PCI configuration registers, without this every
-      # reboot and shutdown will be stalled or crash (often with null pointer
-      # dereferences); with this we can shutdown and reboot fast again.
-      "pci=nommconf"
+    # Graphics is seemingly FUBAR'd on this laptop since Linux 6.9-6.10, the only
+    # way we can get Intel or NVIDIA to work is to run an older kernel like 6.6.
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
 
+    kernelParams = [
       # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
       # on this device than s2idle (suspend to idle).
       "mem_sleep_default=deep"
@@ -138,13 +186,18 @@
   };
 
   fileSystems = {
+    # Ensure time out appears when the actual physical device fails to appear,
+    # otherwise, systemd cannot set the infinite timeout (such as when using
+    # /dev/disk/by-* symlinks) for entering the passphrase:
+    # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
     "/" = {
-      device = "none";
-      fsType = "tmpfs";
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
       options = [
-        "defaults"
-        "size=1G"
-        "mode=755"
+        "subvol=root"
+        "noatime"
+        "compress-force=zstd:1"
+        "discard=async"
       ];
     };
 
@@ -154,10 +207,6 @@
       options = [ "umask=0077" ];
     };
 
-    # Ensure time out appears when the actual physical device fails to appear,
-    # otherwise, systemd cannot set the infinite timeout (such as when using
-    # /dev/disk/by-* symlinks) for entering the passphrase:
-    # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
@@ -182,14 +231,9 @@
     };
   };
 
-  swapDevices = [{
-    device = "${config.environment.persistence.state.persistentStoragePath}/swapfile";
-    size = 4 * 1024;
-  }];
-
-  # Can only use one of these.
-  services.power-profiles-daemon.enable = false;
-  services.tlp.enable = true;
+  swapDevices = [
+    { device = "/dev/disk/by-partuuid/19569fdc-0dc6-4fd7-aef0-ec770aaf1f6a"; randomEncryption.enable = true; }
+  ];
 
   networking.networkmanager.ensureProfiles = {
     environmentFiles = [ config.sops.secrets.networkmanager.path ];
@@ -271,22 +315,12 @@
 
   environment.systemPackages = with pkgs; [
     gnomeExtensions.fullscreen-to-empty-workspace
-
-    gnome-network-displays
     rnote
-    scrcpy
   ];
 
   programs.dconf.profiles.user.databases = [{
     settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
   }];
-
-  # Required for gnome-network-displays.
-  services.avahi.enable = lib.mkForce true;
-  networking.firewall.allowedTCPPorts = [ 7236 ];
-
-  # Required for scrcpy.
-  programs.adb.enable = true;
 
   users.users.electro = {
     isNormalUser = true;
@@ -298,7 +332,6 @@
 
     extraGroups = [
       "wheel" # allow using `sudo` for this user.
-      "adbusers" # allow using `adb` for unprivileged users.
     ];
 
     openssh.authorizedKeys.keyFiles = [
@@ -307,5 +340,5 @@
     ];
   };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.05";
 }
