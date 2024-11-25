@@ -1,30 +1,6 @@
-{ config, lib, ... }:
-
-let
-  # Guard against tmpfs root issues, namely lack of state management. Does not
-  # apply for WSL, as it does not have a NixOS defined root filesystem per the
-  # wsl module.
-  hasStatelessRoot = let inherit (config.fileSystems."/") device fsType;
-    in !config.wsl.enable
-    && device == "none"
-    && fsType == "tmpfs";
-
-  hasImpermanence = config.environment.persistence.state.enable;
-
-  hasSops = config.sops.secrets != { };
-in
+{ config, pkgs, lib, ... }:
 
 {
-  warnings = lib.optionals (hasStatelessRoot && !hasImpermanence) [
-    ''
-      You have a root on tmpfs configuration without persistence enabled on ${config.environment.persistence.state.persistentStoragePath} for host "${config.networking.hostName}".
-
-      This is possibly unintentional, check the option:
-
-        environment.persistence.state.enable
-    ''
-  ];
-
   users.mutableUsers = !config.environment.persistence.state.enable;
 
   # Persist the age private key if sops-nix is used for secrets management.
@@ -32,7 +8,7 @@ in
   # boot process.
   fileSystems =
     let keyFileDir = builtins.dirOf config.sops.age.keyFile;
-    in lib.mkIf (hasSops && hasImpermanence) {
+    in lib.mkIf (config.sops.secrets != { } && config.environment.persistence.state.enable) {
       ${keyFileDir} = {
         device = "/state" + keyFileDir;
         fsType = "none";
@@ -62,6 +38,13 @@ in
       # important to persist their UIDs and GIDs to not have corrupted state
       # on disk.
       "/var/lib/nixos"
+
+      # Systemd timers with `Persistent=true` set store a timestamp file with
+      # the timer's last execution timestamp to disk. A persistent timer uses
+      # this timestamp to measure if it needs to execute on a missed run. If
+      # this is not persisted, the timer will effectively never run unless it
+      # reaches the execution date again on a running system.
+      "/var/lib/systemd/timers"
     ]
 
     # On systems without a RTC (e.g. a Raspberry Pi), the clock file can be
@@ -94,4 +77,92 @@ in
       ];
     };
   };
+
+  systemd = lib.mkIf config.environment.persistence.state.enable {
+    timers = {
+      state-snapshot = {
+        description = "Periodic snapshot of the /state subvolume.";
+        wantedBy = [ "timers.target" ];
+
+        wants = [ "state-snapshot-enabler.service" ];
+        after = [ "state-snapshot-enabler.service" ];
+
+        timerConfig = {
+          OnBootSec = "0";
+          OnUnitActiveSec = "3h";
+          Unit = "state-snapshot.service";
+        };
+      };
+
+      state-snapshot-prune = {
+        description = "Periodic prune of /state subvolume snapshots.";
+        wantedBy = [ "timers.target" ];
+
+        wants = [ "state-snapshot-enabler.service" ];
+        after = [ "state-snapshot-enabler.service" ];
+
+        timerConfig = {
+          OnCalendar = "weekly";
+          Persistent = true;
+          Unit = "state-snapshot-prune.service";
+        };
+      };
+    };
+
+    services = {
+      # This helper service should ideally be a target unit, but they do not have
+      # an execution environment, so we cannot run arbitrary code in target units.
+      state-snapshot-enabler = {
+        description = "Whether to snapshot the /state subvolume.";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "local-fs.target" ];
+
+        serviceConfig = {
+          Type = "oneshot";
+
+          ExecCondition = pkgs.writeShellScript "is-state-btrfs.sh" ''
+            if ! [[ "$(stat -fc '%T' /state)" == 'btrfs' ]]; then
+              exit 1
+            fi
+          '';
+
+          ExecStart = "${pkgs.coreutils}/bin/true";
+        };
+      };
+
+      state-snapshot = {
+        description = "Snapshot the /state subvolume.";
+        serviceConfig.Type = "oneshot";
+
+        path = [ pkgs.btrfs-progs ];
+
+        preStart = ''
+          if [ ! -d '/state/.snapshots' ]; then
+            mkdir -p '/state/.snapshots'
+          fi
+        '';
+
+        script = ''
+          btrfs subvolume snapshot -r '/state' "/state/.snapshots/$(date -u +%Y-%m-%dT%H:%M:%S)"
+        '';
+      };
+
+      state-snapshot-prune = {
+        description = "Prune the /state subvolume snapshots.";
+        serviceConfig.Type = "oneshot";
+
+        path = [ pkgs.btrfs-progs ];
+
+        script = ''
+          threshold=$(date -d 'now - 3 days' +%s)
+          for snapshot in /state/.snapshots/*; do
+            if [ $(date -d "$(basename "$snapshot")" +%s) -le $threshold ]; then
+              btrfs subvolume delete "$snapshot"
+            fi
+          done
+        '';
+      };
+    };
+  };
+
 }
