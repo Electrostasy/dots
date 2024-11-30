@@ -6,10 +6,10 @@
 
     # Override default Desktop Environment fonts.
     packages = with pkgs; lib.mkForce [
-      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
       inter
       ipaexfont
       liberation_ttf
+      nerd-fonts.symbols-only
       recursive
       twemoji-color-font
     ];
