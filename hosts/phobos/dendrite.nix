@@ -36,6 +36,12 @@
     };
   };
 
+  # PostgreSQL systemd service hardening has "PrivateMounts" enabled, which
+  # prevents the "ExecStartPre" script from symlinking the config file to the data
+  # directory, our mountpoint that is now excluded from the service's mount namespace.
+  # This allows the data directory mountpoint to be visible to the service again.
+  systemd.services.postgresql.serviceConfig.ReadWritePaths = [ config.services.postgresql.dataDir ];
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "steamykins@gmail.com";
