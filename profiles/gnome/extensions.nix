@@ -6,8 +6,10 @@
     desktop-cube
     native-window-placement
     panel-date-format
+    system-monitor
     tiling-shell
     unblank
+    user-themes
 
     (pkgs.runCommandLocal "electrostasy-shell-theme" { } ''
       install -D ${./gnome-shell.css} $out/share/themes/electrostasy/gnome-shell/gnome-shell.css
@@ -25,14 +27,7 @@
       "org/gnome/shell".enabled-extensions =
         builtins.map
           (x: x.extensionUuid)
-          (lib.filter (p: p ? extensionUuid) config.environment.systemPackages)
-        # For extensions packaged together with `gnome-shell-extensions`, but
-        # that do not have an individual uuid and package entry listed in nixpkgs'
-        # pkgs/desktops/gnome/extensions/extensionRenames.nix file:
-        ++ [
-          "system-monitor@gnome-shell-extensions.gcampax.github.com"
-          "user-theme@gnome-shell-extensions.gcampax.github.com"
-        ];
+          (lib.filter (p: p ? extensionUuid) config.environment.systemPackages);
 
       "org/gnome/shell/extensions/user-theme".name = "electrostasy";
 
