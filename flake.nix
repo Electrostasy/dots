@@ -22,9 +22,12 @@
   outputs = { self, nixpkgs, ... }: let
     inherit (nixpkgs) lib;
 
-    forEachSystem = lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
-
-    forEverySystem = lib.genAttrs lib.systems.flakeExposed;
+    forEachSystem = lib.genAttrs [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
   in {
     overlays = lib.packagesFromDirectoryRecursive {
       callPackage = path: overrides: import path;
@@ -44,7 +47,7 @@
       phobosImage = (self.nixosConfigurations.phobos.extendModules { modules = [ ./hosts/phobos/image.nix ]; }).config.system.build.image;
     });
 
-    apps = forEverySystem (system: {
+    apps = forEachSystem (system: {
       nvim = {
         type = "app";
         program =
@@ -72,6 +75,7 @@
             };
           in
             lib.getExe evaluatedModules.config.programs.neovim.finalPackage;
+          meta.description = "Self-contained Neovim environment";
       };
     });
 
