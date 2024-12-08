@@ -1,0 +1,9 @@
+[project]
+name = "discord-transcriber"
+version = "0.1"
+dependencies = [
+	"discord.py~=2.5.0a0"
+]
+
+[project.scripts]
+discord-transcriber = "transcriber:main"
