@@ -5,6 +5,7 @@
     "${modulesPath}/profiles/minimal.nix"
     ../../profiles/ssh
     ./dendrite.nix
+    ./discord-transcriber.nix
     ./fileserver.nix
     ./headscale.nix
   ];
