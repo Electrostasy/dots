@@ -2,7 +2,6 @@ from gi.repository import Nautilus, GObject
 from os import walk
 from pathlib import Path
 from subprocess import Popen
-from typing import List
 from urllib.parse import urlparse, unquote
 import mimetypes
 
@@ -19,21 +18,19 @@ class AmberolMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     def _class_name(self) -> str:
         return self.__class__.__name__
 
-    def _open_amberol_for_files(self, menu, paths: List[Path]) -> None:
+    def _open_amberol_for_files(self, menu, paths: list[Path]) -> None:
         cmd = ["/usr/bin/env", "amberol"]
         for path in paths:
             cmd.append(path)
-        Popen(cmd)
+        _ = Popen(cmd)
 
-    def get_file_items(self, files: List[Nautilus.FileInfo]) -> List[Nautilus.MenuItem]:
+    def get_file_items(self, files: list[Nautilus.FileInfo]) -> list[Nautilus.MenuItem]:
         paths = []
         for file in files:
             # We only care about non-hidden directories.
             if not file.is_directory() or file.get_name().startswith("."):
                 continue
 
-            # TODO: Is it possible to async it up in order to not block the UI?
-            # https://github.com/GNOME/nautilus-python/blob/0eaaad1a44c4fd1d7324dfb97fd8c382d59cd4e3/docs/reference/nautilus-python-operation-result.xml#L41
             start = unquote(urlparse(file.get_uri()).path)
             for root, walk_dirs, walk_files in walk(start):
                 # Don't descend down into hidden directories.
@@ -43,7 +40,9 @@ class AmberolMenuProvider(GObject.GObject, Nautilus.MenuProvider):
                     if walk_file.startswith("."):
                         continue
 
-                    mime, _ = mimetypes.guess_type(walk_file)
+                    # Guess mimetype by filename only in order to not slow down/crash
+                    # Nautilus for larger directory trees.
+                    mime, _ = mimetypes.guess_type(walk_file.title())
                     if mime is not None and mime.startswith("audio/"):
                         paths.append(f"{root}/{walk_file}")
 
