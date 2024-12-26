@@ -1,60 +1,79 @@
-from gi.repository import Nautilus, GObject
-from os import walk
-from pathlib import Path
-from subprocess import Popen
-from urllib.parse import urlparse, unquote
+import gi
+gi.require_version('Tracker', '3.0')
+from gi.repository import GObject, Nautilus, Tracker, GLib
+
+import weakref
 import mimetypes
+from urllib.parse import urlparse, unquote
+import os
+import subprocess
+
+
+TRACKER_REMOTE_NAME = 'org.freedesktop.Tracker3.Miner.Files'
 
 
 class AmberolMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     def __init__(self):
         super().__init__()
 
-        # For some reason, mimetypes is not initialized fully when started
-        # from Nautilus.
-        if not mimetypes.inited:
-            mimetypes.init(files=mimetypes.knownfiles)
+        try:
+            self.tracker = Tracker.SparqlConnection.bus_new(TRACKER_REMOTE_NAME, None, None)
+        except GLib.GError as e:
+            # TODO: This could use better error handling/reporting.
+            print(f'Could not connect to {TRACKER_REMOTE_NAME}:\n{e}')
 
-    def _class_name(self) -> str:
-        return self.__class__.__name__
+            self.tracker = None
+            self.find_files = self._find_files_walk
+        else:
+            self._finalizer = weakref.finalize(self, self.tracker.close)
+            self.find_files = self._find_files_tracker
 
-    def _open_amberol_for_files(self, menu, paths: list[Path]) -> None:
-        cmd = ["/usr/bin/env", "amberol"]
-        for path in paths:
-            cmd.append(path)
-        _ = Popen(cmd)
+    def _find_files_tracker(self, directory: Nautilus.FileInfo) -> list[str]:
+        assert self.tracker, 'self._find_files_tracker called with self.tracker = None'
+        query = self.tracker.query_statement('SELECT ?urn { GRAPH tracker:Audio { ?urn a nfo:FileDataObject; FILTER( strstarts(?urn, ~name) ) } }', None)
+        query.bind_string('name', directory.get_uri())
+
+        cursor = query.execute()
+        files = []
+        while cursor.next():
+            files.append(unquote(urlparse(cursor.get_string(0)[0]).path))
+        cursor.close()
+
+        return files
+
+    def _find_files_walk(self, directory: Nautilus.FileInfo) -> list[str]:
+        files = []
+        for root, _, walk_files in os.walk(unquote(urlparse(directory.get_uri()).path)):
+            for walk_file in walk_files:
+                if walk_file.startswith('.'):
+                    continue
+
+                mime, _ = mimetypes.guess_type(walk_file.title())
+                if mime is not None and mime.startswith('audio/'):
+                    files.append(f'{root}/{walk_file}')
+
+        return files
+
+    def _menu_activate_callback(self, menu: Nautilus.MenuItem, files: list[str]) -> None:
+        # `subprocess.Popen` doesn't wait for the command to finish which doesn't
+        # hang Nautilus for a few seconds when the callback is called.
+        _ = subprocess.Popen(['/usr/bin/env', 'amberol'] + files)
 
     def get_file_items(self, files: list[Nautilus.FileInfo]) -> list[Nautilus.MenuItem]:
-        paths = []
+        # Only create a menu item if there is a directory among the selected items.
+        if not any([file.is_directory() for file in files]):
+            return []
+
+        audio_files = []
         for file in files:
-            # We only care about non-hidden directories.
-            if not file.is_directory() or file.get_name().startswith("."):
-                continue
+            audio_files += self.find_files(file)
 
-            start = unquote(urlparse(file.get_uri()).path)
-            for root, walk_dirs, walk_files in walk(start):
-                # Don't descend down into hidden directories.
-                walk_dirs[:] = [dir for dir in walk_dirs if not dir.startswith(".")]
-                for walk_file in walk_files:
-                    # Don't take hidden files either.
-                    if walk_file.startswith("."):
-                        continue
+        count = len(audio_files)
+        if count == 0:
+            return []
 
-                    # Guess mimetype by filename only in order to not slow down/crash
-                    # Nautilus for larger directory trees.
-                    mime, _ = mimetypes.guess_type(walk_file.title())
-                    if mime is not None and mime.startswith("audio/"):
-                        paths.append(f"{root}/{walk_file}")
-
-        paths_len = len(paths)
-        if len(files) == 1:
-            label = f"Open directory with Amberol ({paths_len} Items)"
-        else:
-            label = f"Open directories with Amberol ({paths_len} Items)"
-
-        if len(paths) > 0:
-            item = Nautilus.MenuItem(name=f"{self._class_name()}::Files", label=label)
-            item.connect("activate", self._open_amberol_for_files, paths)
-            return [item]
-
-        return []
+        name = f'{self.__class__.__name__}::AmberolMenu'
+        label = f'Play with Amberol ({count} Item{'s' if count > 1 else ''})'
+        item = Nautilus.MenuItem(name=name, label=label)
+        item.connect('activate', self._menu_activate_callback, audio_files)
+        return [item]
