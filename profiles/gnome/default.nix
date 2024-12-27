@@ -35,26 +35,33 @@
   ];
 
   environment = {
-    persistence.state.users.electro = {
-      files = [
-        # Multi-monitor configuration.
-        ".config/monitors.xml"
-      ];
-
+    persistence.state = {
       directories = [
-        ".cache/fontconfig"
-        ".cache/tracker3"
-
-        # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
-        ".cache/thumbnails/large"
-        ".cache/thumbnails/normal"
-        ".cache/thumbnails/x-large"
-        ".cache/thumbnails/xx-large"
-        ".cache/thumbnails/fail"
-
-        ".cache/keepassxc"
-        ".config/keepassxc"
+        # Contains paired devices which are convenient to persist.
+        "/var/lib/bluetooth"
       ];
+
+      users.electro = {
+        files = [
+          # Multi-monitor configuration.
+          ".config/monitors.xml"
+        ];
+
+        directories = [
+          ".cache/fontconfig"
+          ".cache/tracker3"
+
+          # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
+          ".cache/thumbnails/large"
+          ".cache/thumbnails/normal"
+          ".cache/thumbnails/x-large"
+          ".cache/thumbnails/xx-large"
+          ".cache/thumbnails/fail"
+
+          ".cache/keepassxc"
+          ".config/keepassxc"
+        ];
+      };
     };
 
     sessionVariables.GTK_THEME = "adw-gtk3-dark";
