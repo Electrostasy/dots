@@ -46,6 +46,35 @@ local is_range_between_nodes = function(range, start_node, end_node)
   return require('vim.treesitter._range').contains(container, range)
 end
 
+local symbol_pairs = {
+  -- Common pairs.
+  { '(', ')' },
+  { '{', '}' },
+  { '[', ']' },
+
+  -- bash command subtitution.
+  -- fish command subtitution.
+  { '$(', ')' },
+
+  -- bash arithmetic expansion.
+  { '$((', '))' },
+
+  -- bash parameter expansion.
+  -- Nix interpolation.
+  { '${', '}' },
+
+  -- bash test statement.
+  -- Lua multiline string.
+  -- C++ attribute declaration.
+  { '[[', ']]' },
+
+  -- C++ templates.
+  -- Rust type parameters.
+  { '<', '>' },
+}
+
+local ignored_nodes = { 'string', 'comment' }
+
 local try_add_highlight = function()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local cursor_range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
@@ -59,13 +88,38 @@ local try_add_highlight = function()
 
   for i = #trees, 1, -1 do
     local tree = trees[i]
-    local query = vim.treesitter.query.get(tree:lang(), 'showpairs')
-    if query == nil then
-      return
+
+    local query_table = {}
+    local symbols = vim.treesitter.language.inspect(tree:lang()).symbols
+    for _, pair in pairs(symbol_pairs) do
+      local left_supported = false
+      local right_supported = false
+      for _, value in pairs(symbols) do
+        if not left_supported and value[1] == pair[1] then
+          left_supported = true
+        end
+
+        if not right_supported and value[1] == pair[2] then
+          right_supported = true
+        end
+
+        if left_supported and right_supported then
+          table.insert(query_table, string.format('(_ (("%s" @opening) ("%s" @closing)))', pair[1], pair[2]))
+          break
+        end
+      end
     end
+    local query = vim.treesitter.query.parse(tree:lang(), table.concat(query_table))
 
     local node = tree:named_node_for_range(cursor_range)
     while node do
+      local type = node:type()
+      for _, ignored_node_type in pairs(ignored_nodes) do
+        if type:find(ignored_node_type) then
+          goto next_parent
+        end
+      end
+
       for _, match, _ in query:iter_matches(node, 0) do
         local opening_match, closing_match
         for id, opening_or_closing_match in pairs(match) do
@@ -77,13 +131,13 @@ local try_add_highlight = function()
           end
         end
 
-        -- FIXME: This will not highlight the parent node of a comment for some reason.
         if is_range_between_nodes(cursor_range, opening_match, closing_match) then
           add_highlight(opening_match, closing_match)
           return
         end
       end
 
+      ::next_parent::
       node = node:parent()
     end
   end
@@ -95,8 +149,8 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   group = augroup,
   desc = 'Set up showpairs for the buffer',
   callback = function(event)
-    local query = vim.treesitter.query.get(vim.opt_local.filetype:get(), 'showpairs')
-    if not query then
+    local ok, _ = pcall(vim.treesitter.get_parser)
+    if not ok then
       return
     end
 
