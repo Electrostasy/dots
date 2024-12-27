@@ -138,21 +138,6 @@ vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
           end,
         })
       end
-    else
-      for _, mapping in pairs(mappings) do
-        local mode, lhs, _, opts = unpack(mapping)
-        if vim.fn.mapcheck(lhs, mode) ~= '' then
-          vim.keymap.del(mode, lhs, { buffer = opts.buffer })
-        end
-      end
-
-      require('hlargs').enable_buf(args.buf)
-
-      vim.api.nvim_clear_autocmds({
-        group = 'LspMappings',
-        event = 'ModeChanged',
-        pattern = { 'n:[^cV]', '[^cV]:n' },
-      })
     end
   end
 })
