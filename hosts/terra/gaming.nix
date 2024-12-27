@@ -50,6 +50,12 @@ in
       fsType = "btrfs";
       options = mkOptionsWith [ "subvol=dolphin-emu" ];
     };
+
+    "/home/electro/.config/PCSX2" = {
+      device = "/dev/disk/by-label/games";
+      fsType = "btrfs";
+      options = mkOptionsWith [ "subvol=pcsx2" ];
+    };
   };
 
   environment = {
@@ -63,7 +69,9 @@ in
     systemPackages = with pkgs; [
       bottles
       dolphin-emu
+      dualsensectl
       mangohud
+      pcsx2
     ];
   };
 
