@@ -88,7 +88,6 @@
       papers
       ptyxis
       resources
-      tagger
       warp
 
       # CLI utilities.
