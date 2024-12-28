@@ -115,7 +115,6 @@
   }];
 
   environment.systemPackages = with pkgs; [
-    flacon
     freecad-wayland
     gimp
     kicad
