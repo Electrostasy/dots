@@ -49,9 +49,16 @@ in
         lib.filterAttrs isRealKey potentialKeys;
 
     extraConfig = ''
+      # gzip is used for compression, which is relatively slow, so on fast
+      # networks it can be a bottleneck.
+      Compression no
+
       Match exec "host %h | grep 'sol.${config.networking.domain}'"
         Port 3101
         ${lib.concatStringsSep "\n" (lib.mapAttrsToList mkIdentityFile identities)}
+
+        # I do not use IPv6 so this can speed up login time a bit.
+        AddressFamily inet
     '';
   };
 }

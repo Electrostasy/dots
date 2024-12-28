@@ -13,9 +13,11 @@
     ];
 
     Ciphers = [
-      "chacha20-poly1305@openssh.com"
+      # aes256-gcm and aes128-gcm should often offer much better performance than
+      # chacha20-poly1305.
       "aes256-gcm@openssh.com"
       "aes128-gcm@openssh.com"
+      "chacha20-poly1305@openssh.com"
       "aes256-ctr"
       "aes192-ctr"
       "aes128-ctr"
