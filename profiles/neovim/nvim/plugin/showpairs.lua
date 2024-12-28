@@ -5,47 +5,6 @@ end
 local ns = vim.api.nvim_create_namespace('ShowPairs')
 local augroup = vim.api.nvim_create_augroup('ShowPairs', { })
 
-local extmark_ids = {
-  opening = 1,
-  closing = 2,
-}
-
-local remove_highlight = function()
-  vim.api.nvim_buf_del_extmark(0, ns, extmark_ids.opening)
-  vim.api.nvim_buf_del_extmark(0, ns, extmark_ids.closing)
-end
-
-local add_highlight = function(opening_node, closing_node)
-  local set_extmark_for_node = function(id, node)
-    local start_row, start_col, end_row, end_col = node:range()
-    vim.api.nvim_buf_set_extmark(0, ns, start_row, start_col, {
-      id = id,
-      end_row = end_row,
-      end_col = end_col,
-      hl_group = 'MatchParen',
-      hl_mode = 'combine',
-    })
-  end
-
-  set_extmark_for_node(extmark_ids.opening, opening_node)
-  set_extmark_for_node(extmark_ids.closing, closing_node)
-end
-
--- Workaround for `vim.treesitter.is_in_node_range()` not working in exceptions
--- like in Lua: `query.captures[id]` - the entire container node is `captures[id]`,
--- so if we check whether the cursor is within the container node, which works for
--- other nodes just fine, if the cursor is on `captures` outside of the brackets,
--- the brackets will still get matched.
-local is_range_between_nodes = function(range, start_node, end_node)
-  local start_row, start_col = start_node:start()
-  local end_row, end_col = end_node:start()
-
-  local container = { start_row, start_col, end_row, end_col }
-
-  -- This uses private API but I do not want to reimplement it right now.
-  return require('vim.treesitter._range').contains(container, range)
-end
-
 local symbol_pairs = {
   -- Common pairs.
   { '(', ')' },
@@ -73,57 +32,85 @@ local symbol_pairs = {
   { '<', '>' },
 }
 
-local ignored_nodes = { 'string', 'comment' }
+local lang_to_query_cache = {}
 
-local try_add_highlight = function()
+local invalidate_tree_queries = function(tree)
+  lang_to_query_cache[tree:lang()] = nil
+end
+
+local cache_tree_queries = function(tree)
+  local lang = tree:lang()
+
+  if lang_to_query_cache[lang] then
+    return
+  end
+
+  local query = {}
+  local symbols = vim.treesitter.language.inspect(lang).symbols
+  for _, pair in pairs(symbol_pairs) do
+    local left_supported = false
+    local right_supported = false
+    for _, value in pairs(symbols) do
+      if not left_supported and value[1] == pair[1] then
+        left_supported = true
+      end
+
+      if not right_supported and value[1] == pair[2] then
+        right_supported = true
+      end
+
+      if left_supported and right_supported then
+        table.insert(query, ('(_ (("%s" @opening) ("%s" @closing)))'):format(pair[1], pair[2]))
+        break
+      end
+    end
+  end
+
+  lang_to_query_cache[lang] = vim.treesitter.query.parse(lang, table.concat(query))
+end
+
+local remove_highlight = function(bufnr)
+  vim.api.nvim_buf_del_extmark(bufnr, ns, 1)
+  vim.api.nvim_buf_del_extmark(bufnr, ns, 2)
+end
+
+local add_highlight = function(bufnr)
   local cursor = vim.api.nvim_win_get_cursor(0)
-  local cursor_range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
+  local cursor_range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] + 1 }
 
+  -- `LanguageTree:trees()` does not include child languages.
   local trees = {}
   vim.treesitter.get_parser():for_each_tree(function(_, tree)
-    if tree:contains(cursor_range) then
-      table.insert(trees, tree)
+    if not tree:contains(cursor_range) then
+      return
     end
+
+    table.insert(trees, tree)
   end)
 
   for i = #trees, 1, -1 do
     local tree = trees[i]
 
-    local query_table = {}
-    local symbols = vim.treesitter.language.inspect(tree:lang()).symbols
-    for _, pair in pairs(symbol_pairs) do
-      local left_supported = false
-      local right_supported = false
-      for _, value in pairs(symbols) do
-        if not left_supported and value[1] == pair[1] then
-          left_supported = true
-        end
-
-        if not right_supported and value[1] == pair[2] then
-          right_supported = true
-        end
-
-        if left_supported and right_supported then
-          table.insert(query_table, string.format('(_ (("%s" @opening) ("%s" @closing)))', pair[1], pair[2]))
-          break
-        end
-      end
+    local query = lang_to_query_cache[tree:lang()]
+    if not query then
+      return false
     end
-    local query = vim.treesitter.query.parse(tree:lang(), table.concat(query_table))
+
+    -- In some rare cases, usually when removing text/nodes, we can unknowingly
+    -- invalidate the tree and *really* break things, needing to kill the nvim
+    -- process to recover. This prevents that.
+    if not tree:is_valid() then
+      tree:parse()
+    end
 
     local node = tree:named_node_for_range(cursor_range)
-    while node do
-      local type = node:type()
-      for _, ignored_node_type in pairs(ignored_nodes) do
-        if type:find(ignored_node_type) then
-          goto next_parent
-        end
-      end
 
-      for _, match, _ in query:iter_matches(node, 0) do
+    while node do
+      for _, match, _ in query:iter_matches(node, bufnr) do
         local opening_match, closing_match
         for id, opening_or_closing_match in pairs(match) do
           local name = query.captures[id]
+
           if name == 'opening' then
             opening_match = opening_or_closing_match
           elseif name == 'closing' then
@@ -131,39 +118,83 @@ local try_add_highlight = function()
           end
         end
 
-        if is_range_between_nodes(cursor_range, opening_match, closing_match) then
-          add_highlight(opening_match, closing_match)
-          return
+        local opening_start_row, opening_start_col, opening_end_row, opening_end_col = opening_match:range()
+        local closing_start_row, closing_start_col, closing_end_row, closing_end_col = closing_match:range()
+
+        local mocked_node = {
+          range = function (_, _)
+            return opening_start_row, opening_start_col, closing_end_row, closing_end_col
+          end
+        }
+
+        -- Nodes can be mocked with tables in this API, so let's abuse it.
+        ---@diagnostic disable: missing-fields
+        if vim.treesitter.node_contains(mocked_node, cursor_range) then
+          vim.api.nvim_buf_set_extmark(bufnr, ns, opening_start_row, opening_start_col, {
+            id = 1,
+            end_row = opening_end_row,
+            end_col = opening_end_col,
+            hl_group = 'MatchParen',
+            hl_mode = 'combine',
+          })
+
+          vim.api.nvim_buf_set_extmark(bufnr, ns, closing_start_row, closing_start_col, {
+            id = 2,
+            end_row = closing_end_row,
+            end_col = closing_end_col,
+            hl_group = 'MatchParen',
+            hl_mode = 'combine',
+          })
+
+          return true
         end
       end
 
-      ::next_parent::
       node = node:parent()
     end
   end
 
-  remove_highlight()
+  return false
 end
 
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   group = augroup,
   desc = 'Set up showpairs for the buffer',
   callback = function(event)
-    local ok, _ = pcall(vim.treesitter.get_parser)
+    local ok, parser = pcall(vim.treesitter.get_parser, event.buf)
     if not ok then
       return
     end
 
+    -- Register callbacks for each added language tree to cache the queries,
+    -- doing it on every CursorMoved event is feasible but some parsers like
+    -- markdown seem to struggle.
+    parser:register_cbs({
+      on_child_removed = invalidate_tree_queries,
+      on_child_added = cache_tree_queries,
+    })
+
+    -- Perform an initial pass to cache the queries.
+    parser:for_each_tree(function(_, tree)
+      cache_tree_queries(tree)
+    end)
+
     vim.api.nvim_create_autocmd('BufLeave', {
       group = augroup,
       buffer = event.buf,
-      callback = remove_highlight
+      callback = function()
+        remove_highlight(event.buf)
+      end,
     })
 
     vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
       group = augroup,
       buffer = event.buf,
-      callback = try_add_highlight,
+      callback = function()
+        if not add_highlight(event.buf) then
+          remove_highlight(event.buf)
+        end
+      end,
     })
   end,
 })
