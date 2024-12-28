@@ -125,8 +125,9 @@
     picard
     prusa-slicer
     pt-p300bt-labelmaker
-    sonic-lineup
-    sonic-visualiser
+    # broken since fc9c33366b98237cc759cdd90ef6058f5a1cb9dd due to `libfishsound` not compiling.
+    # sonic-lineup
+    # sonic-visualiser
     via
   ];
 
