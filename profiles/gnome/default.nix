@@ -9,9 +9,7 @@
   ];
 
   nixpkgs.overlays = [
-    self.overlays.f3d-assimp
     self.overlays.f3d-interactive
-    self.overlays.f3d-occt
   ];
 
   xdg.terminal-exec = {
