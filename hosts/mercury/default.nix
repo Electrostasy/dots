@@ -121,41 +121,14 @@
         };
       };
 
-      # Panel orientation detection does not work (is it even supported?), and
-      # hardware keyboard's state is not detected (folded and inactive/unfolded
-      # and active).
-      unl0kr = {
-        enable = true;
-
-        settings = {
-          general.animations = true;
-          theme = {
-            default = "pmos-dark";
-            alternative = "pmos-light";
-          };
-        };
-      };
-
       availableKernelModules = [
         "nvme"
         "usbhid"
         "xhci_pci"
       ];
-
-      kernelModules = [
-        # Required for unl0kr.
-        "evdev"
-
-        # Required for touchscreen support.
-        "hid_multitouch"
-        "i2c_hid_acpi"
-        "intel_lpss_pci"
-      ];
     };
 
-    # Graphics is seemingly FUBAR'd on this laptop since Linux 6.9-6.10, the only
-    # way we can get Intel or NVIDIA to work is to run an older kernel like 6.6.
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
+    kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
       # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
