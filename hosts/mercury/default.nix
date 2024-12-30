@@ -1,4 +1,4 @@
-{ config, pkgs, self, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -16,8 +16,6 @@
     hostPlatform = "x86_64-linux";
 
     allowUnfreePackages = [ "nvidia-x11" ];
-
-    overlays = [ self.overlays.unl0kr_3_update ];
   };
 
   sops = {
