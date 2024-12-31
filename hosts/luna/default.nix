@@ -98,12 +98,15 @@
       options = [ "umask=0077" ];
     };
 
+    # Filesystem creation command used:
+    # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/sd{a..e} -L array
     "/srv/nfs" = {
-      device = "/dev/disk/by-uuid/177e6dee-f31b-4b7c-842a-354433ac0d15";
-      fsType = "bcachefs";
+      device = "/dev/disk/by-label/array";
+      fsType = "btrfs";
       options = [
-        "compression=zstd"
-        "replicas=3"
+        "subvol=nfs"
+        "compress-force=zstd:3"
+        "noatime"
       ];
     };
   };
@@ -112,6 +115,13 @@
 
   services = {
     rpcbind.enable = lib.mkForce false; # not needed for NFSv4.
+
+    btrfs.autoScrub = {
+      enable = true;
+
+      interval = "monthly";
+      fileSystems = [ "/srv/nfs" ];
+    };
 
     nfs = {
       server = {
