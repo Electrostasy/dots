@@ -1,10 +1,18 @@
 { config, pkgs, modulesPath, ... }:
 
 {
-  imports = [ "${modulesPath}/image/repart.nix" ];
+  imports = [
+    "${modulesPath}/image/repart.nix"
+    "${modulesPath}/image/file-options.nix"
+  ];
+
+  image = {
+    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    extension = "raw";
+  };
 
   image.repart = {
-    name = "${config.networking.hostName}-image-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    name = config.image.baseName;
 
     partitions = {
       "esp" = {

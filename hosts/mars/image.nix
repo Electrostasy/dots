@@ -1,17 +1,26 @@
-{ config, lib, modulesPath, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
-  # We cannot use the `image.repart` module here, because systemd-repart does
-  # not support setting the GPT table length or adding holes in the GPT table.
-  # RK3588 expects u-boot to be present at offset 0x00008000, but the best
-  # we can do with systemd-repart is offset 0x00100000.
-  imports = [ "${modulesPath}/installer/sd-card/sd-image.nix" ];
+  imports = [
+    # We cannot use the `image.repart` module here, because systemd-repart does
+    # not support setting the GPT table length or adding holes in the GPT
+    # table. RK3588 expects u-boot to be present at offset 0x00008000, but the
+    # best we can do with systemd-repart is offset 0x00100000.
+    "${modulesPath}/installer/sd-card/sd-image.nix"
+    "${modulesPath}/image/file-options.nix"
+  ];
 
-  # `sd-image.nix` brings in `all-hardware.nix` which we do not need.
-  disabledModules = [ "${modulesPath}/profiles/all-hardware.nix" ];
+  hardware.enableAllHardware = lib.mkImageMediaOverride false;
+
+  image = {
+    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    extension = "img";
+  };
+
+  system.build.image = config.system.build.sdImage;
 
   sdImage = {
-    imageBaseName = "${config.networking.hostName}-sd-image";
+    imageBaseName = config.image.baseName;
     compressImage = false;
     storePaths = [ config.system.build.uboot ];
 

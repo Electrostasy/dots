@@ -10,6 +10,8 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
+  image.modules.raw = [ ./image.nix ];
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
 

@@ -88,7 +88,7 @@ section.
 > order to add, remove or change files:
 >
 > ```sh
-> nix run github:Electrostasy/dots#mountImage -- -i mars-sd-image*.img
+> nix run github:Electrostasy/dots#mountImage -- -i nixos-*.img
 > ```
 
 
@@ -103,10 +103,11 @@ interface for remote monitoring and management of the 3D printer.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command:
+The NixOS SD image to be flashed can be built using the following command
+(requires `aarch64-linux` platform):
 
 ```sh
-nix build github:Electrostasy/dots#deimosImage
+nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant raw
 ```
 
 
@@ -116,7 +117,7 @@ The NixOS SD image may be flashed to a selected microSD card using the following
 command:
 
 ```sh
-dd if=deimos-image*.img of=/dev/sda bs=1M status=progress oflag=direct
+dd if=nixos-deimos-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ```
 
 
@@ -131,10 +132,11 @@ Interceptor] carrier board, serving as Network Attached Storage.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command:
+The NixOS SD image to be flashed can be built using the following command
+(requires `aarch64-linux` platform):
 
 ```sh
-nix build github:Electrostasy/dots#lunaImage
+nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant raw
 ```
 
 
@@ -155,7 +157,7 @@ Board for flashing the CM4:
 5. Flash the image to it:
 
    ```sh
-   sudo dd if=luna-image*.img of=/dev/sda bs=1M status=progress oflag=direct
+   sudo dd if=nixos-luna-*.img of=/dev/sdX bs=1M status=progress oflag=direct
    ```
 
 6. Disconnect the micro USB cable from the host PC.
@@ -183,10 +185,10 @@ of externally over USB.
 ### Building the image
 
 The NixOS installer SD image to be flashed can be built using the following
-command:
+command (requires `aarch64-linux` platform):
 
 ```sh
-NIXPKGS_ALLOW_UNFREE=1 nix build --impure github:Electrostasy/dots#marsImage
+NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild --impure --flake github:Electrostasy/dots#mars build-image --image-variant raw
 ```
 
 
@@ -196,7 +198,7 @@ The NixOS installer SD image may be flashed to a selected microSD card or USB
 flash drive using the following command:
 
 ```sh
-dd if=mars-sd-image*.img of=/dev/sda bs=1M status=progress oflag=direct
+dd if=nixos-mars-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ```
 
 Then, when it is booted, we can write `u-boot` to SPI flash and install NixOS to
@@ -303,10 +305,11 @@ devices together.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command:
+The NixOS SD image to be flashed can be built using the following command
+(requires `aarch64-linux` platform):
 
 ```sh
-nix build github:Electrostasy/dots#phobosImage
+nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant raw
 ```
 
 
@@ -315,5 +318,5 @@ nix build github:Electrostasy/dots#phobosImage
 Flash the SD image to a selected microSD card using the following command:
 
 ```sh
-dd if=phobos-image*.img of=/dev/sda bs=1M status=progress oflag=direct
+dd if=nixos-phobos-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ```

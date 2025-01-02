@@ -14,6 +14,8 @@
     allowUnfreePackages = [ "rkbin" ];
   };
 
+  image.modules.raw = [ ./image.nix ];
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
 

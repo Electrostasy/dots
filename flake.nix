@@ -40,13 +40,6 @@
         directory = ./pkgs;
       });
 
-    packages = forEachSystem (system: {
-      deimosImage = (self.nixosConfigurations.deimos.extendModules { modules = [ ./hosts/deimos/image.nix ]; }).config.system.build.image-hybrid;
-      lunaImage = (self.nixosConfigurations.luna.extendModules { modules = [ ./hosts/luna/image.nix ]; }).config.system.build.image;
-      marsImage = (self.nixosConfigurations.mars.extendModules { modules = [ ./hosts/mars/image.nix ]; }).config.system.build.sdImage;
-      phobosImage = (self.nixosConfigurations.phobos.extendModules { modules = [ ./hosts/phobos/image.nix ]; }).config.system.build.image;
-    });
-
     apps = forEachSystem (system: {
       nvim = {
         type = "app";
@@ -99,5 +92,12 @@
           ];
       })
       (builtins.readDir ./hosts);
+
+    checks.aarch64-linux = {
+      deimosImage = self.outputs.nixosConfigurations.deimos.config.system.build.images.raw;
+      lunaImage = self.outputs.nixosConfigurations.luna.config.system.build.images.raw;
+      marsImage = self.outputs.nixosConfigurations.mars.config.system.build.images.raw;
+      phobosImage = self.outputs.nixosConfigurations.phobos.config.system.build.images.raw;
+    };
   };
 }

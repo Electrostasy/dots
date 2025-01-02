@@ -1,10 +1,18 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
-  imports = [ "${modulesPath}/image/repart.nix" ];
+  imports = [
+    "${modulesPath}/image/repart.nix"
+    "${modulesPath}/image/file-options.nix"
+  ];
+
+  image = {
+    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    extension = "raw";
+  };
 
   image.repart = {
-    name = "${config.networking.hostName}-image-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    name = config.image.baseName;
 
     partitions = {
       "esp" = {
@@ -84,11 +92,11 @@
   # Make an image with a hybrid MBR, as the Raspberry Pi 02w does not support
   # booting from GPT directly. Adapted to `sgdisk` from this forum post:
   # https://forums.raspberrypi.com/viewtopic.php?t=320299#p1920410
-  system.build.image-hybrid = config.system.build.image.overrideAttrs {
+  system.build.image = lib.mkOverride 999 (config.system.build.image.overrideAttrs {
     postFixup = ''
       ${pkgs.gptfdisk}/bin/sgdisk --typecode=1:0c01 --hybrid=1:EE $out/${config.image.repart.imageFile}
     '';
-  };
+  });
 
   systemd.repart = {
     enable = true; # expand the root filesystem on boot.
