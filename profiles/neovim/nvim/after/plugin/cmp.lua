@@ -27,13 +27,31 @@ local kind_icons = {
   TypeParameter = '',
 }
 
--- Flip highlight groups for completion item menu. Default is to have the item
--- kind highlighted a bright colour, but for this, we want the background to be
--- highlight bright instead.
-for kind, _ in pairs(kind_icons) do
-  local group_str = ('CmpItemKind%s'):format(kind)
-  local group = vim.api.nvim_get_hl(0, { name = group_str })
-  vim.api.nvim_set_hl(0, group_str, { fg = group.bg, bg = group.fg })
+-- Flip highlight groups for completion item menu. We need to start with the
+-- linked groups first in order to not double-flip them.
+do
+  local linked_groups = {}
+  for kind, _ in pairs(kind_icons) do
+    local group_str = ('CmpItemKind%s'):format(kind)
+    local group = vim.api.nvim_get_hl(0, { name = group_str })
+
+    if group.link then
+      table.insert(linked_groups, group_str)
+    end
+  end
+
+  for _, group_str in pairs(linked_groups) do
+    local group = vim.api.nvim_get_hl(0, { name = group_str, link = false })
+    vim.api.nvim_set_hl(0, group_str, { fg = group.bg, bg = group.fg })
+  end
+
+  for kind, _ in pairs(kind_icons) do
+    local group_str = ('CmpItemKind%s'):format(kind)
+    if not vim.tbl_contains(linked_groups, group_str) then
+      local group = vim.api.nvim_get_hl(0, { name = group_str })
+      vim.api.nvim_set_hl(0, group_str, { fg = group.bg, bg = group.fg })
+    end
+  end
 end
 
 local cmp = require('cmp')
