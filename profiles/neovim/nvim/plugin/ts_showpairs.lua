@@ -1,4 +1,4 @@
-if vim.g.loaded_showpairs then
+if vim.g.loaded_ts_showpairs then
   return
 end
 
@@ -199,4 +199,4 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   end,
 })
 
-vim.g.loaded_showpairs = true
+vim.g.loaded_ts_showpairs = true
