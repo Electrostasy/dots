@@ -89,6 +89,8 @@
           Format = "ext4";
           Label = "nixos";
           Minimize = "guess";
+
+          MakeDirectories = "/var/lib/sops-nix";
         };
       };
     };

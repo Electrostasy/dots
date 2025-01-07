@@ -13,14 +13,15 @@
   hardware.enableAllHardware = lib.mkImageMediaOverride false;
 
   image = {
-    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    baseName = "${config.sdImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
     extension = "img";
+    filePath = "sd-image/${config.image.baseName}.${config.image.extension}";
   };
 
   system.build.image = config.system.build.sdImage;
 
   sdImage = {
-    imageBaseName = config.image.baseName;
+    imageBaseName = "nixos-" + config.networking.hostName;
     compressImage = false;
     storePaths = [ config.system.build.uboot ];
 
@@ -30,6 +31,8 @@
     populateRootCommands = ''
       mkdir -p ./files/boot
       ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
+
+      mkdir -p ./files/var/lib/sops-nix
     '';
 
     postBuildCommands = ''

@@ -79,16 +79,12 @@ section.
 
 > [!IMPORTANT]
 >
-> Some of the following hosts can be pre-installed via generated images. In
-> order for NixOS activation to be successful, the `age` private key needs to be
-> inserted into the image at the expected location of
-> `/var/lib/sops-nix/keys.txt`.
->
-> A command is available to mount a partition and open a shell at its root in
-> order to add, remove or change files:
+> Some of the following hosts can have images built for them, however, in order
+> for NixOS activation to be successful, the `age` private key needs to be
+> copied into the image:
 >
 > ```sh
-> nix run github:Electrostasy/dots#mountImage -- -i nixos-*.img
+> systemd-dissect --copy-to nixos-* {,}/var/lib/sops-nix/keys.txt
 > ```
 
 
@@ -151,13 +147,13 @@ Board for flashing the CM4:
 4. Run `rpiboot` on the host PC to see eMMC storage as a block device:
 
    ```sh
-   sudo rpiboot
+   rpiboot
    ```
 
 5. Flash the image to it:
 
    ```sh
-   sudo dd if=nixos-luna-*.img of=/dev/sdX bs=1M status=progress oflag=direct
+   dd if=nixos-luna-*.img of=/dev/sdX bs=1M status=progress oflag=direct
    ```
 
 6. Disconnect the micro USB cable from the host PC.
