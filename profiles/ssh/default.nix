@@ -53,7 +53,7 @@ in
       # networks it can be a bottleneck.
       Compression no
 
-      Match exec "host %h | grep 'sol.${config.networking.domain}'"
+      Match exec "host %h | grep 'sol.tailnet.${config.networking.domain}'"
         Port 3101
         ${lib.concatStringsSep "\n" (lib.mapAttrsToList mkIdentityFile identities)}
 

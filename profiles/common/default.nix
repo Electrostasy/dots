@@ -87,15 +87,23 @@
     # Generate new keys on the host running headscale using:
     # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
     authKeyFile = config.sops.secrets.tailscaleKey.path;
-    extraUpFlags = [
-      "--login-server" "https://sol.${config.networking.domain}"
 
-      # https://tailscale.com/kb/1098/machine-names#renaming-a-machine-in-the-cli
+    extraDaemonFlags = [
+      # When the device exits, have the tailscale daemon itself execute
+      # `tailscale logout` to immediately remove ephemeral nodes:
+      # https://tailscale.com/kb/1111/ephemeral-nodes#can-an-ephemeral-device-remove-itself-from-my-tailnet
+      "--state=mem:"
+    ];
+
+    extraUpFlags = [
+      # Use the self-hosted headscale coordination server for tailscale.
+      "--login-server" "https://controlplane.${config.networking.domain}"
+
+      # Avoid using generated names for nodes of the same hostname.
       "--hostname" config.networking.hostName
 
-      # On shutdowns, the nodes remain in headscale even if they are ephemeral.
-      # Either a logout before shutdown, or a reauth on connect is necessary.
-      "--force-reauth"
+      # Avoid the warning for mentioning all non-default flags when changing
+      # settings with `tailscale up`.
       "--reset"
     ];
   };

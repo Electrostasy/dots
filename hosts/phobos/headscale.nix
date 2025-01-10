@@ -54,13 +54,17 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    virtualHosts."sol.${config.networking.domain}" = {
+    virtualHosts."controlplane.${config.networking.domain}" = {
       enableACME = true;
       forceSSL = true;
 
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${builtins.toString config.services.headscale.port}";
+        proxyPass = "http://" + config.services.headscale.settings.listen_addr;
         proxyWebsockets = true;
+        extraConfig = ''
+          proxy_redirect http:// https://;
+          proxy_buffering off;
+        '';
       };
     };
   };
@@ -73,11 +77,10 @@
       # $ headscale generate private-key
       private_key_path = config.sops.secrets.headscaleKey.path;
 
-      # Remove ephemeral nodes as soon as possible (1m5s is non-inclusive minimum).
-      ephemeral_node_inactivity_timeout = "1m6s";
+      server_url = "https://controlplane.${config.networking.domain}:443";
 
       dns = {
-        base_domain = "sol." + config.networking.domain;
+        base_domain = "sol.tailnet." + config.networking.domain;
         magic_dns = true;
       };
     };
