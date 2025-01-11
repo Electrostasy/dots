@@ -19,6 +19,8 @@ python3.pkgs.buildPythonApplication {
     (python3.pkgs.discordpy.overrideAttrs (oldAttrs: {
       version = "0-unstable-2024-12-01";
       src = oldAttrs.src.override {
+        # The original derivation uses a tag, but we need a specific commit.
+        tag = null;
         rev = "9806aeb83179d0d1e90d903e30db7e69e0d492e5";
         hash = "sha256-TpqtK2AuS1PE+lZh6bvrhaqowYKKj8l4cxmLDDKir4s=";
       };
