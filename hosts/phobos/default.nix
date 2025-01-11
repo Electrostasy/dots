@@ -36,6 +36,19 @@
     ];
   };
 
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
+    };
+  };
+
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/nixos";
