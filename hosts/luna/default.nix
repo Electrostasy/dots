@@ -33,6 +33,19 @@
     ];
   };
 
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
+    };
+  };
+
   hardware.deviceTree = {
     filter = "bcm2711-rpi-cm4-io.dtb";
     overlays = [
