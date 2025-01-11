@@ -13,15 +13,11 @@
   hardware.enableAllHardware = lib.mkImageMediaOverride false;
 
   image = {
-    baseName = "${config.sdImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
     extension = "img";
-    filePath = "sd-image/${config.image.baseName}.${config.image.extension}";
   };
 
-  system.build.image = config.system.build.sdImage;
-
   sdImage = {
-    imageBaseName = "nixos-" + config.networking.hostName;
     compressImage = false;
     storePaths = [ config.system.build.uboot ];
 
@@ -38,6 +34,11 @@
     postBuildCommands = ''
       dd if=${config.system.build.uboot}/idbloader.img of=$img seek=64 conv=notrunc
       dd if=${config.system.build.uboot}/u-boot.itb of=$img seek=16384 conv=notrunc
+
+      # TODO: Module changes made in #359345 seemingly did not account for sd-image directory?
+      mkdir -p $out/sd-card
+      mv $img $out/sd-card
+      rmdir $out/sd-image
     '';
   };
 
