@@ -137,8 +137,13 @@
     ];
 
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        consoleMode = "max";
+      };
+
       efi.canTouchEfiVariables = true;
+      timeout = 0; # show menu only while holding down a button.
     };
   };
 
