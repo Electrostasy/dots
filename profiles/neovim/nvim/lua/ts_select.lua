@@ -1,6 +1,6 @@
 local M = {}
 
-local _select_node = function(node)
+local select_node = function(node)
   -- If we were previously in V-Line or V-Block modes, this will make sure `gv`
   -- is run in Visual.
   if vim.fn.visualmode() ~= 'v' then
@@ -52,7 +52,7 @@ M.expand = function()
 
     if parent_start_byte < child_start_byte and parent_end_byte > child_end_byte then
       table.insert(parent_nodes, parent)
-      _select_node(parent)
+      select_node(parent)
       return
     end
 
@@ -70,7 +70,7 @@ M.contract = function()
     parent = parent_nodes[1]
   end
 
-  _select_node(parent)
+  select_node(parent)
 end
 
 return M

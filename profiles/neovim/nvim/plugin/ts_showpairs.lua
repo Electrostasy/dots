@@ -25,6 +25,13 @@ local symbol_pairs = {
   -- Lua literal string.
   -- C++ attribute specifier sequence.
   { '[[', ']]' },
+
+  -- bash process substitution.
+  { '<(', ')' },
+  { '>(', ')' },
+
+  -- Rust closure.
+  { '|', '|' },
 }
 
 local _query_cache = {}

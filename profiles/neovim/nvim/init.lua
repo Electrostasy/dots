@@ -165,6 +165,9 @@ vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
 
-local incremental_selection = require('incremental_selection')
-vim.keymap.set('v', '<Space>', incremental_selection.expand)
-vim.keymap.set('v', '<C-Space>', incremental_selection.contract)
+local ts_select = require('ts_select')
+vim.keymap.set('v', '<Space>', ts_select.expand)
+vim.keymap.set('v', '<C-Space>', ts_select.contract)
+
+local ts_sort = require('ts_sort')
+vim.keymap.set({ 'n', 'v' }, 'gs', ts_sort.sort_nodes_on_cursor)
