@@ -4,8 +4,7 @@
   environment.systemPackages = with pkgs.gnomeExtensions; [
     blur-my-shell
     desktop-cube
-    native-window-placement
-    panel-date-format
+    iso8601-ish-clock
     system-monitor
     tiling-shell
     unblank
@@ -44,8 +43,6 @@
         enable-overview-dragging = false;
         enable-panel-dragging = true;
       };
-
-      "org/gnome/shell/extensions/panel-date-format".format = "%Y-%m-%d %H:%M";
 
       "org/gnome/shell/extensions/tilingshell" = {
         enable-blur-snap-assistant = true;
