@@ -19,12 +19,26 @@
 
   boot.plymouth.enable = true;
 
-  services.xserver = {
-    desktopManager.gnome.enable = true;
-    displayManager.gdm = {
+  services = {
+    displayManager.autoLogin = {
       enable = true;
-      autoSuspend = false;
+      user = "electro";
     };
+
+    xserver = {
+      displayManager.gdm = {
+        enable = true;
+        autoSuspend = false;
+      };
+
+      desktopManager.gnome.enable = true;
+    };
+  };
+
+  # https://github.com/NixOS/nixpkgs/issues/103746
+  systemd.services = {
+    "getty@tty1".enable = false;
+    "autovt@tty1".enable = false;
   };
 
   # Do not turn on bluetooth on boot.
@@ -33,6 +47,9 @@
   users.users.electro.extraGroups = [
     "networkmanager" # don't ask password when connecting to networks.
   ];
+
+  # Log in if the user password matches the LUKS password.
+  security.pam.services.login.enableGnomeKeyring = true;
 
   environment = {
     persistence.state = {
