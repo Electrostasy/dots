@@ -4,18 +4,10 @@
   imports = [
     ../fonts
     ./debloat.nix
-    ./extensions.nix
     ./mimetypes.nix
   ];
 
-  nixpkgs.overlays = [
-    self.overlays.f3d-interactive
-  ];
-
-  xdg.terminal-exec = {
-    enable = true;
-    settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
-  };
+  nixpkgs.overlays = [ self.overlays.f3d-interactive ];
 
   boot.plymouth.enable = true;
 
@@ -35,13 +27,13 @@
     };
   };
 
+  # Required for autologin:
   # https://github.com/NixOS/nixpkgs/issues/103746
   systemd.services = {
     "getty@tty1".enable = false;
     "autovt@tty1".enable = false;
   };
 
-  # Do not turn on bluetooth on boot.
   hardware.bluetooth.powerOnBoot = false;
 
   users.users.electro.extraGroups = [
@@ -51,91 +43,101 @@
   # Log in if the user password matches the LUKS password.
   security.pam.services.login.enableGnomeKeyring = true;
 
-  environment = {
-    persistence.state = {
-      directories = [
-        # Contains paired devices which are convenient to persist.
-        "/var/lib/bluetooth"
+  xdg.terminal-exec = {
+    enable = true;
+    settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
+  };
+
+  environment.persistence.state = {
+    directories = [
+      # Contains paired devices which are convenient to persist.
+      "/var/lib/bluetooth"
+    ];
+
+    users.electro = {
+      files = [
+        # Multi-monitor configuration.
+        ".config/monitors.xml"
       ];
 
-      users.electro = {
-        files = [
-          # Multi-monitor configuration.
-          ".config/monitors.xml"
-        ];
+      directories = [
+        ".cache/fontconfig"
+        ".cache/tracker3"
 
-        directories = [
-          ".cache/fontconfig"
-          ".cache/tracker3"
+        # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
+        ".cache/thumbnails/large"
+        ".cache/thumbnails/normal"
+        ".cache/thumbnails/x-large"
+        ".cache/thumbnails/xx-large"
+        ".cache/thumbnails/fail"
 
-          # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
-          ".cache/thumbnails/large"
-          ".cache/thumbnails/normal"
-          ".cache/thumbnails/x-large"
-          ".cache/thumbnails/xx-large"
-          ".cache/thumbnails/fail"
-
-          ".cache/keepassxc"
-          ".config/keepassxc"
-        ];
-      };
+        ".cache/keepassxc"
+        ".config/keepassxc"
+      ];
     };
-
-    sessionVariables.GTK_THEME = "adw-gtk3-dark";
-
-    systemPackages = with pkgs; [
-      adw-gtk3
-      morewaita-icon-theme
-
-      # Nautilus extensions.
-      nautilus-python
-      nautilus-amberol
-      nautilus-open-any-terminal
-      nautilus-vimv
-
-      # Thumbnailers.
-      ffmpegthumbnailer
-
-      # Graphical programs.
-      amberol
-      exhibit
-      eyedropper
-      fractal
-      freerdp
-      keepassxc
-      (makeAutostartItem { name = "org.keepassxc.KeePassXC"; package = keepassxc; })
-      papers
-      ptyxis
-      resources
-      warp
-
-      # CLI utilities.
-      wl-clipboard
-
-      (makeAutostartItem {
-        name = "random-wallpaper";
-        package = makeDesktopItem {
-          name = "random-wallpaper";
-          desktopName = "Select a random wallpaper on startup";
-          categories = [ "Utility" ];
-          noDisplay = true;
-          terminal = false;
-          type = "Application";
-          exec = lib.getExe (writeShellApplication {
-            name = "random-wallpaper";
-            runtimeInputs = [ xdg-user-dirs fd ];
-
-            text = ''
-              wallpaper=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$(xdg-user-dir PICTURES)/wallpapers" | shuf -n 1)
-              for key in background/picture-uri{,-dark} screensaver/picture-uri; do
-                dconf write "/org/gnome/desktop/$key" "'file://$wallpaper'"
-              done
-            '';
-          });
-        };
-      })
-    ];
   };
+
+  environment.systemPackages = with pkgs; [
+    amberol
+    exhibit
+    eyedropper
+    ffmpegthumbnailer
+    fractal
+    freerdp
+    keepassxc
+    nautilus-amberol
+    nautilus-open-any-terminal
+    nautilus-python
+    nautilus-vimv
+    papers
+    ptyxis
+    resources
+    wl-clipboard
+
+    (makeAutostartItem {
+      name = "random-wallpaper";
+      package = makeDesktopItem {
+        name = "random-wallpaper";
+        desktopName = "Select a random wallpaper on startup";
+        categories = [ "Utility" ];
+        noDisplay = true;
+        terminal = false;
+        type = "Application";
+        exec = lib.getExe (writeShellApplication {
+          name = "random-wallpaper";
+          runtimeInputs = [ xdg-user-dirs fd ];
+
+          text = ''
+            wallpaper=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$(xdg-user-dir PICTURES)/wallpapers" | shuf -n 1)
+            for key in background/picture-uri{,-dark} screensaver/picture-uri; do
+              dconf write "/org/gnome/desktop/$key" "'file://$wallpaper'"
+            done
+          '';
+        });
+      };
+    })
+
+    adw-gtk3
+    morewaita-icon-theme
+    (pkgs.runCommandLocal "electrostasy-shell-theme" { } ''
+      install -D ${./gnome-shell.css} $out/share/themes/electrostasy/gnome-shell/gnome-shell.css
+    '')
+
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.desktop-cube
+    gnomeExtensions.iso8601-ish-clock
+    gnomeExtensions.system-monitor
+    (gnomeExtensions.tiling-shell.overrideAttrs (finalAttrs: {
+      version = "48";
+      src = pkgs.fetchzip {
+        url = "https://extensions.gnome.org/extension-data/tilingshellferrarodomenico.com.v${finalAttrs.version}.shell-extension.zip";
+        hash = "sha256-tnJm6IPVZ+xRPTfd0qDgdmDtmXf73l79WquF7lQ6ya8=";
+        stripRoot = false;
+      };
+    }))
+    gnomeExtensions.unblank
+    gnomeExtensions.user-themes
+  ];
 
   programs.dconf.profiles = {
     gdm.databases = [{
@@ -156,6 +158,7 @@
         "org/gtk/gtk4/settings/debug".inspector-warning = false;
 
         "org/gnome/desktop/calendar".show-weekdate = true;
+
         "org/gnome/desktop/input-sources".sources = [
           (mkTuple [ "xkb" "us" ])
           (mkTuple [ "xkb" "lt" ])
@@ -164,6 +167,7 @@
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
           gtk-enable-primary-paste = false;
+          gtk-theme = "adw-gtk3-dark";
           icon-theme = "MoreWaita";
           monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
@@ -174,26 +178,31 @@
           use-generic-terminal-name = true;
         };
 
-        "org/gnome/Ptyxis" = {
-          new-tab-position = "next";
-          restore-session = false;
-          profile-uuids = [ "6b79e535da7cbdbf6aaf249a66a71bb1" ];
-          default-profile-uuid = "6b79e535da7cbdbf6aaf249a66a71bb1";
-        };
-
         "org/gnome/Ptyxis/Shortcuts".close-tab = "<Shift><Control>w";
 
-        "org/gnome/Ptyxis/Profiles/6b79e535da7cbdbf6aaf249a66a71bb1" = {
-          palette = lib.optionalString config.programs.neovim.enable "poimandres";
+        "org/gnome/Ptyxis" = {
+          default-profile-uuid = "6b79e535da7cbdbf6aaf249a66a71bb1";
+          new-tab-position = "next";
+          profile-uuids = [ "6b79e535da7cbdbf6aaf249a66a71bb1" ];
+          restore-session = false;
         };
 
+        "org/gnome/Ptyxis/Profiles/6b79e535da7cbdbf6aaf249a66a71bb1".palette = "poimandres";
+
         "org/gnome/desktop/media-handling".automount = false;
+
         "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
+
         "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
+
         "org/gnome/desktop/privacy".remember-recent-files = false;
+
         "org/gnome/desktop/screensaver".lock-enabled = false;
+
         "org/gnome/desktop/session".idle-delay = mkUint32 0;
+
         "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
+
         "org/gnome/mutter".experimental-features = [
           "scale-monitor-framebuffer"
           "variable-refresh-rate"
@@ -207,13 +216,13 @@
         };
 
         "org/gnome/nautilus/preferences" = {
-          default-folder-viewer = "list-view";
           date-time-format = "detailed";
+          default-folder-viewer = "list-view";
         };
 
         "org/gnome/nautilus/list-view" = {
-          default-zoom-level = "small";
           default-visible-columns = [ "name" "size" "detailed_type" "date_modified" ];
+          default-zoom-level = "small";
           use-tree-view = true;
         };
 
@@ -223,15 +232,7 @@
           view-type = "list";
         };
 
-        # Hidden/background programs only show up if they are flatpaks,
-        # so disable background play for now.
-        "io/bassi/Amberol".background-play = false;
-
-        "org/gnome/settings-daemon/plugins/media-keys" = {
-          screenreader = mkEmptyArray type.string;
-          magnifier = mkEmptyArray type.string;
-          calculator = [ "<Super>c" ];
-        };
+        "org/gnome/settings-daemon/plugins/media-keys".home = [ "<Super>e" ];
 
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
@@ -239,42 +240,41 @@
           name = "Terminal";
         };
 
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-          binding = "<Super>e";
-          command = "/usr/bin/env nautilus";
-          name = "File Manager";
-        };
-
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-          binding = "<Super>k";
-          command = "/usr/bin/env keepassxc";
-          name = "Password Manager";
-        };
-
         # This is necessary for some reason, or the above custom-keybindings don't work.
         "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
         ];
 
         "org/gnome/desktop/wm/keybindings" = {
-          activate-window-menu = [ "Menu" ];
           close = [ "<Shift><Super>w" ];
           move-to-workspace-left = [ "<Control><Super>a" ];
           move-to-workspace-right = [ "<Control><Super>d" ];
-          toggle-on-all-workspaces = [ "<Control><Super>s" ];
-          panel-run-dialog = [ "<Alt>space" ];
+          panel-run-dialog = [ "<Super><Alt>space" ];
           switch-input-source = [ "<Alt>Shift_L" ]; # https://unix.stackexchange.com/a/436347
           switch-input-source-backward = mkEmptyArray type.string;
           switch-to-workspace-1 = [ "<Super>1" ];
           switch-to-workspace-2 = [ "<Super>2" ];
           switch-to-workspace-3 = [ "<Super>3" ];
           switch-to-workspace-4 = [ "<Super>4" ];
-          switch-to-workspace-left = [ "<Shift><Super>a" ];
-          switch-to-workspace-right = [ "<Shift><Super>d" ];
+          switch-to-workspace-left = [ "<Super>a" ];
+          switch-to-workspace-right = [ "<Super>d" ];
           toggle-fullscreen = [ "<Shift><Super>f" ];
           toggle-maximized = [ "<Super>f" ];
+          toggle-on-all-workspaces = [ "<Control><Super>s" ];
+        };
+
+        "org/gnome/shell" = {
+          enabled-extensions =
+            builtins.map
+              (lib.getAttr "extensionUuid")
+              (lib.filter (lib.hasAttr "extensionUuid") config.environment.systemPackages);
+
+          favorite-apps = [
+            "org.keepassxc.KeePassXC.desktop"
+            "org.gnome.Fractal.desktop"
+            (lib.optionalString config.programs.firefox.enable "firefox.desktop")
+            (lib.optionalString config.programs.steam.enable "steam.desktop")
+          ];
         };
 
         "org/gnome/shell/keybindings" = {
@@ -288,13 +288,14 @@
           toggle-quick-settings = mkEmptyArray type.string;
 
           screenshot = mkEmptyArray type.string;
-          show-screen-recording-ui = mkEmptyArray type.string;
+          show-screen-recording-ui = [ "<Shift><Super>r" ];
           show-screenshot-ui = [ "<Shift><Super>s" ];
         };
 
         # Weather shown in the panel's date/notification menu.
         "org/gnome/shell/weather" = {
           automatic-location = false;
+
           # Locations are based on data/Locations.xml in the GNOME/libgweather repository.
           locations =
             let
@@ -321,6 +322,60 @@
 
         # Weather shown in GNOME Weather program.
         "org/gnome/Weather".locations = self."org/gnome/shell/weather".locations;
+
+        "org/gnome/shell/extensions/user-theme".name = "electrostasy";
+
+        "org/gnome/shell/extensions/desktop-cube" = {
+          last-first-gap = false;
+          mouse-rotation-speed = 1.0;
+        };
+
+        "org/gnome/shell/extensions/tilingshell" = {
+          enable-blur-snap-assistant = true;
+          enable-snap-assist = false;
+          enable-tiling-system-windows-suggestions = true;
+          inner-gaps = mkUint32 0;
+          outer-gaps = mkUint32 0;
+
+          layouts-json = builtins.toJSON [
+            {
+              id = "1/1 H-Split";
+              tiles = [
+                { groups = [ 1 ]; height = 1; width = 0.5; x = 0; y = 0; }
+                { groups = [ 1 ]; height = 1; width = 0.5; x = 0.5; y = 0; }
+              ];
+            }
+            {
+              id = "1/1 V-Split";
+              tiles = [
+                { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0; }
+                { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0.5; }
+              ];
+            }
+            {
+              id = "1/2 H-Split";
+              tiles = [
+                { groups = [ 1 ]; height = 1; width = 0.33; x = 0; y = 0; }
+                { groups = [ 1 ]; height = 1; width = 0.67; x = 0.33; y = 0; }
+              ];
+            }
+            {
+              id = "2/1 H-Split";
+              tiles = [
+                { groups = [ 1 ]; height = 1; width = 0.67; x = 0; y = 0; }
+                { groups = [ 1 ]; height = 1; width = 0.33; x = 0.67; y = 0; }
+              ];
+            }
+            {
+              id = "1/1/1 H-Split";
+              tiles = [
+                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0; y = 0; }
+                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.333333; y = 0; }
+                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.666666; y = 0; }
+              ];
+            }
+          ];
+        };
       });
     }];
   };
@@ -334,61 +389,44 @@
       "${config.environment.persistence.state.persistentStoragePath}/home/electro/.config/monitors.xml";
   };
 
+  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
+  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
+  systemd.user.tmpfiles.rules = [
+    "L+ %h/.config/gtk-4.0/gtk.css - - - - ${./gtk.css}"
+    "L+ %h/.local/share/org.gnome.Ptyxis/palettes/poimandres.palette - - - - ${
+      (pkgs.formats.ini { }).generate "poimandres.palette" {
+        Palette = {
+          Name = "poimandres";
+
+          Background = "#1b1e28";
+          Foreground = "#e4f0fb";
+          Cursor = "#ffffff";
+
+          Color0 = "#171922"; # #000000 "black"
+          Color1 = "#d0679d"; # #800000 "red"
+          Color2 = "#5fb3a1"; # #008000 "green"
+          Color3 = "#42675a"; # #808000 "yellow"
+          Color4 = "#7390aa"; # #000080 "blue"
+          Color5 = "#767c9d"; # #800080 "magenta"
+          Color6 = "#91b4d5"; # #008080 "cyan"
+          Color7 = "#303340"; # #c0c0c0 "white"
+
+          Color8 = "#506477"; # #808080 "brblack"
+          Color9 = "#fcc5e9"; # #ff0000 "brred"
+          Color10 = "#5de4c7"; # #00ff00 "brgreen"
+          Color11 = "#fffac2"; # #ffff00 "bryellow"
+          Color12 = "#add7ff"; # #0000ff "brblue"
+          Color13 = "#fae4fc"; # #ff00ff "brmagenta"
+          Color14 = "#89ddff"; # #00ffff "brcyan"
+          Color15 = "#e4f0fb"; # #ffffff "brwhite"
+        };
+      }
+    }"
+  ];
+
   programs.firefox.autoConfig = ''
     pref("widget.gtk.non-native-titlebar-buttons.enabled", false);
     pref("widget.gtk.rounded-bottom-corners.enabled", true);
     pref("widget.use-xdg-desktop-portal.file-picker", 1);
-  '';
-
-  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
-  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
-  systemd.user.tmpfiles.rules = [
-    # Setup terminal emulator colours based on the Neovim theme.
-    (lib.optionalString
-      config.programs.neovim.enable
-      "L+ %h/.local/share/org.gnome.Ptyxis/palettes/poimandres.palette - - - - ${
-        (pkgs.formats.ini { }).generate "poimandres.palette" {
-          Palette = {
-            Name = "poimandres";
-
-            Background = "#1b1e28";
-            Foreground = "#e4f0fb";
-            Cursor = "#ffffff";
-
-            Color0 = "#171922"; # #000000
-            Color1 = "#d0679d"; # #800000
-            Color2 = "#5fb3a1"; # #008000
-            Color3 = "#42675a"; # #808000
-            Color4 = "#7390aa"; # #000080
-            Color5 = "#767c9d"; # #800080
-            Color6 = "#91b4d5"; # #008080
-            Color7 = "#303340"; # #c0c0c0
-
-            Color8 = "#506477"; # #808080
-            Color9 = "#fcc5e9"; # #ff0000
-            Color10 = "#5de4c7"; # #00ff00
-            Color11 = "#fffac2"; # #ffff00
-            Color12 = "#add7ff"; # #0000ff
-            Color13 = "#fae4fc"; # #ff00ff
-            Color14 = "#89ddff"; # #00ffff
-            Color15 = "#e4f0fb"; # #ffffff
-          };
-        }
-      }")
-  ];
-
-  # Setup shell colours based on the Neovim theme.
-  programs.fish.interactiveShellInit = lib.optionalString config.programs.neovim.enable ''
-    set -e fish_color_cancel; set -Ux fish_color_cancel d0679d --reverse
-    set -e fish_color_command; set -Ux fish_color_command 89ddff
-    set -e fish_color_comment; set -Ux fish_color_comment 4b4f5c
-    set -e fish_color_cwd; set -Ux fish_color_cwd 5fb3a1
-    set -e fish_color_end; set -Ux fish_color_end 7390aa
-    set -e fish_color_error; set -Ux fish_color_error d0679d
-    set -e fish_color_operator; set -Ux fish_color_operator add7ff
-    set -e fish_color_param; set -Ux fish_color_param a6accd
-    set -e fish_color_quote; set -Ux fish_color_quote fffac2
-    set -e fish_color_redirection; set -Ux fish_color_redirection 7390aa
-    set -e fish_color_valid_path; set -Ux fish_color_valid_path 5fb3a1 --underline
   '';
 }

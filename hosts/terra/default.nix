@@ -114,8 +114,7 @@
 
   programs.dconf.profiles.user.databases = [{
     settings."org/gnome/shell/extensions/tilingshell".selected-layouts = [
-      "1/1 V-Split"
-      "1/1 H-Split"
+      [ "1/1 V-Split" "1/1 H-Split" ]
     ];
   }];
 

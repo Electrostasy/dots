@@ -51,31 +51,30 @@
   };
 
   users.defaultUserShell = pkgs.fish;
+
   programs.fish = {
     enable = true;
 
     interactiveShellInit = /* fish */ ''
       set -g fish_greeting # Disable greeting.
 
-      # The reason why this is not in programs.fish.shellAliases is that $argv
-      # is automatically provided before the end of the function, which makes
-      # sense for declaring aliases, but this leads to less workarounds. However,
-      # we cannot put this in ./functions/ls.fish, because then the built-in `ls`
-      # alias takes precedence for some reason.
       function ls --wraps eza
         set -l flags (path filter -v -- $argv | string match -rg '^\./(-.*)$')
         set -l entries (path normalize -- $argv | string match -rv '^\./' | path resolve; or pwd)
         command eza -TL1 --group-directories-first --icons=auto $flags $entries
       end
 
-      # Syntax highlighting seems to be disabled under some terminal emulators.
-      # Enforce default theme explicitly.
-      set -l theme "fish default"
-      fish_config theme choose $theme
-
-      # The above will not export the theme colour variables to functions and
-      # scripts, which is why the following is used to export the theme variables.
-      fish_config theme dump $theme | while read -l line; echo "set -Ux $line"; end | source
+      set -e fish_color_cancel; set -Ux fish_color_cancel red --reverse
+      set -e fish_color_command; set -Ux fish_color_command brcyan
+      set -e fish_color_comment; set -Ux fish_color_comment white
+      set -e fish_color_cwd; set -Ux fish_color_cwd green
+      set -e fish_color_end; set -Ux fish_color_end blue
+      set -e fish_color_error; set -Ux fish_color_error red
+      set -e fish_color_operator; set -Ux fish_color_operator brblue
+      set -e fish_color_param; set -Ux fish_color_param cyan
+      set -e fish_color_quote; set -Ux fish_color_quote bryellow
+      set -e fish_color_redirection; set -Ux fish_color_redirection blue
+      set -e fish_color_valid_path; set -Ux fish_color_valid_path green --underline
     '';
   };
 }
