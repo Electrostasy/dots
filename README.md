@@ -271,23 +271,9 @@ git clone https://github.com/Electrostasy/dots /mnt/etc/nixos
 nixos-install --flake /mnt/etc/nixos#mercury --root /mnt --no-root-passwd
 ```
 
-Due to [`system.etc.overlay`], the installation currently will fail if it is
-enabled. As a workaround, the following commands need to be run before
-running `nixos-install` again:
-
-```sh
-mkdir /mnt/tmp
-mount -o bind /tmp /mnt/tmp
-mount -o bind /proc /mnt/proc
-mount -o bind /sys /mnt/sys
-mount -o bind /dev /mnt/dev
-cp /etc/os-release /mnt/etc/
-```
-
 [terra]: ./hosts/terra/default.nix
 [mercury]: ./hosts/mercury/default.nix
 [erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
-[`system.etc.overlay`]: https://github.com/NixOS/nixpkgs/issues/319533
 
 
 ## phobos
