@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   mkOptionsWith = extraOptions: [
@@ -116,6 +116,13 @@ in
 
     gamescope = {
       enable = true;
+
+      # Fix frametime issues that appear after 15-30 min. playtime for resource
+      # intensive games:
+      # https://github.com/ValveSoftware/gamescope/issues/163
+      # https://github.com/ValveSoftware/gamescope/issues/697#issuecomment-2564875728
+      env.LD_PRELOAD = "''";
+      args = lib.mkAfter [ "env LD_PRELOAD=$LD_PRELOAD" ];
 
       # https://github.com/NixOS/nixpkgs/issues/217119
       capSysNice = false;
