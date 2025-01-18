@@ -1,10 +1,10 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   environment = {
     systemPackages = with pkgs; [
       aria2
-      bottom
+      btop
       eza
       fd
       file
@@ -16,9 +16,6 @@
       tealdeer
       vimv-rs
 
-      # TODO: fish seems to be unable to load functions placed in /etc/fish/functions
-      # without adding it to fish_function_path. We can add them to ~/.config/fish/functions
-      # though.
       (pkgs.runCommandLocal "install-fish-functions" {} ''
         install -Dm0444 -t $out/share/fish/vendor_functions.d ${./functions}/*
       '')
@@ -27,7 +24,6 @@
     shellAliases = {
       a2c = "aria2c";
       wh = "wormhole-rs";
-      ts = lib.mkIf config.services.tailscale.enable "tailscale";
     };
 
     persistence.state.users.electro.directories = [

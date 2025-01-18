@@ -13,10 +13,6 @@
     overlays = [ self.overlays.default ];
   };
 
-  sops.secrets = lib.mkIf config.services.tailscale.enable {
-    tailscaleKey.sopsFile = ../../hosts/phobos/secrets.yaml;
-  };
-
   boot.tmp.useTmpfs = true;
 
   # Cannot mess with locales on WSL, so do not customize them there.
@@ -81,6 +77,15 @@
 
   security.sudo.wheelNeedsPassword = false;
 
+  sops.secrets = lib.mkIf config.services.tailscale.enable {
+    tailscaleKey.sopsFile = ../../hosts/phobos/secrets.yaml;
+  };
+
+  environment = lib.mkIf config.services.tailscale.enable {
+    persistence.state.directories = [ "/var/lib/tailscale" ];
+    shellAliases.ts = "tailscale";
+  };
+
   services.tailscale = {
     enable = lib.mkDefault true;
 
@@ -88,22 +93,12 @@
     # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
     authKeyFile = config.sops.secrets.tailscaleKey.path;
 
-    extraDaemonFlags = [
-      # When the device exits, have the tailscale daemon itself execute
-      # `tailscale logout` to immediately remove ephemeral nodes:
-      # https://tailscale.com/kb/1111/ephemeral-nodes#can-an-ephemeral-device-remove-itself-from-my-tailnet
-      "--state=mem:"
-    ];
-
     extraUpFlags = [
-      # Use the self-hosted headscale coordination server for tailscale.
+      # Use the self-hosted headscale coordination server.
       "--login-server" "https://controlplane.${config.networking.domain}"
 
-      # Avoid using generated names for nodes of the same hostname.
-      "--hostname" config.networking.hostName
-
-      # Avoid the warning for mentioning all non-default flags when changing
-      # settings with `tailscale up`.
+      # If `extraUpFlags` is changed, then we will not require manual
+      # intervention to add this flag to the `tailscale up` command anyway.
       "--reset"
     ];
   };
