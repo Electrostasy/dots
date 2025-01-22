@@ -127,14 +127,14 @@
     gnomeExtensions.desktop-cube
     gnomeExtensions.iso8601-ish-clock
     gnomeExtensions.system-monitor
-    (gnomeExtensions.tiling-shell.overrideAttrs (finalAttrs: {
-      version = "48";
+    (gnomeExtensions.tiling-shell.overrideAttrs {
+      version = "16.1";
       src = pkgs.fetchzip {
-        url = "https://extensions.gnome.org/extension-data/tilingshellferrarodomenico.com.v${finalAttrs.version}.shell-extension.zip";
-        hash = "sha256-tnJm6IPVZ+xRPTfd0qDgdmDtmXf73l79WquF7lQ6ya8=";
+        url = "https://github.com/domferr/tilingshell/releases/download/16.1/tilingshell@ferrarodomenico.com.zip";
+        hash = "sha256-AyZOmO8evUVkD1h/RZcEin9newavZWqdBZFMqKFx+ec=";
         stripRoot = false;
       };
-    }))
+    })
     gnomeExtensions.unblank
     gnomeExtensions.user-themes
   ];
