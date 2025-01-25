@@ -22,13 +22,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = linux.moduleBuildDependencies;
 
-  makeFlags = linux.makeFlags ++ [
+  makeFlags = linux.moduleMakeFlags ++ [
     "KERNELRELEASE=${linux.modDirVersion}"
     "KERNEL_DIR=${linux.dev}/lib/modules/${linux.modDirVersion}/build"
-    "INSTALL_MOD_PATH=$(out)"
   ];
 
   buildFlags = [ "modules" ];
+  installFlags = [ "INSTALL_MOD_PATH=${builtins.placeholder "out"}" ];
   installTargets = [ "modules_install" ];
 
   meta = {
