@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/hwmon/microchip,emc2301.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Microchip EMC230X family RPM fan controller
+
+maintainers:
+  - Mathew McBride <matt@traverse.com.au>
+
+description: |
+  The Microchip EMC230X family (formerly produced by SMSC) is a family
+  of fan controllers which can drive via a set PWM period or
+  to a target RPM speed. They are available in variants from 1 to 5
+  independent channels.
+
+  Product information:
+  https://www.microchip.com/en-us/product/EMC2301
+  https://www.microchip.com/en-us/product/EMC2302
+  https://www.microchip.com/en-us/product/EMC2303
+  https://www.microchip.com/en-us/product/EMC2305
+
+
+properties:
+  compatible:
+    enum:
+      - microchip,emc2301
+      - microchip,emc2302
+      - microchip,emc2303
+      - microchip,emc2305
+  reg:
+    maxItems: 1
+
+  "#address-cells": true
+
+  "#size-cells": true
+
+required:
+  - compatible
+  - reg
+
+patternProperties:
+  "fan@[0-9]+$":
+    type: object
+    description: Fan channel properties for use as a thermal cooling device
+
+    properties:
+      min-rpm:
+        description: Minimum fan RPM when used as a cooling device
+        maxItems: 1
+      max-rpm:
+        description: Maximum fan RPM when used as a cooling device
+        maxItems: 1
+      reg:
+        description: Channel number on EMC230X device the fan is attached to
+        maxItems: 1
+      "#cooling-cells":
+        const: 2
+    required:
+      - reg
+      - min-rpm
+      - max-rpm
+      - "#cooling-cells"
+additionalProperties: false
+
+examples:
+  - |
+    i2c {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        fanctrl@2f {
+            compatible = "microchip,emc2301";
+            reg = <0x2f>;
+
+            fan@0 {
+              min-rpm = /bits/ 16 <3500>;
+              max-rpm = /bits/ 16 <5000>;
+              reg = <0>;
+            }
+        };
+    };

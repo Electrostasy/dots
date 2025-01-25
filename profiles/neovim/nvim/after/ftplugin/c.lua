@@ -5,6 +5,7 @@ vim.lsp.start({
     'compile_commands.json',
     'compile_flags.txt',
     'configure.ac',
+    '.clangd',
     '.git',
   }),
 })
