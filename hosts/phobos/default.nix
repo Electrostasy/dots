@@ -12,7 +12,7 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
-  image.modules = lib.mkForce { raw = [ ./image.nix ]; };
+  image.modules = lib.mkForce { raw = ./image.nix; };
 
   sops = {
     defaultSopsFile = ./secrets.yaml;

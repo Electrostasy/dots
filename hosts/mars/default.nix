@@ -14,7 +14,7 @@
     allowUnfreePackages = [ "rkbin" ];
   };
 
-  image.modules = lib.mkForce { raw = [ ./image.nix ]; };
+  image.modules = lib.mkForce { raw = ./image.nix; };
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
