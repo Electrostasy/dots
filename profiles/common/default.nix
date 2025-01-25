@@ -125,6 +125,8 @@
     };
   };
 
+  system.rebuild.enableNg = true;
+
   nix = {
     package = pkgs.nixVersions.latest;
 
