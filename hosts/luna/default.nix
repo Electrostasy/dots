@@ -244,11 +244,12 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 2049 ];
+  networking.firewall = {
+    allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];
+    allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
+  };
 
   services = {
-    rpcbind.enable = lib.mkForce false; # not needed for NFSv4.
-
     btrfs.autoScrub = {
       enable = true;
 
@@ -259,15 +260,16 @@
     nfs = {
       server = {
         enable = true;
-        createMountPoints = true;
+
         exports = ''
-          /srv/nfs/ *.sol.${config.networking.domain}(rw,fsid=root,insecure)
+          /srv/nfs/ *.sol.tailnet.${config.networking.domain}(rw,fsid=root,insecure)
+          /srv/nfs/ 192.168.205.0/24(rw,fsid=0,insecure)
         '';
       };
 
       settings.nfsd = {
         vers2 = false;
-        vers3 = false;
+        vers3 = true; # needed for mounting by Windows clients.
       };
     };
   };
