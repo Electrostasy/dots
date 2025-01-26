@@ -32,6 +32,10 @@
       configfile = ./modconfig;
     };
 
+    extraModulePackages = [
+      (pkgs.emc230x.override { linux = config.boot.kernelPackages.kernel; })
+    ];
+
     kernelParams = [
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
@@ -71,13 +75,15 @@
     };
   };
 
+  # NOTE: If the device tree changes, it needs to be re-added into the /boot
+  # directory where the firmware lives:
+  # https://forums.raspberrypi.com/viewtopic.php?t=370304#p2227480
   hardware.deviceTree = {
     filter = "bcm2711-rpi-cm4-io.dtb";
+
     overlays = [
       {
-        # Cut down version of the Interceptor device tree in overlay form
-        # without support for the PoE boards.
-        name = "axzez-interceptor-overlay";
+        name = "usb3-overlay";
         dtsText = ''
           /dts-v1/;
           /plugin/;
@@ -89,36 +95,123 @@
           &xhci {
             status = "okay";
           };
+        '';
+      }
 
-          &gpio {
-            spi0_pins: spi0_pins {
-              brcm,pins = <0x28 0x29 0x2a>;
-              brcm,function = <0x03>;
-            };
+      # TODO: Driver probe fails.
+      # {
+      #   name = "rtc-overlay";
+      #   dtsText = ''
+      #     /dts-v1/;
+      #     /plugin/;
+      #
+      #     / {
+      #       compatible = "raspberrypi,4-compute-module", "brcm,bcm2711";
+      #     };
+      #
+      #     &i2c0_1 {
+      #       rtc@51 {
+      #         status = "disabled";
+      #       };
+      #
+      #       rtc@52 {
+      #         compatible = "microcrystal,rv3028";
+      #         reg = <0x52>;
+      #       };
+      #     };
+      #   '';
+      # }
 
-            spi0_cs_pins: spi0_cs_pins {
-              brcm,pins = <0x2b>;
-              brcm,function = <0x01>;
+      {
+        name = "fan-control-overlay";
+        dtsText = ''
+          /dts-v1/;
+          /plugin/;
+
+          #include <dt-bindings/thermal/thermal.h>
+
+          / {
+            compatible = "raspberrypi,4-compute-module", "brcm,bcm2711";
+          };
+
+          &i2c0_0 {
+            fan_controller: fan-controller@2e {
+              reg = <0x2e>;
+              compatible = "microchip,emc2305";
+              #address-cells = <1>;
+              #size-cells = <0>;
+
+              // RPM values taken from Noctua NF-A4x20 PWM specifications:
+              // https://noctua.at/en/nf-a4x20-pwm
+              fan0: fan@0 {
+                reg = <0>;
+                min-rpm = /bits/ 16 <1200>;
+                max-rpm = /bits/ 16 <5000>;
+                #cooling-cells = <2>;
+              };
             };
           };
 
-          &spi {
-            status = "okay";
-            pinctrl-names = "default";
-            pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
-            cs-gpios = <&gpio 0x2b 0x01>;
+          // These are the same trips and cooling-maps as in the Raspberry Pi
+          // downstream's bcm2712-rpi-5-b.dts.
+          &cpu_thermal {
+            trips {
+              cpu_tepid: cpu-tepid {
+                temperature = <50000>;
+                hysteresis = <2000>;
+                type = "active";
+              };
 
-            spidev@0 {
-              compatible = "jedec,spi-nor";
-              reg = <0x00>;
-              spi-max-frequency = <0x989680>;
+              cpu_warm: cpu-warm {
+                temperature = <60000>;
+                hysteresis = <2000>;
+                type = "active";
+              };
+
+              cpu_hot: cpu-hot {
+                temperature = <67500>;
+                hysteresis = <2000>;
+                type = "active";
+              };
+
+              cpu_vhot: cpu-vhot {
+                temperature = <75000>;
+                hysteresis = <2000>;
+                type = "active";
+              };
+
+              cpu_crit: cpu-crit {
+                temperature = <90000>;
+                hysteresis = <0>;
+                type = "critical";
+              };
             };
-          };
 
-          &i2c0 {
-            rv3028@52 {
-              compatible = "microcrystal,rv3028";
-              reg = <0x52>;
+            cooling-maps {
+              tepid {
+                trip = <&cpu_tepid>;
+                cooling-device = <&fan0 0 3>;
+              };
+
+              warm {
+                trip = <&cpu_warm>;
+                cooling-device = <&fan0 4 5>;
+              };
+
+              hot {
+                trip = <&cpu_hot>;
+                cooling-device = <&fan0 5 6>;
+              };
+
+              vhot {
+                trip = <&cpu_vhot>;
+                cooling-device = <&fan0 6 7>;
+              };
+
+              melt {
+                trip = <&cpu_crit>;
+                cooling-device = <&fan0 7 THERMAL_NO_LIMIT>;
+              };
             };
           };
         '';

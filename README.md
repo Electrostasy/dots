@@ -120,7 +120,7 @@ dd if=nixos-deimos-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ## luna
 
 The host [luna] is a Raspberry Pi Compute Module 4 (CM4) mounted to an [Axzez
-Interceptor] carrier board, serving as Network Attached Storage.
+Interceptor] carrier board v1.0, serving as Network Attached Storage.
 
 [luna]: ./hosts/luna/default.nix
 [Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
