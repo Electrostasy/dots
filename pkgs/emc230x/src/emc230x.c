@@ -70,6 +70,16 @@ static const struct i2c_device_id emc230x_ids[] = {
 
 MODULE_DEVICE_TABLE(i2c, emc230x_ids);
 
+static const struct of_device_id emc230x_dt_ids[] = {
+	{ .compatible = "microchip,emc2301" },
+	{ .compatible = "microchip,emc2302" },
+	{ .compatible = "microchip,emc2303" },
+	{ .compatible = "microchip,emc2305" },
+	{ /* sentinel */ }
+};
+
+MODULE_DEVICE_TABLE(of, emc230x_dt_ids);
+
 static int emc230x_show_fan_pwm(struct device *dev, int channel, long *val)
 {
 	struct emc230x_data *data = dev_get_drvdata(dev);
@@ -626,6 +636,7 @@ static struct i2c_driver emc230x_driver = {
 	.class = I2C_CLASS_HWMON,
 	.driver = {
 		.name = "emc230x",
+		.of_match_table = emc230x_dt_ids,
 	},
 	.probe = emc230x_probe,
 	.id_table = emc230x_ids,
