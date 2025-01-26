@@ -231,8 +231,8 @@
       options = [ "umask=0077" ];
     };
 
-    # Filesystem creation command used:
-    # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/sd{a..e} -L array
+    # Formatted from 5 disks using:
+    # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/disk/by-id/ata-ST18000NM003D-3DL103_* -L array
     "/srv/nfs" = {
       device = "/dev/disk/by-label/array";
       fsType = "btrfs";
