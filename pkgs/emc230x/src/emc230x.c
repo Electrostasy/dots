@@ -3,11 +3,12 @@
  * Microchip (formerly SMSC) EMC230X family RPM fan controller driver
  * For EMC2301/2/5 controllers
  * Copyright (C) 2021-2022 Traverse Technologies
+ * Copyright (C) 2025 Gediminas Valys <steamykins@gmail.com>
  */
 
 /*
  * This driver has two components:
- * - hwmon (read/write fan rpm values)
+ * - hwmon (read/write fan rpm/pwm values)
  * - thermal (set fan rpm speeds for cooling purposes)
  */
 
@@ -25,6 +26,8 @@
 #define EMC230X_FAN_STALL_STATUS_REG		0x25
 #define EMC230X_FAN_SPIN_FAIL_STATUS_REG	0x26
 #define EMC230X_FAN_DRIVE_FAIL_STATUS_REG	0x27
+#define EMC230X_FAN_PWM_MIN			0x00
+#define EMC230X_FAN_PWM_MAX			0xFF
 
 #define EMC230X_PWM_FAN_DRIVE_REG(channel)	(0x30 + (channel * 0x10))
 #define EMC230X_FAN_CONFIG_REG(channel)		(0x32 + (channel * 0x10))
@@ -66,6 +69,36 @@ static const struct i2c_device_id emc230x_ids[] = {
 };
 
 MODULE_DEVICE_TABLE(i2c, emc230x_ids);
+
+static int emc230x_show_fan_pwm(struct device *dev, int channel, long *val)
+{
+	struct emc230x_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->i2c_client;
+	int ret;
+
+	ret = i2c_smbus_read_byte_data(client, EMC230X_PWM_FAN_DRIVE_REG(channel));
+	if (ret < 0)
+		return ret;
+	*val = ret;
+
+	return ret;
+}
+
+static int emc230x_set_fan_pwm(struct device *dev, int channel, long val)
+{
+	struct emc230x_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->i2c_client;
+	int ret;
+
+	if (val < EMC230X_FAN_PWM_MIN || val > EMC230X_FAN_PWM_MAX)
+		return -EINVAL;
+
+	ret = i2c_smbus_write_byte_data(client, EMC230X_PWM_FAN_DRIVE_REG(channel), val);
+	if (ret < 0)
+		return ret;
+
+	return 0;
+}
 
 static int emc2301_read_fan_tach(struct device *dev,
 				 int channel,
@@ -228,9 +261,7 @@ static int emc230x_enable_rpm_control(struct device *dev,
 
 	/* If RPM drive not enabled, set PWM cycle (non-closed loop) to 100% */
 	if (!enable)
-		ret = i2c_smbus_write_byte_data(client,
-						EMC230X_PWM_FAN_DRIVE_REG(channel),
-						0xFF);
+		ret = emc230x_set_fan_pwm(dev, EMC230X_PWM_FAN_DRIVE_REG(channel), 0xFF);
 
 	return ret;
 };
@@ -318,11 +349,11 @@ static const struct hwmon_channel_info *emc2301_hwmon_info[] = {
 			   HWMON_F_INPUT | HWMON_F_FAULT | HWMON_F_TARGET,
 			   HWMON_F_INPUT | HWMON_F_FAULT | HWMON_F_TARGET),
 	HWMON_CHANNEL_INFO(pwm,
-			   HWMON_PWM_ENABLE,
-			   HWMON_PWM_ENABLE,
-			   HWMON_PWM_ENABLE,
-			   HWMON_PWM_ENABLE,
-			   HWMON_PWM_ENABLE),
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT),
 	NULL
 };
 
@@ -349,6 +380,8 @@ static umode_t emc230x_hwmon_is_visible(const void *data,
 	case hwmon_pwm:
 		switch (attr) {
 		case hwmon_pwm_enable:
+			return 0644;
+		case hwmon_pwm_input:
 			return 0644;
 		default:
 			return 0;
@@ -377,6 +410,8 @@ static int emc230x_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 		switch (attr) {
 		case hwmon_pwm_enable:
 			return emc230x_read_is_rpm_control(dev, channel, value);
+		case hwmon_pwm_input:
+			return emc230x_show_fan_pwm(dev, channel, value);
 		default:
 			return 0;
 		}
@@ -388,10 +423,26 @@ static int emc230x_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 static int emc230x_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
 			u32 attr, int channel, long value)
 {
-	if (type == hwmon_fan && attr == hwmon_fan_target)
-		return emc230x_set_fan_rpm(dev, channel, value);
-	else if (type == hwmon_pwm && attr == hwmon_pwm_enable)
-		return emc230x_write_rpm_control(dev, channel, value);
+	switch (type) {
+	case hwmon_fan:
+		switch (attr) {
+		case hwmon_fan_target:
+			return emc230x_set_fan_rpm(dev, channel, value);
+		default:
+			break;
+		}
+	case hwmon_pwm:
+		switch (attr) {
+		case hwmon_pwm_enable:
+			return emc230x_write_rpm_control(dev, channel, value);
+		case hwmon_pwm_input:
+			return emc230x_set_fan_pwm(dev, channel, value);
+		default:
+			break;
+		}
+	default:
+		break;
+	}
 
 	return -EINVAL;
 }
