@@ -26,11 +26,36 @@
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
-    kernelPackages = pkgs.linuxPackages_latest;
+    # To update the modconfig run: `ARCH=arm64 make oldconfig`
+    kernelPackages = pkgs.linuxPackages_custom {
+      inherit (pkgs.linuxPackages_latest.kernel) version src;
+      configfile = ./modconfig;
+    };
+
     kernelParams = [
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
     ];
+
+    initrd = {
+      includeDefaultModules = false;
+      availableKernelModules = [
+        "mmc_block" # required to boot from eMMC.
+        "usb-storage"
+        "xhci-hcd"
+      ];
+
+      systemd = {
+        # If our array cannot be mounted due to a failed disk or some other
+        # reason, we need a way to get in and fix it.
+        emergencyAccess = true;
+
+        # TPM is explicitly disabled in the kernel config, but the kernel build
+        # will fail due to missing `tpm-crb` kernel module unless we disable it
+        # in initrd too.
+        tpm2.enable = false;
+      };
+    };
   };
 
   nix = {
