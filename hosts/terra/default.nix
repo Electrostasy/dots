@@ -203,7 +203,9 @@
       directories = [
         ".config/FreeCAD"
         ".config/PrusaSlicer"
+        ".config/kicad"
         ".local/share/FreeCAD"
+        ".local/share/kicad"
         "Documents"
         "Downloads"
         "Pictures"
