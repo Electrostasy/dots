@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, self, ... }:
 
 {
   imports = [
@@ -14,7 +14,10 @@
     ./gaming.nix
   ];
 
-  nixpkgs.hostPlatform = "x86_64-linux";
+  nixpkgs = {
+    hostPlatform = "x86_64-linux";
+    overlays = [ self.overlays.sonic-visualiser-update ];
+  };
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
@@ -128,9 +131,8 @@
     picard
     prusa-slicer
     pt-p300bt-labelmaker
-    # broken since fc9c33366b98237cc759cdd90ef6058f5a1cb9dd due to `libfishsound` not compiling.
-    # sonic-lineup
-    # sonic-visualiser
+    sonic-lineup
+    sonic-visualiser
     via
   ];
 
