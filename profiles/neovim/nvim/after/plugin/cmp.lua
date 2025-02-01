@@ -87,7 +87,7 @@ cmp.setup({
   }),
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'path', option = { trailing_slash = true } },
+    { name = 'async_path', option = { trailing_slash = true } },
   },
   formatting = {
     expandable_indicator = true,

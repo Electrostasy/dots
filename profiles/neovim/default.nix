@@ -29,10 +29,10 @@
 
     plugins = with pkgs.vimPlugins; [
       # Completion engine and sources.
+      cmp-async-path
       cmp-buffer
       cmp-nvim-lsp
       cmp-nvim-lua
-      cmp-path
       cmp-under-comparator
       nvim-cmp
 
