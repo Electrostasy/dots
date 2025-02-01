@@ -20,7 +20,7 @@
     preStart = ''
       pushd "$STATE_DIRECTORY"
       if ! [ -f 'ggml-base.en.bin' ]; then
-        ${pkgs.openai-whisper-cpp}/bin/whisper-cpp-download-ggml-model base.en
+        ${pkgs.whisper-cpp}/bin/whisper-cpp-download-ggml-model base.en
       fi
       popd
     '';

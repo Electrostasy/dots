@@ -1,7 +1,7 @@
 { python3
 
 , ffmpeg
-, openai-whisper-cpp
+, whisper-cpp
 
 , lib
 }:
@@ -29,13 +29,13 @@ python3.pkgs.buildPythonApplication {
 
   buildInputs = [
     ffmpeg
-    openai-whisper-cpp
+    whisper-cpp
   ];
 
   makeWrapperArgs = [
     "--prefix PATH : ${lib.makeBinPath [
       ffmpeg
-      openai-whisper-cpp
+      whisper-cpp
     ]}"
   ];
 
