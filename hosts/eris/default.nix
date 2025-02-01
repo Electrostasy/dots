@@ -65,7 +65,6 @@
     unixtools.xxd
     untrunc-anthwlock # `untrunc`.
     xlsx2csv
-    xsv
   ];
 
   system.stateVersion = "24.11";
