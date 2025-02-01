@@ -339,43 +339,42 @@
 
           layouts-json = builtins.toJSON [
             {
-              id = "1/1 H-Split";
+              id = "50% Horizontal Split";
               tiles = [
                 { groups = [ 1 ]; height = 1; width = 0.5; x = 0; y = 0; }
                 { groups = [ 1 ]; height = 1; width = 0.5; x = 0.5; y = 0; }
               ];
             }
             {
-              id = "1/1 V-Split";
+              id = "50% Vertical Split";
               tiles = [
                 { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0; }
                 { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0.5; }
               ];
             }
             {
-              id = "1/2 H-Split";
-              tiles = [
-                { groups = [ 1 ]; height = 1; width = 0.33; x = 0; y = 0; }
-                { groups = [ 1 ]; height = 1; width = 0.67; x = 0.33; y = 0; }
-              ];
-            }
-            {
-              id = "2/1 H-Split";
-              tiles = [
-                { groups = [ 1 ]; height = 1; width = 0.67; x = 0; y = 0; }
-                { groups = [ 1 ]; height = 1; width = 0.33; x = 0.67; y = 0; }
-              ];
-            }
-            {
-              id = "1/1/1 H-Split";
+              id = "33% Horizontal Grid";
               tiles = [
                 { groups = [ 1 ]; height = 1; width = 0.333333; x = 0; y = 0; }
                 { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.333333; y = 0; }
                 { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.666666; y = 0; }
               ];
             }
+            {
+              id = "16.67% Grid";
+              tiles = [
+                { groups = [ 1 4 ]; height = 0.5; width = 0.333333; x = 0; y = 0; }
+                { groups = [ 2 3 1 ]; height = 0.5; width = 0.333333; x = 0.333333; y = 0; }
+                { groups = [ 5 2 ]; height = 0.5; width = 0.333333; x = 0.666666; y = 0; }
+                { groups = [ 3 2 1 ]; height = 0.5; width = 0.333333; x = 0.333333; y = 0.5; }
+                { groups = [ 4 1 ]; height = 0.5; width = 0.333333; x = 0; y = 0.5; }
+                { groups = [ 5 2 ]; height = 0.5; width = 0.333333; x = 0.666666; y = 0.5; }
+              ];
+            }
           ];
         };
+
+        "io/bassi/Amberol".background-play = false;
       });
     }];
   };
