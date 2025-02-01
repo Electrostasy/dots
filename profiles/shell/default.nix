@@ -11,6 +11,7 @@
       jq
       magic-wormhole-rs
       ouch
+      qrtool
       ripgrep
       rsync
       tealdeer
