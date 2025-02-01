@@ -33,7 +33,7 @@
     };
 
     extraModulePackages = [
-      (pkgs.emc230x.override { linux = config.boot.kernelPackages.kernel; })
+      (pkgs.emc230x.override { linuxPackages = config.boot.kernelPackages; })
     ];
 
     kernelParams = [

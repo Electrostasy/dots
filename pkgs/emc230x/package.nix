@@ -1,5 +1,5 @@
 { stdenv
-, linux
+, linuxPackages
 , lib
 }:
 
@@ -21,17 +21,21 @@
 # tree based probing, which I have added in this version of the driver for
 # personal use.
 
+let
+  inherit (linuxPackages) kernel kernelModuleMakeFlags;
+in
+
 stdenv.mkDerivation (finalAttrs: {
-  name = "emc230x-${finalAttrs.version}-${linux.version}";
+  name = "emc230x-${finalAttrs.version}-${kernel.version}";
   version = "0.1";
 
   src = ./src;
 
-  nativeBuildInputs = linux.moduleBuildDependencies;
+  nativeBuildInputs = kernel.moduleBuildDependencies;
 
-  makeFlags = linux.moduleMakeFlags ++ [
-    "KERNELRELEASE=${linux.modDirVersion}"
-    "KERNEL_DIR=${linux.dev}/lib/modules/${linux.modDirVersion}/build"
+  makeFlags = kernelModuleMakeFlags ++ [
+    "KERNELRELEASE=${kernel.modDirVersion}"
+    "KERNEL_DIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
 
   buildFlags = [ "modules" ];
