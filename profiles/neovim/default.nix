@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, self, ... }:
 
 {
+  nixpkgs.overlays = [ self.overlays.basedpyright-fix ];
+
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.user.tmpfiles.rules = [
