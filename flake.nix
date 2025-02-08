@@ -47,20 +47,22 @@
           let
             evaluatedModules = import "${nixpkgs}/nixos/lib/eval-config.nix" {
               inherit system;
+              specialArgs = { inherit self; };
+
               modules = [
                 self.outputs.nixosModules.neovim
                 ./profiles/neovim
                 ({ pkgs, ... }: {
-                  nixpkgs.overlays = [
-                    self.overlays.default # contains `pkgs.vimPlugins.hlargs-nvim`.
-                  ];
+                  nixpkgs.overlays = [ self.overlays.default ];
 
-                  # Add the Neovim configuration as a plugin.
                   programs.neovim.plugins = [(
                     pkgs.vimUtils.buildVimPlugin {
                       name = "lua-config";
                       src = ./profiles/neovim/nvim;
                       postInstall = "mv $out/init.lua $out/plugin/init.lua";
+
+                      # https://nixos.org/manual/nixpkgs/unstable/#testing-neovim-plugins-neovim-require-check
+                      doCheck = false;
                     }
                   )];
                 })
