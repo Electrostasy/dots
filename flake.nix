@@ -71,6 +71,16 @@
         meta.description = "Self-contained Neovim environment";
       };
 
+      diff-closures = {
+        type = "app";
+        program = nixpkgs.lib.getExe (nixpkgs.legacyPackages.${system}.writeShellApplication {
+          name = "diff-closures";
+          runtimeInputs = [ nixpkgs.legacyPackages.${system}.gnugrep ];
+          text = builtins.readFile ./scripts/diff-closures.sh;
+        });
+        meta.description = "List added/removed packages and version updates between two closures.";
+      };
+
       is-cached = {
         type = "app";
         program = nixpkgs.lib.getExe (nixpkgs.legacyPackages.${system}.writeShellApplication {
