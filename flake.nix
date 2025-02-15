@@ -20,22 +20,20 @@
   };
 
   outputs = { self, nixpkgs, ... }: let
-    inherit (nixpkgs) lib;
-
-    forEachSystem = lib.genAttrs [
+    forEachSystem = nixpkgs.lib.genAttrs [
       "x86_64-linux"
       "aarch64-linux"
       "x86_64-darwin"
       "aarch64-darwin"
     ];
   in {
-    overlays = lib.packagesFromDirectoryRecursive {
+    overlays = nixpkgs.lib.packagesFromDirectoryRecursive {
       callPackage = path: overrides: import path;
       directory = ./overlays;
     };
 
     legacyPackages = forEachSystem (system:
-      lib.packagesFromDirectoryRecursive {
+      nixpkgs.lib.packagesFromDirectoryRecursive {
         callPackage = nixpkgs.legacyPackages.${system}.callPackage;
         directory = ./pkgs;
       });
@@ -69,8 +67,23 @@
               ];
             };
           in
-            lib.getExe evaluatedModules.config.programs.neovim.finalPackage;
-          meta.description = "Self-contained Neovim environment";
+            nixpkgs.lib.getExe evaluatedModules.config.programs.neovim.finalPackage;
+        meta.description = "Self-contained Neovim environment";
+      };
+
+      is-cached = {
+        type = "app";
+        program = nixpkgs.lib.getExe (nixpkgs.legacyPackages.${system}.writeShellApplication {
+          name = "is-cached";
+          runtimeInputs = with nixpkgs.legacyPackages.${system}; [
+            curl
+            jq
+            inotify-tools
+          ];
+          excludeShellChecks = [ "SC2155" ];
+          text = builtins.readFile ./scripts/is-cached.sh;
+        });
+        meta.description = "List cache availability for a derivation and its dependencies in https://cache.nixos.org.";
       };
     });
 
@@ -80,18 +93,21 @@
       unfree = ./modules/unfree;
     };
 
-    nixosConfigurations = lib.mapAttrs (name: _:
-      lib.nixosSystem {
+    nixosConfigurations = nixpkgs.lib.mapAttrs (name: _:
+      nixpkgs.lib.nixosSystem {
         specialArgs = { inherit self; };
 
-        modules =
-          lib.attrValues self.outputs.nixosModules
-          ++ lib.mapAttrsToList (n: v: v.nixosModules.default or v.nixosModules.${n} or {}) self.inputs
-          ++ [
-            ./profiles/common
-            ./hosts/${name}
-            { networking.hostName = name; }
-          ];
+        modules = [
+          self.inputs.impermanence.nixosModules.default
+          self.inputs.nixos-wsl.nixosModules.default
+          self.inputs.sops-nix.nixosModules.default
+          self.outputs.nixosModules.mpv
+          self.outputs.nixosModules.neovim
+          self.outputs.nixosModules.unfree
+          { networking.hostName = name; }
+          ./profiles/common
+          ./hosts/${name}
+        ];
       })
       (builtins.readDir ./hosts);
 
