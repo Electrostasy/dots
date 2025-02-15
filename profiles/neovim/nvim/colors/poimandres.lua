@@ -209,6 +209,7 @@ groups.treesitter = {
   -- ['@exception'] = { link = 'Exception' },
 
   ['@variable'] = { fg = blend(palette.text, palette.blueGray1, 0.5) },
+  ['@variable.member'] = { link = 'Identifier' },
   -- ['@type'] = { link = 'Type' },
   -- ['@type.definition'] = { link = 'Typedef' },
   -- ['@storageclass'] = { link = 'StorageClass' },

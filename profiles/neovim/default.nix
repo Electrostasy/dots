@@ -55,7 +55,7 @@
       basedpyright
       clang-tools
       lua-language-server
-      nil
+      nixd
       ripgrep
       rust-analyzer
       wl-clipboard
