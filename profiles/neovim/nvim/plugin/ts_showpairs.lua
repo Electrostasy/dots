@@ -47,9 +47,15 @@ _query_cache.on_child_added = function(tree)
     return
   end
 
+  -- Some parsers are weird in how they report their symbols, so we normalize the results as a LUT.
   local symbols = vim.iter(vim.treesitter.language.inspect(lang).symbols)
-    :fold({}, function(acc, _, value)
-      acc[value[1]] = true
+    :fold({}, function(acc, left, right)
+      if right ~= nil then
+        acc[right[1]] = true
+      else
+        acc[left[1]] = true
+      end
+
       return acc
     end)
 
