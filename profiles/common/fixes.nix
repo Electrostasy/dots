@@ -9,10 +9,6 @@
   systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
   environment.persistence.state.directories = [ "/var/tmp" ];
 
-  # perlless profile is too heavy-handed with this, so we unset it, because
-  # some programs like tlp have no perlless alternative.
-  system.forbiddenDependenciesRegexes = lib.mkForce [];
-
   # impermanence conflicts with /etc read-only overlay, making bind mounts fail:
   # https://github.com/nix-community/impermanence/issues/210
   # Seems to break a lot of other things too.

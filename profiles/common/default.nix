@@ -8,6 +8,25 @@
     ./fixes.nix
   ];
 
+  system = {
+    configurationRevision = self.rev or "dirty";
+
+    rebuild.enableNg = true;
+
+    # perlless profile disables these by default.
+    tools = {
+      # `nixos-option` does not use perl anymore.
+      nixos-option.enable = lib.mkDefault true;
+
+      # We use the `-ng` version of `nixos-rebuild`.
+      nixos-rebuild.enable = lib.mkDefault true;
+    };
+
+    # perlless profile is too heavy-handed with this, so we unset it, because
+    # some programs like tlp have no perlless alternative.
+    forbiddenDependenciesRegexes = lib.mkForce [];
+  };
+
   nixpkgs = {
     config.allowAliases = false;
     overlays = [ self.overlays.default ];
@@ -124,8 +143,6 @@
       };
     };
   };
-
-  system.rebuild.enableNg = true;
 
   nix = {
     package = pkgs.nixVersions.latest;
