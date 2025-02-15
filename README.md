@@ -28,7 +28,6 @@ The managed hosts and their descriptions are listed in the following table:
 
 | **Hostname** | **Device type**               | **Description**                                |
 |:--           | :--                           | :--                                            |
-| ceres        | Desktop                       | Secondary PC at work                           |
 | deimos       | Raspberry Pi Zero 2 W         | Klipper host for 3D printer                    |
 | eris         | WSL                           | Primary PC at work                             |
 | luna         | Raspberry Pi Compute Module 4 | NAS                                            |
