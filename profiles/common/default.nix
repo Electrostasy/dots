@@ -32,6 +32,9 @@
     overlays = [ self.overlays.default ];
   };
 
+  # Reduce build times by not building the NixOS documentation.
+  documentation.nixos.enable = lib.mkDefault false;
+
   boot.tmp.useTmpfs = true;
 
   # Cannot mess with locales on WSL, so do not customize them there.
