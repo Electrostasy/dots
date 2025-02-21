@@ -21,10 +21,10 @@
 
   outputs = { self, nixpkgs, ... }: let
     forEachSystem = nixpkgs.lib.genAttrs [
-      "x86_64-linux"
+      "aarch64-darwin"
       "aarch64-linux"
       "x86_64-darwin"
-      "aarch64-darwin"
+      "x86_64-linux"
     ];
   in {
     overlays = nixpkgs.lib.packagesFromDirectoryRecursive {
@@ -73,26 +73,41 @@
 
       diff-closures = {
         type = "app";
-        program = nixpkgs.lib.getExe (nixpkgs.legacyPackages.${system}.writeShellApplication {
-          name = "diff-closures";
-          runtimeInputs = [ nixpkgs.legacyPackages.${system}.gnugrep ];
-          text = builtins.readFile ./scripts/diff-closures.sh;
-        });
+        program =
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            package = pkgs.writeShellApplication {
+              name = "diff-closures";
+              runtimeInputs = with pkgs; [
+                coreutils-full
+                gnugrep
+              ];
+              text = builtins.readFile ./scripts/diff-closures.sh;
+            };
+          in
+            nixpkgs.lib.getExe package;
         meta.description = "List added/removed packages and version updates between two closures.";
       };
 
       is-cached = {
         type = "app";
-        program = nixpkgs.lib.getExe (nixpkgs.legacyPackages.${system}.writeShellApplication {
-          name = "is-cached";
-          runtimeInputs = with nixpkgs.legacyPackages.${system}; [
-            curl
-            jq
-            inotify-tools
-          ];
-          excludeShellChecks = [ "SC2155" ];
-          text = builtins.readFile ./scripts/is-cached.sh;
-        });
+        program =
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            package = pkgs.writeShellApplication {
+              name = "is-cached";
+              runtimeInputs = with pkgs; [
+                coreutils-full
+                curl
+                gnugrep
+                inotify-tools
+                jq
+                util-linux
+              ];
+              text = builtins.readFile ./scripts/is-cached.sh;
+            };
+          in
+            nixpkgs.lib.getExe package;
         meta.description = "List cache availability for a derivation and its dependencies in https://cache.nixos.org.";
       };
     });

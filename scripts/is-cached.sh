@@ -11,14 +11,55 @@ if ! nix path-info --derivation "$1" &> /dev/null; then
 	exit 1
 fi
 
-# Associative array of nix store paths to their hashes.
-declare -A paths="($(
-	nix path-info --derivation --recursive "$1" --json 2> /dev/null | \
-	jq -r 'keys | .[] | @sh "[\(.)]=\(. | sub("^/nix/store/"; "") | sub("-.*"; ""))"'
-))"
-
 output_dir="$(mktemp --directory --suffix='is-cached')"
 configfile="$output_dir/configfile"
+
+function cursor_hide {
+	echo -en '\e[?25l'
+}
+
+function cursor_show {
+	echo -en '\e[?25h'
+}
+
+function println_yellow {
+	printf '\033[0;33m%s\033[0m\n' "$1"
+}
+
+function println_green {
+	printf '\033[0;32m%s\033[0m\n' "$1"
+}
+
+function println_red {
+	printf '\033[0;31m%s\033[0m\n' "$1"
+}
+
+function sort_by_store_path {
+	local -n paths_array=$1
+	# sort only after the `/nix/store/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-`
+	# part of the path.
+	sort -k 1.44 <(printf '%s\n' "${paths_array[@]}")
+}
+
+function cleanup {
+	rm -r "$output_dir"
+	cursor_show
+}
+
+trap cleanup EXIT
+
+if ! paths_json="$(nix path-info --derivation --recursive "$1" --json 2> /dev/null)"; then
+	echo "ERROR: fetching store paths for derivation '$1' returned non-zero exit code!" >&2
+	exit 1
+fi
+
+if ! paths_array_str="$(jq -r 'keys | .[] | @sh "[\(.)]=\(. | sub("^/nix/store/"; "") | sub("-.*"; ""))"' <<< "$paths_json")"; then
+	echo "ERROR: jq returned non-zero exit code!" >&2
+	exit 1
+fi
+
+# Mapping of nix store paths to their hashes.
+declare -A paths="($paths_array_str)"
 
 for drv in ${!paths[*]}; do
 	hash="${paths[$drv]}"
@@ -28,76 +69,70 @@ for drv in ${!paths[*]}; do
 	echo "output = \"$output_dir/$hash\""
 done > "$configfile"
 
-total_paths="${#paths[@]}"
-echo "Querying https://cache.nixos.org with $total_paths paths..."
 curl --config "$configfile" --silent &
 
-# Because we use `curl` with a config file and multiple requests, we cannot see
-# the global progress. For this reason, we run it in the background while
-# calculating progress ourselves based on the number of files created compared
-# to the expected total number.
+# Prettier status output to stderr.
+cursor_hide
+total_paths="${#paths[@]}"
+echo -n "Querying https://cache.nixos.org with $total_paths paths:     " >&2
+
 file_counter=0
 while read -r _; do
 	((++file_counter))
-	percent="$((file_counter*100/total_paths))"
-	echo -en "\033[2K\r$percent%"
 
-	# TODO: Need to test if the `kill` invocation here actually does anything useful.
-	if [ "$percent" -eq 100 ] || ! kill -0 %%; then
-		echo -en "\033[2K\r"
+	echo -en "\033[4D" >&2 # move cursor left 4 columns.
+	printf '%3s%%' "$((file_counter*100/total_paths))" >&2 # redraw the progress.
+
+	if [ "$file_counter" -eq "$total_paths" ] || ! kill -0 %% &> /dev/null; then
+		echo >&2 # add a gap between status and results.
 		break
 	fi
 done < <(inotifywait --monitor --recursive --event 'create' "$output_dir" 2> /dev/null)
+cursor_show
+
 wait "$(jobs -p)" # ensure the `curl` background job finishes.
 
 for drv in ${!paths[*]}; do
 	hash="${paths[$drv]}"
 
-	# TODO: Better handling for the rare cache miss, probably cloudfront magic at play.
+	# Handle the rare cache miss, probably cloudfront magic at play but
+	# cannot reproduce consistently.
 	response_file="$output_dir/$hash"
 	if grep -xqF 'x-cache: MISS' "$response_file"; then
 		missing+=("$drv")
 		continue
 	fi
 
-	if [ "$(head -n 1 "$response_file" | cut -d ' ' -f 2)" -eq 200 ]; then
-		cached+=("$drv")
-	else
+	if [ "$(head -n 1 "$response_file" | cut -d ' ' -f 2)" -ne 200 ]; then
 		uncached+=("$drv")
+	else
+		cached+=("$drv")
 	fi
 done
 
-rm -r "$output_dir"
+if [ -v missing ]; then
+	echo
+	echo "${#missing[@]} cache misses:"
+
+	while read -r missing_drv; do
+		println_red "$missing_drv"
+	done < <(sort_by_store_path missing)
+fi
 
 if [ -v uncached ]; then
 	echo
 	echo "${#uncached[@]} uncached paths:"
 
-	mapfile -t uncached < <(sort -k 1.45 <(printf '%s\n' "${uncached[@]}"))
-	for uncached_drv in "${uncached[@]}"; do
-		printf '\033[0;33m%s\033[0m\n' "$uncached_drv"
-	done
+	while read -r uncached_drv; do
+		println_yellow "$uncached_drv"
+	done < <(sort_by_store_path uncached)
 fi
 
 if [ -v cached ]; then
 	echo
 	echo "${#cached[@]} cached paths:"
 
-	mapfile -t cached < <(sort -k 1.45 <(printf '%s\n' "${cached[@]}"))
-	for cached_drv in "${cached[@]}"; do
-		printf '\033[0;32m%s\033[0m\n' "$cached_drv"
-	done
-fi
-
-if [ -v missing ]; then
-	missing_num="${#missing[@]}"
-	if [ "$missing_num" -gt 0 ]; then
-		echo
-		echo "WARNING: $missing_num missing paths:"
-
-		mapfile -t missing < <(sort -k 1.45 <(printf '%s\n' "${missing[@]}"))
-		for missing_drv in "${missing[@]}"; do
-			printf '\033[0;31m%s\033[0m\n' "$missing_drv"
-		done
-	fi
+	while read -r cached_drv; do
+		println_green "$cached_drv"
+	done < <(sort_by_store_path cached)
 fi
