@@ -14,8 +14,9 @@ local symbol_pairs = {
   -- Shell command subtitution.
   { '$(', ')' },
 
-  -- bash arithmetic expansion.
+  -- bash arithmetic (expansion).
   { '$((', '))' },
+  { '((', '))' },
 
   -- bash parameter expansion.
   -- Nix interpolation.
