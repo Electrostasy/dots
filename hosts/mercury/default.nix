@@ -223,63 +223,36 @@
 
     profiles = {
       home-wifi = {
-        ipv4.method = "auto";
         connection = {
-          id = "Sukceno";
+          id = "home";
           type = "wifi";
           autoconnect = true;
         };
-        wifi.ssid = "Sukceno";
+
+        wifi.ssid = "$SSID_HOME_WIFI";
         wifi-security = {
-          auth-alg = "open";
           key-mgmt = "wpa-psk";
-          psk = "$PSK_SUKCENO";
+          psk = "$PSK_HOME_WIFI";
         };
+
+        ipv4.method = "auto";
       };
 
-      home-wifi-fast = {
-        ipv4.method = "auto";
+      work-wifi = {
         connection = {
-          id = "Sukceno5G";
+          id = "work";
           type = "wifi";
           autoconnect = true;
         };
-        wifi.ssid = "Sukceno5G";
-        wifi-security = {
-          auth-alg = "open";
-          key-mgmt = "wpa-psk";
-          psk = "$PSK_SUKCENO5G";
-        };
-      };
 
-      work-3 = {
-        ipv4.method = "auto";
-        connection = {
-          id = "L19A3A";
-          type = "wifi";
-          autoconnect = true;
-        };
-        wifi.ssid = "L19A3A";
+        wifi.ssid = "$SSID_WORK_WIFI";
         wifi-security = {
           auth-alg = "open";
           key-mgmt = "wpa-psk";
-          psk = "$PSK_L19A3A";
+          psk = "$PSK_WORK_WIFI";
         };
-      };
 
-      work-4 = {
         ipv4.method = "auto";
-        connection = {
-          id = "L19A";
-          type = "wifi";
-          autoconnect = true;
-        };
-        wifi.ssid = "L19A";
-        wifi-security = {
-          auth-alg = "open";
-          key-mgmt = "wpa-psk";
-          psk = "$PSK_L19A";
-        };
       };
     };
   };
