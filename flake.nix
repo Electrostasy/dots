@@ -99,12 +99,12 @@
               runtimeInputs = with pkgs; [
                 coreutils-full
                 curl
-                gnugrep
-                inotify-tools
                 jq
-                util-linux
               ];
               text = builtins.readFile ./scripts/is-cached.sh;
+              excludeShellChecks = [
+                "SC2028" # https://github.com/koalaman/shellcheck/issues/2486
+              ];
             };
           in
             nixpkgs.lib.getExe package;

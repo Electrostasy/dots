@@ -11,27 +11,26 @@ if ! nix path-info --derivation "$1" &> /dev/null; then
 	exit 1
 fi
 
-output_dir="$(mktemp --directory --suffix='is-cached')"
-configfile="$output_dir/configfile"
+configfile="$(mktemp --suffix='is-cached-config')"
 
 function cursor_hide {
-	echo -en '\e[?25l'
+	echo -en '\x1B[?25l'
 }
 
 function cursor_show {
-	echo -en '\e[?25h'
+	echo -en '\x1B[?25h'
 }
 
 function println_yellow {
-	printf '\033[0;33m%s\033[0m\n' "$1"
+	printf '\x1B[0;33m%s\x1B[0m\n' "$1"
 }
 
 function println_green {
-	printf '\033[0;32m%s\033[0m\n' "$1"
+	printf '\x1B[0;32m%s\x1B[0m\n' "$1"
 }
 
 function println_red {
-	printf '\033[0;31m%s\033[0m\n' "$1"
+	printf '\x1B[0;31m%s\x1B[0m\n' "$1"
 }
 
 function sort_by_store_path {
@@ -42,73 +41,53 @@ function sort_by_store_path {
 }
 
 function cleanup {
-	rm -r "$output_dir"
+	rm "$configfile"
 	cursor_show
 }
 
 trap cleanup EXIT
 
-if ! paths_json="$(nix path-info --derivation --recursive "$1" --json 2> /dev/null)"; then
+if ! path_info="$(nix path-info --derivation --recursive "$1" --json 2> /dev/null)"; then
 	echo "ERROR: fetching store paths for derivation '$1' returned non-zero exit code!" >&2
 	exit 1
 fi
 
-if ! paths_array_str="$(jq -r 'keys | .[] | @sh "[\(.)]=\(. | sub("^/nix/store/"; "") | sub("-.*"; ""))"' <<< "$paths_json")"; then
+if ! array_str="$(jq -r 'keys | .[] | @sh "[\(. | sub("^/nix/store/"; "") | sub("-.*"; ""))]=\(.)"' <<< "$path_info")"; then
 	echo "ERROR: jq returned non-zero exit code!" >&2
 	exit 1
 fi
 
-# Mapping of nix store paths to their hashes.
-declare -A paths="($paths_array_str)"
+declare -A paths_by_hash="($array_str)"
 
-for drv in ${!paths[*]}; do
-	hash="${paths[$drv]}"
-	echo "next"
-	echo "head"
+for hash in ${!paths_by_hash[*]}; do
+	echo 'next'
+	echo 'head'
+	echo 'no-show-headers'
+	echo 'write-out = "%{url.path} %{response_code}\\n"'
 	echo "url = \"https://cache.nixos.org/$hash.narinfo\""
-	echo "output = \"$output_dir/$hash\""
 done > "$configfile"
 
-curl --config "$configfile" --silent &
+total_paths="${#paths_by_hash[@]}"
+echo -n "Querying https://cache.nixos.org with $total_paths paths:   0%" >&2
 
-# Prettier status output to stderr.
 cursor_hide
-total_paths="${#paths[@]}"
-echo -n "Querying https://cache.nixos.org with $total_paths paths:     " >&2
+count=0
+while read -r path response_code; do
+	drv="${paths_by_hash["${path:1:-8}"]}"
 
-file_counter=0
-while read -r _; do
-	((++file_counter))
+	case "$response_code" in
+		200) cached+=("$drv") ;;
+		404) uncached+=("$drv") ;;
+		*) missing+=("$drv") ;;
+	esac
 
-	echo -en "\033[4D" >&2 # move cursor left 4 columns.
-	printf '%3s%%' "$((file_counter*100/total_paths))" >&2 # redraw the progress.
+	((++count))
 
-	if [ "$file_counter" -eq "$total_paths" ] || ! kill -0 %% &> /dev/null; then
-		echo >&2 # add a gap between status and results.
-		break
-	fi
-done < <(inotifywait --monitor --recursive --event 'create' "$output_dir" 2> /dev/null)
+	echo -en "\x1B[4D" >&2 # move cursor to the left by 4 cells.
+	printf '%4s' "$((count*100/total_paths))%" >&2
+done < <(curl --config "$configfile" --parallel --parallel-immediate --silent)
+echo >&2
 cursor_show
-
-wait "$(jobs -p)" # ensure the `curl` background job finishes.
-
-for drv in ${!paths[*]}; do
-	hash="${paths[$drv]}"
-
-	# Handle the rare cache miss, probably cloudfront magic at play but
-	# cannot reproduce consistently.
-	response_file="$output_dir/$hash"
-	if grep -xqF 'x-cache: MISS' "$response_file"; then
-		missing+=("$drv")
-		continue
-	fi
-
-	if [ "$(head -n 1 "$response_file" | cut -d ' ' -f 2)" -ne 200 ]; then
-		uncached+=("$drv")
-	else
-		cached+=("$drv")
-	fi
-done
 
 if [ -v missing ]; then
 	echo
