@@ -27,6 +27,10 @@
       wh = "wormhole-rs";
     };
 
+    sessionVariables = {
+      TIME_STYLE = "+%Y-%m-%d %H:%M:%S"; # for `ls`, `eza`.
+    };
+
     persistence.state.users.electro.directories = [
       ".cache/nix-index"
 
