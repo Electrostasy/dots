@@ -99,7 +99,6 @@
               runtimeInputs = with pkgs; [
                 coreutils-full
                 curl
-                jq
               ];
               text = builtins.readFile ./scripts/is-cached.sh;
               excludeShellChecks = [

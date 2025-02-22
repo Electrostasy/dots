@@ -6,13 +6,6 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-if ! nix path-info --derivation "$1" &> /dev/null; then
-	echo "ERROR: argument '$1' is not a derivation!"
-	exit 1
-fi
-
-configfile="$(mktemp --suffix='is-cached-config')"
-
 function cursor_hide {
 	echo -en '\x1B[?25l'
 }
@@ -34,11 +27,13 @@ function println_red {
 }
 
 function sort_by_store_path {
-	local -n paths_array=$1
+	local -n array=$1
 	# sort only after the `/nix/store/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-`
 	# part of the path.
-	sort -k 1.44 <(printf '%s\n' "${paths_array[@]}")
+	sort -k 1.44 <(printf '%s\n' "${array[@]}")
 }
+
+configfile="$(mktemp --suffix='is-cached-config')"
 
 function cleanup {
 	rm "$configfile"
@@ -47,19 +42,11 @@ function cleanup {
 
 trap cleanup EXIT
 
-if ! path_info="$(nix path-info --derivation --recursive "$1" --json 2> /dev/null)"; then
-	echo "ERROR: fetching store paths for derivation '$1' returned non-zero exit code!" >&2
-	exit 1
-fi
+declare -A paths
+for path in $(nix path-info --derivation --recursive "$1"); do
+	hash="${path:11:32}"
+	paths["$hash"]="$path"
 
-if ! array_str="$(jq -r 'keys | .[] | @sh "[\(. | sub("^/nix/store/"; "") | sub("-.*"; ""))]=\(.)"' <<< "$path_info")"; then
-	echo "ERROR: jq returned non-zero exit code!" >&2
-	exit 1
-fi
-
-declare -A paths_by_hash="($array_str)"
-
-for hash in ${!paths_by_hash[*]}; do
 	echo 'next'
 	echo 'head'
 	echo 'no-show-headers'
@@ -67,18 +54,18 @@ for hash in ${!paths_by_hash[*]}; do
 	echo "url = \"https://cache.nixos.org/$hash.narinfo\""
 done > "$configfile"
 
-total_paths="${#paths_by_hash[@]}"
+total_paths="${#paths[@]}"
 echo -n "Querying https://cache.nixos.org with $total_paths paths:   0%" >&2
 
 cursor_hide
 count=0
-while read -r path response_code; do
-	drv="${paths_by_hash["${path:1:-8}"]}"
+while read -r url_path response_code; do
+	path="${paths["${url_path:1:32}"]}"
 
 	case "$response_code" in
-		200) cached+=("$drv") ;;
-		404) uncached+=("$drv") ;;
-		*) missing+=("$drv") ;;
+		200) cached+=("$path") ;;
+		404) uncached+=("$path") ;;
+		*) missing+=("$path") ;;
 	esac
 
 	((++count))
