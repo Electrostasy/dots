@@ -21,14 +21,14 @@ in
     # https://github.com/NixOS/nixpkgs/issues/44901
     initrd = {
       kernelModules = [
-        "lz4hc"
-        "z3fold"
+        "lz4"
+        "zsmalloc"
       ];
 
       systemd.tmpfiles.settings = {
         "10-zswap" = {
-          "/sys/module/zswap/parameters/compressor".w.argument = "lz4hc";
-          "/sys/module/zswap/parameters/zpool".w.argument = "z3fold";
+          "/sys/module/zswap/parameters/compressor".w.argument = "lz4";
+          "/sys/module/zswap/parameters/zpool".w.argument = "zsmalloc";
         };
 
         "10-mglru-thrashing-prevention" = {
