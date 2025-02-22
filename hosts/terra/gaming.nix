@@ -25,9 +25,16 @@ in
         "z3fold"
       ];
 
-      systemd.tmpfiles.settings."10-zswap" = {
-        "/sys/module/zswap/parameters/compressor".w.argument = "lz4hc";
-        "/sys/module/zswap/parameters/zpool".w.argument = "z3fold";
+      systemd.tmpfiles.settings = {
+        "10-zswap" = {
+          "/sys/module/zswap/parameters/compressor".w.argument = "lz4hc";
+          "/sys/module/zswap/parameters/zpool".w.argument = "z3fold";
+        };
+
+        "10-mglru-thrashing-prevention" = {
+          "/sys/kernel/mm/lru_gen/enabled".w.argument = "y"; # ensure it is enabled.
+          "/sys/kernel/mm/lru_gen/min_ttl_ms".w.argument = "1000";
+        };
       };
     };
   };
@@ -103,9 +110,6 @@ in
   ];
 
   programs = {
-    # Necessary to prevent stutters and audio issues.
-    cfs-zen-tweaks.enable = true;
-
     gpu-screen-recorder.enable = true;
 
     steam = {
