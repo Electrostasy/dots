@@ -9,49 +9,37 @@
   ];
 
   system = {
-    configurationRevision = self.rev or "dirty";
-
+    configurationRevision = self.rev or "dirty"; # for `nixos-version`.
     rebuild.enableNg = true;
+  };
 
-    # perlless profile disables these by default.
-    tools = {
-      # `nixos-option` does not use perl anymore.
-      nixos-option.enable = lib.mkDefault true;
+  nix = {
+    package = pkgs.nixVersions.latest;
 
-      # We use the `-ng` version of `nixos-rebuild`.
-      nixos-rebuild.enable = lib.mkDefault true;
+    settings = {
+      use-xdg-base-directories = true; # don't clutter $HOME.
+
+      experimental-features = [
+        "cgroups" # allow Nix to execute builds inside cgroups.
+        "flakes" # enable flakes.
+        "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
+        "no-url-literals" # disallow unquoted URLs in Nix language syntax.
+      ];
+
+      use-cgroups = true;
     };
-
-    # perlless profile is too heavy-handed with this, so we unset it, because
-    # some programs like tlp have no perlless alternative.
-    forbiddenDependenciesRegexes = lib.mkForce [];
   };
 
   nixpkgs = {
-    config.allowAliases = false;
-    overlays = [ self.overlays.default ];
+    config.allowAliases = false; # aliases bother me.
+    overlays = [ self.overlays.default ]; # include self-packaged packages.
   };
-
-  # Reduce build times by not building the NixOS documentation.
-  documentation.nixos.enable = lib.mkDefault false;
 
   boot.tmp.useTmpfs = true;
 
-  # Cannot mess with locales on WSL, so do not customize them there.
-  i18n = lib.mkIf (!config.wsl.enable) {
-    # We want European formatting for everything, while keeping the language
-    # English. With this, we get ISO-8601 formatted dates, metric measurements,
-    # the works, while keeping it English.
-    defaultLocale = "en_DK.UTF-8";
+  time.timeZone = "Europe/Vilnius";
 
-    supportedLocales = [
-      "en_DK.UTF-8/UTF-8"
-      "ja_JP.UTF-8/UTF-8" # required for Japanese in filenames.
-      "lt_LT.UTF-8/UTF-8"
-    ];
-  };
-
-  time.timeZone = lib.mkDefault "Europe/Vilnius";
+  i18n.extraLocaleSettings.LC_TIME = "en_DK.UTF-8"; # ISO-8601 datetime.
 
   networking = {
     domain = "0x6776.lt";
@@ -67,34 +55,8 @@
       "2.europe.pool.ntp.org"
     ];
 
-    useNetworkd = true; # translate `networking.*` options into systemd-networkd.
-  };
-
-  systemd.network = {
-    wait-online.anyInterface = true;
-
-    # Default to DHCP for physical wired and wireless interfaces.
-    networks = {
-      "99-wired-dhcp" = {
-        matchConfig = {
-          Type = "ether";
-          Kind = "!*";
-        };
-
-        networkConfig.DHCP = "ipv4";
-      };
-
-      "99-wireless-dhcp" = {
-        matchConfig.WLANInterfaceType = "station";
-
-        networkConfig = {
-          DHCP = "ipv4";
-          IgnoreCarrierLoss = "3s";
-        };
-
-        dhcpV4Config.RouteMetric = 1025; # 1024 is default, so prefer wired if available.
-      };
-    };
+    useNetworkd = lib.mkDefault true; # translate `networking.*` options into `systemd.network`.
+    useDHCP = lib.mkDefault true;
   };
 
   security.sudo.wheelNeedsPassword = false;
@@ -112,17 +74,10 @@
     enable = lib.mkDefault true;
 
     # Generate new keys on the host running headscale using:
-    # $ headscale --user sol preauthkeys create --ephemeral --expiration 1y
+    # $ headscale --user sol preauthkeys create --expiration 99y
     authKeyFile = config.sops.secrets.tailscaleKey.path;
 
-    extraUpFlags = [
-      # Use the self-hosted headscale coordination server.
-      "--login-server" "https://controlplane.${config.networking.domain}"
-
-      # If `extraUpFlags` is changed, then we will not require manual
-      # intervention to add this flag to the `tailscale up` command anyway.
-      "--reset"
-    ];
+    extraUpFlags = [ "--login-server" "https://controlplane.${config.networking.domain}" ];
   };
 
   programs.git = {
@@ -144,23 +99,6 @@
         name = "Gediminas Valys";
         email = "steamykins@gmail.com";
       };
-    };
-  };
-
-  nix = {
-    package = pkgs.nixVersions.latest;
-
-    settings = {
-      use-xdg-base-directories = true; # don't clutter $HOME.
-
-      experimental-features = [
-        "cgroups" # allow Nix to execute builds inside cgroups.
-        "flakes" # enable flakes.
-        "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
-        "no-url-literals" # disallow unquoted URLs in Nix language syntax.
-      ];
-
-      use-cgroups = true;
     };
   };
 }

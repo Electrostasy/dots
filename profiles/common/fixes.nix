@@ -1,40 +1,74 @@
 { config, lib, ... }:
 
 {
+  system = {
+    # perlless profile sets `system.disableInstallerTools`, which we do not
+    # really need all that much, but `nixos-option` is useful, and it re-adds
+    # `nixos-rebuild` in a bad way that shadows `nixos-rebuild-ng`.
+    tools = {
+      # `nixos-option` does not use perl anymore, either.
+      nixos-option.enable = lib.mkDefault true;
+      nixos-rebuild.enable = lib.mkDefault true;
+      nixos-version.enable = lib.mkDefault true;
+    };
+
+    # Perlless profile is too strict and this breaks too many things.
+    forbiddenDependenciesRegexes = lib.mkForce [];
+  };
+
+  nixpkgs.overlays = [
+    # As mentioned above, perlless profile adds `nixos-rebuild` to
+    # `environment.systemPackages`, which is hard to remove. If we use
+    # `nixos-rebuild-ng`, `nixos-rebuild` shadows it, so we make
+    # `nixos-rebuild-ng` have a lower priority (take precedence).
+    (final: prev: {
+      nixos-rebuild-ng = prev.nixos-rebuild-ng.overrideAttrs (oldAttrs: {
+        meta.priority = (prev.nixos-rebuild.meta.priority or lib.meta.defaultPriority) - 1;
+      });
+    })
+  ];
+
+  # This randomly acts up (especially when network is offline while switching
+  # configurations) or breaks on different hardware and I hate it.
+  systemd.network.wait-online.enable = lib.mkDefault false;
+
+  # If `extraUpFlags` is changed, then we will require manual intervention with
+  # `tailscale up` after activation, repeating all the `extraUpFlags`, and
+  # adding `--reset` to the end anyway.
+  services.tailscale.extraUpFlags = [ "--reset" ];
+
   # Building in /tmp can make the tmpfs fill up with build artifacts, which is
   # also meant to be cleaned up on boot:
   # https://github.com/NixOS/nix/issues/11477
   # https://github.com/NixOS/nixpkgs/pull/338181#issuecomment-2349833045
   nix.settings.build-dir = "/var/tmp";
-  systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
-  environment.persistence.state.directories = [ "/var/tmp" ];
 
-  # impermanence conflicts with /etc read-only overlay, making bind mounts fail:
-  # https://github.com/nix-community/impermanence/issues/210
-  # Seems to break a lot of other things too.
-  system.etc.overlay.mutable = true;
+  # impermanence conflicts with /etc read-only overlay, making bind mounts
+  # fail: https://github.com/nix-community/impermanence/issues/210
+  system.etc.overlay.mutable = config.environment.persistence.state.enable;
 
-  # Since git 2.35.2, rebuilding from repositories owned by non-root users will
-  # break `nixos-rebuild`, unless we run `nixos-rebuild` with the `--use-remote-sudo`
-  # commandline flag: https://github.com/NixOS/nixpkgs/issues/169193#issuecomment-1103816735
+  # Since git 2.35.2 this workaround is needed to fix an annoying error when
+  # using git or nixos-rebuild as non-root in /etc/nixos:
+  # fatal: detected dubious ownership in repository at '/etc/nixos'
   programs.git.config.safe.directory = "/etc/nixos";
 
   # When deploying NixOS configurations with `nixos-rebuild --target-host`, we
-  # can get an error on missing valid signatures for store paths built on the
-  # build host, the solution is to add the user (or group) on the remote end to
-  # trusted-users or sign the store paths with valid signatures:
+  # can get an error about missing valid signatures for store paths built on
+  # the build host, the solution is to add the user (or group) on the remote
+  # end to trusted-users or sign the store paths with valid signatures:
   # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
   nix.settings.trusted-users = [ "@wheel" ];
 
   # With the iwd backend, autoconnect does not work, even if we set
-  # `wifi.iwd.autoconnect = false`. If networks are managed with NetworkManager,
-  # iwd is not aware of them without converting them to iwd's format, but not
-  # using iwd's autoconnect functionality is not working either.
+  # `wifi.iwd.autoconnect = false`. If networks are managed with
+  # NetworkManager, iwd is not aware of them without converting them to iwd's
+  # format, but not using iwd's autoconnect functionality is not working
+  # either. So we force `wpa_supplicant`.
   networking.networkmanager.wifi.backend = "wpa_supplicant";
 
   # Normally, when dconf changes are made to the `user` profile, the user will
-  # need to log out and log in again for the changes to be applied. However,
-  # in NixOS, this is not sufficient for some cases (automatically enabling
+  # need to log out and log in again for the changes to be applied. However, in
+  # NixOS, this is not sufficient for some cases (automatically enabling
   # extensions), because on a live system, the /etc/dconf path is not updated
   # to the new database on activation. This restores the intended behaviour.
   system.activationScripts.update-dconf-path = lib.mkIf config.programs.dconf.enable {
