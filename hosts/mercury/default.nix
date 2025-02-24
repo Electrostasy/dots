@@ -152,6 +152,8 @@
       efi.canTouchEfiVariables = true;
       timeout = 0; # show menu only while holding down a button.
     };
+
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
   environment.persistence.state = {
