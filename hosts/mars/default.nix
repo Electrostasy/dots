@@ -7,12 +7,7 @@
     ../../profiles/ssh
   ];
 
-  nixpkgs = {
-    hostPlatform = "aarch64-linux";
-
-    # Needed for Rockchip TPL for RK3588 in u-boot.
-    allowUnfreePackages = [ "rkbin" ];
-  };
+  nixpkgs.hostPlatform = "aarch64-linux";
 
   image.modules = lib.mkForce { raw = ./image.nix; };
 
@@ -28,32 +23,6 @@
     };
   };
 
-  system = {
-    checks = [ config.system.build.uboot ];
-
-    build.uboot = pkgs.ubootNanoPCT6.override (oldAttrs: {
-      version = "2025.01-rc2";
-
-      # 2025.01 contains the NanoPC-T6 LTS DTB using the same defconfig. This will
-      # allow loading the correct DTB during boot.
-      src = pkgs.fetchurl {
-        url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.01-rc2.tar.bz2";
-        hash = "sha256-RVaXQ+3SJaKf50OdejBbmzEI+yYF6Zwad6+B/PQhVJo=";
-      };
-
-      # Include the SPI NOR flash build artifact.
-      filesToInstall = oldAttrs.filesToInstall ++ [ "u-boot-rockchip-spi.bin" ];
-
-      # Use blobless Boot Loader stage 3.1. For some reason, the ATF packages
-      # do not have an `override` function, so we have to use `overrideAttrs`.
-      BL31 = "${pkgs.armTrustedFirmwareRK3588.overrideAttrs {
-        platformCanUseHDCPBlob = false;
-
-        meta.license = lib.licenses.bsd3;
-      }}/bl31.elf";
-    });
-  };
-
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
@@ -66,20 +35,18 @@
   };
 
   environment.systemPackages = with pkgs; [
-    mtdutils # `flashcp`.
     pciutils # `lspci`.
     usbutils # `lsusb`.
   ];
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-partlabel/nixos";
+      device = "/dev/disk/by-label/nixos";
       fsType = "ext4";
-      options = [ "defaults" ];
     };
 
     "/boot" = {
-      device = "/dev/disk/by-partlabel/boot";
+      device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";
       options = [ "umask=0077" ];
     };

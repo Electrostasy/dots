@@ -50,14 +50,12 @@ to login and certain services will not function correctly. The `age` private key
 has to be generated and placed in `/var/lib/sops-nix/keys.txt` before secrets
 can be decrypted or rotated. The `age` private key can be generated using the
 following command:
-
 ```sh
 rage-keygen -o ~/keys.txt
 ```
 
 In order to make key rotation easier, the following commands will re-encrypt all
 secret files in this repository, when executed from its root, using the new key:
-
 ```sh
 SECRET_FILES_REGEX=$(REGEXES=($(rg 'path_regex: (.*)$' -Nor '$1' .sops.yaml)); IFS='|'; echo "(${REGEXES[*]})")
 AGE_PUBLIC_KEY="$(rg '# public key: (.*)' -or '$1' /var/lib/sops-nix/keys.txt)"
@@ -80,7 +78,6 @@ describe the procedure to swap the disk out.
 If the disk is still visible in the system, we need to mount it degraded
 (because btrfs tools work with mounted filesystems) in recovery mode and issue
 a replace command:
-
 ```sh
 mkdir -p /mnt/array
 mount -t btrfs -o degraded /dev/disk/by-label/array /mnt/array
@@ -89,7 +86,6 @@ btrfs replace start /dev/disk/by-id/$FAILED /dev/disk/by-id/$NEW /mnt/array
 
 If the disk is not visible in the system, we need to identify the missing disk
 by its ID and provide it to the replace command:
-
 ```sh
 btrfs filesystem show # check if there are missing devices.
 btrfs device usage /mnt/array # identified by `missing, ID: $FAILED_ID`.
@@ -119,7 +115,6 @@ section.
 > Some of the following hosts can have images built for them, however, in order
 > for NixOS activation to be successful, the `age` private key needs to be
 > copied into the image:
->
 > ```sh
 > systemd-dissect --copy-to nixos-* {,}/var/lib/sops-nix/keys.txt
 > ```
@@ -136,9 +131,8 @@ interface for remote monitoring and management of the 3D printer.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command
+The NixOS image to be flashed can be built using the following command
 (requires `aarch64-linux` platform):
-
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant raw
 ```
@@ -146,9 +140,8 @@ nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-varian
 
 ### Flashing the image
 
-The NixOS SD image may be flashed to a selected microSD card using the following
+The NixOS image may be flashed to a selected microSD card using the following
 command:
-
 ```sh
 dd if=nixos-deimos-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ```
@@ -165,9 +158,8 @@ Interceptor] carrier board v1.0, serving as Network Attached Storage.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command
+The NixOS image to be flashed can be built using the following command
 (requires `aarch64-linux` platform):
-
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant raw
 ```
@@ -175,24 +167,21 @@ nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant 
 
 ### Flashing the image
 
-The NixOS SD image may be flashed to eMMC storage using the Raspberry Pi Compute
-Module 4 IO Board. The following is a set of steps in order to prepare the IO
-Board for flashing the CM4:
+The NixOS image may be flashed to eMMC storage using the Raspberry Pi Compute
+Module 4 IO Board and the following steps:
+
 1. Bridge the first set of pins on the 'J2' jumper to disable eMMC boot.
-2. Connect the IO Board with the host PC you will flash from using a micro USB cable.
+2. Connect the IO Board with the host PC you will flash from using a micro USB
+   cable.
 3. Power on the IO Board.
 4. Run `rpiboot` on the host PC to see eMMC storage as a block device:
-
    ```sh
    rpiboot
    ```
-
 5. Flash the image to it:
-
    ```sh
    dd if=nixos-luna-*.img of=/dev/sdX bs=1M status=progress oflag=direct
    ```
-
 6. Disconnect the micro USB cable from the host PC.
 7. Power off the IO Board.
 8. Detach the CM4 and attach it to your carrier board.
@@ -202,52 +191,68 @@ Board for flashing the CM4:
 
 The host [mars] is a [FriendlyElec NanoPC-T6 LTS], currently unused.
 
-The preferred way would be to flash both `u-boot` and the NixOS image to SPI and
-eMMC respectively, however, at the time of writing, due to [limitations] in
-`rkdeveloptool`, the open-source command line flashing tool developed by
-Rockchip as an alternative to the closed-source `upgrade_tool`, we cannot select
-between SPI and eMMC flash memory when flashing. Because of this, we build an
-installer image with `u-boot` included, and flash on the target system instead
-of externally over USB.
+Due to [limitations] in `rkdeveloptool`, we cannot select between SPI NOR and
+eMMC flash memory when flashing unless we use a [patched] version, which is
+provided by this flake:
+
+```sh
+nix shell github:Electrostasy/dots#rkdeveloptool
+```
 
 [mars]: ./hosts/mars/default.nix
 [FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
 [limitations]: https://github.com/rockchip-linux/rkdeveloptool/issues/94
+[patched]: https://github.com/rockchip-linux/rkdeveloptool/pull/106
 
 
 ### Building the image
 
-The NixOS installer SD image to be flashed can be built using the following
-command (requires `aarch64-linux` platform):
+The NixOS image to be flashed can be built using the following command
+(requires `aarch64-linux` platform):
 
 ```sh
-NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild --impure --flake github:Electrostasy/dots#mars build-image --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant raw
 ```
 
 
 ### Flashing the image
 
-The NixOS installer SD image may be flashed to a selected microSD card or USB
-flash drive using the following command:
+The NixOS image may be flashed to eMMC storage using the patched
+`rkdeveloptool` and the following steps:
 
-```sh
-dd if=nixos-mars-*.img of=/dev/sdX bs=1M status=progress oflag=direct
-```
-
-Then, when it is booted, we can write `u-boot` to SPI flash and install NixOS to
-eMMC memory. The `u-boot` build suitable for SPI flash, provided in
-`u-boot-rockchip-spi.bin`, contains the miniloader `idbloader.img` and u-boot
-proper `u-boot.itb` files concatenated at their expected offsets.
-
-In order to flash `u-boot` to SPI on a running system, use the following
-command:
-
-```sh
-flashcp -v -p u-boot-rockchip-spi.bin /dev/mtd0
-```
-
-In order to install NixOS to eMMC on a running system, you have to target
-`/dev/mmcblk0` as the target installation device.
+1. Enter MaskROM mode on the board by holding down the MaskROM and power
+   buttons. After the status LED has been on for at least 3 seconds, the
+   MaskROM and power buttons may be released.
+2. Connect the board and the host PC you will flash from with a USB-C cable.
+3. Run the following command on the host PC to verify a MaskROM device is
+   connected:
+   ```sh
+   rkdeveloptool ld
+   ```
+4. Download the loader to the board using the command:
+   ```sh
+   NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
+   rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
+   ```
+5. Select SPI NOR flash as storage and flash the `u-boot` firmware
+   using the commands:
+   ```sh
+   nix build nixpkgs#legacyPackages.aarch64-linux.ubootNanoPCT6
+   rkdeveloptool cs 9
+   rkdeveloptool ef
+   rkdeveloptool wl 0 ./result/u-boot-rockchip-spi.bin
+   ```
+6. Select eMMC memory as storage and flash the NixOS image using the commands:
+   ```sh
+   rkdeveloptool cs 1
+   rkdeveloptool ef
+   rkdeveloptool wl 0 nixos-mars-*.raw
+   ```
+7. Reboot the device using the command:
+   ```sh
+   rkdeveloptool rd
+   ```
+8. Disconnect the USB-C cable from the board and the host PC.
 
 
 ## mercury (and terra)
@@ -260,7 +265,6 @@ in the initrd.
 ### Partitioning
 
 The below commands detail the partitioning process for the host [mercury]:
-
 ```sh
 # Create 1G ESP, LUKS root and 16G swap partitions.
 sgdisk -n 1::+1G -t 1:ef00 -n 2::-16G -t 2:8309 -n 3::0 -t 3:8200 /dev/nvme0n1
@@ -288,7 +292,6 @@ umount /mnt
 ### Installation
 
 The below commands detail the installation process for the host [mercury]:
-
 ```sh
 mount /dev/mapper/cryptroot -o subvol=root,compress-force=zstd:1,noatime /mnt
 mkdir -p /mnt/{nix,state,boot,var/log,var/lib/sops-nix,etc/nixos}
@@ -324,9 +327,8 @@ devices together.
 
 ### Building the image
 
-The NixOS SD image to be flashed can be built using the following command
+The NixOS image to be flashed can be built using the following command
 (requires `aarch64-linux` platform):
-
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant raw
 ```
@@ -334,8 +336,7 @@ nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-varian
 
 ### Flashing the image
 
-Flash the SD image to a selected microSD card using the following command:
-
+Flash the image to a selected microSD card using the following command:
 ```sh
 dd if=nixos-phobos-*.img of=/dev/sdX bs=1M status=progress oflag=direct
 ```
