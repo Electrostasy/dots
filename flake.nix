@@ -78,15 +78,11 @@
             pkgs = nixpkgs.legacyPackages.${system};
             package = pkgs.writeShellApplication {
               name = "diff-closures";
-              runtimeInputs = with pkgs; [
-                coreutils-full
-                gnugrep
-              ];
               text = builtins.readFile ./scripts/diff-closures.sh;
             };
           in
             nixpkgs.lib.getExe package;
-        meta.description = "List added/removed packages and version updates between two closures.";
+        meta.description = "Show what packages and versions were added and removed between two closures.";
       };
 
       is-cached = {
