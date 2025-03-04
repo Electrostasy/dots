@@ -5,7 +5,7 @@
     ../../profiles/firefox
     ../../profiles/gnome
     ../../profiles/mpv
-    # ../../profiles/mullvad
+    ../../profiles/mullvad
     ../../profiles/neovim
     ../../profiles/shell
     ../../profiles/ssh
