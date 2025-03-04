@@ -6,12 +6,8 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-function cursor_hide {
-	echo -en '\x1B[?25l'
-}
-
-function cursor_show {
-	echo -en '\x1B[?25h'
+function build_request {
+	printf '%s\n' 'next' 'head' 'no-show-headers' 'write-out = "%{url.path} %{response_code}\\n"' "url = \"https://cache.nixos.org/$1.narinfo\""
 }
 
 function println_yellow {
@@ -33,31 +29,15 @@ function sort_by_store_path {
 	sort -k 1.44 <(printf '%s\n' "${array[@]}")
 }
 
-configfile="$(mktemp --suffix='is-cached-config')"
-
-function cleanup {
-	rm "$configfile"
-	cursor_show
-}
-
-trap cleanup EXIT
-
 declare -A paths
 for path in $(nix path-info --derivation --recursive "$1"); do
 	hash="${path:11:32}"
 	paths["$hash"]="$path"
+done
 
-	echo 'next'
-	echo 'head'
-	echo 'no-show-headers'
-	echo 'write-out = "%{url.path} %{response_code}\\n"'
-	echo "url = \"https://cache.nixos.org/$hash.narinfo\""
-done > "$configfile"
+max_count="${#paths[@]}"
+echo -n "Querying https://cache.nixos.org with $max_count paths:   0%" >&2
 
-total_paths="${#paths[@]}"
-echo -n "Querying https://cache.nixos.org with $total_paths paths:   0%" >&2
-
-cursor_hide
 count=0
 while read -r url_path response_code; do
 	path="${paths["${url_path:1:32}"]}"
@@ -68,37 +48,29 @@ while read -r url_path response_code; do
 		*) missing+=("$path") ;;
 	esac
 
-	((++count))
-
 	echo -en "\x1B[4D" >&2 # move cursor to the left by 4 cells.
-	printf '%4s' "$((count*100/total_paths))%" >&2
-done < <(curl --config "$configfile" --parallel --parallel-immediate --silent)
+	printf '%4s' "$((++count * 100 / max_count))%" >&2
+done < <(for hash in "${!paths[@]}"; do build_request "$hash"; done | curl -s -K - -Z --parallel-immediate)
 echo >&2
-cursor_show
 
-if [ -v missing ]; then
+if [[ -v missing ]]; then
 	echo
 	echo "${#missing[@]} cache misses:"
-
-	while read -r missing_drv; do
-		println_red "$missing_drv"
-	done < <(sort_by_store_path missing)
+	println_red "$(sort_by_store_path missing)"
 fi
 
-if [ -v uncached ]; then
-	echo
+if [[ -v uncached ]]; then
+	if [[ -v missing ]]; then
+		echo # optional spacing.
+	fi
 	echo "${#uncached[@]} uncached paths:"
-
-	while read -r uncached_drv; do
-		println_yellow "$uncached_drv"
-	done < <(sort_by_store_path uncached)
+	println_yellow "$(sort_by_store_path uncached)"
 fi
 
-if [ -v cached ]; then
-	echo
+if [[ -v cached ]]; then
+	if [[ -v uncached ]]; then
+		echo # optional spacing.
+	fi
 	echo "${#cached[@]} cached paths:"
-
-	while read -r cached_drv; do
-		println_green "$cached_drv"
-	done < <(sort_by_store_path cached)
+	println_green "$(sort_by_store_path cached)"
 fi
