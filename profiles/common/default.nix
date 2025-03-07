@@ -32,7 +32,10 @@
 
   nixpkgs = {
     config.allowAliases = false; # aliases bother me.
-    overlays = [ self.overlays.default ]; # include self-packaged packages.
+    overlays = [
+      self.overlays.default # include self-packaged packages.
+      self.overlays.rkdeveloptool-update
+    ];
   };
 
   boot.tmp.useTmpfs = true;

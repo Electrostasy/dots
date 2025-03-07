@@ -191,18 +191,8 @@ Module 4 IO Board and the following steps:
 
 The host [mars] is a [FriendlyElec NanoPC-T6 LTS], currently unused.
 
-Due to [limitations] in `rkdeveloptool`, we cannot select between SPI NOR and
-eMMC flash memory when flashing unless we use a [patched] version, which is
-provided by this flake:
-
-```sh
-nix shell github:Electrostasy/dots#rkdeveloptool
-```
-
 [mars]: ./hosts/mars/default.nix
 [FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
-[limitations]: https://github.com/rockchip-linux/rkdeveloptool/issues/94
-[patched]: https://github.com/rockchip-linux/rkdeveloptool/pull/106
 
 
 ### Building the image
@@ -217,8 +207,8 @@ nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant 
 
 ### Flashing the image
 
-The NixOS image may be flashed to eMMC storage using the patched
-`rkdeveloptool` and the following steps:
+The NixOS image may be flashed to eMMC storage using the latest version (at
+least 2025-03-07) of `rkdeveloptool` and the following steps:
 
 1. Enter MaskROM mode on the board by holding down the MaskROM and power
    buttons. After the status LED has been on for at least 3 seconds, the
