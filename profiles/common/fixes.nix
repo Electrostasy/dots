@@ -43,9 +43,20 @@
   # https://github.com/NixOS/nixpkgs/pull/338181#issuecomment-2349833045
   nix.settings.build-dir = "/var/tmp";
 
-  # impermanence conflicts with /etc read-only overlay, making bind mounts
+  # Having an immutable /etc is undesirable for at least the following reasons:
+  # - impermanence conflicts with /etc read-only overlay, making bind mounts
   # fail: https://github.com/nix-community/impermanence/issues/210
-  system.etc.overlay.mutable = config.environment.persistence.state.enable;
+  # - /etc/machine-id is normally populated by systemd, but the immutable /etc
+  # prevents that (breaking DHCPv4, journal and other things on systems without
+  # a valid machine ID). It can be set to uninitialized in order to force first
+  # boot behaviour (systemd normally will then overmount a temporary file which
+  # contains the actual machine ID, and after first-boot-complete.target has
+  # been reached, the real machine ID would be written to disk), except in our
+  # case, the systemd-machine-id-commit.service responsible for it will not run
+  # because /etc is not writable. The bottom line is that if we set the machine
+  # ID to uninitialized on an immutable /etc, each boot will have a unique
+  # machine ID.
+  system.etc.overlay.mutable = lib.mkForce true;
 
   # Since git 2.35.2 this workaround is needed to fix an annoying error when
   # using git or nixos-rebuild as non-root in /etc/nixos:
