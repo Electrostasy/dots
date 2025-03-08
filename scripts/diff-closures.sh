@@ -114,7 +114,7 @@ while read -r line; do
 		continue
 	fi
 
-	unset 'left_fields'
+	left_fields=()
 	while IFS=',' read -ra fields; do
 		for field in "${fields[@]}"; do
 			case "$field" in
@@ -139,8 +139,8 @@ while read -r line; do
 		done
 	done < <(echo "${rest%→*}")
 
-	unset 'size'
-	unset 'right_fields'
+	size=''
+	right_fields=()
 	while IFS=',' read -ra fields; do
 		for field in "${fields[@]}"; do
 			case "$field" in
