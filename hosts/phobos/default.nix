@@ -8,6 +8,7 @@
     ./discord-transcriber.nix
     ./fileserver.nix
     ./headscale.nix
+    ./hostapd.nix
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";
@@ -86,5 +87,5 @@
     ];
   };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.05";
 }
