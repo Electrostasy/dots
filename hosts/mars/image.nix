@@ -46,6 +46,6 @@
   systemd.repart = {
     enable = true; # expand the root filesystem on boot.
 
-    partitions."10-root".Type = "root";
+    partitions."20-root".Type = "root";
   };
 }

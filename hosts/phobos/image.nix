@@ -15,7 +15,7 @@
     name = config.image.baseName;
 
     partitions = {
-      "esp" = {
+      "10-esp" = {
         contents = {
           "/".source = pkgs.runCommand "populate-bootloader" { } ''
             ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d $out
@@ -81,7 +81,7 @@
         };
       };
 
-      "root" = {
+      "20-root" = {
         storePaths = [ config.system.build.toplevel ];
 
         repartConfig = {
@@ -99,6 +99,6 @@
   systemd.repart = {
     enable = true; # expand the root filesystem on boot.
 
-    partitions."10-root".Type = "root";
+    partitions."20-root".Type = "root";
   };
 }
