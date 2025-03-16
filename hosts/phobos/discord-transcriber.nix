@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   sops.secrets.discordBotToken = {};
@@ -10,23 +10,24 @@
     after = [ "network-online.target" ];
 
     serviceConfig = {
+      DynamicUser = true;
       StateDirectory = "discord-transcriber";
-
-      LoadCredential = [
-        "token:${config.sops.secrets.discordBotToken.path}"
-      ];
+      LoadCredential = "token:${config.sops.secrets.discordBotToken.path}";
     };
 
+    path = with pkgs; [
+      curl
+      discord-transcriber
+    ];
+
     preStart = ''
-      pushd "$STATE_DIRECTORY"
-      if ! [ -f 'ggml-base.en.bin' ]; then
-        ${pkgs.whisper-cpp}/bin/whisper-cpp-download-ggml-model base.en
+      if ! [ -f "$STATE_DIRECTORY/ggml-base.en.bin" ]; then
+        curl -o "$STATE_DIRECTORY/ggml-base.en.bin" 'https://ggml.ggerganov.com/ggml-model-whisper-base.en.bin'
       fi
-      popd
     '';
 
     script = ''
-      ${lib.getExe pkgs.discord-transcriber} --model "$STATE_DIRECTORY/ggml-base.en.bin" --token "$(systemd-creds cat 'token')"
+      discord-transcriber --model "$STATE_DIRECTORY/ggml-base.en.bin" --token "$(systemd-creds cat 'token')"
     '';
   };
 }
