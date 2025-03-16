@@ -145,7 +145,8 @@
   services.postgresql = {
     enable = true;
 
-    dataDir = "/var/lib/postgresql";
+    package = pkgs.postgresql_16;
+
     ensureDatabases = [ "dendrite" ];
     ensureUsers = [
       { name = "dendrite";
