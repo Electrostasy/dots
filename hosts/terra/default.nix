@@ -16,7 +16,10 @@
 
   nixpkgs = {
     hostPlatform = "x86_64-linux";
-    overlays = [ self.overlays.sonic-visualiser-update ];
+    overlays = [
+      self.overlays.qemu-unshare-fix
+      self.overlays.sonic-visualiser-update
+    ];
   };
 
   sops = {
