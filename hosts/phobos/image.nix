@@ -6,6 +6,24 @@
     "${modulesPath}/image/file-options.nix"
   ];
 
+  nixpkgs.overlays = [
+    # If our bootloader EEPROM version from raspberrypi/rpi-eeprom is too new,
+    # then we need accordingly new firmware files or else we will not be able
+    # to boot.
+    # TODO: Remove when it is updated in nixpkgs.
+    (final: prev: {
+      raspberrypifw = prev.raspberrypifw.overrideAttrs (finalAttrs: oldAttrs: {
+        version = "1.20250305";
+
+        src = oldAttrs.src.override {
+          rev = null;
+          tag = finalAttrs.version;
+          hash = "sha256-J2Na7yGKvRDWKC+1gFEQMuaam+4vt+RsV9FjarDgvMs=";
+        };
+      });
+    })
+  ];
+
   image = {
     baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
     extension = "raw";

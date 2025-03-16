@@ -31,10 +31,7 @@
     loader.generic-extlinux-compatible.enable = true;
 
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "8250.nr_uarts=1"
-      "console=ttyS0,115200"
-    ];
+    kernelParams = [ "8250.nr_uarts=1" ];
   };
 
   nix = {
@@ -62,11 +59,6 @@
       options = [ "umask=0077" ];
     };
   };
-
-  # Raspberry Pi 4 does not have a RTC and timesyncd is fighting with resolved
-  # due to DNSSEC and expired signatures, so for now just synchronize time
-  # with local network router ("DNSSEC validation failed: signature-expired").
-  services.timesyncd.servers = lib.mkForce [ "192.168.205.1" ];
 
   users.users.electro = {
     isNormalUser = true;
