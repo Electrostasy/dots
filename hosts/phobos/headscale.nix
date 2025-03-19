@@ -1,10 +1,14 @@
 { config, pkgs, ... }:
 
 {
-  sops.secrets.headscaleKey = {
-    mode = "0440";
-    owner = config.users.users.headscale.name;
-    group = config.users.groups.headscale.name;
+  sops.secrets = {
+    headscaleKey = {
+      mode = "0440";
+      owner = config.users.users.headscale.name;
+      group = config.users.groups.headscale.name;
+    };
+
+    tailscaleKey = { };
   };
 
   boot.kernelParams = [

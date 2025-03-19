@@ -23,7 +23,7 @@
     netdevs."30-br0".netdevConfig = {
       Name = "br0";
       Kind = "bridge";
-      MACAddress = "none"; # inherit MAC so our DHCPv4 IP doesn't change.
+      MACAddress = "none"; # inherit MAC.
     };
 
     links."30-br0" = {
