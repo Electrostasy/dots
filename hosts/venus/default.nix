@@ -2,9 +2,9 @@
 
 {
   imports = [
-    ../../profiles/firefox
+    ../../profiles/firefox.nix
     ../../profiles/gnome
-    ../../profiles/mpv
+    ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
     ../../profiles/shell

@@ -108,9 +108,9 @@
     });
 
     nixosModules = {
-      mpv = ./modules/mpv;
-      neovim = ./modules/neovim;
-      unfree = ./modules/unfree;
+      mpv = ./modules/mpv.nix;
+      neovim = ./modules/neovim.nix;
+      unfree = ./modules/unfree.nix;
     };
 
     nixosConfigurations = nixpkgs.lib.mapAttrs (name: _:

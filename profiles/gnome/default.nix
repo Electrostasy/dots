@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../fonts
+    ../fonts.nix
     ./debloat.nix
     ./mimetypes.nix
   ];

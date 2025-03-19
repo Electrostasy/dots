@@ -41,11 +41,7 @@
       autofit-smaller = "1920x1080";
       cursor-autohide = "always";
 
-      # PipeWire backend is selected automatically if detected, set it anyway.
-      ao = "pipewire";
-
-      # Force showing subtitles while seeking.
-      demuxer-mkv-subtitle-preroll = "yes";
+      demuxer-mkv-subtitle-preroll = "yes"; # force showing subtitles while seeking.
       hr-seek = "yes"; # use precise seeks whenever possible.
 
       # Load external subtitles with similar name to file.
@@ -53,7 +49,6 @@
       sub-bold = "no";
       sub-gray = "yes";
 
-      # Subtitle styling.
       # Can't selectively override the font for ASS subtitles in libass, without
       # stripping all the style tags, so just keep them enabled.
       # sub-ass-override = "yes";
@@ -68,9 +63,7 @@
       sub-shadow-color = "0.0/0.0/0.0/0.85";
       sub-shadow-offset = 0.75;
 
-      # Load high quality default OpenGL options
-      vo = "gpu";
-      profile = "gpu-hq";
+      vo = "gpu-next";
       hwdec = "vaapi";
       deband = "yes";
       deband-iterations = 4;
@@ -80,15 +73,7 @@
       dither-depth = "auto";
       volume = 100;
       volume-max = 100;
-      gpu-context = "wayland";
-      # Better video quality
-      scale = "ewa_lanczos";
-      scale-blur = 0.981251;
-      dscale = "mitchell";
-      cscale = "ewa_lanczossharp";
-      # Resample audio instead of dropping frames if video out of sync
       video-sync = "display-resample";
-      autofit = "50%";
 
       # Language priority
       alang = [ "ja" "jpn" "en" "eng" ];
