@@ -12,7 +12,7 @@
     ./hostapd.nix
   ];
 
-  nixpkgs.hostPlatform = "aarch64-linux";
+  nixpkgs.hostPlatform.system = "aarch64-linux";
 
   image.modules = lib.mkForce { raw = ./image.nix; };
 

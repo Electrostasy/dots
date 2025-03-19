@@ -7,7 +7,7 @@
   ];
 
   nixpkgs = {
-    hostPlatform = "x86_64-linux";
+    hostPlatform.system = "x86_64-linux";
     overlays = [ self.overlays.libewf-fuse ];
   };
 

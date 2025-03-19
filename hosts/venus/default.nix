@@ -12,7 +12,7 @@
     ../../profiles/tailscale.nix
   ];
 
-  nixpkgs.hostPlatform = "x86_64-linux";
+  nixpkgs.hostPlatform.system = "x86_64-linux";
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
