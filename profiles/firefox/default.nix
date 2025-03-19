@@ -115,6 +115,11 @@ in
       pref("browser.bookmarks.addedImportButton", true); // disable 'Import bookmarks...' toolbar button.
       pref("browser.toolbars.bookmarks.visibility", "always"); // always show the bookmarks toolbar.
       pref("pref.general.disable_button.default_browser", true); // default browser is managed by NixOS.
+      pref("sidebar.revamp", true); // enable sidebar.
+      pref("sidebar.revamp.round-content-area", true); // round content area.
+      pref("sidebar.verticalTabs", true); // enable vertical tabs in sidebar.
+      pref("browser.ml.chat.enabled", false); // disable sidebar chatbot.
+      pref("sidebar.main.tools", "history"); // only show history button in sidebar.
 
       // Hide suggestions in urlbar.
       pref("browser.urlbar.showSearchSuggestionsFirst", false);
