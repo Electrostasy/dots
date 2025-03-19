@@ -5,6 +5,7 @@
     "${modulesPath}/profiles/minimal.nix"
     ../../profiles/shell
     ../../profiles/ssh
+    ../../profiles/tailscale.nix
   ];
 
   nixpkgs.hostPlatform = "aarch64-linux";

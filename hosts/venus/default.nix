@@ -9,6 +9,7 @@
     ../../profiles/neovim
     ../../profiles/shell
     ../../profiles/ssh
+    ../../profiles/tailscale.nix
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";

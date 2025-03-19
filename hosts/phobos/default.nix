@@ -4,6 +4,7 @@
   imports = [
     "${modulesPath}/profiles/minimal.nix"
     ../../profiles/ssh
+    ../../profiles/tailscale.nix
     ./dendrite.nix
     ./discord-transcriber.nix
     ./fileserver.nix
