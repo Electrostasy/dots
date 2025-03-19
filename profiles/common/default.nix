@@ -83,6 +83,10 @@
     extraUpFlags = [ "--login-server" "https://controlplane.${config.networking.domain}" ];
   };
 
+  # For some reason, tailscale does not always successfully add the tailnet to
+  # /etc/resolv.conf, so hardcode it here.
+  services.resolved.domains = [ "sol.tailnet.0x6776.lt" ];
+
   programs.git = {
     enable = true;
 
