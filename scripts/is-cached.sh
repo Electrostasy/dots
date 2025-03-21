@@ -1,76 +1,82 @@
 #!/usr/bin/env bash
 
-if [ "$#" -ne 1 ]; then
-	echo "USAGE: $0 <derivation>"
-	echo "  where <derivation> can be for e.g. 'nixpkgs#hello'"
+function print_usage {
+	cat <<- EOF
+	List cache availability for a derivation and its dependencies in https://cache.nixos.org.
+
+	Usage:
+	  $(basename "$0") [options] derivation
+
+	Options:
+	  -p            Query the cache in parallel
+	  -h            Print this help text
+
+	Positional arguments:
+	  derivation    Derivation or flakeref#attrpath as accepted by nix path-info --derivation
+
+	Example:
+	  $(basename "$0") -p nixpkgs#hello
+	EOF
+}
+
+declare -a curl_opts=()
+
+while getopts 'ph' opt; do
+	case "$opt" in
+		p) curl_opts+=('-Z' '--parallel-immediate') ;;
+		h) print_usage ; exit 0 ;;
+		*) print_usage ; exit 1 ;;
+	esac
+	shift
+done
+
+if [[ $# -ne 1 ]] || ! store_paths="$(nix --experimental-features 'nix-command flakes' path-info --derivation --recursive "$1" 2> /dev/null)"; then
+	print_usage
 	exit 1
 fi
 
-function build_request {
-	printf '%s\n' 'next' 'head' 'no-show-headers' 'write-out = "%{url.path} %{response_code}\\n"' "url = \"https://cache.nixos.org/$1.narinfo\""
-}
+declare -A hash_to_store_path
+while read -r store_path; do
+	hash_to_store_path["${store_path:11:32}"]="$store_path"
+done <<< "$store_paths"
 
-function println_yellow {
-	printf '\x1B[0;33m%s\x1B[0m\n' "$1"
-}
-
-function println_green {
-	printf '\x1B[0;32m%s\x1B[0m\n' "$1"
-}
-
-function println_red {
-	printf '\x1B[0;31m%s\x1B[0m\n' "$1"
-}
-
-function sort_by_store_path {
-	local -n array=$1
-	# sort only after the `/nix/store/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-`
-	# part of the path.
-	sort -k 1.44 <(printf '%s\n' "${array[@]}")
-}
-
-declare -A paths
-for path in $(nix path-info --derivation --recursive "$1"); do
-	hash="${path:11:32}"
-	paths["$hash"]="$path"
-done
-
-max_count="${#paths[@]}"
-echo -n "Querying https://cache.nixos.org with $max_count paths:   0%" >&2
-
-count=0
+total="${#hash_to_store_path[@]}"
+i=0
 while read -r url_path response_code; do
-	path="${paths["${url_path:1:32}"]}"
-
+	store_path="${hash_to_store_path["${url_path:1:32}"]}"
 	case "$response_code" in
-		200) cached+=("$path") ;;
-		404) uncached+=("$path") ;;
-		*) missing+=("$path") ;;
+		200) cached+=("$store_path") ;;
+		404) uncached+=("$store_path") ;;
+		*)   missing+=("$store_path") ;;
 	esac
 
-	echo -en "\x1B[4D" >&2 # move cursor to the left by 4 cells.
-	printf '%4s' "$((++count * 100 / max_count))%" >&2
-done < <(for hash in "${!paths[@]}"; do build_request "$hash"; done | curl -s -K - -Z --parallel-immediate)
-echo >&2
+	echo -en '\x1B[2K' >&2
+	printf "Querying https://cache.nixos.org with %s paths: %3s%%\n" "$total" "$((++i * 100 / total))" >&2
+	if [[ $i -lt $total ]]; then
+		echo -en '\x1B[1F' >&2
+	fi
+done < <(curl "${curl_opts[@]}" -s -K <(printf '\nnext\nhead\nno-show-headers\nwrite-out = "%%{url.path} %%{response_code}\\n"\nurl = "https://cache.nixos.org/%s.narinfo"' "${!hash_to_store_path[@]}"))
 
 if [[ -v missing ]]; then
 	echo
 	echo "${#missing[@]} cache misses:"
-	println_red "$(sort_by_store_path missing)"
+	echo -en '\x1B[;31m' >&2
+	sort -k 1.44 <(printf '%s\n' "${missing[@]}")
+	echo -en '\x1B[0m' >&2
 fi
 
 if [[ -v uncached ]]; then
-	if [[ -v missing ]]; then
-		echo # optional spacing.
-	fi
+	[[ -v missing ]] && echo
 	echo "${#uncached[@]} uncached paths:"
-	println_yellow "$(sort_by_store_path uncached)"
+	echo -en '\x1B[;33m' >&2
+	sort -k 1.44 <(printf '%s\n' "${uncached[@]}")
+	echo -en '\x1B[0m' >&2
 fi
 
 if [[ -v cached ]]; then
-	if [[ -v uncached ]]; then
-		echo # optional spacing.
-	fi
+	[[ -v uncached ]] && echo
 	echo "${#cached[@]} cached paths:"
-	println_green "$(sort_by_store_path cached)"
+	echo -en '\x1B[;32m' >&2
+	sort -k 1.44 <(printf '%s\n' "${cached[@]}")
+	echo -en '\x1B[0m' >&2
 fi
