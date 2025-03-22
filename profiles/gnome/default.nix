@@ -315,6 +315,11 @@
 
         # Weather shown in GNOME Weather program.
         "org/gnome/Weather".locations = self."org/gnome/shell/weather".locations;
+        "org/gnome/GWeather4" = {
+          distance-unit = "meters";
+          speed-unit = "ms";
+          temperature-unit = "centigrade";
+        };
 
         "org/gnome/shell/extensions/user-theme".name = "electrostasy";
 
