@@ -1,7 +1,7 @@
 # https://github.com/NixOS/nixpkgs/pull/370573
 
 final: prev: {
-  sonic-visualiser = (prev.sonic-visualiser.override { librdf_raptor = null; librdf_rasqal = null; }).overrideAttrs (finalAttrs: {
+  sonic-visualiser = prev.sonic-visualiser.overrideAttrs (finalAttrs: {
     version = "5.0.1";
 
     src = prev.fetchzip {
