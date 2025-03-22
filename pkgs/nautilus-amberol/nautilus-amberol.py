@@ -49,7 +49,8 @@ class AmberolMenuProvider(GObject.GObject, Nautilus.MenuProvider):
                     continue
 
                 mime, _ = mimetypes.guess_type(walk_file.title())
-                if mime is not None and mime.startswith('audio/'):
+                # 'audio/x-mpegurl' etc. are playlists and not real audio files.
+                if mime is not None and mime.startswith('audio/') and not mime.endswith('mpegurl'):
                     files.append(f'{root}/{walk_file}')
 
         return files
