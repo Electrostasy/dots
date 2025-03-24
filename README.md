@@ -97,7 +97,7 @@ Flash to eMMC storage using the Raspberry Pi Compute Module 4 IO Board:
 
 When a disk fails or is near failing in the array, we need to swap the disk out.
 
-> [!WARNING]
+> [!CAUTION]
 > You can only mount the array in degraded mode once or your data is lost!
 
 If the disk is still visible in the system, we need to mount it degraded
@@ -129,9 +129,65 @@ btrfs balance start /mnt/array
 ```
 
 
+## hyperion
+
+This is a Rockchip RK3576 based SBC - an [ArmSoM Sige5].
+
+[ArmSoM Sige5]: https://docs.armsom.org/armsom-sige5
+
+
+###  Building the image
+
+Build on an `aarch64-linux` platform and insert the `age` private key:
+```sh
+nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant raw
+systemd-dissect --copy-to nixos-hyperion-* {,}/var/lib/sops-nix/keys.txt
+```
+
+
+### Flashing the image
+
+First ensure the board's microSD card slot is populated, then flash `u-boot` to
+microSD and the image to eMMC storage using `rkdeveloptool`:
+
+1. Enter MaskROM mode on the board by holding down the MaskROM and power
+   buttons; after the status LED has been on for at least 3 seconds, the
+   MaskROM and power buttons may be released.
+2. Connect the board and the host PC you will flash from with a USB cable.
+3. Run the following command on the host PC to verify a MaskROM device is
+   connected:
+   ```sh
+   rkdeveloptool ld
+   ```
+4. Get the Rockchip proprietary SPL bootloader blobs and download the loader to
+   the board:
+   ```sh
+   NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
+   rkdeveloptool db ./result/bin/rk3576_spl_loader_v*.bin
+   ```
+5. Build the `u-boot` firmware, then select SD as storage and flash it:
+   ```sh
+   nix build github:Electrostasy/dots#legacyPackages.aarch64-linux.ubootSige5
+   rkdeveloptool cs 2
+   rkdeveloptool ef
+   rkdeveloptool wl 64 ./result/u-boot-rockchip.bin
+   ```
+6. Select eMMC memory as storage and flash the NixOS image to it:
+   ```sh
+   rkdeveloptool cs 1
+   rkdeveloptool ef
+   rkdeveloptool wl 0 nixos-hyperion-*
+   ```
+7. Reboot the device:
+   ```sh
+   rkdeveloptool rd
+   ```
+8. Disconnect the USB cable from the board and the host PC.
+
+
 ## mars
 
-This is a [FriendlyElec NanoPC-T6 LTS].
+This is a Rockchip RK3588 based SBC - a [FriendlyElec NanoPC-T6 LTS].
 
 [FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
 
@@ -147,7 +203,7 @@ systemd-dissect --copy-to nixos-mars-* {,}/var/lib/sops-nix/keys.txt
 
 ### Flashing the image
 
-Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
+Flash u-boot to SPI NOR flash and the image to eMMC storage using `rkdeveloptool`:
 
 1. Enter MaskROM mode on the board by holding down the MaskROM and power
    buttons; after the status LED has been on for at least 3 seconds, the
@@ -164,7 +220,8 @@ Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
    NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
    rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
    ```
-5. Build the `u-boot` firmware, then select SPI NOR flash as storage and flash it:
+5. Build the `u-boot` firmware, then select SPI NOR flash as storage and flash
+   it:
    ```sh
    nix build nixpkgs#legacyPackages.aarch64-linux.ubootNanoPCT6
    rkdeveloptool cs 9
