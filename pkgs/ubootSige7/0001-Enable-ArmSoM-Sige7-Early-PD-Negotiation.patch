@@ -1,0 +1,76 @@
+diff --git a/arch/arm/dts/rk3588-armsom-sige7-u-boot.dtsi b/arch/arm/dts/rk3588-armsom-sige7-u-boot.dtsi
+index af96d2fa8fb..3d120e267f4 100644
+--- a/arch/arm/dts/rk3588-armsom-sige7-u-boot.dtsi
++++ b/arch/arm/dts/rk3588-armsom-sige7-u-boot.dtsi
+@@ -3,4 +3,53 @@
+  * Copyright (c) 2024 ArmSoM Technology Co., Ltd.
+  */
+ 
++#include <dt-bindings/usb/pd.h>
+ #include "rk3588-u-boot.dtsi"
++
++&i2c3 {
++	pinctrl-0 = <&i2c3m0_xfer>;
++	pinctrl-names = "default";
++
++	status = "okay";
++
++	usbc_power: usb-typec@22 {
++		compatible = "fcs,fusb302";
++		reg = <0x22>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PC4 IRQ_TYPE_LEVEL_LOW>;
++		int-n-gpios = <&gpio3 RK_PC4 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usbc_power_int>;
++		status = "okay";
++
++		usb_con: connector {
++			compatible = "usb-c-connector";
++			label = "USB-C";
++			data-role = "dual";
++			power-role = "sink";
++			try-power-role = "sink";
++			op-sink-microwatt = <1000000>;
++			sink-pdos = <
++				PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)
++				PDO_FIXED(9000, 3000, PDO_FIXED_USB_COMM)
++				PDO_FIXED(12000, 3000, PDO_FIXED_USB_COMM)
++			>;
++		};
++	};
++};
++
++&pinctrl {
++	usb {
++		usbc_power_int: usbc-power-int {
++			rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++};
++
++&led_red {
++	default-state = "on";
++};
++
++&sdhci {
++	cap-mmc-highspeed;
++};
+diff --git a/configs/sige7-rk3588_defconfig b/configs/sige7-rk3588_defconfig
+index 8b033e22b84..12974e179c7 100644
+--- a/configs/sige7-rk3588_defconfig
++++ b/configs/sige7-rk3588_defconfig
+@@ -71,6 +71,13 @@ CONFIG_DEBUG_UART_SHIFT=2
+ CONFIG_SYS_NS16550_MEM32=y
+ CONFIG_SYSRESET=y
+ CONFIG_USB=y
++CONFIG_I2C_MUX=y
++CONFIG_DM_POWER_DELIVERY=y
++CONFIG_TYPEC_TCPM=y
++CONFIG_TYPEC_HUSB311=y
++CONFIG_TYPEC_FUSB302=y
++CONFIG_CMD_CHARGE_DISPLAY=y
++CONFIG_DM_CHARGE_DISPLAY=y
+ CONFIG_USB_XHCI_HCD=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_EHCI_GENERIC=y
