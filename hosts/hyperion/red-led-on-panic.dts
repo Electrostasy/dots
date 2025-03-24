@@ -1,0 +1,11 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "armsom,sige5";
+};
+
+&red_led {
+	linux,default-trigger = "none";
+	panic-indicator;
+};
