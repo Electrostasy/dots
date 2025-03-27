@@ -33,10 +33,13 @@
     };
 
     legacyPackages = forEachSystem (system:
-      nixpkgs.lib.packagesFromDirectoryRecursive {
-        callPackage = nixpkgs.legacyPackages.${system}.callPackage;
-        directory = ./pkgs;
-      });
+      let
+        packages = nixpkgs.lib.packagesFromDirectoryRecursive {
+          callPackage = nixpkgs.lib.callPackageWith (nixpkgs.legacyPackages.${system} // packages);
+          directory = ./pkgs;
+        };
+      in
+        packages);
 
     apps = forEachSystem (system: {
       nvim = {
