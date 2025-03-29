@@ -1,11 +1,11 @@
-vim.lsp.start({
-  name = 'clangd',
+return {
   cmd = { 'clangd' },
-  root_dir = vim.fs.root(0, {
+  filetypes = { 'c', 'cpp' },
+  root_markers = {
+    '.clangd',
     'compile_commands.json',
     'compile_flags.txt',
     'configure.ac',
-    '.clangd',
     '.git',
-  }),
-})
+  },
+}

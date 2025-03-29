@@ -1,10 +1,13 @@
-local root_dir = vim.fs.root(0, { 'flake.nix', '.git' }) or vim.fn.getcwd()
-local is_flake = vim.fs.find({ 'flake.nix' }, { path = root_dir, upward = true, type = 'file' })
+local root_markers = {
+  'flake.nix',
+  '.git',
+}
 
 local nixpkgs_expr
 local options_expr
 
-if is_flake then
+local root_dir = vim.fs.root(0, root_markers) or vim.fn.getcwd()
+if vim.fs.find({ 'flake.nix' }, { path = root_dir, upward = true, type = 'file' }) then
   nixpkgs_expr = ('(builtins.getFlake \"%s\").inputs.nixpkgs'):format(root_dir)
 
   local json = vim.system({ 'nix', 'eval', '.#nixosConfigurations', '--apply', 'builtins.attrNames', '--json' }):wait().stdout
@@ -30,10 +33,10 @@ if not options_expr then
   options_expr = '(import \"${<nixpkgs>}/nixos/lib/eval-config.nix\" { modules = []; }).options'
 end
 
-vim.lsp.start({
-  name = 'nixd',
+return {
   cmd = { 'nixd' },
-  root_dir = root_dir,
+  filetypes = { 'nix' },
+  root_markers = root_dir,
 
   settings = {
     nixd = {
@@ -51,4 +54,4 @@ vim.lsp.start({
       },
     },
   },
-})
+}

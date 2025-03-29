@@ -16,18 +16,18 @@ vim.g.loaded_matchit = 1
 vim.g.loaded_matchparen = 1
 vim.g.loaded_2html_plugin = 1
 
-vim.opt.termguicolors = true
-vim.opt.background = 'dark'
+vim.o.termguicolors = true
+vim.o.background = 'dark'
 vim.cmd.colorscheme('poimandres')
 
 vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
-vim.opt.showmode = false -- Don't show mode in command line.
-vim.opt.shortmess:append('S') -- Hide search count from message area.
-vim.opt.ignorecase = true -- Ignore case of normal letters in patterns.
-vim.opt.smartcase = true -- Ignore case when pattern contains lowercase letters only.
-vim.opt.wrap = false
-vim.opt.splitbelow = true
-vim.opt.splitright = true
+vim.o.showmode = false -- Don't show mode in command line.
+vim.o.shortmess = 'S' -- Hide search count from message area.
+vim.o.ignorecase = true -- Ignore case of normal letters in patterns.
+vim.o.smartcase = true -- Ignore case when pattern contains lowercase letters only.
+vim.o.wrap = false
+vim.o.splitbelow = true
+vim.o.splitright = true
 
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
@@ -77,8 +77,8 @@ do
     tab = '··',
   }
 
-  vim.opt.showbreak = '↳'
-  vim.opt.list = true
+  vim.o.showbreak = '↳'
+  vim.o.list = true
   vim.opt.listchars = normal_listchars
 
   vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
@@ -96,7 +96,7 @@ do
         vim.opt_local.listchars = normal_listchars
       end
 
-      -- Execute `OptionSet` autocmds manually, instead of running this nested.
+      -- Execute `OptionSet` autocmds manually instead of running this nested.
       vim.api.nvim_exec_autocmds('OptionSet', {
         group = 'IndentBlankline',
         pattern = 'listchars',
@@ -110,21 +110,22 @@ vim.api.nvim_create_autocmd('FileType', {
   desc = 'Enable treesitter for supported filetypes',
   pattern = '*',
   callback = function(event)
-    local filetype = event.match
-    local ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
-    if not ok or not lang then
+    if #vim.api.nvim_get_runtime_file(('parser/%s.so'):format(event.match), false) == 0 then
       return
     end
 
-    vim.treesitter.start(event.buf, lang)
+    vim.treesitter.start(event.buf, event.match)
 
-    if vim.treesitter.query.get(lang, 'folds') then
-      vim.opt.foldmethod = 'expr'
-      vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-      vim.opt.foldlevel = 99
-      vim.opt.foldtext = ''
-      vim.opt.fillchars:append({ fold = ' ' })
+    if vim.treesitter.query.get(event.match, 'folds') then
+      vim.wo.foldmethod = 'expr'
+      vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.wo.foldlevel = 99
+      vim.wo.foldtext = ''
+      vim.opt_local.fillchars = { fold = ' ' }
     end
+
+    -- Enable treesitter based parameter highlighting.
+    require('hlargs').setup()
   end,
 })
 
@@ -133,7 +134,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'WinLeave' }, {
   desc = 'Highlight line containing cursor only on active buffer',
   pattern = '*',
   callback = function(args)
-    vim.opt_local.cursorline = args.event == 'BufEnter'
+    vim.wo.cursorline = args.event == 'BufEnter'
   end
 })
 
@@ -146,13 +147,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.opt.number = true
+vim.o.number = true
 vim.api.nvim_create_autocmd('ModeChanged', {
   group = vim.api.nvim_create_augroup('DynamicRelativeNumber', { }),
   desc = 'Set relativenumber when entering visual/select line/block modes',
   pattern = '*',
   callback = function(args)
-    vim.opt_local.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
+    vim.wo.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
   end,
 })
 

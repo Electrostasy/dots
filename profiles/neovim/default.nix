@@ -28,26 +28,20 @@
     enable = true;
 
     plugins = with pkgs.vimPlugins; [
-      # Completion engine and sources.
       cmp-async-path
       cmp-buffer
       cmp-nvim-lsp
       cmp-nvim-lua
       cmp-under-comparator
-      nvim-cmp
-
-      # Visual improvements.
+      gitsigns-nvim
       hlargs-nvim
       indent-blankline-nvim
-      lsp_lines-nvim
+      nvim-cmp
       nvim-highlight-colors
-      nvim-treesitter.withAllGrammars # for queries and parsers.
+      nvim-treesitter.withAllGrammars
       nvim-web-devicons
-
-      # Functionality.
-      gitsigns-nvim
-      telescope-zf-native-nvim
       telescope-nvim
+      telescope-zf-native-nvim
       treesj
     ];
 
@@ -58,7 +52,6 @@
       nixd
       ripgrep
       rust-analyzer
-      wl-clipboard
       zls
     ];
   };

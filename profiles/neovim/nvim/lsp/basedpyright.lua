@@ -1,12 +1,13 @@
-vim.lsp.start({
-  name = 'basedpyright-langserver',
+return {
   cmd = { 'basedpyright-langserver', '--stdio' },
-  root_dir = vim.fs.root(0, {
+  filetypes = { 'python' },
+  root_markers = {
     'pyproject.toml',
-    'setup.py',
+    'requirements.txt',
     'setup.cfg',
-    'requirements.txt'
-  }),
+    'setup.py',
+    '.git',
+  },
 
   settings = {
     basedpyright = {
@@ -17,4 +18,4 @@ vim.lsp.start({
       },
     },
   },
-})
+}

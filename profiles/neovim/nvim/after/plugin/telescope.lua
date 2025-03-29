@@ -77,6 +77,6 @@ vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('TelescopeNoCursorline', { }),
   pattern = { 'TelescopePrompt', 'TelescopeResults' },
   callback = function()
-    vim.opt.cursorline = false
+    vim.wo.cursorline = false
   end
 })

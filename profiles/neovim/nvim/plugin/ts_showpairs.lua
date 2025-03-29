@@ -48,29 +48,18 @@ _query_cache.on_child_added = function(tree)
     return
   end
 
-  -- Some parsers are weird in how they report their symbols, so we normalize the results as a LUT.
-  local symbols = vim.iter(vim.treesitter.language.inspect(lang).symbols)
-    :fold({}, function(acc, left, right)
-      if right ~= nil then
-        acc[right[1]] = true
-      else
-        acc[left[1]] = true
-      end
+  local symbols = vim.treesitter.language.inspect(lang).symbols
 
-      return acc
-    end)
+  _query_cache[lang] = vim.treesitter.query.parse(lang, vim.iter(symbol_pairs):fold('', function(acc, pair)
+    local opening = pair[1]
+    local closing = pair[2]
 
-  _query_cache[lang] = vim.treesitter.query.parse(lang, vim.iter(symbol_pairs)
-    :fold('', function(acc, pair)
-      local opening = pair[1]
-      local closing = pair[2]
+    if symbols[('"%s"'):format(opening)] ~= nil and symbols[('"%s"'):format(closing)] ~= nil then
+      acc = acc .. ('(_ (("%s" @opening) ("%s" @closing)))'):format(opening, closing)
+    end
 
-      if symbols[opening] and symbols[closing] then
-        acc = acc .. ('(_ (("%s" @opening) ("%s" @closing)))'):format(opening, closing)
-      end
-
-      return acc
-    end))
+    return acc
+  end))
 end
 
 local _remove_highlight = function(bufnr)
@@ -99,8 +88,8 @@ local _add_highlight = function(bufnr)
     local node = tree:named_node_for_range(cursor_range)
     while node do
       for _, match, _ in query:iter_matches(node, bufnr) do
-        local opening_start_row, opening_start_col, opening_end_row, opening_end_col = match[1]:range()
-        local closing_start_row, closing_start_col, closing_end_row, closing_end_col = match[2]:range()
+        local opening_start_row, opening_start_col, opening_end_row, opening_end_col = match[1][1]:range()
+        local closing_start_row, closing_start_col, closing_end_row, closing_end_col = match[2][1]:range()
 
         -- Some nodes can contain the matching pair as part of their node, which
         -- is why we must explicitly check if the cursor is inside the range
@@ -137,7 +126,8 @@ local _add_highlight = function(bufnr)
       node = node:parent()
     end
 
-    ---@diagnostic disable-next-line: invisible
+    -- We check for nil during the while loop condition.
+    ---@diagnostic disable-next-line: cast-local-type
     tree = tree:parent()
   end
 
@@ -149,7 +139,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   desc = 'Set up showpairs for the buffer',
   callback = function(event)
     local ok, parser = pcall(vim.treesitter.get_parser, event.buf)
-    if not ok then
+    if not ok or not parser then
       return
     end
 
@@ -157,6 +147,8 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
       on_child_removed = _query_cache.on_child_removed,
       on_child_added = _query_cache.on_child_added,
     })
+
+    parser:parse()
 
     -- The callbacks are not called until a tree is added/removed, so we need
     -- to perform a first pass.

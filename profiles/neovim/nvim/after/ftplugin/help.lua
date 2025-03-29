@@ -1,2 +1,2 @@
-vim.opt.ruler = false
+vim.o.ruler = false
 

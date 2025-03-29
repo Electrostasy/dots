@@ -233,7 +233,7 @@ function __StatusLine(current)
 
   -- Max line number in gutter.
   ---@diagnostic disable-next-line: undefined-field
-  if vim.opt.number:get() or vim.opt.relativenumber:get() then
+  if vim.wo.number or vim.wo.relativenumber then
     local buf_length_digits = int_len(vim.api.nvim_buf_line_count(buf))
     table.insert(groups, ('%s%s '):format(string.rep(' ', gutter_width - buf_length_digits - 2), '%L'))
   end
@@ -241,7 +241,7 @@ function __StatusLine(current)
   -- Mode indicator.
   local mode, mode_hl = unpack(mode_map[vim.api.nvim_get_mode().mode:sub(1, 1)])
   ---@diagnostic disable-next-line: undefined-field
-  if current == 0 and not vim.opt.showmode:get() then
+  if current == 0 and not vim.o.showmode then
     table.insert(groups, ('%%#%s# %s %%*'):format(mode_hl, mode))
   end
 
@@ -266,9 +266,9 @@ function __StatusLine(current)
   end
 
   ---@diagnostic disable-next-line: undefined-field
-  local ruler = vim.opt.ruler:get()
+  local ruler = vim.o.ruler
   if ruler then
-    local format = vim.opt.rulerformat:get()
+    local format = vim.o.rulerformat
     if format == '' then
       format = '󰳂 %l:%c'
     end
@@ -292,7 +292,7 @@ function __StatusLine(current)
   table.insert(groups, indent)
 
   -- Show incremental search count.
-  if vim.opt.shortmess:get().S and vim.v.hlsearch == 1 then
+  if vim.o.shortmess:find('S') and vim.v.hlsearch == 1 then
     local ok, count = pcall(vim.fn.searchcount, { recompute = true })
     if ok and count.current ~= nil and count.total ~= 0 then
       local search_icon = '  '
@@ -382,7 +382,7 @@ vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   group = augroup,
   pattern = '*',
   callback = function()
-    vim.opt_local.statusline = [[%{%v:lua.__StatusLine(0)%}]]
+    vim.wo.statusline = [[%{%v:lua.__StatusLine(0)%}]]
   end
 })
 
@@ -390,6 +390,6 @@ vim.api.nvim_create_autocmd({ 'WinLeave', 'BufLeave' }, {
   group = augroup,
   pattern = '*',
   callback = function()
-    vim.opt_local.statusline = [[%{%v:lua.__StatusLine(1)%}]]
+    vim.wo.statusline = [[%{%v:lua.__StatusLine(1)%}]]
   end
 })

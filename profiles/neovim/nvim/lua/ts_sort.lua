@@ -46,6 +46,11 @@ M.sort_nodes_on_cursor = function()
 
   local bufnr = vim.api.nvim_win_get_buf(winnr)
   local parser = vim.treesitter.get_parser(bufnr)
+  if not parser then
+    return
+  end
+
+  parser:parse()
 
   local target_node = parser:named_node_for_range({ cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] + 1}, { ignore_injections = false })
   if not target_node then

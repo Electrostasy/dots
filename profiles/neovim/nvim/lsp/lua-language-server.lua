@@ -2,19 +2,19 @@ local path = vim.split(package.path, ';')
 table.insert(path, 'lua/?.lua')
 table.insert(path, 'lua/?/init.lua')
 
-vim.lsp.start({
-  name = 'lua-language-server',
+return {
   cmd = { 'lua-language-server' },
-  root_dir = vim.fs.root(0, {
+  filetypes = { 'lua' },
+  root_markers = {
+    '.luacheckrc',
     '.luarc.json',
     '.luarc.jsonc',
-    '.luacheckrc',
     '.stylua.toml',
-    'stylua.toml',
     'selene.toml',
     'selene.yml',
-    '.git'
-  }),
+    'stylua.toml',
+    '.git',
+  },
 
   settings = {
     Lua = {
@@ -30,4 +30,4 @@ vim.lsp.start({
       },
     },
   },
-})
+}
