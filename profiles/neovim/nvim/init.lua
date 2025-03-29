@@ -22,7 +22,7 @@ vim.cmd.colorscheme('poimandres')
 
 vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
 vim.o.showmode = false -- Don't show mode in command line.
-vim.o.shortmess = 'S' -- Hide search count from message area.
+vim.opt.shortmess:append('S') -- Hide search count from message area.
 vim.o.ignorecase = true -- Ignore case of normal letters in patterns.
 vim.o.smartcase = true -- Ignore case when pattern contains lowercase letters only.
 vim.o.wrap = false
@@ -121,7 +121,7 @@ vim.api.nvim_create_autocmd('FileType', {
       vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
       vim.wo.foldlevel = 99
       vim.wo.foldtext = ''
-      vim.opt_local.fillchars = { fold = ' ' }
+      vim.opt_local.fillchars:append({ fold = ' ' })
     end
 
     -- Enable treesitter based parameter highlighting.
