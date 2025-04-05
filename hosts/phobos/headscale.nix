@@ -47,11 +47,6 @@
     ];
   };
 
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "steamykins@gmail.com";
-  };
-
   services.nginx = {
     enable = true;
 

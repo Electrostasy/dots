@@ -42,11 +42,6 @@
   # This allows the data directory mountpoint to be visible to the service again.
   systemd.services.postgresql.serviceConfig.ReadWritePaths = [ config.services.postgresql.dataDir ];
 
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "steamykins@gmail.com";
-  };
-
   services.nginx = {
     enable = true;
     recommendedTlsSettings = true;

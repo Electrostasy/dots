@@ -23,11 +23,6 @@
     ];
   };
 
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "steamykins@gmail.com";
-  };
-
   # `rsync` has to be installed on the remote in order for uploads initialized
   # with it to work (such as `phobos-up` script).
   environment.systemPackages = [ pkgs.rsync ];
