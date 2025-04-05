@@ -2,11 +2,9 @@
 
 {
   system = {
-    # perlless profile sets `system.disableInstallerTools`, which we do not
-    # really need all that much, but `nixos-option` is useful, and it re-adds
-    # `nixos-rebuild` in a bad way that shadows `nixos-rebuild-ng`.
+    # Perlless profile sets `system.disableInstallerTools` which removes some
+    # common useful utilities.
     tools = {
-      # `nixos-option` does not use perl anymore, either.
       nixos-option.enable = lib.mkDefault true;
       nixos-rebuild.enable = lib.mkDefault true;
       nixos-version.enable = lib.mkDefault true;
@@ -17,14 +15,11 @@
   };
 
   nixpkgs.overlays = [
-    # As mentioned above, perlless profile adds `nixos-rebuild` to
-    # `environment.systemPackages`, which is hard to remove. If we use
-    # `nixos-rebuild-ng`, `nixos-rebuild` shadows it, so we make
-    # `nixos-rebuild-ng` have a lower priority (take precedence).
+    # Perlless profile re-adds `nixos-rebuild` to `environment.systemPackages`,
+    # which is hard to remove. If we use `nixos-rebuild-ng`, `nixos-rebuild`
+    # shadows it, so we make `nixos-rebuild-ng` have a higher priority.
     (final: prev: {
-      nixos-rebuild-ng = prev.nixos-rebuild-ng.overrideAttrs (oldAttrs: {
-        meta.priority = (prev.nixos-rebuild.meta.priority or lib.meta.defaultPriority) - 1;
-      });
+      nixos-rebuild-ng = lib.hiPrio prev.nixos-rebuild-ng;
     })
   ];
 
@@ -49,17 +44,15 @@
   # - /etc/machine-id is normally populated by systemd, but the immutable /etc
   # prevents that (breaking DHCPv4, journal and other things on systems without
   # a valid machine ID). It can be set to uninitialized in order to force first
-  # boot behaviour (systemd normally will then overmount a temporary file which
+  # boot behaviour, systemd normally will then overmount a temporary file which
   # contains the actual machine ID, and after first-boot-complete.target has
   # been reached, the real machine ID would be written to disk), except in our
   # case, the systemd-machine-id-commit.service responsible for it will not run
-  # because /etc is not writable. The bottom line is that if we set the machine
-  # ID to uninitialized on an immutable /etc, each boot will have a unique
-  # machine ID.
+  # because /etc is still not writable.
   system.etc.overlay.mutable = lib.mkForce true;
 
   # Since git 2.35.2 this workaround is needed to fix an annoying error when
-  # using git or nixos-rebuild as non-root in /etc/nixos:
+  # using `git` or `nixos-rebuild` as non-root in /etc/nixos:
   # fatal: detected dubious ownership in repository at '/etc/nixos'
   programs.git.config.safe.directory = "/etc/nixos";
 
