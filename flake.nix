@@ -130,5 +130,12 @@
         ];
       })
       (builtins.readDir ./hosts);
+
+    checks.aarch64-linux = {
+      deimos-image = self.outputs.nixosConfigurations.deimos.config.system.build.images.raw;
+      luna-image = self.outputs.nixosConfigurations.luna.config.system.build.images.raw;
+      mars-image = self.outputs.nixosConfigurations.mars.config.system.build.images.raw;
+      phobos-image = self.outputs.nixosConfigurations.phobos.config.system.build.images.raw;
+    };
   };
 }
