@@ -1,4 +1,4 @@
-{ config, pkgs, self, ... }:
+{ config, pkgs, flake, ... }:
 
 {
   imports = [
@@ -18,8 +18,8 @@
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [
-      self.overlays.qemu-unshare-fix
-      self.overlays.sonic-visualiser-update
+      flake.overlays.qemu-unshare-fix
+      flake.overlays.sonic-visualiser-update
     ];
   };
 

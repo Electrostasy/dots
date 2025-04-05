@@ -1,4 +1,4 @@
-{ pkgs, lib, self, ... }:
+{ pkgs, lib, flake, ... }:
 
 {
   imports = [
@@ -8,7 +8,7 @@
 
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
-    overlays = [ self.overlays.libewf-fuse ];
+    overlays = [ flake.overlays.libewf-fuse ];
   };
 
   wsl = {

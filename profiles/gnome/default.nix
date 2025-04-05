@@ -1,4 +1,4 @@
-{ config, pkgs, lib, self, ... }:
+{ config, pkgs, lib, flake, ... }:
 
 {
   imports = [
@@ -7,7 +7,7 @@
     ./mimetypes.nix
   ];
 
-  nixpkgs.overlays = [ self.overlays.f3d-interactive ];
+  nixpkgs.overlays = [ flake.overlays.f3d-interactive ];
 
   boot.plymouth.enable = true;
 

@@ -48,21 +48,19 @@
           let
             evaluatedModules = import "${nixpkgs}/nixos/lib/eval-config.nix" {
               inherit system;
-              specialArgs = { inherit self; };
 
               modules = [
                 self.outputs.nixosModules.neovim
+                { _module.args.flake = self; }
                 ./profiles/neovim
-                ({ pkgs, ... }: {
-                  nixpkgs.overlays = [ self.overlays.default ];
+                ({ pkgs, flake, ... }: {
+                  nixpkgs.overlays = [ flake.overlays.default ];
 
                   programs.neovim.plugins = [(
                     pkgs.vimUtils.buildVimPlugin {
                       name = "lua-config";
                       src = ./profiles/neovim/nvim;
                       postInstall = "mv $out/init.lua $out/plugin/init.lua";
-
-                      # https://nixos.org/manual/nixpkgs/unstable/#testing-neovim-plugins-neovim-require-check
                       doCheck = false;
                     }
                   )];
@@ -115,8 +113,6 @@
 
     nixosConfigurations = nixpkgs.lib.mapAttrs (name: _:
       nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit self; };
-
         modules = [
           self.inputs.impermanence.nixosModules.default
           self.inputs.nixos-wsl.nixosModules.default
@@ -124,8 +120,12 @@
           self.outputs.nixosModules.mpv
           self.outputs.nixosModules.neovim
           self.outputs.nixosModules.unfree
-          { networking.hostName = name; }
+
+          # Allow modules to refer to this flake by argument.
+          { _module.args.flake = self; }
+
           ./profiles/common
+          { networking.hostName = name; }
           ./hosts/${name}
         ];
       })

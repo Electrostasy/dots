@@ -1,4 +1,4 @@
-{ config, pkgs, lib, modulesPath, self, ... }:
+{ config, pkgs, lib, modulesPath, flake, ... }:
 
 {
   imports = [
@@ -9,7 +9,7 @@
   ];
 
   system = {
-    configurationRevision = self.rev or "dirty"; # for `nixos-version`.
+    configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
     rebuild.enableNg = true;
   };
 
@@ -33,8 +33,8 @@
   nixpkgs = {
     config.allowAliases = false; # aliases bother me.
     overlays = [
-      self.overlays.default # include self-packaged packages.
-      self.overlays.rkdeveloptool-update
+      flake.overlays.default # include self-packaged packages.
+      flake.overlays.rkdeveloptool-update
     ];
   };
 
