@@ -34,7 +34,6 @@
     config.allowAliases = false; # aliases bother me.
     overlays = [
       flake.overlays.default # include self-packaged packages.
-      flake.overlays.rkdeveloptool-update
     ];
   };
 

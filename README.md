@@ -147,8 +147,7 @@ systemd-dissect --copy-to nixos-mars-* {,}/var/lib/sops-nix/keys.txt
 
 ### Flashing the image
 
-Flash u-boot to SPI flash and the image to eMMC storage using the latest
-version (at least 2025-03-07) of `rkdeveloptool`:
+Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
 
 1. Enter MaskROM mode on the board by holding down the MaskROM and power
    buttons; after the status LED has been on for at least 3 seconds, the
