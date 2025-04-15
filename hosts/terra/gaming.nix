@@ -127,43 +127,30 @@ in
 
       package = pkgs.gamescope_3_16_1;
 
-      # https://github.com/NixOS/nixpkgs/issues/217119
+      # Does not work in the Steam FHSEnv due to bubblewrap, use ananicy-cpp
+      # instead: https://github.com/NixOS/nixpkgs/issues/217119
       capSysNice = false;
-    };
-
-    gamemode = {
-      enable = true;
-      enableRenice = true;
-
-      settings = {
-        general.renice = 10;
-
-        custom = {
-          start = builtins.toString (pkgs.writeShellScript "gamemode-start.sh" ''
-            echo always > /sys/kernel/mm/transparent_hugepage/enabled
-            echo 0 > /proc/sys/vm/compaction_proactiveness
-            echo 0 > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag
-            echo 1 > /proc/sys/vm/page_lock_unfairness
-
-            # https://gitlab.freedesktop.org/drm/amd/-/issues/1500
-            echo manual > /sys/class/drm/card0/device/power_dpm_force_performance_level
-            echo 1 > /sys/class/drm/card0/device/pp_power_profile_mode # 3D_FULL_SCREEN
-          '');
-
-          end = builtins.toString (pkgs.writeShellScript "gamemode-end.sh" ''
-            echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
-            echo 20 > /proc/sys/vm/compaction_proactiveness
-            echo 1 > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag
-            echo 5 > /proc/sys/vm/page_lock_unfairness
-
-            # https://gitlab.freedesktop.org/drm/amd/-/issues/1500
-            echo auto > /sys/class/drm/card0/device/power_dpm_force_performance_level
-            echo 0 > /sys/class/drm/card0/device/pp_power_profile_mode # BOOTUP_DEFAULT
-          '');
-        };
-      };
     };
   };
 
-  users.users.electro.extraGroups = [ config.users.groups.gamemode.name ];
+  services.ananicy = {
+    enable = true;
+
+    package = pkgs.ananicy-cpp;
+
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+    extraRules = [
+      # https://store.steampowered.com/app/1203620/Enshrouded/
+      { name = "enshrouded.exe"; type = "Game"; }
+
+      # https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/
+      { name = "mafiadefinitiveedition.exe"; type = "Game"; }
+
+      # https://store.steampowered.com/app/892970/Valheim/
+      { name = "valheim.exe"; type = "Game"; }
+    ];
+  };
+
+  # https://gitlab.com/ananicy-cpp/ananicy-cpp/-/issues/40#note_1036996573
+  systemd.services."user@".serviceConfig.Delegate = "cpu cpuset io memory pids";
 }
