@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, flake, ... }:
 
 let
   mkOptionsWith = extraOptions: [
@@ -11,6 +11,15 @@ let
 in
 
 {
+  nixpkgs = {
+    allowUnfreePackages = [
+      "steam"
+      "steam-unwrapped"
+    ];
+
+    overlays = [ flake.overlays.gamescope_3_16_1 ];
+  };
+
   boot = {
     kernelParams = [
       "vm.swappiness=10"
@@ -104,11 +113,6 @@ in
     ''}"
   ];
 
-  nixpkgs.allowUnfreePackages = [
-    "steam"
-    "steam-unwrapped"
-  ];
-
   programs = {
     gpu-screen-recorder.enable = true;
 
@@ -121,12 +125,7 @@ in
     gamescope = {
       enable = true;
 
-      # Fix frametime issues that appear after 15-30 min. playtime for resource
-      # intensive games:
-      # https://github.com/ValveSoftware/gamescope/issues/163
-      # https://github.com/ValveSoftware/gamescope/issues/697#issuecomment-2564875728
-      env.LD_PRELOAD = "''";
-      args = lib.mkAfter [ "env LD_PRELOAD=$LD_PRELOAD" ];
+      package = pkgs.gamescope_3_16_1;
 
       # https://github.com/NixOS/nixpkgs/issues/217119
       capSysNice = false;
