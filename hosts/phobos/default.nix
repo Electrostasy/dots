@@ -11,6 +11,7 @@
     ./fileserver.nix
     ./headscale.nix
     ./hostapd.nix
+    ./prometheus.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
