@@ -26,8 +26,7 @@
 
     # Disable unused GNOME module features.
     avahi.enable = false;
-    dleyna-renderer.enable = false;
-    dleyna-server.enable = false;
+    dleyna.enable = false;
     hardware.bolt.enable = false;
     gnome = {
       evolution-data-server.enable = lib.mkForce false;
