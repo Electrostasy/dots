@@ -273,3 +273,9 @@ Flash to microSD card:
 ```sh
 dd if=nixos-phobos-* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
+
+
+# License
+
+This project is licensed under the [MIT License](LICENSE), unless specified
+otherwise.
