@@ -50,7 +50,6 @@
   services.nginx = {
     enable = true;
 
-    recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
     virtualHosts."controlplane.${config.networking.domain}" = {
@@ -58,11 +57,19 @@
       forceSSL = true;
 
       locations."/" = {
+        recommendedProxySettings = false;
+
         proxyPass = "http://" + config.services.headscale.settings.listen_addr;
         proxyWebsockets = true;
         extraConfig = ''
-          proxy_redirect http:// https://;
+          keepalive_requests 100000;
+          keepalive_timeout 160s;
           proxy_buffering off;
+          proxy_ignore_client_abort on;
+          proxy_send_timeout 600s;
+          proxy_read_timeout 900s;
+          proxy_connect_timeout 75s;
+          send_timeout 600s;
         '';
       };
     };
@@ -116,7 +123,7 @@
 
         sqlite3 ${config.users.users.headscale.home}/db.sqlite << EOF
 INSERT INTO pre_auth_keys (key, user_id, reusable, ephemeral, created_at, expiration)
-VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 1, datetime('now'), datetime('now', '+1 year'));
+VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 0, datetime('now'), datetime('now', '+1 year'));
 EOF
       fi
     '';
