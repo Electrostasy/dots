@@ -51,6 +51,7 @@
         job_name = "node";
         static_configs = let inherit (config.services.prometheus.exporters.node) port; in [
           { targets = [ "localhost:${builtins.toString port}" ]; }
+          { targets = [ "terra:${builtins.toString port}" ]; }
         ];
       }
     ];
