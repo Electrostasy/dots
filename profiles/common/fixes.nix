@@ -1,27 +1,8 @@
 { config, lib, ... }:
 
 {
-  system = {
-    # Perlless profile sets `system.disableInstallerTools` which removes some
-    # common useful utilities.
-    tools = {
-      nixos-option.enable = lib.mkDefault true;
-      nixos-rebuild.enable = lib.mkDefault true;
-      nixos-version.enable = lib.mkDefault true;
-    };
-
-    # Perlless profile is too strict and this breaks too many things.
-    forbiddenDependenciesRegexes = lib.mkForce [];
-  };
-
-  nixpkgs.overlays = [
-    # Perlless profile re-adds `nixos-rebuild` to `environment.systemPackages`,
-    # which is hard to remove. If we use `nixos-rebuild-ng`, `nixos-rebuild`
-    # shadows it, so we make `nixos-rebuild-ng` have a higher priority.
-    (final: prev: {
-      nixos-rebuild-ng = lib.hiPrio prev.nixos-rebuild-ng;
-    })
-  ];
+  # Perlless profile is too strict and this breaks too many things.
+  system.forbiddenDependenciesRegexes = lib.mkForce [];
 
   # This randomly acts up (especially when network is offline while switching
   # configurations) or breaks on different hardware and I hate it.
