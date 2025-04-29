@@ -36,15 +36,13 @@
           Format = "ext4";
           Label = "nixos";
           Minimize = "guess";
-
-          MakeDirectories = "/var/lib/sops-nix";
         };
       };
     };
   };
 
   systemd.repart = {
-    enable = true; # expand the root filesystem on boot.
+    enable = true;
 
     partitions."20-root".Type = "root";
   };

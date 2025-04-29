@@ -39,7 +39,8 @@ This is a [Raspberry Pi Zero 2 W], running Klipper for my 3D printer.
 Build on an `aarch64-linux` platform and insert the `age` private key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant raw
-systemd-dissect --copy-to nixos-deimos-* {,}/var/lib/sops-nix/keys.txt
+cp ./result/nixos-deimos* .
+systemd-dissect --with nixos-deimos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
 
@@ -47,7 +48,7 @@ systemd-dissect --copy-to nixos-deimos-* {,}/var/lib/sops-nix/keys.txt
 
 Flash to microSD card:
 ```sh
-dd if=nixos-deimos-* of=/dev/sdX bs=1M status=progress oflag=direct
+dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
 
 
@@ -68,7 +69,8 @@ modconfig.
 Build on an `aarch64-linux` platform and insert the `age` private key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant raw
-systemd-dissect --copy-to nixos-luna-* {,}/var/lib/sops-nix/keys.txt
+cp ./result/nixos-luna* .
+systemd-dissect --with nixos-luna* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
 
@@ -86,7 +88,7 @@ Flash to eMMC storage using the Raspberry Pi Compute Module 4 IO Board:
    ```
 5. Flash the image to it:
    ```sh
-   dd if=nixos-luna-* of=/dev/sdX bs=1M status=progress oflag=direct
+   dd if=nixos-luna* of=/dev/sdX bs=1M status=progress oflag=direct
    ```
 6. Disconnect the micro USB cable from the host PC.
 7. Power off the IO Board.
@@ -141,13 +143,15 @@ This is a [FriendlyElec NanoPC-T6 LTS].
 Build on an `aarch64-linux` platform and insert the `age` private key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant raw
-systemd-dissect --copy-to nixos-mars-* {,}/var/lib/sops-nix/keys.txt
+cp ./result/nixos-mars* .
+systemd-dissect --with nixos-mars* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
 
 ### Flashing the image
 
-Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
+Flash U-Boot to SPI NOR flash and the image to eMMC storage using
+`rkdeveloptool`:
 
 1. Enter MaskROM mode on the board by holding down the MaskROM and power
    buttons; after the status LED has been on for at least 3 seconds, the
@@ -164,7 +168,8 @@ Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
    NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
    rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
    ```
-5. Build the `u-boot` firmware, then select SPI NOR flash as storage and flash it:
+5. Build the U-Boot firmware, then select SPI NOR flash as storage and flash
+   it:
    ```sh
    nix build nixpkgs#legacyPackages.aarch64-linux.ubootNanoPCT6
    rkdeveloptool cs 9
@@ -175,7 +180,7 @@ Flash u-boot to SPI flash and the image to eMMC storage using `rkdeveloptool`:
    ```sh
    rkdeveloptool cs 1
    rkdeveloptool ef
-   rkdeveloptool wl 0 nixos-mars-*
+   rkdeveloptool wl 0 nixos-mars*
    ```
 7. Reboot the device:
    ```sh
@@ -263,7 +268,8 @@ This is a [Raspberry Pi 4 Model B], hosting various things like my VPN.
 Build on an `aarch64-linux` platform and insert the `age` private key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant raw
-systemd-dissect --copy-to nixos-phobos-* {,}/var/lib/sops-nix/keys.txt
+cp ./result/nixos-phobos* .
+systemd-dissect --with nixos-phobos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
 
@@ -271,7 +277,7 @@ systemd-dissect --copy-to nixos-phobos-* {,}/var/lib/sops-nix/keys.txt
 
 Flash to microSD card:
 ```sh
-dd if=nixos-phobos-* of=/dev/sdX bs=1M status=progress oflag=direct
+dd if=nixos-phobos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
 
 
