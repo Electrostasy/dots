@@ -1,20 +1,12 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, ... }:
 
 {
-  imports = [
-    "${modulesPath}/image/repart.nix"
-    "${modulesPath}/image/file-options.nix"
-  ];
+  imports = [ ../../profiles/image.nix ];
 
   image = {
-    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
     extension = "raw";
-  };
 
-  image.repart = {
-    name = config.image.baseName;
-
-    partitions = {
+    repart.partitions = {
       "10-esp" = {
         contents = {
           "/".source = pkgs.runCommand "populate-bootloader" { } ''
