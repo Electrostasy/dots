@@ -5,7 +5,8 @@
 
   # Persist the age private key if sops-nix is used for secrets management.
   # Does not work with impermanence, as it is not mounted early enough in the
-  # boot process.
+  # boot process:
+  # https://github.com/Mic92/sops-nix/blob/master/README.md#setting-a-users-password
   fileSystems =
     let keyFileDir = builtins.dirOf config.sops.age.keyFile;
     in lib.mkIf (config.sops.secrets != { } && config.environment.persistence.state.enable) {
@@ -18,63 +19,35 @@
       };
     };
 
-  # See section "Necessary system state" in the NixOS manual.
+  # https://nixos.org/manual/nixos/unstable/#ch-system-state
   environment.persistence.state = {
-    # Impermanence should be opt-in by default.
     enable = lib.mkDefault false;
 
     persistentStoragePath = "/state";
-    hideMounts = config.services.gvfs.enable;
+    hideMounts = true;
 
     directories = [
-      # NixOS configuration directory, used by `nixos-rebuild` etc.
       "/etc/nixos"
-
-      # Kernel, system and other service messages/logs are stored here, which
-      # can be useful to keep around between reboots.
-      "/var/log"
-
-      # NixOS uses dynamic users for systemd services wherever it can, it is
-      # important to persist their UIDs and GIDs to not have corrupted state
-      # on disk.
       "/var/lib/nixos"
-
-      # Systemd timers with `Persistent=true` set store a timestamp file with
-      # the timer's last execution timestamp to disk. A persistent timer uses
-      # this timestamp to measure if it needs to execute on a missed run. If
-      # this is not persisted, the timer will effectively never run unless it
-      # reaches the execution date again on a running system.
-      "/var/lib/systemd/timers"
-    ]
-
-    # On systems without a RTC (e.g. a Raspberry Pi), the clock file can be
-    # crucial for startup, for e.g. DNSSEC keys cannot be validated correctly
-    # if the clock is wrong.
-    ++ lib.optional
-      (config.services.timesyncd.enable || config.services.chrony.enable)
-      # /var/lib/systemd/timesync/clock mutates, which can cause issues when
-      # it is a bind mount, so we persist its parent directory instead.
-      "/var/lib/systemd/timesync";
-
-    files = [
-      # This file contains the unique machine ID of the local system,
-      # commonly set during installation. Programs may use this ID to identify
-      # the host with a globally unique ID in the network.
-      "/etc/machine-id"
+      "/var/lib/systemd"
+      "/var/log/journal"
     ];
 
-    # Persist the Nix flake and evaluation caches.
-    users = {
-      root = {
-        home = "/root";
-        directories = [
-          ".cache/nix"
-        ];
-      };
+    files = [ "/etc/machine-id" ];
 
+    users = {
+      root.directories = [ ".cache/nix" ];
       electro.directories = [
         ".cache/nix"
+        "Documents"
+        "Downloads"
+        "Music"
+        "Pictures"
+        "Videos"
       ];
+
+      # Cannot be defined from users.users due to infinite recursion.
+      root.home = "/root";
     };
   };
 
@@ -89,7 +62,7 @@
 
         timerConfig = {
           OnBootSec = "0";
-          OnUnitActiveSec = "3h";
+          OnUnitActiveSec = "6h";
           Unit = "state-snapshot.service";
         };
       };

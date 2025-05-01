@@ -208,9 +208,6 @@
         ".config/kicad"
         ".local/share/FreeCAD"
         ".local/share/kicad"
-        "Documents"
-        "Downloads"
-        "Pictures"
       ];
     };
   };

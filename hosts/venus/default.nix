@@ -179,11 +179,9 @@
   environment.persistence.state = {
     enable = true;
 
-    users.electro.directories = [
-      "Documents"
-      "Downloads"
-      "Pictures"
-    ];
+    users.electro = {
+      files = [ ".config/git-credential-keepassxc" ];
+    };
   };
 
   environment.systemPackages = with pkgs; [

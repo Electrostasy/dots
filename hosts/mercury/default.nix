@@ -161,12 +161,6 @@
 
     users.electro = {
       files = [ ".config/git-credential-keepassxc" ];
-
-      directories = [
-        "Documents"
-        "Downloads"
-        "Pictures"
-      ];
     };
   };
 
