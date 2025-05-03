@@ -281,7 +281,7 @@ static int emc230x_write_rpm_control(struct device *dev,
 				     long value)
 {
 	struct emc230x_data *priv = dev_get_drvdata(dev);
-	bool enable_rpm_control = (value == 1) ? true : false;
+	bool enable_rpm_control = (value == 0) ? true : false;
 
 	return emc230x_enable_rpm_control(dev, priv->i2c_client,
 					  channel,
