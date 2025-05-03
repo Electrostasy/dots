@@ -241,11 +241,16 @@
   };
 
   networking.firewall = {
+    interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
+
+    # Required for NFS3/4.
     allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];
     allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
   };
 
   services = {
+    prometheus.exporters.node.enable = true;
+
     btrfs.autoScrub = {
       enable = true;
 
