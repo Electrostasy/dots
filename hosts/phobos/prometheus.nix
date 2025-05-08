@@ -38,8 +38,6 @@
   services.prometheus = {
     enable = true;
 
-    exporters.node.enable = true;
-
     globalConfig = {
       # Recommended to set these to the same value for consistency.
       scrape_interval = "15s";
@@ -49,10 +47,26 @@
     scrapeConfigs = [
       {
         job_name = "node";
-        static_configs = let inherit (config.services.prometheus.exporters.node) port; in [
-          { targets = [ "localhost:${builtins.toString port}" ]; }
-          { targets = [ "luna:${builtins.toString port}" ]; }
-          { targets = [ "terra:${builtins.toString port}" ]; }
+
+        # Relabel "instance" from "host:port" to "host":
+        # https://github.com/prometheus/docs/issues/2296#issuecomment-1527133892
+        relabel_configs = [
+          {
+            source_labels = [ "__address__" ];
+            regex = "(.+):(\\d+)";
+            target_label = "instance";
+            replacement = "$1";
+          }
+        ];
+
+        static_configs = [
+          {
+            targets = builtins.map (host: "${host}:${builtins.toString config.services.prometheus.exporters.node.port}") [
+              "luna"
+              "phobos"
+              "terra"
+            ];
+          }
         ];
       }
     ];
