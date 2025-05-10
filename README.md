@@ -55,10 +55,7 @@ dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 ## luna
 
 This is a [Raspberry Pi Compute Module 4] mounted on an [Axzez Interceptor]
-carrier board, serving as Network Attached Storage. It has a EMC2305 RPM-PWM
-fan controller connected externally over I²C to manage cooling, running the out
-of tree `emc230x` driver by Traverse for it and a minimal kernel with a custom
-modconfig.
+carrier board.
 
 [Raspberry Pi Compute Module 4]: https://www.raspberrypi.com/products/compute-module-4/?variant=raspberry-pi-cm4001000
 [Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board

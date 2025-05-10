@@ -1,0 +1,10 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "raspberrypi,4-compute-module";
+};
+
+&xhci {
+	status = "okay";
+};
