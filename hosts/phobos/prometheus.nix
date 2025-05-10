@@ -98,6 +98,7 @@
           name = "Prometheus";
           type = "prometheus";
           url = "http://localhost:${builtins.toString config.services.prometheus.port}";
+          isDefault = true;
           # Needs to match the scrape_interval or else $__rate_interval will break:
           # https://community.grafana.com/t/agent-scrape-interval-break-cpu-chart/110491/8
           jsonData.timeInterval = config.services.prometheus.globalConfig.scrape_interval;
