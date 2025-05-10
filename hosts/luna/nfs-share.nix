@@ -23,11 +23,9 @@
       "nofail"
       "x-systemd.device-timeout=5"
 
-      # A hard mount on network file systems can sometimes block forever trying
-      # to re-establish a connection, for e.g. when the nfs server is down, locking
-      # up the entire client. It is better to fail sooner than ruin UX when this share
-      # is mostly intended to be pulled from rather than pushed to.
-      "soft"
+      # Only mount/unmount when Tailscale is running, this ensures we do not
+      # try to mount/unmount prematurely.
+      "x-systemd.requires=tailscaled.service"
 
       # Give up immediately if share is unreachable.
       "retry=0"

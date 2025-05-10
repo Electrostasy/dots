@@ -6,6 +6,7 @@
     ../../profiles/shell
     ../../profiles/ssh
     ../../profiles/tailscale.nix
+    ./nfs.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
@@ -109,13 +110,7 @@
     };
   };
 
-  networking.firewall = {
-    interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
-
-    # Required for NFS3/4.
-    allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];
-    allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
-  };
+  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
 
   services = {
     prometheus.exporters.node.enable = true;
@@ -144,22 +139,6 @@
         "--min-fan-speed-prct=10"
         "--interval=1min"
       ];
-    };
-
-    nfs = {
-      server = {
-        enable = true;
-
-        exports = ''
-          /srv/nfs/ *.sol.tailnet.${config.networking.domain}(rw,fsid=root,insecure)
-          /srv/nfs/ 192.168.205.0/24(rw,fsid=0,insecure)
-        '';
-      };
-
-      settings.nfsd = {
-        vers2 = false;
-        vers3 = true; # needed for mounting by Windows clients.
-      };
     };
   };
 
