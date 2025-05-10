@@ -35,7 +35,7 @@ def transcribe_file_blocking(input_file: Path, model_file: Path) -> str:
     ], check=True, capture_output=True)
 
     whisper = run([
-        'whisper-cpp',
+        'whisper-cli',
         '-m', model_file.as_posix(),
         '-np', # suppress all output that isn't the transcribed text.
         '-f', '-',
@@ -173,8 +173,8 @@ def main():
 
     client.model_path = Path(args.model)
 
-    if not which('whisper-cpp'):
-        logging.error('whisper-cpp binary not found in PATH, exiting')
+    if not which('whisper-cli'):
+        logging.error('whisper-cli binary not found in PATH, exiting')
         exit(1)
 
     if not which('ffmpeg'):
