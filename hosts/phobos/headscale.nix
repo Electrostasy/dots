@@ -28,10 +28,8 @@
   networking.firewall = {
     enable = true;
 
-    allowedTCPPorts = [
-      80
-      443
-    ];
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 3478 ];
   };
 
   fileSystems."/var/lib/headscale" = {
@@ -88,6 +86,14 @@
       dns = {
         base_domain = "sol.tailnet." + config.networking.domain;
         magic_dns = true;
+      };
+
+      derp.server = {
+        enabled = true;
+        region_id = 999;
+        region_code = "headscale";
+        region_name = "controlplane.0x6776.lt";
+        stun_listen_addr = "0.0.0.0:3478";
       };
     };
   };
