@@ -134,6 +134,7 @@
       (builtins.readDir ./hosts);
 
     checks.aarch64-linux = {
+      atlas-image = self.outputs.nixosConfigurations.atlas.config.system.build.images.raw;
       deimos-image = self.outputs.nixosConfigurations.deimos.config.system.build.images.raw;
       luna-image = self.outputs.nixosConfigurations.luna.config.system.build.images.raw;
       mars-image = self.outputs.nixosConfigurations.mars.config.system.build.images.raw;

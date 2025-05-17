@@ -1,0 +1,10 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "armsom,sige7";
+};
+
+&led_red {
+	panic-indicator;
+};

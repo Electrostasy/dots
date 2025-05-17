@@ -196,6 +196,63 @@ Flash U-Boot to SPI NOR flash and the image to eMMC storage using
 [FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
 
 
+## atlas
+
+This is a Rockchip RK3588 based SBC - an [ArmSoM Sige7].
+
+
+### Building the image
+
+Build on an `aarch64-linux` platform and insert the `age` private key:
+```sh
+nixos-rebuild build-image --flake github:Electrostasy/dots#atlas --image-variant raw
+cp ./result/nixos-atlas* .
+systemd-dissect --with nixos-atlas* install -D {,.}/var/lib/sops-nix/keys.txt
+```
+
+
+### Flashing the image
+
+First ensure the board's microSD card slot is populated, then flash U-Boot to
+microSD and the image to eMMC storage using `rkdeveloptool`:
+
+1. Enter MaskROM mode on the board by holding down the MaskROM and power
+   buttons; after the status LED has been on for at least 3 seconds, the
+   MaskROM and power buttons may be released.
+2. Connect the board and the host PC you will flash from with a USB cable.
+3. Run the following command on the host PC to verify a MaskROM device is
+   connected:
+   ```sh
+   rkdeveloptool ld
+   ```
+4. Get the Rockchip proprietary SPL bootloader blobs and download the loader to
+   the board:
+   ```sh
+   NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
+   rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
+   ```
+5. Build the U-Boot firmware, then select SD as storage and flash it:
+   ```sh
+   nix build github:Electrostasy/dots#legacyPackages.aarch64-linux.ubootSige7
+   rkdeveloptool cs 2
+   rkdeveloptool ef
+   rkdeveloptool wl 64 ./result/u-boot-rockchip.bin
+   ```
+6. Select eMMC memory as storage and flash the NixOS image to it:
+   ```sh
+   rkdeveloptool cs 1
+   rkdeveloptool ef
+   rkdeveloptool wl 0 nixos-atlas*
+   ```
+7. Reboot the device:
+   ```sh
+   rkdeveloptool rd
+   ```
+8. Disconnect the USB cable from the board and the host PC.
+
+[ArmSoM Sige7]: https://docs.armsom.org/armsom-sige7
+
+
 ## mercury and terra
 
 The hosts [mercury], a Asus ROG Flow Z13 (2022) laptop, and [terra], a desktop
