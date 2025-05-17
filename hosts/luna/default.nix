@@ -110,6 +110,8 @@
     };
   };
 
+  zramSwap.enable = true;
+
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
 
   services = {

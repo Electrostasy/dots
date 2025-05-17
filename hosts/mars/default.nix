@@ -53,6 +53,8 @@
     };
   };
 
+  zramSwap.enable = true;
+
   users.users.electro = {
     isNormalUser = true;
     uid = 1000;

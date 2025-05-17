@@ -51,6 +51,8 @@
     };
   };
 
+  zramSwap.enable = true;
+
   hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
   networking.wireless = {
