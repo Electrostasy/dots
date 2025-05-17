@@ -17,30 +17,11 @@ in
   ];
 
   boot = {
-    kernelParams = [
-      "vm.swappiness=10"
-      "zswap.enabled=1"
-    ];
+    kernelParams = [ "vm.swappiness=10" ];
 
-    # Required for zswap:
-    # https://github.com/NixOS/nixpkgs/issues/44901
-    initrd = {
-      kernelModules = [
-        "lz4"
-        "zsmalloc"
-      ];
-
-      systemd.tmpfiles.settings = {
-        "10-zswap" = {
-          "/sys/module/zswap/parameters/compressor".w.argument = "lz4";
-          "/sys/module/zswap/parameters/zpool".w.argument = "zsmalloc";
-        };
-
-        "10-mglru-thrashing-prevention" = {
-          "/sys/kernel/mm/lru_gen/enabled".w.argument = "y"; # ensure it is enabled.
-          "/sys/kernel/mm/lru_gen/min_ttl_ms".w.argument = "1000";
-        };
-      };
+    initrd.systemd.tmpfiles.settings."10-mglru-thrashing-prevention" = {
+      "/sys/kernel/mm/lru_gen/enabled".w.argument = "y"; # ensure it is enabled.
+      "/sys/kernel/mm/lru_gen/min_ttl_ms".w.argument = "1000";
     };
   };
 

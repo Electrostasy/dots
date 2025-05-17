@@ -109,6 +109,7 @@
       mpv = ./modules/mpv.nix;
       neovim = ./modules/neovim.nix;
       unfree = ./modules/unfree.nix;
+      zswap = ./modules/zswap.nix;
     };
 
     nixosConfigurations = nixpkgs.lib.mapAttrs (name: _:
@@ -120,6 +121,7 @@
           self.outputs.nixosModules.mpv
           self.outputs.nixosModules.neovim
           self.outputs.nixosModules.unfree
+          self.outputs.nixosModules.zswap
 
           # Allow modules to refer to this flake by argument.
           { _module.args.flake = self; }
