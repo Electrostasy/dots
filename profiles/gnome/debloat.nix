@@ -51,25 +51,27 @@
     # program `system-monitor` is required:
     # pkgs.gnome-system-monitor
 
+    pkgs.adwaita-fonts
     pkgs.baobab
+    pkgs.decibels
     pkgs.epiphany
     pkgs.evince
     pkgs.geary
-    pkgs.gnome-connections
-    pkgs.gnome-console
-    pkgs.gnome-font-viewer
-    pkgs.gnome-text-editor
-    pkgs.gnome-themes-extra
-    pkgs.gnome-tour
-    pkgs.gnome-user-docs
     pkgs.gnome-backgrounds
     pkgs.gnome-bluetooth
     pkgs.gnome-characters
     pkgs.gnome-clocks
     pkgs.gnome-color-manager
+    pkgs.gnome-connections
+    pkgs.gnome-console
     pkgs.gnome-contacts
+    pkgs.gnome-font-viewer
     pkgs.gnome-logs
     pkgs.gnome-music
+    pkgs.gnome-text-editor
+    pkgs.gnome-themes-extra
+    pkgs.gnome-tour
+    pkgs.gnome-user-docs
     pkgs.orca
     pkgs.simple-scan
     pkgs.totem
