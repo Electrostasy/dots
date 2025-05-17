@@ -212,16 +212,6 @@
     };
   };
 
-  # Set default mount options for mounting through udisksctl/nautilus.
-  services.udisks2.settings."mount_options.conf" = {
-    "/dev/disk/by-uuid/e208c920-b9e7-42e6-a38a-ef6aacbeb374" = {
-      btrfs_defaults = [
-        "noatime"
-        "compress-force=zstd:3"
-      ];
-    };
-  };
-
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
   services.prometheus.exporters.node = {
     enable = true;
