@@ -39,6 +39,12 @@
 
   boot.tmp.useTmpfs = true;
 
+  zswap = {
+    enable = !config.zramSwap.enable;
+
+    compressor = "lz4";
+  };
+
   time.timeZone = "Europe/Vilnius";
 
   i18n.extraLocaleSettings.LC_TIME = "en_DK.UTF-8"; # ISO-8601 datetime.
