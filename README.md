@@ -103,7 +103,7 @@ Flash to eMMC storage using the Raspberry Pi Compute Module 4 IO Board:
 
 When a disk fails or is near failing in the array, we need to swap the disk out.
 
-> [!WARNING]
+> [!CAUTION]
 > You can only mount the array in degraded mode once or your data is lost!
 
 If the disk is still visible in the system, we need to mount it degraded
@@ -138,9 +138,66 @@ btrfs balance start /mnt/array
 [Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
 
 
+## hyperion
+
+This is a Rockchip RK3576 based SBC - an [ArmSoM Sige5].
+
+
+###  Building the image
+
+Build on an `aarch64-linux` platform and insert the `age` private key:
+```sh
+nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant raw
+cp ./result/nixos-hyperion* .
+systemd-dissect --with nixos-hyperion* install -D {,.}/var/lib/sops-nix/keys.txt
+```
+
+
+### Flashing the image
+
+Change Storage functionality does not seem to work correctly on RK3576, so we
+first flash U-Boot to microSD separately and then the image to eMMC storage
+using `rkdeveloptool`:
+
+1. Build the U-Boot firmware and flash it to microSD:
+   ```sh
+   nix build github:Electrostasy/dots#legacyPackages.aarch64-linux.ubootSige5
+   dd if=./result/u-boot-rockchip.bin of=/dev/sdX bs=32k seek=1 conv=fsync
+   ```
+2. Insert the microSD with flashed U-Boot firmware into the board.
+3. Enter MaskROM mode on the board by holding down the MaskROM and power
+   buttons; after the status LED has been on for at least 3 seconds, the
+   MaskROM and power buttons may be released.
+4. Connect the board and the host PC you will flash from with a USB cable.
+5. Run the following command on the host PC to verify a MaskROM device is
+   connected:
+   ```sh
+   rkdeveloptool ld
+   ```
+6. Get the Rockchip proprietary SPL bootloader blobs and download the loader to
+   the board:
+   ```sh
+   NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
+   rkdeveloptool db ./result/bin/rk3576_spl_loader_v*.bin
+   ```
+7. Select eMMC memory as storage and flash the NixOS image to it:
+   ```sh
+   rkdeveloptool cs 1
+   rkdeveloptool ef
+   rkdeveloptool wl 0 nixos-hyperion*
+   ```
+8. Reboot the device:
+   ```sh
+   rkdeveloptool rd
+   ```
+9. Disconnect the USB cable from the board and the host PC.
+
+[ArmSoM Sige5]: https://docs.armsom.org/armsom-sige5
+
+
 ## mars
 
-This is a [FriendlyElec NanoPC-T6 LTS].
+This is a Rockchip RK3588 based SBC - a [FriendlyElec NanoPC-T6 LTS].
 
 
 ### Building the image
