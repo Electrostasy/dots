@@ -125,20 +125,19 @@
     hddfancontrol = {
       enable = true;
 
-      pwmPaths = [ "/sys/class/hwmon/hwmon2/pwm2:128:0" ];
+      settings.harddrives = {
+        disks = [
+          "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-1.0"
+          "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-2.0"
+          "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-3.0"
+          "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-4.0"
+          "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-5.0"
+        ];
 
-      disks = [
-        "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-1.0"
-        "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-2.0"
-        "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-3.0"
-        "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-4.0"
-        "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-5.0"
-      ];
+        pwmPaths = [ "/sys/class/hwmon/hwmon2/pwm2:128:0" ];
 
-      extraArgs = [
-        "--min-fan-speed-prct=10"
-        "--interval=1min"
-      ];
+        extraArgs = [ "--interval=1min" ];
+      };
     };
   };
 
