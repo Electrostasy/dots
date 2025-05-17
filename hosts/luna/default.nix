@@ -117,6 +117,8 @@
   services = {
     prometheus.exporters.node.enable = true;
 
+    journald.storage = "volatile";
+
     btrfs.autoScrub = {
       enable = true;
 

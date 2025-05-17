@@ -73,6 +73,8 @@
     '';
   };
 
+  services.journald.storage = "volatile";
+
   users.users.electro = {
     isNormalUser = true;
     uid = 1000;
