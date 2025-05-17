@@ -1,4 +1,4 @@
-{ config, pkgs, flake, ... }:
+{ config, pkgs, ... }:
 
 let
   mkOptionsWith = extraOptions: [
@@ -11,14 +11,10 @@ let
 in
 
 {
-  nixpkgs = {
-    allowUnfreePackages = [
-      "steam"
-      "steam-unwrapped"
-    ];
-
-    overlays = [ flake.overlays.gamescope_3_16_1 ];
-  };
+  nixpkgs.allowUnfreePackages = [
+    "steam"
+    "steam-unwrapped"
+  ];
 
   boot = {
     kernelParams = [
@@ -124,8 +120,6 @@ in
 
     gamescope = {
       enable = true;
-
-      package = pkgs.gamescope_3_16_1;
 
       # Does not work in the Steam FHSEnv due to bubblewrap, use ananicy-cpp
       # instead: https://github.com/NixOS/nixpkgs/issues/217119
