@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [ ../../profiles/image.nix ];
@@ -80,15 +80,6 @@
       };
     };
   };
-
-  # Make an image with a hybrid MBR, as the Raspberry Pi 02w does not support
-  # booting from GPT directly. Adapted to `sgdisk` from this forum post:
-  # https://forums.raspberrypi.com/viewtopic.php?t=320299#p1920410
-  system.build.image = lib.mkOverride 999 (config.system.build.image.overrideAttrs {
-    postFixup = ''
-      ${pkgs.gptfdisk}/bin/sgdisk --typecode=1:0c01 --hybrid=1:EE $out/${config.image.repart.imageFile}
-    '';
-  });
 
   systemd.repart = {
     enable = true;

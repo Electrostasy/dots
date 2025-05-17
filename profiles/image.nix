@@ -1,14 +1,7 @@
 { config, pkgs, modulesPath, ... }:
 
 {
-  imports = [
-    "${modulesPath}/image/repart.nix"
-    "${modulesPath}/image/file-options.nix"
-  ];
+  imports = [ "${modulesPath}/image/repart.nix" ];
 
-  image = {
-    baseName = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
-
-    repart.name = config.image.baseName;
-  };
+  image.repart.name = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
 }

@@ -31,8 +31,6 @@ fd --full-path "$regex" -x sops rotate -i --add-age "$key_new" --rm-age "$key"
 
 This is a [Raspberry Pi Zero 2 W], running Klipper for my 3D printer.
 
-[Raspberry Pi Zero 2 W]: https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/
-
 
 ### Building the image
 
@@ -43,6 +41,16 @@ cp ./result/nixos-deimos* .
 systemd-dissect --with nixos-deimos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
+Due to the limitations of the [Raspberry Pi Zero 2 W], it does not support
+booting from GPT directly, it needs an MBR or hybrid MBR image. Due to the
+limitations of the NixOS module system, we cannot make this GPT image into a
+hybrid MBR image without occasionally encountering infinite recursion errors.
+[Convert](https://forums.raspberrypi.com/viewtopic.php?t=320299#p1920410) the
+image into a hybrid MBR partitioning scheme manually:
+```sh
+sgdisk --typecode=1:0c01 --hybrid=1:EE nixos-deimos*
+```
+
 
 ### Flashing the image
 
@@ -51,14 +59,13 @@ Flash to microSD card:
 dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
 
+[Raspberry Pi Zero 2 W]: https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/
+
 
 ## luna
 
 This is a [Raspberry Pi Compute Module 4] mounted on an [Axzez Interceptor]
 carrier board.
-
-[Raspberry Pi Compute Module 4]: https://www.raspberrypi.com/products/compute-module-4/?variant=raspberry-pi-cm4001000
-[Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
 
 
 ### Building the image
@@ -127,12 +134,13 @@ evenly distributed between drives in the array:
 btrfs balance start /mnt/array
 ```
 
+[Raspberry Pi Compute Module 4]: https://www.raspberrypi.com/products/compute-module-4/?variant=raspberry-pi-cm4001000
+[Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
+
 
 ## mars
 
 This is a [FriendlyElec NanoPC-T6 LTS].
-
-[FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
 
 
 ### Building the image
@@ -185,6 +193,8 @@ Flash U-Boot to SPI NOR flash and the image to eMMC storage using
    ```
 8. Disconnect the USB-C cable from the board and the host PC.
 
+[FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6
+
 
 ## mercury and terra
 
@@ -192,10 +202,6 @@ The hosts [mercury], a Asus ROG Flow Z13 (2022) laptop, and [terra], a desktop
 PC, have an [erase-your-darlings] inspired encrypted btrfs root setup, where on
 every boot the root subvolume is rolled back to an empty snapshot (accomplished
 using a systemd service in the initrd).
-
-[erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
-[mercury]: ./hosts/mercury/default.nix
-[terra]: ./hosts/terra/default.nix
 
 
 ### Partitioning
@@ -252,12 +258,14 @@ using a systemd service in the initrd).
    nixos-install --flake /mnt/etc/nixos#mercury --root /mnt --no-root-passwd
    ```
 
+[erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
+[mercury]: ./hosts/mercury/default.nix
+[terra]: ./hosts/terra/default.nix
+
 
 ## phobos
 
 This is a [Raspberry Pi 4 Model B], hosting various things like my VPN.
-
-[Raspberry Pi 4 Model B]: https://www.raspberrypi.com/products/raspberry-pi-4-model-b/
 
 
 ### Building the image
@@ -276,6 +284,8 @@ Flash to microSD card:
 ```sh
 dd if=nixos-phobos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
+
+[Raspberry Pi 4 Model B]: https://www.raspberrypi.com/products/raspberry-pi-4-model-b/
 
 
 # License
