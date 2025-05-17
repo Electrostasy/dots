@@ -20,21 +20,13 @@
     path = [ config.services.mullvad-vpn.package ];
 
     postStart = ''
-      while ! mullvad status > /dev/null; do
-        echo "Waiting for mullvad-daemon to initialize..."
+      while ! mullvad status &> /dev/null; do
         sleep 1
       done
-      echo "mullvad-daemon initialized."
 
       account="$(systemd-creds cat 'mullvadAccount')"
       if [ "$(mullvad account get 2>&1 | head -n 1 | cut -d ':' -f 2 | tr -d ' ')" != "$account" ]; then
-        echo "Logging into Mullvad..."
         mullvad account login "$account"
-      fi
-
-      if [ $? -ne 0 ]; then
-        echo "Could not log into Mullvad! Exiting..."
-        exit 1
       fi
 
       # If this is the first time connecting after logging in, it will most likely
@@ -45,6 +37,10 @@
         sleep 1
         [ "$(mullvad status | cut -d ':' -f 1)" == 'Blocked' ]
       do true; done
+
+      # This is important, otherwise NFS transfers over Tailscale are very slow
+      # (between 2-3 times slower) because they have to go through the VPN.
+      mullvad lan set allow
     '';
   };
 
