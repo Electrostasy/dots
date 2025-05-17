@@ -136,6 +136,7 @@
     checks.aarch64-linux = {
       atlas-image = self.outputs.nixosConfigurations.atlas.config.system.build.images.raw;
       deimos-image = self.outputs.nixosConfigurations.deimos.config.system.build.images.raw;
+      hyperion-image = self.outputs.nixosConfigurations.hyperion.config.system.build.images.raw;
       luna-image = self.outputs.nixosConfigurations.luna.config.system.build.images.raw;
       mars-image = self.outputs.nixosConfigurations.mars.config.system.build.images.raw;
       phobos-image = self.outputs.nixosConfigurations.phobos.config.system.build.images.raw;
