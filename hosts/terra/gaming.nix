@@ -18,6 +18,7 @@ in
 
   boot = {
     kernelParams = [ "vm.swappiness=10" ];
+    kernelModules = [ "ntsync" ];
 
     initrd.systemd.tmpfiles.settings."10-mglru-thrashing-prevention" = {
       "/sys/kernel/mm/lru_gen/enabled".w.argument = "y"; # ensure it is enabled.
@@ -87,6 +88,8 @@ in
       graphs=gpu_load,cpu_load
       histogram
       throttling_status_graph
+      wine
+      winesync
     ''}"
   ];
 
