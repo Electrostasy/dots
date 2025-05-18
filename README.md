@@ -31,10 +31,8 @@ fd --full-path "$regex" -x sops rotate -i --add-age "$key_new" --rm-age "$key"
 
 This is a [Raspberry Pi Zero 2 W], running Klipper for my 3D printer.
 
-
-### Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant raw
 cp ./result/nixos-deimos* .
@@ -51,10 +49,7 @@ image into a hybrid MBR partitioning scheme manually:
 sgdisk --typecode=1:0c01 --hybrid=1:EE nixos-deimos*
 ```
 
-
-### Flashing the image
-
-Flash to microSD card:
+Flash the image to microSD card:
 ```sh
 dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
@@ -64,23 +59,19 @@ dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 
 ## luna
 
-This is a [Raspberry Pi Compute Module 4] mounted on an [Axzez Interceptor]
+This is a [Raspberry Pi Compute Module 4] mounted on an [Axzez Interceptor v1.0]
 carrier board.
 
-
-### Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant raw
 cp ./result/nixos-luna* .
 systemd-dissect --with nixos-luna* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
-
-### Flashing the image
-
-Flash to eMMC storage using the Raspberry Pi Compute Module 4 IO Board:
+Flash the image to eMMC storage using the Raspberry Pi Compute Module 4 IO
+Board:
 
 1. Bridge the first set of pins on the 'J2' jumper to disable eMMC boot.
 2. Connect the IO Board with the host PC you will flash from using a micro USB
@@ -98,10 +89,8 @@ Flash to eMMC storage using the Raspberry Pi Compute Module 4 IO Board:
 7. Power off the IO Board.
 8. Detach the CM4 and attach it to your carrier board.
 
-
-### Maintenance
-
-When a disk fails or is near failing in the array, we need to swap the disk out.
+For maintenance, when a disk fails or is near failing in the array, we need to
+swap the disk out.
 
 > [!CAUTION]
 > You can only mount the array in degraded mode once or your data is lost!
@@ -135,25 +124,20 @@ btrfs balance start /mnt/array
 ```
 
 [Raspberry Pi Compute Module 4]: https://www.raspberrypi.com/products/compute-module-4/?variant=raspberry-pi-cm4001000
-[Axzez Interceptor]: https://www.axzez.com/product-page/interceptor-carrier-board
+[Axzez Interceptor v1.0]: https://www.axzez.com/product-page/interceptor-carrier-board
 
 
 ## hyperion
 
 This is a Rockchip RK3576 based SBC - an [ArmSoM Sige5].
 
-
-###  Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant raw
 cp ./result/nixos-hyperion* .
 systemd-dissect --with nixos-hyperion* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
-
-
-### Flashing the image
 
 Change Storage functionality does not seem to work correctly on RK3576, so we
 first flash U-Boot to microSD separately and then the image to eMMC storage
@@ -199,18 +183,13 @@ using `rkdeveloptool`:
 
 This is a Rockchip RK3588 based SBC - a [FriendlyElec NanoPC-T6 LTS].
 
-
-### Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant raw
 cp ./result/nixos-mars* .
 systemd-dissect --with nixos-mars* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
-
-
-### Flashing the image
 
 Flash U-Boot to SPI NOR flash and the image to eMMC storage using
 `rkdeveloptool`:
@@ -257,18 +236,13 @@ Flash U-Boot to SPI NOR flash and the image to eMMC storage using
 
 This is a Rockchip RK3588 based SBC - an [ArmSoM Sige7].
 
-
-### Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#atlas --image-variant raw
 cp ./result/nixos-atlas* .
 systemd-dissect --with nixos-atlas* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
-
-
-### Flashing the image
 
 First ensure the board's microSD card slot is populated, then flash U-Boot to
 microSD and the image to eMMC storage using `rkdeveloptool`:
@@ -317,9 +291,6 @@ PC, have an [erase-your-darlings] inspired encrypted btrfs root setup, where on
 every boot the root subvolume is rolled back to an empty snapshot (accomplished
 using a systemd service in the initrd).
 
-
-### Partitioning
-
 1. Create 1G ESP, LUKS root and 16G swap partitions:
    ```sh
    sgdisk -n 1::+1G -t 1:ef00 -n 2::-16G -t 2:8309 -n 3::0 -t 3:8200 /dev/nvme0n1
@@ -347,10 +318,7 @@ using a systemd service in the initrd).
    btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
    umount /mnt
    ```
-
-### Installation
-
-1. Prepare the mountpoints:
+6. Prepare the mountpoints:
    ```sh
    mount /dev/mapper/cryptroot -o subvol=root,compress-force=zstd:1,noatime /mnt
    mkdir -p /mnt/{nix,state,boot,var/log,var/lib/sops-nix,etc/nixos}
@@ -358,7 +326,7 @@ using a systemd service in the initrd).
    mount /dev/mapper/cryptroot -o subvol=state,compress-force=zstd:1,noatime /mnt/state
    mount /dev/nvme0n1p1 /mnt/boot
    ```
-2. Set up the bind mounts:
+7. Set up the bind mounts:
    ```sh
    mkdir -p /mnt/state/{var/log,var/lib/sops-nix,etc/nixos}
    mount -o bind /mnt/state/var/log /mnt/var/log
@@ -366,7 +334,7 @@ using a systemd service in the initrd).
    # IMPORTANT: don't forget to add the age private key above!
    mount -o bind /mnt/state/etc/nixos /mnt/etc/nixos
    ```
-3. Download and build the NixOS configuration:
+8. Download and build the NixOS configuration:
    ```sh
    git clone https://github.com/Electrostasy/dots /mnt/etc/nixos
    nixos-install --flake /mnt/etc/nixos#mercury --root /mnt --no-root-passwd
@@ -381,20 +349,15 @@ using a systemd service in the initrd).
 
 This is a [Raspberry Pi 4 Model B], hosting various things like my VPN.
 
-
-### Building the image
-
-Build on an `aarch64-linux` platform and insert the `age` private key:
+Build the image on an `aarch64-linux` platform and insert the `age` private
+key:
 ```sh
 nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant raw
 cp ./result/nixos-phobos* .
 systemd-dissect --with nixos-phobos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
-
-### Flashing the image
-
-Flash to microSD card:
+Flash the image to microSD card:
 ```sh
 dd if=nixos-phobos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
