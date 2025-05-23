@@ -79,11 +79,21 @@
             pkgs = nixpkgs.legacyPackages.${system};
             package = pkgs.writeShellApplication {
               name = "diff-closures";
-              text = builtins.readFile ./scripts/diff-closures.sh;
+              runtimeInputs = [ pkgs.jq ];
+              text = ''
+                if [[ $# -eq 0 ]]; then
+                  set -- "/run/current-system" "/etc/nixos#nixosConfigurations.\"$HOSTNAME\".config.system.build.toplevel"
+                elif ! nix path-info --derivation "$1" "$2" &> /dev/null; then
+                  echo 'Error: arguments must evaluate to Nix derivations!'
+                  exit 1
+                fi
+
+                jq -rf ${./scripts/diff-closures.jq} -s <(nix derivation show -r "$1") <(nix derivation show -r "$2")
+              '';
             };
           in
             nixpkgs.lib.getExe package;
-        meta.description = "Show what packages and versions were added and removed between two closures.";
+        meta.description = "Show what packages and versions changed between two closures.";
       };
 
       is-cached = {
