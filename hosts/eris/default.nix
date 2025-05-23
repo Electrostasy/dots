@@ -17,14 +17,10 @@
     useWindowsDriver = true; # use OpenGL/CUDA from Windows.
   };
 
-  # `resolv.conf` is managed by WSL.
-  services.resolved.enable = false;
-  networking.nameservers = lib.mkForce [ ];
-
-  # DHCP is handled by Windows.
-  systemd.network.networks."10-windows-dhcp" = {
-    matchConfig.Name = [ "eth*" ];
-    networkConfig.DHCP = "no";
+  networking = {
+    nameservers = lib.mkForce [ ];
+    useDHCP = false;
+    useNetworkd = false;
   };
 
   environment.systemPackages = with pkgs; [
