@@ -79,8 +79,8 @@
 
   environment.systemPackages = with pkgs; [
     amberol
-    exhibit
     eyedropper
+    f3d
     ffmpegthumbnailer
     fractal
     freerdp
