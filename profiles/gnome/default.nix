@@ -9,7 +9,14 @@
 
   nixpkgs.overlays = [ flake.overlays.f3d-interactive ];
 
-  boot.plymouth.enable = true;
+  boot = {
+    # When plymouth shows the LUKS password prompt, we may need to wait a few
+    # seconds before usbhid is loaded and the keyboard functions unless we load
+    # usbhid sooner.
+    initrd.kernelModules = [ "usbhid" ];
+
+    plymouth.enable = true;
+  };
 
   services = {
     displayManager.autoLogin = {
