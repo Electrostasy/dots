@@ -69,6 +69,10 @@
 
   security.sudo.wheelNeedsPassword = false;
 
+  environment.persistence."/persist/state".users.electro.files = [
+    (lib.optionalString config.services.graphical-desktop.enable ".config/git-credential-keepassxc")
+  ];
+
   programs.git = {
     enable = true;
 
@@ -90,4 +94,6 @@
       };
     };
   };
+
+  users.mutableUsers = lib.mkDefault false;
 }

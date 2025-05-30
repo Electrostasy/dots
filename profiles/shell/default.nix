@@ -31,16 +31,20 @@
       TIME_STYLE = "+%Y-%m-%d %H:%M:%S"; # for `ls`, `eza`.
     };
 
-    persistence.state.users.electro.directories = [
-      ".cache/nix-index"
+    persistence = {
+      "/persist/cache".users.electro.directories = [
+        ".cache/nix-index"
 
-      # tealdeer removes the entire tldr-pages subdirectory, so we cannot
-      # persist it, but instead we persist the parent directory.
-      ".cache/tealdeer"
+        # tealdeer removes the entire tldr-pages subdirectory, so we cannot
+        # persist it, but instead we persist the parent directory.
+        ".cache/tealdeer"
+      ];
 
-      # https://github.com/fish-shell/fish-shell/issues/8627
-      ".local/share/fish"
-    ];
+      "/persist/state".users.electro.directories = [
+        # https://github.com/fish-shell/fish-shell/issues/8627
+        ".local/share/fish"
+      ];
+    };
   };
 
   programs.nix-index = {

@@ -177,11 +177,11 @@
       ];
     };
 
-    "/state" = {
+    "/persist" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
-        "subvol=state"
+        "subvol=persist"
         "noatime"
         "compress-force=zstd:1"
         "discard=async"
@@ -194,15 +194,13 @@
     { device = "/dev/disk/by-partuuid/212fa8ad-6681-44ff-9df4-1cf6b0df55be"; randomEncryption.enable = true; }
   ];
 
-  environment.persistence.state = {
-    enable = true;
+  environment.persistence = {
+    "/persist/cache".enable = true;
 
-    users.electro = {
-      files = [
-        ".config/git-credential-keepassxc"
-      ];
+    "/persist/state" = {
+      enable = true;
 
-      directories = [
+      users.electro.directories = [
         ".config/FreeCAD"
         ".config/PrusaSlicer"
         ".config/kicad"

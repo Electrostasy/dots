@@ -314,25 +314,27 @@ using a systemd service in the initrd).
    mount /dev/mapper/cryptroot -o compress-force=zstd:1,noatime /mnt
    btrfs subvolume create /mnt/root
    btrfs subvolume create /mnt/nix
-   btrfs subvolume create /mnt/state
+   btrfs subvolume create /mnt/persist
+   btrfs subvolume create /mnt/persist/cache
+   btrfs subvolume create /mnt/persist/state
    btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
    umount /mnt
    ```
 6. Prepare the mountpoints:
    ```sh
    mount /dev/mapper/cryptroot -o subvol=root,compress-force=zstd:1,noatime /mnt
-   mkdir -p /mnt/{nix,state,boot,var/log,var/lib/sops-nix,etc/nixos}
+   mkdir -p /mnt/{nix,persist,boot,var/log,var/lib/sops-nix,etc/nixos}
    mount /dev/mapper/cryptroot -o subvol=nix,compress-force=zstd:1,noatime /mnt/nix
-   mount /dev/mapper/cryptroot -o subvol=state,compress-force=zstd:1,noatime /mnt/state
+   mount /dev/mapper/cryptroot -o subvol=persist,compress-force=zstd:1,noatime /mnt/persist
    mount /dev/nvme0n1p1 /mnt/boot
    ```
 7. Set up the bind mounts:
    ```sh
-   mkdir -p /mnt/state/{var/log,var/lib/sops-nix,etc/nixos}
-   mount -o bind /mnt/state/var/log /mnt/var/log
-   mount -o bind /mnt/state/var/lib/sops-nix /mnt/var/lib/sops-nix
+   mkdir -p /mnt/persist/state/{var/log,var/lib/sops-nix,etc/nixos}
+   mount -o bind /mnt/persist/state/var/log /mnt/var/log
+   mount -o bind /mnt/persist/state/var/lib/sops-nix /mnt/var/lib/sops-nix
    # IMPORTANT: don't forget to add the age private key above!
-   mount -o bind /mnt/state/etc/nixos /mnt/etc/nixos
+   mount -o bind /mnt/persist/state/etc/nixos /mnt/etc/nixos
    ```
 8. Download and build the NixOS configuration:
    ```sh

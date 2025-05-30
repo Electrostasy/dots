@@ -55,32 +55,35 @@
     settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
   };
 
-  environment.persistence.state = {
-    directories = [
-      # Contains paired devices which are convenient to persist.
-      "/var/lib/bluetooth"
+  environment.persistence = {
+    "/persist/cache".users.electro.directories = [
+      ".cache/fontconfig"
+      ".cache/keepassxc"
+      ".cache/tracker3"
+
+      # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
+      ".cache/thumbnails/fail"
+      ".cache/thumbnails/large"
+      ".cache/thumbnails/normal"
+      ".cache/thumbnails/x-large"
+      ".cache/thumbnails/xx-large"
     ];
 
-    users.electro = {
-      files = [
-        # Multi-monitor configuration.
-        ".config/monitors.xml"
-      ];
+    "/persist/state" = {
+      directories = [ "/var/lib/bluetooth" ];
 
-      directories = [
-        ".cache/fontconfig"
-        ".cache/tracker3"
+      users.electro = {
+        files = [ ".config/monitors.xml" ];
 
-        # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
-        ".cache/thumbnails/large"
-        ".cache/thumbnails/normal"
-        ".cache/thumbnails/x-large"
-        ".cache/thumbnails/xx-large"
-        ".cache/thumbnails/fail"
-
-        ".cache/keepassxc"
-        ".config/keepassxc"
-      ];
+        directories = [
+          ".config/keepassxc"
+          "Documents"
+          "Downloads"
+          "Music"
+          "Pictures"
+          "Videos"
+        ];
+      };
     };
   };
 
@@ -390,7 +393,7 @@
     # Link the monitors.xml files together. This is not ideal, but GDM and
     # gnome-shell don't quite communicate on unified display settings yet.
     "/run/gdm/.config/monitors.xml"."L+".argument =
-      "${config.environment.persistence.state.persistentStoragePath}/home/electro/.config/monitors.xml";
+      "${config.environment.persistence."/persist/state".persistentStoragePath}/home/electro/.config/monitors.xml";
   };
 
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when

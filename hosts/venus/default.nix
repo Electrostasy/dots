@@ -163,11 +163,11 @@
       ];
     };
 
-    "/state" = {
+    "/persist" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
       options = [
-        "subvol=state"
+        "subvol=persist"
         "noatime"
         "compress-force=zstd:3"
         "discard=async"
@@ -176,12 +176,9 @@
     };
   };
 
-  environment.persistence.state = {
-    enable = true;
-
-    users.electro = {
-      files = [ ".config/git-credential-keepassxc" ];
-    };
+  environment.persistence = {
+    "/persist/cache".enable = true;
+    "/persist/state".enable = true;
   };
 
   environment.systemPackages = with pkgs; [

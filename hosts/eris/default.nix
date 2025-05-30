@@ -46,5 +46,7 @@
     xlsx2csv
   ];
 
+  users.mutableUsers = true; # TODO: Set default user password.
+
   system.stateVersion = "24.11";
 }
