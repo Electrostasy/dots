@@ -1,6 +1,19 @@
 { config, pkgs, ... }:
 
 {
+  preservation.preserveAt = {
+    "/persist/cache".users.electro.directories = [
+      # tealdeer removes the entire tldr-pages subdirectory, so we cannot
+      # persist it, but instead we persist the parent directory.
+      ".cache/tealdeer"
+    ];
+
+    "/persist/state".users.electro.directories = [
+      # https://github.com/fish-shell/fish-shell/issues/8627
+      ".local/share/fish"
+    ];
+  };
+
   environment = {
     systemPackages = with pkgs; [
       aria2
@@ -38,19 +51,6 @@
 
     sessionVariables = {
       TIME_STYLE = "+%Y-%m-%d %H:%M:%S"; # for `ls`, `eza`.
-    };
-
-    persistence = {
-      "/persist/cache".users.electro.directories = [
-        # tealdeer removes the entire tldr-pages subdirectory, so we cannot
-        # persist it, but instead we persist the parent directory.
-        ".cache/tealdeer"
-      ];
-
-      "/persist/state".users.electro.directories = [
-        # https://github.com/fish-shell/fish-shell/issues/8627
-        ".local/share/fish"
-      ];
     };
   };
 

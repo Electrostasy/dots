@@ -3,10 +3,9 @@
 {
   sops.secrets.tailscaleKey.sopsFile = ../hosts/phobos/secrets.yaml;
 
-  environment = {
-    persistence."/persist/state".directories = [ "/var/lib/tailscale" ];
-    shellAliases.ts = "tailscale";
-  };
+  preservation.preserveAt."/persist/state".directories = [ "/var/lib/tailscale" ];
+
+  environment.shellAliases.ts = "tailscale";
 
   services.tailscale = {
     enable = true;

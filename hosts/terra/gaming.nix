@@ -52,11 +52,9 @@ in
     };
   };
 
-  environment = {
-    # By default mesa shader cache is in ~/.cache/mesa_shader_cache, but can be
-    # overriden by setting $MESA_SHADER_CACHE_DIR.
-    persistence."/persist/cache".users.electro.directories = [ ".cache/mesa_shader_cache" ];
+  preservation.preserveAt."/persist/cache".users.electro.directories = [ ".cache/mesa_shader_cache" ];
 
+  environment = {
     # Keep configs, state, etc. all in the same place.
     sessionVariables.DOLPHIN_EMU_USERPATH = "\${XDG_DATA_HOME:-$HOME/.local/share}/dolphin-emu";
 

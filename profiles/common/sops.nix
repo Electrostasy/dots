@@ -1,29 +1,29 @@
 { config, pkgs, lib, ... }:
 
-let
-  keyFile = "/var/lib/sops-nix/keys.txt";
-in
-
 {
   config = lib.mkIf (config.sops.secrets != { }) {
+    preservation.preserveAt."/persist/state".directories = [
+      { directory = builtins.dirOf config.sops.age.keyFile; inInitrd = true; }
+    ];
+
     # This is required for `nixos-rebuild build-vm` to work correctly.
     virtualisation.vmVariant = {
       virtualisation.sharedDirectories.sops = {
-        source = builtins.dirOf keyFile;
-        target = builtins.dirOf keyFile;
+        source = builtins.dirOf config.sops.age.keyFile;
+        target = builtins.dirOf config.sops.age.keyFile;
       };
     };
 
     sops = {
       age = {
-        inherit keyFile;
+        keyFile = "/var/lib/sops-nix/keys.txt";
         sshKeyPaths = [];
       };
       gnupg.sshKeyPaths = [];
     };
 
     environment = {
-      sessionVariables.SOPS_AGE_KEY_FILE = keyFile;
+      sessionVariables.SOPS_AGE_KEY_FILE = config.sops.age.keyFile;
 
       systemPackages = with pkgs; [
         rage

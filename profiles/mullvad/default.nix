@@ -6,7 +6,7 @@
     path = "/etc/mullvad-vpn/account-history.json";
   };
 
-  environment.persistence."/persist/state".files = [
+  preservation.preserveAt."/persist/state".files = [
     # Contains the device-specific rotated Wireguard private key. If this is
     # not persistent, new devices from the associated Mullvad account have to
     # be removed each time the device is restarted.

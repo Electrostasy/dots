@@ -1,42 +1,24 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Persist the age private key if sops-nix is used for secrets management.
-  # Does not work with impermanence, as it is not mounted early enough in the
-  # boot process:
-  # https://github.com/Mic92/sops-nix/blob/master/README.md#setting-a-users-password
-  fileSystems =
-    let keyFileDir = builtins.dirOf config.sops.age.keyFile;
-    in lib.mkIf (config.sops.secrets != { } && config.environment.persistence."/persist/state".enable) {
-      ${keyFileDir} = {
-        device = "/persist/state" + keyFileDir;
-        fsType = "none";
-        options = [ "bind" ];
-        depends = [ "/persist/state" ];
-        neededForBoot = true;
-      };
-    };
-
-  # https://nixos.org/manual/nixos/unstable/#ch-system-state
-  environment.persistence = {
+  preservation.preserveAt = {
     "/persist/cache" = {
-      enable = lib.mkDefault false;
-
-      hideMounts = true;
+      commonMountOptions = [ "x-gvfs-hide" ];
 
       users = {
-        root.directories = [ ".cache/nix" ];
-        electro.directories = [ ".cache/nix" ];
+        root = {
+          home = "/root";
+          directories = [ ".cache/nix" ];
+        };
 
-        # Cannot be defined from users.users due to infinite recursion.
-        root.home = "/root";
+        electro = {
+          directories = [ ".cache/nix" ];
+        };
       };
     };
 
     "/persist/state" = {
-      enable = lib.mkDefault false;
-
-      hideMounts = true;
+      commonMountOptions = [ "x-gvfs-hide" ];
 
       directories = [
         "/etc/nixos"
@@ -45,11 +27,13 @@
         "/var/log/journal"
       ];
 
-      files = [ "/etc/machine-id" ];
+      files = [
+        { file = "/etc/machine-id"; inInitrd = true; how = "symlink"; configureParent = true; }
+      ];
     };
   };
 
-  systemd = lib.mkIf config.environment.persistence."/persist/state".enable {
+  systemd = lib.mkIf config.preservation.enable {
     timers = {
       state-snapshot = {
         description = "Periodic snapshot of the /persist/state subvolume.";
@@ -132,6 +116,16 @@
             fi
           done
         '';
+      };
+
+      systemd-machine-id-commit = {
+        unitConfig.ConditionPathIsMountPoint = [
+          "" "/persist/state/etc/machine-id"
+        ];
+
+        serviceConfig.ExecStart = [
+          "" "systemd-machine-id-setup --commit --root /persist/state"
+        ];
       };
     };
   };

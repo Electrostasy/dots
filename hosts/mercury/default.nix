@@ -156,11 +156,6 @@
     binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
-  environment.persistence = {
-    "/persist/cache".enable = true;
-    "/persist/state".enable = true;
-  };
-
   fileSystems = {
     # Ensure time out appears when the actual physical device fails to appear,
     # otherwise, systemd cannot set the infinite timeout (such as when using
@@ -210,6 +205,8 @@
   swapDevices = [
     { device = "/dev/disk/by-partuuid/19569fdc-0dc6-4fd7-aef0-ec770aaf1f6a"; randomEncryption.enable = true; }
   ];
+
+  preservation.enable = true;
 
   networking.networkmanager.ensureProfiles = {
     environmentFiles = [ config.sops.secrets.networkmanager.path ];

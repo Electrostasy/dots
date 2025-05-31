@@ -16,7 +16,7 @@ let
 in
 
 {
-  environment.persistence."/persist/state".users.electro.directories = [ ".mozilla/firefox" ];
+  preservation.preserveAt."/persist/state".users.electro.directories = [ ".mozilla/firefox" ];
 
   programs.firefox = {
     enable = true;

@@ -176,10 +176,7 @@
     };
   };
 
-  environment.persistence = {
-    "/persist/cache".enable = true;
-    "/persist/state".enable = true;
-  };
+  preservation.enable = true;
 
   environment.systemPackages = with pkgs; [
     gnomeExtensions.fullscreen-to-empty-workspace

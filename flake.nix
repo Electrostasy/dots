@@ -6,12 +6,14 @@
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
 
-    impermanence.url = "github:nix-community/impermanence/master";
-
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Revert to main when this is merged:
+    # https://github.com/nix-community/preservation/pull/12
+    preservation.url = "github:nix-community/preservation/2d53e88842ee5810ea3ec4f8dcec913aeaf2839d";
 
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
@@ -125,8 +127,8 @@
     nixosConfigurations = nixpkgs.lib.mapAttrs (name: _:
       nixpkgs.lib.nixosSystem {
         modules = [
-          self.inputs.impermanence.nixosModules.default
           self.inputs.nixos-wsl.nixosModules.default
+          self.inputs.preservation.nixosModules.default
           self.inputs.sops-nix.nixosModules.default
           self.outputs.nixosModules.mpv
           self.outputs.nixosModules.neovim

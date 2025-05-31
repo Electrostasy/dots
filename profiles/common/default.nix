@@ -2,14 +2,15 @@
 
 {
   imports = [
-    ./sops.nix
-    ./impermanence.nix
     "${modulesPath}/profiles/perlless.nix"
     ./fixes.nix
+    ./preservation.nix
+    ./sops.nix
   ];
 
   system = {
     configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
+
     rebuild.enableNg = true;
   };
 
@@ -69,7 +70,7 @@
 
   security.sudo.wheelNeedsPassword = false;
 
-  environment.persistence."/persist/state".users.electro.files = [
+  preservation.preserveAt."/persist/state".users.electro.files = [
     (lib.optionalString config.services.graphical-desktop.enable ".config/git-credential-keepassxc")
   ];
 

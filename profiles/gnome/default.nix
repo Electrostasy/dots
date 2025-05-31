@@ -55,7 +55,7 @@
     settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
   };
 
-  environment.persistence = {
+  preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
       ".cache/fontconfig"
       ".cache/keepassxc"
@@ -389,8 +389,7 @@
   systemd.tmpfiles.settings."10-gnome-autostart" = {
     # Link the monitors.xml files together. This is not ideal, but GDM and
     # gnome-shell don't quite communicate on unified display settings yet.
-    "/run/gdm/.config/monitors.xml"."L+".argument =
-      "${config.environment.persistence."/persist/state".persistentStoragePath}/home/electro/.config/monitors.xml";
+    "/run/gdm/.config/monitors.xml"."L+".argument = "/persist/state/home/electro/.config/monitors.xml";
   };
 
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when

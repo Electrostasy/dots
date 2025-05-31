@@ -194,20 +194,17 @@
     { device = "/dev/disk/by-partuuid/212fa8ad-6681-44ff-9df4-1cf6b0df55be"; randomEncryption.enable = true; }
   ];
 
-  environment.persistence = {
-    "/persist/cache".enable = true;
+  preservation = {
+    enable = true;
 
-    "/persist/state" = {
-      enable = true;
-
-      users.electro.directories = [
-        ".config/FreeCAD"
-        ".config/PrusaSlicer"
-        ".config/kicad"
-        ".local/share/FreeCAD"
-        ".local/share/kicad"
-      ];
-    };
+    preserveAt."/persist/state".users.electro.directories = [
+      ".config/FreeCAD"
+      ".config/MusicBrainz"
+      ".config/PrusaSlicer"
+      ".config/kicad"
+      ".local/share/FreeCAD"
+      ".local/share/kicad"
+    ];
   };
 
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
