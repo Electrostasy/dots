@@ -95,13 +95,13 @@
     fractal
     freerdp
     keepassxc
+    mission-center
     nautilus-amberol
     nautilus-open-any-terminal
     nautilus-python
     nautilus-vimv
     papers
     ptyxis
-    resources
     wl-clipboard
 
     (makeAutostartItem {
