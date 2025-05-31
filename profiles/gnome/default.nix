@@ -129,9 +129,6 @@
 
     adw-gtk3
     morewaita-icon-theme
-    (pkgs.runCommandLocal "electrostasy-shell-theme" { } ''
-      install -D ${./gnome-shell.css} $out/share/themes/electrostasy/gnome-shell/gnome-shell.css
-    '')
 
     gnomeExtensions.blur-my-shell
     gnomeExtensions.desktop-cube
@@ -399,7 +396,6 @@
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.user.tmpfiles.rules = [
-    "L+ %h/.config/gtk-4.0/gtk.css - - - - ${./gtk.css}"
     "L+ %h/.local/share/org.gnome.Ptyxis/palettes/poimandres.palette - - - - ${
       (pkgs.formats.ini { }).generate "poimandres.palette" {
         Palette = {
