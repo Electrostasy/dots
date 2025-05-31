@@ -2,29 +2,6 @@
 
 {
   services = {
-    # Due to the way desktop configuration works in Nixpkgs, we have to install
-    # an X server even if we only use Wayland.
-    xserver = {
-      enable = true;
-
-      # We can exclude these packages without breaking X in gnome-shell, even if
-      # I almost never use it.
-      excludePackages = [ pkgs.xterm ] ++ (with pkgs.xorg; [
-        iceauth
-        xauth
-        xf86inputevdev
-        xinput
-        xlsclients
-        xorgserver
-        xprop
-        xrandr
-        xrdb
-        xset
-        xsetroot
-      ]);
-    };
-
-    # Disable unused GNOME module features.
     avahi.enable = false;
     dleyna.enable = false;
     hardware.bolt.enable = false;

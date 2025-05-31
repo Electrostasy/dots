@@ -19,19 +19,19 @@
   };
 
   services = {
-    displayManager.autoLogin = {
-      enable = true;
-      user = "electro";
-    };
-
-    xserver = {
-      displayManager.gdm = {
+    displayManager = {
+      gdm = {
         enable = true;
         autoSuspend = false;
       };
 
-      desktopManager.gnome.enable = true;
+      autoLogin = {
+        enable = true;
+        user = "electro";
+      };
     };
+
+    desktopManager.gnome.enable = true;
   };
 
   # Required for autologin:
