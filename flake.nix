@@ -90,7 +90,10 @@
                   exit 1
                 fi
 
-                jq -rf ${./scripts/diff-closures.jq} -s <(nix derivation show -r "$1") <(nix derivation show -r "$2")
+                jq -rf ${./scripts/diff-closures.jq} -s
+                  <(nix derivation show --recursive "$1")
+                  <(nix derivation show --recursive "$2")
+                  <(nix derivation show /run/current-system/sw/bin/*)
               '';
             };
           in
