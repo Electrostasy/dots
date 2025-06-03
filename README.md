@@ -288,58 +288,41 @@ microSD and the image to eMMC storage using `rkdeveloptool`:
 
 The hosts [mercury], a Asus ROG Flow Z13 (2022) laptop, and [terra], a desktop
 PC, have an [erase-your-darlings] inspired encrypted btrfs root setup, where on
-every boot the root subvolume is rolled back to an empty snapshot (accomplished
+every boot the root subvolume is restored from an empty snapshot (accomplished
 using a systemd service in the initrd).
 
-1. Create 1G ESP, LUKS root and 16G swap partitions:
+1. Create the ESP, LUKS encrypted root and swap partitions:
    ```sh
    sgdisk -n 1::+1G -t 1:ef00 -n 2::-16G -t 2:8309 -n 3::0 -t 3:8200 /dev/nvme0n1
-   ```
-2. Format the ESP:
-   ```sh
-   mkfs.vfat -F 32 -n BOOT /dev/nvme0n1p1
-   ```
-3. Format the root partition:
-   ```sh
    cryptsetup luksFormat --uuid eea26205-2ae5-4d2c-9a13-32c7d9ae2421 /dev/nvme0n1p2
    cryptsetup luksOpen /dev/nvme0n1p2 cryptroot
-   mkfs.btrfs -L nixos /dev/mapper/cryptroot
    ```
-4. Format the swap partition:
+2. Format the partitions:
    ```sh
+   mkfs.vfat -F 32 -n BOOT /dev/nvme0n1p1
+   mkfs.btrfs -L nixos /dev/mapper/cryptroot
    mkswap -L swap /dev/nvme0n1p3
    ```
-5. Set up the btrfs subvolumes:
+3. Set up the btrfs subvolumes and empty root snapshot:
    ```sh
    mount /dev/mapper/cryptroot -o compress-force=zstd:1,noatime /mnt
-   btrfs subvolume create /mnt/root
-   btrfs subvolume create /mnt/nix
-   btrfs subvolume create /mnt/persist
-   btrfs subvolume create /mnt/persist/cache
-   btrfs subvolume create /mnt/persist/state
-   btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
+   btrfs subvolume create /mnt/{root,nix,persist,persist/{cache,state}}
+   btrfs subvolume snapshot -r /mnt/{root,root-blank}
    umount /mnt
    ```
-6. Prepare the mountpoints:
+4. Prepare the mountpoints for installation:
    ```sh
    mount /dev/mapper/cryptroot -o subvol=root,compress-force=zstd:1,noatime /mnt
-   mkdir -p /mnt/{nix,persist,boot,var/log,var/lib/sops-nix,etc/nixos}
-   mount /dev/mapper/cryptroot -o subvol=nix,compress-force=zstd:1,noatime /mnt/nix
-   mount /dev/mapper/cryptroot -o subvol=persist,compress-force=zstd:1,noatime /mnt/persist
-   mount /dev/nvme0n1p1 /mnt/boot
+   mount /dev/mapper/cryptroot -o subvol=nix,compress-force=zstd:1,noatime -m /mnt/nix
+   mount /dev/mapper/cryptroot -o subvol=persist,compress-force=zstd:1,noatime -m /mnt/persist
+   mount /dev/nvme0n1p1 -m /mnt/boot
    ```
-7. Set up the bind mounts:
+5. Download, build and install the NixOS configuration:
    ```sh
-   mkdir -p /mnt/persist/state/{var/log,var/lib/sops-nix,etc/nixos}
-   mount -o bind /mnt/persist/state/var/log /mnt/var/log
-   mount -o bind /mnt/persist/state/var/lib/sops-nix /mnt/var/lib/sops-nix
-   # IMPORTANT: don't forget to add the age private key above!
-   mount -o bind /mnt/persist/state/etc/nixos /mnt/etc/nixos
-   ```
-8. Download and build the NixOS configuration:
-   ```sh
-   git clone https://github.com/Electrostasy/dots /mnt/etc/nixos
-   nixos-install --flake /mnt/etc/nixos#mercury --root /mnt --no-root-passwd
+   git clone https://github.com/Electrostasy/dots /mnt/persist/state/etc/nixos
+   # IMPORTANT: don't forget to copy the age private key:
+   # install -D keys.txt /mnt/persist/state/var/lib/sops-nix/keys.txt
+   nixos-install --flake /mnt/persist/state/etc/nixos#terra --root /mnt --no-root-passwd
    ```
 
 [erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
