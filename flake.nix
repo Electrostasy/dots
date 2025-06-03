@@ -123,6 +123,7 @@
     nixosModules = {
       mpv = ./modules/mpv.nix;
       neovim = ./modules/neovim.nix;
+      restore-root = ./modules/restore-root.nix;
       unfree = ./modules/unfree.nix;
       zswap = ./modules/zswap.nix;
     };
@@ -135,6 +136,7 @@
           self.inputs.sops-nix.nixosModules.default
           self.outputs.nixosModules.mpv
           self.outputs.nixosModules.neovim
+          self.outputs.nixosModules.restore-root
           self.outputs.nixosModules.unfree
           self.outputs.nixosModules.zswap
 
