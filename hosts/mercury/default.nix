@@ -69,56 +69,10 @@
         bypassWorkqueues = true;
       };
 
-      systemd = {
-        # https://github.com/NixOS/nixpkgs/issues/309316
-        storePaths = with pkgs; [
-          "${util-linux}/bin/mount"
-          "${util-linux}/bin/umount"
-          "${btrfs-progs}/bin/btrfs"
-          "${coreutils}/bin/cut"
-        ];
+      restore-root = {
+        enable = true;
 
-        services.cryptroot-restore = {
-          description = "Restore root filesystem for impermanent btrfs root";
-          wantedBy = [ "sysinit.target" ];
-
-          after = [ "cryptsetup.target" ]; # after /dev/mapper/cryptroot is available.
-          before = [ "local-fs-pre.target" ]; # before filesystems are mounted.
-
-          path = with pkgs; [
-            util-linux
-            btrfs-progs
-            coreutils
-          ];
-
-          unitConfig.DefaultDependencies = "no";
-          serviceConfig.Type = "oneshot";
-
-          # In order to restore the root subvolume from an empty snapshot, first
-          # the lower level subvolumes under /root need to be deleted, which seem
-          # to get created by systemd.
-          script = ''
-            mkdir -p /mnt
-            mount -t btrfs -o subvol=/ /dev/mapper/cryptroot /mnt
-
-            for subvolume in $(btrfs subvolume list -o /mnt/root | cut -f9 -d' '); do
-              echo "Deleting /$subvolume subvolume..."
-              btrfs subvolume delete "/mnt/$subvolume"
-            done
-
-            if [ $? -eq 0 ]; then
-              echo "Deleting /root subvolume..."
-              btrfs subvolume delete /mnt/root
-
-              echo "Restoring /root subvolume from blank snapshot..."
-              btrfs subvolume snapshot /mnt/root-blank /mnt/root
-            else
-              echo "Failed to delete subvolumes under /mnt/root!"
-            fi
-
-            umount /mnt
-          '';
-        };
+        device = "/dev/mapper/cryptroot";
       };
 
       availableKernelModules = [
