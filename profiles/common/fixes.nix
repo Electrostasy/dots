@@ -31,12 +31,12 @@
   # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
   nix.settings.trusted-users = [ "@wheel" ];
 
-  # With the iwd backend, autoconnect does not work, even if we set
-  # `wifi.iwd.autoconnect = false`. If networks are managed with
-  # NetworkManager, iwd is not aware of them without converting them to iwd's
-  # format, but not using iwd's autoconnect functionality is not working
-  # either. So we force `wpa_supplicant`.
-  networking.networkmanager.wifi.backend = "wpa_supplicant";
+  # Disable IWD's autoconnect mechanism to have only NetworkManager initiate
+  # connections. If left up to IWD, it will never autoconnect to any networks
+  # configured through the NetworkManager NixOS option `ensureProfiles`.
+  networking.networkmanager.settings = lib.mkIf (config.networking.networkmanager.wifi.backend == "iwd") {
+    device."wifi.iwd.autoconnect" = false;
+  };
 
   # Normally, when dconf changes are made to the `user` profile, the user will
   # need to log out and log in again for the changes to be applied. However, in

@@ -64,6 +64,7 @@
       "2.europe.pool.ntp.org"
     ];
 
+    networkmanager.wifi.backend = lib.mkDefault "iwd";
     useNetworkd = lib.mkDefault true; # translate `networking.*` options into `systemd.network`.
     useDHCP = lib.mkDefault true;
   };
