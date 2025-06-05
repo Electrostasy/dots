@@ -3,7 +3,6 @@
 {
   imports = [
     "${modulesPath}/profiles/perlless.nix"
-    ./fixes.nix
     ./preservation.nix
     ./sops.nix
   ];
@@ -12,6 +11,8 @@
     configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
 
     rebuild.enableNg = true;
+
+    forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
   };
 
   nix = {
@@ -28,6 +29,13 @@
       ];
 
       use-cgroups = true;
+      build-dir = "/var/tmp";
+
+      # When deploying NixOS configurations with `nixos-rebuild --target-host`,
+      # we can get an error about missing valid signatures for store paths
+      # built on the build host:
+      # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
+      trusted-users = [ "@wheel" ];
     };
   };
 
@@ -64,9 +72,25 @@
       "2.europe.pool.ntp.org"
     ];
 
-    networkmanager.wifi.backend = lib.mkDefault "iwd";
-    useNetworkd = lib.mkDefault true; # translate `networking.*` options into `systemd.network`.
+    networkmanager = {
+      wifi.backend = lib.mkDefault "iwd";
+
+      # Disable IWD's autoconnect mechanism to have only NetworkManager
+      # initiate connections. If left up to IWD, it will never autoconnect to
+      # any networks configured through the NetworkManager NixOS option
+      # `ensureProfiles`.
+      settings = lib.mkIf (config.networking.networkmanager.wifi.backend == "iwd") {
+        device."wifi.iwd.autoconnect" = false;
+      };
+    };
+
+    useNetworkd = lib.mkDefault true; # translate `networking.*` into `systemd.network`.
     useDHCP = lib.mkDefault true;
+  };
+
+  systemd = {
+    network.wait-online.enable = lib.mkDefault false;
+    services.NetworkManager-wait-online.enable = lib.mkDefault false;
   };
 
   security.sudo.wheelNeedsPassword = false;
@@ -94,6 +118,11 @@
         name = "Gediminas Valys";
         email = "steamykins@gmail.com";
       };
+
+      # Since git 2.35.2 this workaround is needed to fix an annoying error
+      # when using `git` or `nixos-rebuild` as non-root in /etc/nixos:
+      # fatal: detected dubious ownership in repository at '/etc/nixos'
+      safe.directory = "/etc/nixos";
     };
   };
 

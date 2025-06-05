@@ -384,6 +384,21 @@
     }];
   };
 
+  # Normally, when dconf changes are made to the `user` profile, the user will
+  # need to log out and log in again for the changes to be applied. However, in
+  # NixOS, this is not sufficient for some cases (automatically enabling
+  # extensions), because on a live system, the /etc/dconf path is not updated
+  # to the new database on activation. This restores the intended behaviour.
+  system.activationScripts.update-dconf-path = {
+    text = ''
+      dconf_nix_path='${config.environment.etc.dconf.source}'
+      if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
+        ln -sf "$dconf_nix_path" /etc/dconf
+        dconf update /etc/dconf
+      fi
+    '';
+  };
+
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.tmpfiles.settings."10-gnome-autostart" = {
