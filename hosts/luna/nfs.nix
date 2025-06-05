@@ -12,8 +12,8 @@
       enable = true;
 
       exports = ''
-        /srv/nfs/ *.sol.tailnet.${config.networking.domain}(rw,fsid=root,insecure,no_subtree_check)
-        /srv/nfs/ 192.168.205.0/24(rw,fsid=0,insecure,no_subtree_check)
+        /srv/nfs/ *.sol.tailnet.${config.networking.domain}(rw,fsid=root,insecure,no_subtree_check,root_squash)
+        /srv/nfs/ 192.168.205.0/24(rw,fsid=0,insecure,no_subtree_check,root_squash)
       '';
     };
 
