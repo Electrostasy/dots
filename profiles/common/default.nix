@@ -36,6 +36,10 @@
       # built on the build host:
       # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
       trusted-users = [ "@wheel" ];
+
+      # Avoid the caller sending stuff over SSH to the builder when the builder
+      # can fetch it themselves.
+      builders-use-substitutes = true;
     };
   };
 
