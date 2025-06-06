@@ -103,6 +103,10 @@
     (lib.optionalString config.services.graphical-desktop.enable ".config/git-credential-keepassxc")
   ];
 
+  # We do not need an explanation why we cannot run dynamically linked,
+  # unpatched binaries on NixOS.
+  environment.stub-ld.enable = lib.mkDefault false;
+
   programs.git = {
     enable = true;
 
