@@ -36,7 +36,7 @@ end
 return {
   cmd = { 'nixd' },
   filetypes = { 'nix' },
-  root_markers = root_dir,
+  root_markers = root_markers,
 
   settings = {
     nixd = {
