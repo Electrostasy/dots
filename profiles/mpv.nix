@@ -1,10 +1,6 @@
-{ pkgs, flake, ... }:
+{ pkgs, ... }:
 
 {
-  nixpkgs.overlays = [
-    flake.overlays.mpv-revert-libplacebo
-  ];
-
   programs.mpv = {
     enable = true;
 
