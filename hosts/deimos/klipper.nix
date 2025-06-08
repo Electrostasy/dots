@@ -98,7 +98,7 @@
           force_logins = true;
           cors_domains = [
             "*://localhost"
-            "*://phobos"
+            "*://deimos"
           ];
           trusted_clients = [
             "127.0.0.1/32"
