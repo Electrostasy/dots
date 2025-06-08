@@ -19,6 +19,13 @@
     package = pkgs.nixVersions.latest;
 
     settings = {
+      # Do not download a global flake registry, we use the system registry set
+      # up by NixOS where `nixpkgs` is pinned.
+      flake-registry = builtins.toFile "global-registry.json" (builtins.toJSON {
+        version = 2;
+        flakes = [  ];
+      });
+
       use-xdg-base-directories = true; # don't clutter $HOME.
 
       experimental-features = [
