@@ -21,7 +21,14 @@
     enable = true;
 
     useWindowsDriver = true; # use OpenGL/CUDA from Windows.
+
+    defaultUser = "electro";
   };
+
+  # This somehow conflicts with WSL - if this is enabled, the user specified in
+  # wsl.defaultUser is never created:
+  # <3>WSL (308 - Relay) ERROR: CreateProcessParseCommon:989: getpwnam(electro) failed 5
+  services.userborn.enable = false;
 
   networking = {
     nameservers = lib.mkForce [ ];
