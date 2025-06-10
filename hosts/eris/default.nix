@@ -6,6 +6,12 @@
     ../../profiles/shell
   ];
 
+  # This somehow conflicts with WSL - if this is enabled and a garbage
+  # collection is run, various programs (including bash) cannot be run even
+  # though they are present in the store, rendering WSL unbootable:
+  # <3>WSL (11 - Relay) ERROR: CreateProcessCommon:725: execvpe(/nix/store/...-wrapped-bash/wrapper) failed: No such file or directory
+  system.etc.overlay.enable = false;
+
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [ flake.overlays.libewf-fuse ];
@@ -46,7 +52,7 @@
     xlsx2csv
   ];
 
-  users.mutableUsers = true; # TODO: Set default user password.
+  users.allowNoPasswordLogin = true;
 
   system.stateVersion = "24.11";
 }
