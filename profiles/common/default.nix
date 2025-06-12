@@ -100,10 +100,9 @@
     useDHCP = lib.mkDefault true;
   };
 
-  systemd = {
-    network.wait-online.enable = lib.mkDefault false;
-    services.NetworkManager-wait-online.enable = lib.mkDefault false;
-  };
+  # Only one can be enabled, otherwise we will run into errors saying we have
+  # no network.
+  systemd.network.wait-online.enable = !(config.networking.networkmanager.enable && config.systemd.services.NetworkManager-wait-online.enable);
 
   security.sudo.wheelNeedsPassword = false;
 

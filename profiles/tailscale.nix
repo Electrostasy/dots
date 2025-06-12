@@ -27,4 +27,7 @@
   # For some reason, tailscale does not always successfully add the tailnet to
   # /etc/resolv.conf, so hardcode it here.
   services.resolved.domains = [ "sol.tailnet.${config.networking.domain}" ];
+
+  networking.networkmanager.unmanaged = [ config.services.tailscale.interfaceName ];
+  systemd.network.wait-online.ignoredInterfaces = [ config.services.tailscale.interfaceName ];
 }
