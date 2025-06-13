@@ -73,7 +73,10 @@
       directories = [ "/var/lib/bluetooth" ];
 
       users.electro = {
-        files = [ ".config/monitors.xml" ];
+        files = [
+          ".config/git-credential-keepassxc"
+          ".config/monitors.xml"
+        ];
 
         directories = [
           ".config/keepassxc"
@@ -94,6 +97,7 @@
     ffmpegthumbnailer
     fractal
     freerdp
+    git-credential-keepassxc
     keepassxc
     mission-center
     nautilus-amberol
@@ -138,6 +142,8 @@
     gnomeExtensions.unblank
     gnomeExtensions.user-themes
   ];
+
+  programs.git.config.credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
 
   programs.dconf.profiles = {
     gdm.databases = [{

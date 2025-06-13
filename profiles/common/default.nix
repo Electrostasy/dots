@@ -106,10 +106,6 @@
 
   security.sudo.wheelNeedsPassword = false;
 
-  preservation.preserveAt."/persist/state".users.electro.files = [
-    (lib.optionalString config.services.graphical-desktop.enable ".config/git-credential-keepassxc")
-  ];
-
   # We do not need an explanation why we cannot run dynamically linked,
   # unpatched binaries on NixOS.
   environment.stub-ld.enable = lib.mkDefault false;
@@ -123,11 +119,6 @@
         "https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
         "https://sr.ht/".insteadOf = [ "srht:" "sourcehut:" ];
       };
-
-      credential.helper =
-        lib.mkIf
-          config.services.graphical-desktop.enable
-          "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
 
       user = {
         name = "Gediminas Valys";
