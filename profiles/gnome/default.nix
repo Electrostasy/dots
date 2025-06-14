@@ -342,6 +342,7 @@
         };
 
         "org/gnome/shell/extensions/tilingshell" = {
+          enable-blur-selected-tilepreview = true;
           enable-blur-snap-assistant = true;
           enable-snap-assist = false;
           enable-tiling-system-windows-suggestions = true;
