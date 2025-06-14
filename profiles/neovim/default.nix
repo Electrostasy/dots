@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
@@ -38,11 +38,27 @@
       indent-blankline-nvim
       nvim-cmp
       nvim-highlight-colors
-      nvim-treesitter.withAllGrammars
       nvim-web-devicons
       telescope-nvim
       telescope-zf-native-nvim
       treesj
+
+      # Exclude parsers already bundled with Neovim:
+      # https://neovim.io/doc/user/treesitter.html#treesitter-parsers
+      (nvim-treesitter.withPlugins (ps: lib.pipe ps [
+        (attrset: lib.removeAttrs attrset [ "override" "overrideDerivation" ])
+
+        (lib.filterAttrs (_: value: with ps; !lib.elem value [
+          tree-sitter-c
+          tree-sitter-lua
+          tree-sitter-markdown
+          tree-sitter-query
+          tree-sitter-vim
+          tree-sitter-vimdoc
+        ]))
+
+        lib.attrValues
+      ]))
     ];
 
     extraPackages = with pkgs; [
