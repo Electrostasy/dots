@@ -16,7 +16,15 @@ def realname:
 		gsub($c; $c)
 	)) as $version |
 
-	.name | sub("-\($version).*"; "");
+	.name
+	| sub("-\($version).*"; "")
+
+	# Python and perl packages are prefixed with `$interpreter-$version-`,
+	# which is incremented whenever the interpreter version changes and
+	# that produces a lot of noise when the packages are not updated, but
+	# the interpreters are.
+	| sub("^python([0-9]+.?)+-"; "python-")
+	| sub("^perl([0-9]+.?)+-"; "perl-");
 
 # There may be packages with the same name but different versions present, so
 # to avoid incorrect version comparisons due to overlapping package names, we
