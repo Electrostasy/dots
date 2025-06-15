@@ -17,7 +17,7 @@
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
-      wpa_supplicant = {};
+      networkmanager = {};
       electroPassword.neededForUsers = true;
       electroIdentity = {
         mode = "0400";
@@ -51,22 +51,50 @@
     firmware = [ pkgs.raspberrypiWirelessFirmware ];
   };
 
-  networking.wireless = {
+  networking.networkmanager = {
     enable = true;
 
-    secretsFile = config.sops.secrets.wpa_supplicant.path;
-    networks = {
-      Sukceno.pskRaw = "ext:psk_Sukceno";
-      Sukceno5G.pskRaw = "ext:psk_Sukceno5G";
-    };
+    ensureProfiles = {
+      environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
-    # On disconnected or inactive state, have wpa_supplicant try to periodically
-    # reconnect.
-    extraConfig = ''
-      ap_scan=1
-      autoscan=periodic:10
-      disable_scan_offload=1
-    '';
+      profiles = {
+        home-wifi = {
+          connection = {
+            id = "home";
+            type = "wifi";
+            autoconnect = true;
+          };
+
+          wifi = {
+            ssid = "$SSID_HOME_WIFI";
+            mode = "infrastructure";
+          };
+
+          wifi-security = {
+            key-mgmt = "wpa-psk";
+            psk = "$PSK_HOME_WIFI";
+          };
+        };
+
+        phobos-wifi = {
+          connection = {
+            id = "work";
+            type = "wifi";
+            autoconnect = true;
+          };
+
+          wifi = {
+            ssid = "$SSID_PHOBOS_WIFI";
+            mode = "infrastructure";
+          };
+
+          wifi-security = {
+            key-mgmt = "wpa-psk";
+            psk = "$PSK_PHOBOS_WIFI";
+          };
+        };
+      };
+    };
   };
 
   services.journald.storage = "volatile";
