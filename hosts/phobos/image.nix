@@ -1,7 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ../../profiles/image.nix ];
+  imports = [
+    ../../profiles/image/repart.nix
+    ../../profiles/image/expand-root.nix
+  ];
 
   nixpkgs.overlays = [
     # If our bootloader EEPROM version from raspberrypi/rpi-eeprom is too new,
@@ -102,11 +105,5 @@
         };
       };
     };
-  };
-
-  systemd.repart = {
-    enable = true;
-
-    partitions."20-root".Type = "root";
   };
 }

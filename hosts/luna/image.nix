@@ -1,7 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ../../profiles/image.nix ];
+  imports = [
+    ../../profiles/image/repart.nix
+    ../../profiles/image/expand-root.nix
+  ];
 
   image = {
     extension = "raw";
@@ -89,11 +92,5 @@
         };
       };
     };
-  };
-
-  systemd.repart = {
-    enable = true;
-
-    partitions."20-root".Type = "root";
   };
 }

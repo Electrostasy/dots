@@ -2,10 +2,11 @@
 
 let
   inherit (pkgs.stdenv.hostPlatform) efiArch;
+  inherit (pkgs.stdenv) isAarch64;
 in
 
 {
-  imports = [ ../../profiles/image.nix ];
+  imports = [ ./repart.nix ];
 
   image = {
     extension = "raw";
@@ -15,15 +16,18 @@ in
         contents = {
           "/EFI/BOOT/BOOT${lib.toUpper efiArch}.EFI".source = "${config.systemd.package}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
           "/EFI/systemd/systemd-boot${efiArch}.efi".source = "${config.systemd.package}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
-          "/EFI/nixos/${config.system.boot.loader.kernelFile}.efi".source = "${config.boot.kernelPackages.kernel}/${config.system.boot.loader.kernelFile}";
-          "/EFI/nixos/${config.system.boot.loader.initrdFile}.efi".source = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
-          "/EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}.efi".source = "${config.hardware.deviceTree.package}/${config.hardware.deviceTree.name}";
+          "/EFI/nixos/${config.system.boot.loader.kernelFile}".source = "${config.boot.kernelPackages.kernel}/${config.system.boot.loader.kernelFile}";
+          "/EFI/nixos/${config.system.boot.loader.initrdFile}".source = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
+          "/EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}".source =
+            lib.mkIf
+              isAarch64
+              "${config.hardware.deviceTree.package}/${config.hardware.deviceTree.name}";
 
           "/loader/entries/nixos-generation-1.conf".source = pkgs.writeText "nixos-generation-1.conf" ''
             title NixOS
-            linux /EFI/nixos/${config.system.boot.loader.kernelFile}.efi
-            initrd /EFI/nixos/${config.system.boot.loader.initrdFile}.efi
-            devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}.efi
+            linux /EFI/nixos/${config.system.boot.loader.kernelFile}
+            initrd /EFI/nixos/${config.system.boot.loader.initrdFile}
+            ${lib.optionalString isAarch64 "devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}"}
             options init=${config.system.build.toplevel}/init ${builtins.toString config.boot.kernelParams}
           '';
         };
@@ -39,6 +43,7 @@ in
       "20-root" = {
         storePaths = [ config.system.build.toplevel ];
 
+        # Register the contents of the Nix store in the Nix database.
         contents."/nix/var/nix".source = pkgs.runCommand "nix-state" { nativeBuildInputs = [ pkgs.buildPackages.nix ]; } ''
           mkdir -p $out/profiles
           ln -s ${config.system.build.toplevel} $out/profiles/system-1-link
@@ -56,11 +61,5 @@ in
         };
       };
     };
-  };
-
-  systemd.repart = {
-    enable = true;
-
-    partitions."20-root".Type = "root";
   };
 }
