@@ -27,8 +27,6 @@
   };
 
   boot = {
-    loader.generic-extlinux-compatible.enable = true;
-
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       # Required to enable serial console:
@@ -36,24 +34,22 @@
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
     ];
-  };
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/nixos";
-      fsType = "ext4";
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = false;
     };
 
-    "/boot" = {
-      device = "/dev/disk/by-label/BOOT";
-      fsType = "vfat";
-      options = [ "umask=0077" ];
-    };
+    initrd.systemd.root = "gpt-auto";
+    supportedFilesystems.ext4 = true;
   };
 
   zramSwap.enable = true;
 
-  hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
+  hardware = {
+    deviceTree.name = "broadcom/bcm2837-rpi-zero-2-w.dtb";
+    firmware = [ pkgs.raspberrypiWirelessFirmware ];
+  };
 
   networking.wireless = {
     enable = true;
@@ -94,5 +90,5 @@
     ];
   };
 
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 }
