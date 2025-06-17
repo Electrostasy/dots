@@ -61,7 +61,7 @@ if [[ -v missing ]]; then
 	echo
 	echo "${#missing[@]} cache misses:"
 	echo -en '\x1B[;31m' >&2
-	sort -k 1.44 <(printf '%s\n' "${missing[@]}")
+	sort -t - -k 2 <(printf '%s\n' "${missing[@]}")
 	echo -en '\x1B[0m' >&2
 fi
 
@@ -69,7 +69,7 @@ if [[ -v uncached ]]; then
 	[[ -v missing ]] && echo
 	echo "${#uncached[@]} uncached paths:"
 	echo -en '\x1B[;33m' >&2
-	sort -k 1.44 <(printf '%s\n' "${uncached[@]}")
+	sort -t - -k 2 <(printf '%s\n' "${uncached[@]}")
 	echo -en '\x1B[0m' >&2
 fi
 
@@ -77,6 +77,6 @@ if [[ -v cached ]]; then
 	[[ -v uncached ]] && echo
 	echo "${#cached[@]} cached paths:"
 	echo -en '\x1B[;32m' >&2
-	sort -k 1.44 <(printf '%s\n' "${cached[@]}")
+	sort -t - -k 2 <(printf '%s\n' "${cached[@]}")
 	echo -en '\x1B[0m' >&2
 fi
