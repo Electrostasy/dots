@@ -39,13 +39,11 @@ cp ./result/nixos-deimos* .
 systemd-dissect --with nixos-deimos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
-Due to the [limitations] of the Raspberry Pi Zero 2 W, it does not support
-booting from GPT formatted media directly and needs an MBR with a specific
-first FAT partition type containing the Raspberry Pi firmware. Convert the
-image to a hybrid MBR and set the firmware partition type to 0x0C00 manually:
+Due to the [limitations] of the Raspberry Pi Zero 2 W, booting from GPT
+formatted media directly is not supported and the image needs a hybrid MBR
+containing the partition with Raspberry Pi firmware:
 ```sh
-sgdisk --hybrid=1:EE nixos-deimos*
-sfdisk --label-nested dos --part-type nixos-deimos* 1 0c
+echo -e 'size=+1GiB, type=0c\n start=1, type=ee' | sfdisk -Y dos nixos-deimos*
 ```
 
 Flash the image to microSD card:
