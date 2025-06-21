@@ -10,8 +10,6 @@
   system = {
     configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
 
-    rebuild.enableNg = true;
-
     forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
   };
 
