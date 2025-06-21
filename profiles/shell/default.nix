@@ -73,18 +73,18 @@
           echo 'The following executables are provided by this ephemeral shell:'
           set -f input
           set -f id 1
-          for store_path in (string match -- '/nix/store/*' $PATH | path filter | sort -k 1.44)
+          for store_path in (string match -- '/nix/store/*' $PATH | path filter | sort -t - -k 2)
             set -f name (nix derivation show $store_path | jq -r '.[].env | .version as $version | .name | sub("-\($version).*"; "")')
             set -f parent $id
             set -a input "$id $parent $name"
             set id (math "$id + 1")
-            for executable in (fd . $store_path -t x -L --format '{/}' | sort -u)
+            for executable in (fd . $store_path -t x -L --format '{/}' | ${pkgs.coreutils-full}/bin/sort -u)
               set -a input "$id $parent $executable"
               set id (math "$id + 1")
             end
           end
 
-          printf '%s\n' $input | column --tree-id 1 --tree-parent 2 --tree 3 --table-hide 1,2
+          printf '%s\n' $input | ${pkgs.util-linux}/bin/column --tree-id 1 --tree-parent 2 --tree 3 --table-hide 1,2
         else
           echo 'Not in Nix shell!'
         end
