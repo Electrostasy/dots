@@ -6,7 +6,6 @@
     ../../profiles/shell
     ../../profiles/ssh
     ../../profiles/tailscale.nix
-    ./klipper.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
@@ -26,15 +25,22 @@
     };
   };
 
-  boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      # Required to enable serial console:
-      # https://forums.raspberrypi.com/viewtopic.php?t=246215#p1659905
-      "8250.nr_uarts=1"
-      "console=ttyS0,115200"
-    ];
+  hardware.deviceTree = {
+    name = "broadcom/bcm2837-rpi-zero-2-w.dtb";
 
+    overlays = [
+      {
+        name = "disable-bt-overlay";
+        dtsFile = ./disable-bt.dts;
+      }
+      {
+        name = "usb-host-overlay";
+        dtsFile = ./usb-host.dts;
+      }
+    ];
+  };
+
+  boot = {
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = false;
@@ -46,9 +52,12 @@
 
   zramSwap.enable = true;
 
-  hardware = {
-    deviceTree.name = "broadcom/bcm2837-rpi-zero-2-w.dtb";
-    firmware = [ pkgs.raspberrypiWirelessFirmware ];
+  # Required for Wi-Fi.
+  hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
+
+  networking.firewall = {
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 80 443 ];
   };
 
   networking.networkmanager = {
@@ -97,7 +106,68 @@
     };
   };
 
+  services.udev.extraRules = /* udev */ ''
+    # In order to not have to use /dev/serial/by-id/usb-Prusa_Research__prus...
+    # to communicate with the 3D printer over serial.
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="2c99", ATTRS{idProduct}=="0002", SYMLINK+="ttyMK3S"
+  '';
+
+  services.klipper = {
+    enable = true;
+
+    # Allow Moonraker to control Klipper.
+    user = config.users.users.moonraker.name;
+    group = config.users.groups.moonraker.name;
+
+    configFile = ./mcu-prusa-mk3s.cfg;
+  };
+
+  # Required for Moonraker's allowSystemControl.
+  security.polkit.enable = true;
+
+  services.moonraker = {
+    enable = true;
+
+    allowSystemControl = true;
+
+    settings = {
+      history = { };
+      authorization = {
+        force_logins = true;
+        cors_domains = [
+          "*://localhost"
+          "*://${config.networking.hostName}"
+
+          # Tailscale MagicDNS.
+          "*://${config.networking.hostName}.sol.tailnet.${config.networking.domain}"
+        ];
+        trusted_clients = [
+          "127.0.0.1/32"
+          "100.64.0.0/24"
+        ];
+      };
+    };
+  };
+
+  services.mainsail = {
+    enable = true;
+
+    nginx.extraConfig = ''
+      # Allow sending gcode files up to 1G.
+      client_max_body_size 1024m;
+    '';
+  };
+
   services.journald.storage = "volatile";
+
+  environment.systemPackages = [
+    # Expose klipper's calibrate_shaper.py for input shaper calibration.
+    (pkgs.writeShellApplication {
+      name = "calibrate_shaper";
+      runtimeInputs = [ (pkgs.python3.withPackages (ps: with ps; [ numpy matplotlib ])) ];
+      text = "${config.services.klipper.package.src}/scripts/calibrate_shaper.py \"$@\"";
+    })
+  ];
 
   users.users.electro = {
     isNormalUser = true;

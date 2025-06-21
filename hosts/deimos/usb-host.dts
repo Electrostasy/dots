@@ -1,0 +1,10 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "raspberrypi,model-zero-2-w";
+};
+
+&usb {
+	dr_mode = "host";
+};

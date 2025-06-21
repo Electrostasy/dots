@@ -1,0 +1,26 @@
+/dts-v1/;
+/plugin/;
+
+// Replace the Mini UART with PL011 UART (/dev/ttyAMA0) and disable bluetooth.
+// The Mini UART's baudrate depends on the core clock and isn't very suitable
+// for communication with devices over serial.
+
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "raspberrypi,model-zero-2-w";
+};
+
+&uart1 {
+	status = "disabled";
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_gpio14>;
+	status = "okay";
+};
+
+&bt {
+	status = "disabled";
+};
