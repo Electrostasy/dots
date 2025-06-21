@@ -78,18 +78,14 @@
   }];
 
   environment.systemPackages = with pkgs; [
-    freecad-wayland
-    gimp
+    freecad
+    gimp3
     kicad
     libreoffice-fresh
-    nurl
-    pastel
     picard
     prusa-slicer
-    pt-p300bt-labelmaker
     sonic-lineup
     sonic-visualiser
-    via
   ];
 
   hardware = {
