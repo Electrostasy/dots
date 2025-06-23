@@ -86,6 +86,10 @@
       dns = {
         base_domain = "sol.tailnet." + config.networking.domain;
         magic_dns = true;
+        nameservers.global = [
+          "9.9.9.9"
+          "1.1.1.1"
+        ];
       };
 
       derp.server = {
