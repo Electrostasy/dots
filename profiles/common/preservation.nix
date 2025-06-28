@@ -92,13 +92,13 @@
         path = [ pkgs.btrfs-progs ];
 
         preStart = ''
-          if [ ! -d '/persist/.snapshots' ]; then
-            mkdir -p '/persist/.snapshots'
+          if [ ! -d '/persist/.snapshots/state' ]; then
+            mkdir -p '/persist/.snapshots/state'
           fi
         '';
 
         script = ''
-          btrfs subvolume snapshot -r '/persist/state' "/persist/.snapshots/state-$(date -u +%Y-%m-%dT%H:%M:%S)"
+          btrfs subvolume snapshot -r '/persist/state' "/persist/.snapshots/state/$(date -u +%Y-%m-%dT%H:%M:%S)"
         '';
       };
 
@@ -110,7 +110,7 @@
 
         script = ''
           threshold=$(date -d 'now - 3 days' +%s)
-          for snapshot in /persist/.snapshots/state-*; do
+          for snapshot in /persist/.snapshots/state/*; do
             if [ $(date -d "$(basename "$snapshot")" +%s) -le $threshold ]; then
               btrfs subvolume delete "$snapshot"
             fi
