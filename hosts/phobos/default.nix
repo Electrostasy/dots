@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, ... }:
 
 {
   imports = [
@@ -34,7 +34,6 @@
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
-    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "8250.nr_uarts=1" ];
   };
 
