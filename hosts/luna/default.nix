@@ -46,8 +46,6 @@
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
-    kernelPackages = pkgs.linuxPackages_latest;
-
     # Use emc230x instead of the in-kernel emc2305 driver.
     blacklistedKernelModules = [ "emc2305" ];
     extraModulePackages = [ (pkgs.emc230x.override { linuxPackages = config.boot.kernelPackages; }) ];
