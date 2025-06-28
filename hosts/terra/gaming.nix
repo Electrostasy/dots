@@ -88,6 +88,12 @@ in
       throttling_status_graph
       wine
       winesync
+
+      fps_limit=143
+      fps_limit_method=early
+      show_fps_limit
+      vsync=0
+      gl_vsync=-1
     ''}"
   ];
 
