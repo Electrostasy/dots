@@ -157,6 +157,21 @@
     ];
   };
 
+  systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
+  services.snapper = {
+    persistentTimer = true;
+    filters = "/nix/store";
+
+    configs.state = {
+      SUBVOLUME = "/persist/state";
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_LIMIT_MONTHLY = 0;
+      TIMELINE_LIMIT_QUARTERLY = 0;
+      TIMELINE_LIMIT_YEARLY = 0;
+    };
+  };
+
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
   services.prometheus.exporters.node = {
     enable = true;

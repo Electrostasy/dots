@@ -162,6 +162,21 @@
 
   preservation.enable = true;
 
+  systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
+  services.snapper = {
+    persistentTimer = true;
+    filters = "/nix/store";
+
+    configs.state = {
+      SUBVOLUME = "/persist/state";
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_LIMIT_MONTHLY = 0;
+      TIMELINE_LIMIT_QUARTERLY = 0;
+      TIMELINE_LIMIT_YEARLY = 0;
+    };
+  };
+
   networking.networkmanager.ensureProfiles = {
     environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
