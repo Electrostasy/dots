@@ -1,16 +1,25 @@
 { config, pkgs, lib, modulesPath, flake, ... }:
 
+let
+  hasSecrets = config.sops.secrets != { };
+in
+
 {
-  imports = [
-    "${modulesPath}/profiles/perlless.nix"
-    ./preservation.nix
-    ./sops.nix
-  ];
+  imports = [ "${modulesPath}/profiles/perlless.nix" ];
 
   system = {
     configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
 
     forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
+  };
+
+  sops = {
+    age = {
+      keyFile = "/var/lib/sops-nix/keys.txt";
+      sshKeyPaths = [ ];
+    };
+
+    gnupg.sshKeyPaths = [ ];
   };
 
   nix = {
@@ -21,7 +30,7 @@
       # up by NixOS where `nixpkgs` is pinned.
       flake-registry = builtins.toFile "global-registry.json" (builtins.toJSON {
         version = 2;
-        flakes = [  ];
+        flakes = [ ];
       });
 
       use-xdg-base-directories = true; # don't clutter $HOME.
@@ -111,9 +120,62 @@
 
   security.sudo.wheelNeedsPassword = false;
 
-  # We do not need an explanation why we cannot run dynamically linked,
-  # unpatched binaries on NixOS.
-  environment.stub-ld.enable = lib.mkDefault false;
+  environment = {
+    # We do not need an explanation why we cannot run dynamically linked,
+    # unpatched binaries on NixOS.
+    stub-ld.enable = lib.mkDefault false;
+
+    # Tell `sops` where to find the private key.
+    sessionVariables.SOPS_AGE_KEY_FILE = lib.mkIf hasSecrets config.sops.age.keyFile;
+
+    systemPackages = lib.mkIf hasSecrets [
+      pkgs.rage
+      pkgs.sops
+    ];
+  };
+
+  preservation.preserveAt = {
+    "/persist/cache" = {
+      commonMountOptions = [ "x-gvfs-hide" ];
+
+      users = {
+        root = {
+          home = "/root";
+          directories = [ ".cache/nix" ];
+        };
+
+        electro = {
+          directories = [ ".cache/nix" ];
+        };
+      };
+    };
+
+    "/persist/state" = {
+      commonMountOptions = [ "x-gvfs-hide" ];
+
+      directories = [
+        "/etc/nixos"
+        "/var/lib/nixos"
+        "/var/lib/systemd"
+        "/var/log/journal"
+        (lib.mkIf hasSecrets { directory = builtins.dirOf config.sops.age.keyFile; inInitrd = true; })
+      ];
+
+      files = [
+        { file = "/etc/machine-id"; inInitrd = true; how = "symlink"; configureParent = true; }
+      ];
+    };
+  };
+
+  systemd.services.systemd-machine-id-commit = lib.mkIf config.preservation.enable {
+    unitConfig.ConditionPathIsMountPoint = [
+      "" "/persist/state/etc/machine-id"
+    ];
+
+    serviceConfig.ExecStart = [
+      "" "systemd-machine-id-setup --commit --root /persist/state"
+    ];
+  };
 
   programs.git = {
     enable = true;

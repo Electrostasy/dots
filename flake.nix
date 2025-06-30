@@ -143,7 +143,7 @@
           # Allow modules to refer to this flake by argument.
           { _module.args.flake = self; }
 
-          ./profiles/common
+          ./profiles/common.nix
           { networking.hostName = name; }
           ./hosts/${name}
         ];
