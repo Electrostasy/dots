@@ -82,6 +82,10 @@
       "2.europe.pool.ntp.org"
     ];
 
+    # This defaults to true because of `networking.networkmanager`.
+    # Use 999 for a higher priority than the default 1000.
+    modemmanager.enable = lib.mkOverride 999 false;
+
     networkmanager = {
       wifi.backend = lib.mkDefault "iwd";
 
