@@ -103,6 +103,15 @@ in
     steam = {
       enable = true;
 
+      package = pkgs.steam.override {
+        extraEnv = {
+          # Enable Wayland and HDR for GE-Proton by default.
+          PROTON_ENABLE_HDR = 1;
+          PROTON_ENABLE_WAYLAND = 1;
+          WAYLANDDRV_PRIMARY_MONITOR = "DP-1";
+        };
+      };
+
       protontricks.enable = true;
     };
 
