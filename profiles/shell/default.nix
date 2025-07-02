@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   preservation.preserveAt = {
@@ -30,17 +30,10 @@
       tealdeer
       vimv-rs
 
+      command-not-found
+
       (pkgs.runCommandLocal "install-fish-functions" { } ''
         install -Dm0444 -t $out/share/fish/vendor_functions.d ${builtins.path { path = ./functions; name = "source"; }}/{hyperlink,phobos-up,nixpkgs-pr,fish_right_prompt}.fish
-        install -Dm0444 -t $out/share/fish/vendor_functions.d ${pkgs.replaceVarsWith {
-          src = "${builtins.path { path = ./functions; name = "source"; }}/fish_command_not_found.fish";
-
-          replacements = {
-            inherit (pkgs) sqlite path;
-          };
-
-          dir = "bin";
-        }}/bin/fish_command_not_found.fish
       '')
     ];
 
@@ -55,6 +48,20 @@
   };
 
   users.defaultUserShell = config.programs.fish.package;
+
+  # TODO: When https://github.com/NixOS/nixpkgs/pull/415070 is merged, remove
+  # these and set our command-not-found as programs.command-not-found.package.
+  programs.bash.interactiveShellInit = ''
+    command_not_found_handle() {
+      "${lib.getExe pkgs.command-not-found}" "$@"
+    }
+  '';
+
+  programs.zsh.interactiveShellInit = ''
+    command_not_found_handler() {
+      "${lib.getExe pkgs.command-not-found}" "$@"
+    }
+  '';
 
   programs.fish = {
     enable = true;
