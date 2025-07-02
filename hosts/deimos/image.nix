@@ -1,10 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ../../profiles/image/efi.nix
-    ../../profiles/image/expand-root.nix
-  ];
+  imports = [ ../../profiles/image/efi.nix ];
 
   image.repart.partitions."10-esp".contents = {
     # Kernel image file that corresponds to the Raspberry Pi Zero 2 W model

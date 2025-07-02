@@ -13,7 +13,7 @@ devices:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#phobos --image-variant default
 cp ./result/nixos-phobos* .
 systemd-dissect --with nixos-phobos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
@@ -34,7 +34,7 @@ support disabling eMMC boot for flashing. It must first be mounted to a
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#luna --image-variant default
 cp ./result/nixos-luna* .
 systemd-dissect --with nixos-luna* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
@@ -68,7 +68,7 @@ Board:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#deimos --image-variant default
 cp ./result/nixos-deimos* .
 systemd-dissect --with nixos-deimos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```

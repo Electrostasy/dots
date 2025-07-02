@@ -12,7 +12,7 @@ This document contains installation guides for the following Rockchip devices:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant default
 cp ./result/nixos-hyperion* .
 systemd-dissect --with nixos-hyperion* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
@@ -61,7 +61,7 @@ using `rkdeveloptool`:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#atlas --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#atlas --image-variant default
 cp ./result/nixos-atlas* .
 systemd-dissect --with nixos-atlas* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
@@ -110,7 +110,7 @@ microSD and the image to eMMC storage using `rkdeveloptool`:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key:
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant raw
+nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant default
 cp ./result/nixos-mars* .
 systemd-dissect --with nixos-mars* install -D {,.}/var/lib/sops-nix/keys.txt
 ```

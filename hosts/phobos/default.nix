@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, ... }:
 
 {
   imports = [
@@ -17,7 +17,7 @@
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
 
-  image.modules = lib.mkForce { raw = ./image.nix; };
+  image.modules.default = ./image.nix;
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
