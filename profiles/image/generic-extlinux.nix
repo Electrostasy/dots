@@ -1,9 +1,13 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ../../profiles/image/repart.nix
-    ../../profiles/image/expand-root.nix
+  imports = [ ./repart.nix ];
+
+  assertions = [
+    {
+      assertion = config.boot.loader.generic-extlinux-compatible.enable;
+      message = "generic-extlinux image profile can only be used with extlinux";
+    }
   ];
 
   image = {
@@ -19,7 +23,7 @@
           Type = "esp";
           Format = "vfat";
           Label = "BOOT";
-          SizeMinBytes = "512M";
+          SizeMinBytes = "1G";
         };
       };
 

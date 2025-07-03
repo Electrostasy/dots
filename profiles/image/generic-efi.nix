@@ -8,6 +8,21 @@ in
 {
   imports = [ ./repart.nix ];
 
+  assertions = [
+    {
+      assertion = config.boot.loader.systemd-boot.enable;
+      message = "generic-efi image profile currently only supports systemd-boot";
+    }
+    {
+      assertion = !config.boot.loader.generic-extlinux-compatible.enable;
+      message = "generic-efi image profile cannot be used with extlinux";
+    }
+    {
+      assertion = config.hardware.deviceTree.name != null;
+      message = "generic-efi image profile requires hardware.deviceTree.name to be set";
+    }
+  ];
+
   image = {
     extension = "raw";
 

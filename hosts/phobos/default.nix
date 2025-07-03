@@ -17,7 +17,29 @@
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
 
-  image.modules.default = ./image.nix;
+  nixpkgs.overlays = [
+    # If our bootloader EEPROM version from raspberrypi/rpi-eeprom is too new,
+    # then we need accordingly new firmware files or else we will not be able
+    # to boot.
+    # TODO: Remove when it is updated in nixpkgs.
+    (final: prev: {
+      raspberrypifw = prev.raspberrypifw.overrideAttrs (finalAttrs: oldAttrs: {
+        version = "1.20250305";
+
+        src = oldAttrs.src.override {
+          rev = null;
+          tag = finalAttrs.version;
+          hash = "sha256-J2Na7yGKvRDWKC+1gFEQMuaam+4vt+RsV9FjarDgvMs=";
+        };
+      });
+    })
+  ];
+
+  image.modules.default.imports = [
+    ../../profiles/image/expand-root.nix
+    ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/platform/raspberrypi-4-b.nix
+  ];
 
   sops = {
     defaultSopsFile = ./secrets.yaml;

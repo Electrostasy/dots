@@ -11,7 +11,11 @@
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
 
-  image.modules.default = ./image.nix;
+  image.modules.default.imports = [
+    ../../profiles/image/expand-root.nix
+    ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/platform/raspberrypi-cm4.nix
+  ];
 
   sops = {
     defaultSopsFile = ./secrets.yaml;

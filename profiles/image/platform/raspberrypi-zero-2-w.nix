@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ../../profiles/image/efi.nix ];
-
   image.repart.partitions."10-esp".contents = {
     # Kernel image file that corresponds to the Raspberry Pi Zero 2 W model
     # (64-bit). In this case, we load U-Boot.
@@ -11,11 +9,11 @@
     # Contains many configuration parameters for setting up the Raspberry Pi:
     # https://www.raspberrypi.com/documentation/computers/config_txt.html
     "/config.txt".source = pkgs.writeText "config.txt" ''
-      # If set to 1, the kernel will be started in 64-bit mode. In 64-bit
-      # mode, the firmware will choose an appropriate kernel (e.g.
-      # kernel8.img), unless there is an explicit kernel option defined, in
-      # which case that is used instead. Defaults to 1 on Pi 4s (Pi 4B, Pi
-      # 400, CM4 and CM4S), and 0 on all other platforms.
+      # If set to 1, the kernel will be started in 64-bit mode. In 64-bit mode,
+      # the firmware will choose an appropriate kernel (e.g. kernel8.img),
+      # unless there is an explicit kernel option defined, in which case that
+      # is used instead. Defaults to 1 on Pi 4s (Pi 4B, Pi 400, CM4 and CM4S),
+      # and 0 on all other platforms.
       arm_64bit=1
 
       # enable_uart=1 requests that the kernel creates a serial console,
@@ -28,9 +26,9 @@
       avoid_warnings=1
 
       # If upstream_kernel=1 is used, the firmware will prefer upstream Linux
-      # names for DTBs (bcm2837-rpi-3-b.dtb instead of bcm2710-rpi-3-b.dtb,
-      # for example). If the upstream file isn’t found the firmware will load
-      # the downstream variant instead and automatically apply the "upstream"
+      # names for DTBs (bcm2837-rpi-3-b.dtb instead of bcm2710-rpi-3-b.dtb, for
+      # example). If the upstream file isn’t found the firmware will load the
+      # downstream variant instead and automatically apply the "upstream"
       # overlay to make some adjustments.
       upstream_kernel=1
     '';
