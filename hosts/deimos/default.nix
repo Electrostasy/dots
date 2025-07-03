@@ -11,8 +11,8 @@
   nixpkgs.hostPlatform.system = "aarch64-linux";
 
   image.modules.default.imports = [
-    ../../profiles/image/efi.nix
     ../../profiles/image/expand-root.nix
+    ./image.nix
   ];
 
   sops = {
