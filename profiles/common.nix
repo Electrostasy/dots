@@ -108,6 +108,33 @@ in
       settings = lib.mkIf (config.networking.networkmanager.wifi.backend == "iwd") {
         device."wifi.iwd.autoconnect" = false;
       };
+
+      dispatcherScripts = [
+        {
+          type = "basic";
+          source = pkgs.writeShellScript "nm-wifi-or-wired.sh" ''
+            if [[ $(nmcli -g GENERAL.TYPE device show "$1") != 'ethernet' ]]; then
+              exit 0
+            fi
+
+            if [[ $(nmcli -g WIFI-HW radio all) != 'enabled' ]]; then
+              echo 'Wi-Fi hardware unavailable, exiting'
+              exit 1
+            fi
+
+            case "$2" in
+              'up')
+                echo 'Ethernet up, disabling Wi-Fi'
+                nmcli radio wifi off
+                ;;
+              'down')
+                echo 'Ethernet down, enabling Wi-Fi'
+                nmcli radio wifi on
+                ;;
+            esac
+          '';
+        }
+      ];
     };
 
     useNetworkd = lib.mkDefault true; # translate `networking.*` into `systemd.network`.
