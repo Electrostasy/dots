@@ -91,7 +91,12 @@ def colourise($path_colour; $regular_colour):
 	.[0].type as $type
 	| group_by(.name)
 	| map("  \(.[0].name_colour): \(map(.content) | sort | join(", "))")
-	| if length > 0 then [ "\(length) \($type) packages:" ] + . + [ "" ] else empty end
+	| length as $length
+	| if $length > 0 then
+		[ "\($length) \($type) package\(if $length > 1 then "s" else "" end):" ] + . + [ "" ]
+	else
+		empty
+	end
 )
 | add
 | .[0:-1]
