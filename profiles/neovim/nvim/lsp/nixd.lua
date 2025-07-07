@@ -10,9 +10,10 @@ local root_dir = vim.fs.root(0, root_markers) or vim.fn.getcwd()
 if vim.fs.find({ 'flake.nix' }, { path = root_dir, upward = true, type = 'file' }) then
   nixpkgs_expr = ('(builtins.getFlake \"%s\").inputs.nixpkgs'):format(root_dir)
 
-  local json = vim.system({ 'nix', 'eval', '.#nixosConfigurations', '--apply', 'builtins.attrNames', '--json' }):wait().stdout
-  if json then
-    for _, host in ipairs(vim.json.decode(json)) do
+  local command = vim.system({ 'nix', 'eval', ('%s#nixosConfigurations'):format(root_dir), '--apply', 'builtins.attrNames', '--json' }):wait()
+  local ok, hosts = pcall(vim.json.decode, command.stdout)
+  if ok then
+    for _, host in ipairs(hosts) do
       for parent in vim.fs.parents(vim.api.nvim_buf_get_name(0)) do
         if host == vim.fs.basename(parent) then
           local format_str = ('(builtins.getFlake \"%s\").nixosConfigurations.\"%s\"'):format(root_dir, host)
