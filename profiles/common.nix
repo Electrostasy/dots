@@ -96,9 +96,6 @@ in
     modemmanager.enable = lib.mkOverride 999 false;
 
     networkmanager = {
-      # TODO: Remove when https://github.com/NixOS/nixpkgs/pull/421042 is merged.
-      enableDefaultPlugins = lib.mkDefault false;
-
       wifi.backend = lib.mkDefault "iwd";
 
       # Disable IWD's autoconnect mechanism to have only NetworkManager
