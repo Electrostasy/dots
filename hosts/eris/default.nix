@@ -39,6 +39,7 @@
   environment.systemPackages = with pkgs; [
     bintools-unwrapped
     binwalk
+    chars
     dos2unix
     evtx # `evtx-dump`.
     exiftool
