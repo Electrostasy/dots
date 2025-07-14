@@ -28,15 +28,10 @@
     enable = true;
 
     plugins = with pkgs.vimPlugins; [
-      cmp-async-path
-      cmp-buffer
-      cmp-nvim-lsp
-      cmp-nvim-lua
-      cmp-under-comparator
+      blink-cmp
       gitsigns-nvim
       hlargs-nvim
       indent-blankline-nvim
-      nvim-cmp
       nvim-highlight-colors
       nvim-web-devicons
       telescope-nvim

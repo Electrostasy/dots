@@ -23,7 +23,18 @@ M.blend = function(from, to, amount)
   local r = blend_channel(from_parts[1], to_parts[1], amount)
   local g = blend_channel(from_parts[2], to_parts[2], amount)
   local b = blend_channel(from_parts[3], to_parts[3], amount)
-  return string.format('#%02X%02X%02X', r, g, b)
+  return ('#%02X%02X%02X'):format(r, g, b)
+end
+
+M.luminance = function(hex)
+  if type(hex) == 'number' then
+    hex = ('%06x'):format(hex)
+  end
+  local red = tonumber(hex:sub(1, 2), 16)
+  local green = tonumber(hex:sub(3, 4), 16)
+  local blue = tonumber(hex:sub(5, 6), 16)
+
+  return (red * 299 + green * 587 + blue * 114) / 1000
 end
 
 return M

@@ -28,6 +28,7 @@ vim.o.smartcase = true -- Ignore case when pattern contains lowercase letters on
 vim.o.wrap = false
 vim.o.splitbelow = true
 vim.o.splitright = true
+vim.o.statuscolumn = '%l %C%s'
 
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
@@ -147,13 +148,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.o.number = true
-vim.api.nvim_create_autocmd('ModeChanged', {
+-- We cannot use only ModeChanged, as that will conflict with blink.cmp's
+-- completion window by shifting it to the left whenever the completion items
+-- are scrolled. Adapted from the example provided at `:h ModeChanged`.
+vim.wo.number = true
+vim.api.nvim_create_autocmd({ 'ModeChanged', 'WinEnter', 'WinLeave' }, {
   group = vim.api.nvim_create_augroup('DynamicRelativeNumber', { }),
   desc = 'Set relativenumber when entering visual/select line/block modes',
-  pattern = '*',
-  callback = function(args)
-    vim.wo.relativenumber = vim.tbl_contains({ 'n:V', 'n:\22', 'n:s', 'n:\19' }, args.match)
+  pattern = { '[vV\x16]*:*', '*:[vV\x16]*' },
+  callback = function()
+    vim.wo.relativenumber = vim.api.nvim_get_mode().mode:find('[vV\22]') and true or false
   end,
 })
 
@@ -166,9 +170,7 @@ vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
 
-local ts_select = require('ts_select')
-vim.keymap.set('v', '<Space>', ts_select.expand)
-vim.keymap.set('v', '<C-Space>', ts_select.contract)
+vim.keymap.set('v', '<Space>', require('ts_select').expand)
+vim.keymap.set('v', '<C-Space>', require('ts_select').contract)
 
-local ts_sort = require('ts_sort')
-vim.keymap.set({ 'n', 'v' }, 'gs', ts_sort.sort_nodes_on_cursor)
+vim.keymap.set({ 'n', 'v' }, 'gs', require('ts_sort').sort_nodes_on_cursor)
