@@ -57,13 +57,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end
 })
 
-vim.lsp.enable({
-  'basedpyright',
-  'clangd',
-  'lua-language-server',
-  'nixd',
-  'rust-analyzer',
-  'zls',
-})
+vim.iter(vim.api.nvim_get_runtime_file('lsp/*.lua', true))
+  :map(function(file)
+      return vim.fs.basename(file):sub(1, -(#'.lua' + 1))
+  end)
+  :each(vim.lsp.enable)
 
 vim.g.loaded_lsp = 1
