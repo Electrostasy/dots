@@ -24,7 +24,7 @@ function phobos-up -d "Upload files to phobos for public sharing"
 
   # If multiple arguments are provided, get escaped URLs for all of them.
   set -l urls
-  set -l domain (domainname)
+  set -l domain (domainname --domain)
   for file in (path basename $files)
     set urls $urls "https://$domain/static/$(string escape --style=url $file)"
   end
