@@ -24,6 +24,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
 vim.api.nvim_create_autocmd('BufAdd', {
   pattern = { '*:*', '*:*:*' },
   group = group,
+  nested = true,
   callback = function(event)
     local matches = vim.fn.matchlist(event.file, [[\v^(.{-})(:(\d+))?(:(\d+))?$]])
 
