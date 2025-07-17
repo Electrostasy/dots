@@ -29,6 +29,7 @@ vim.o.wrap = false
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.statuscolumn = '%l %C%s'
+vim.wo.number = true
 
 -- Add a blinking cursor in certain modes.
 vim.opt.guicursor = {
@@ -145,19 +146,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
   callback = function()
     vim.highlight.on_yank({ timeout = 250 })
-  end,
-})
-
--- We cannot use only ModeChanged, as that will conflict with blink.cmp's
--- completion window by shifting it to the left whenever the completion items
--- are scrolled. Adapted from the example provided at `:h ModeChanged`.
-vim.wo.number = true
-vim.api.nvim_create_autocmd({ 'ModeChanged', 'WinEnter', 'WinLeave' }, {
-  group = vim.api.nvim_create_augroup('DynamicRelativeNumber', { }),
-  desc = 'Set relativenumber when entering visual/select line/block modes',
-  pattern = { '[vV\x16]*:*', '*:[vV\x16]*' },
-  callback = function()
-    vim.wo.relativenumber = vim.api.nvim_get_mode().mode:find('[vV\22]') and true or false
   end,
 })
 
