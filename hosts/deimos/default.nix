@@ -8,7 +8,64 @@
     ../../profiles/tailscale.nix
   ];
 
-  nixpkgs.hostPlatform.system = "aarch64-linux";
+  nixpkgs = {
+    hostPlatform.system = "aarch64-linux";
+
+    # TODO: Needs a refactor into either separate packages or over the upstream
+    # klipper-flash-* packages, which do not work right now.
+    overlays = [
+      (final: prev: {
+        klipper-flash-prusa-mk3s =
+          let
+            firmware = (prev.klipper-firmware.overrideAttrs (prevAttrs: {
+              buildFlags = [ "out/klipper.elf.hex" ];
+              installPhase = prevAttrs.installPhase + ''
+                cp out/klipper.elf.hex $out/ || true
+              '';
+            })).override {
+              klipper = config.services.klipper.package;
+              mcu = "prusa-mk3s";
+              firmwareConfig = ./configs/einsy-rambo.config;
+            };
+          in
+            prev.writeShellApplication {
+              name = "klipper-flash-prusa-mk3s";
+
+              runtimeInputs = [ prev.avrdude ];
+              runtimeEnv = { inherit firmware; };
+              passthru = { inherit firmware; };
+
+              text = ''
+                avrdude -cwiring -patmega2560 -P/dev/ttyMK3S -b115200 -D -Uflash:w:$firmware/klipper.elf.hex:i
+              '';
+            };
+
+        klipper-flash-led-controller =
+          let
+            firmware = (prev.klipper-firmware.overrideAttrs (prevAttrs: {
+              buildFlags = [ "out/klipper.uf2" "lib/rp2040_flash/rp2040_flash" ];
+              installPhase = prevAttrs.installPhase + ''
+                cp lib/rp2040_flash/rp2040_flash $out/ || true
+              '';
+            })).override {
+              klipper = config.services.klipper.package;
+              mcu = "led-controller";
+              firmwareConfig = ./configs/rp2040.config;
+            };
+          in
+            prev.writeShellApplication {
+              name = "klipper-flash-led-controller";
+
+              runtimeEnv = { inherit firmware; };
+              passthru = { inherit firmware; };
+
+              text = ''
+                $firmware/rp2040_flash $firmware/klipper.uf2 "$@"
+              '';
+            };
+          })
+    ];
+  };
 
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
@@ -164,13 +221,9 @@
 
   services.journald.storage = "volatile";
 
-  environment.systemPackages = [
-    # Expose klipper's calibrate_shaper.py for input shaper calibration.
-    (pkgs.writeShellApplication {
-      name = "calibrate_shaper";
-      runtimeInputs = [ (pkgs.python3.withPackages (ps: with ps; [ numpy matplotlib ])) ];
-      text = "${config.services.klipper.package.src}/scripts/calibrate_shaper.py \"$@\"";
-    })
+  environment.systemPackages = with pkgs; [
+    klipper-flash-prusa-mk3s
+    klipper-flash-led-controller
   ];
 
   users.users.electro = {
