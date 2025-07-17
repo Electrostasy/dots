@@ -35,10 +35,6 @@ require('blink.cmp').setup({
     },
   },
   completion = {
-    trigger = {
-      show_on_backspace = true,
-      show_on_backspace_in_keyword = true,
-    },
     menu = {
       draw = {
         padding = { 0, 1 },
