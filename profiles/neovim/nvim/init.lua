@@ -161,6 +161,29 @@ vim.api.nvim_create_autocmd({ 'ModeChanged', 'WinEnter', 'WinLeave' }, {
   end,
 })
 
+local ignored_buftypes = { 'quickfix', 'nofile', 'help' }
+local ignored_filetypes = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' }
+vim.api.nvim_create_autocmd({ 'FileType', 'BufReadPost' }, {
+  desc = 'Restore cursor to last known position',
+  group = vim.api.nvim_create_augroup('RestoreCursor', { }),
+  callback = function(event)
+    if vim.tbl_contains(ignored_buftypes, vim.bo.buftype) or vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
+      return
+    end
+
+    local position = vim.api.nvim_buf_get_mark(event.buf, [["]])
+    local win = vim.fn.bufwinid(event.buf)
+
+    if
+      position ~= { 0, 0 } and
+      position[1] < vim.api.nvim_buf_line_count(event.buf) and
+      win ~= -1
+    then
+      vim.api.nvim_win_set_cursor(win, position)
+    end
+  end,
+})
+
 vim.keymap.set('n', '<C-h>', '<C-w>h', { silent = true })
 vim.keymap.set('n', '<C-j>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-k>', '<C-w>k', { silent = true })
