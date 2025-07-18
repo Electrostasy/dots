@@ -109,7 +109,7 @@ local ignored_buftypes = { 'quickfix', 'nofile', 'help' }
 local ignored_filetypes = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' }
 vim.api.nvim_create_autocmd({ 'FileType', 'BufReadPost' }, {
   desc = 'Restore cursor to last known position',
-  group = vim.api.nvim_create_augroup('RestoreCursor', { }),
+  group = vim.api.nvim_create_augroup('RestoreCursorPosition', { }),
   callback = function(event)
     if vim.tbl_contains(ignored_buftypes, vim.bo.buftype) or vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
       return
@@ -124,6 +124,7 @@ vim.api.nvim_create_autocmd({ 'FileType', 'BufReadPost' }, {
       win ~= -1
     then
       vim.api.nvim_win_set_cursor(win, position)
+      vim.api.nvim_feedkeys('zz', 'nx', true)
     end
   end,
 })

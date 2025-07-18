@@ -47,6 +47,7 @@ vim.api.nvim_create_autocmd('BufAdd', {
 
     if vim.fn.filereadable(file) == 1 then
       vim.api.nvim_win_set_cursor(0, { row, column - 1 })
+      vim.api.nvim_feedkeys('zz', 'nx', true)
     end
 
     if vim.api.nvim_buf_is_valid(event.buf) then
