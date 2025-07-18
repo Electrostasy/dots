@@ -21,18 +21,8 @@ require('blink.cmp').setup({
     preset = 'enter',
     ['<C-space>'] = false,
     ['<C-d>'] = { 'show_documentation', 'hide_documentation', 'fallback' },
-    ['<C-b>'] = {
-      function(cmp)
-        return cmp.scroll_documentation_up(1)
-      end,
-      'fallback',
-    },
-    ['<C-f>'] = {
-      function(cmp)
-        return cmp.scroll_documentation_down(1)
-      end,
-      'fallback',
-    },
+    ['<C-b>'] = { function(cmp) return cmp.scroll_documentation_up(1) end, 'fallback' },
+    ['<C-f>'] = { function(cmp) return cmp.scroll_documentation_down(1) end, 'fallback' },
   },
   completion = {
     menu = {
@@ -41,17 +31,11 @@ require('blink.cmp').setup({
         columns = { { 'kind_icon' }, { 'label', 'label_description', gap = 1 }, { 'kind' } },
         components = {
           kind_icon = {
-            text = function(ctx)
-              return ' ' .. ctx.kind_icon .. ' '
-            end,
-            highlight = function(ctx)
-              return 'BlinkCmpKindIcon' .. ctx.kind
-            end,
+            text = function(ctx) return ' ' .. ctx.kind_icon .. ' ' end,
+            highlight = function(ctx) return 'BlinkCmpKindIcon' .. ctx.kind end,
           },
           kind = {
-            highlight = function(ctx)
-              return 'BlinkCmpKind' .. ctx.kind
-            end,
+            highlight = function(ctx) return 'BlinkCmpKind' .. ctx.kind end,
           },
         },
       },
@@ -80,6 +64,13 @@ require('blink.cmp').setup({
     },
   },
   fuzzy = {
+    sorts = {
+      'score',
+      -- Prioritize items without leading or multiple underscores in label.
+      'label',
+      'sort_text',
+    },
+
     implementation = 'rust',
     prebuilt_binaries = {
       download = false,
