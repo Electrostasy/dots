@@ -13,6 +13,7 @@
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
     ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/interactive.nix
   ];
 
   sops = {

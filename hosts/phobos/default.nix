@@ -38,6 +38,7 @@
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
     ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-4-b.nix
   ];
 
