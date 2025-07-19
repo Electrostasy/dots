@@ -2,7 +2,7 @@
 
 let
   inherit (pkgs.stdenv.hostPlatform) efiArch;
-  inherit (pkgs.stdenv) isAarch64;
+  deviceTreeEnabled = config.hardware.deviceTree.enable && config.hardware.deviceTree.name != null;
 in
 
 {
@@ -16,10 +16,6 @@ in
     {
       assertion = !config.boot.loader.generic-extlinux-compatible.enable;
       message = "generic-efi image profile cannot be used with extlinux";
-    }
-    {
-      assertion = config.hardware.deviceTree.name != null;
-      message = "generic-efi image profile requires hardware.deviceTree.name to be set";
     }
   ];
 
@@ -35,14 +31,14 @@ in
           "/EFI/nixos/${config.system.boot.loader.initrdFile}".source = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
           "/EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}".source =
             lib.mkIf
-              isAarch64
+              deviceTreeEnabled
               "${config.hardware.deviceTree.package}/${config.hardware.deviceTree.name}";
 
           "/loader/entries/nixos-generation-1.conf".source = pkgs.writeText "nixos-generation-1.conf" ''
             title NixOS
             linux /EFI/nixos/${config.system.boot.loader.kernelFile}
             initrd /EFI/nixos/${config.system.boot.loader.initrdFile}
-            ${lib.optionalString isAarch64 "devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}"}
+            ${lib.optionalString deviceTreeEnabled "devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}"}
             options init=${config.system.build.toplevel}/init ${builtins.toString config.boot.kernelParams}
           '';
         };
