@@ -36,7 +36,7 @@
               passthru = { inherit firmware; };
 
               text = ''
-                avrdude -cwiring -patmega2560 -P/dev/ttyMK3S -b115200 -D -Uflash:w:$firmware/klipper.elf.hex:i
+                avrdude -cwiring -patmega2560 -P"$1" -b115200 -D -Uflash:w:$firmware/klipper.elf.hex:i
               '';
             };
 
@@ -60,7 +60,7 @@
               passthru = { inherit firmware; };
 
               text = ''
-                $firmware/rp2040_flash $firmware/klipper.uf2 "$@"
+                $firmware/rp2040_flash $firmware/klipper.uf2 "$1"
               '';
             };
           })
@@ -167,12 +167,6 @@
       };
     };
   };
-
-  services.udev.extraRules = /* udev */ ''
-    # In order to not have to use /dev/serial/by-id/usb-Prusa_Research__prus...
-    # to communicate with the 3D printer over serial.
-    SUBSYSTEM=="tty", ATTRS{idVendor}=="2c99", ATTRS{idProduct}=="0002", SYMLINK+="ttyMK3S"
-  '';
 
   services.klipper = {
     enable = true;
