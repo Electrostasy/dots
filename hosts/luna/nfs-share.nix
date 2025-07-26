@@ -13,8 +13,7 @@
       "timeo=100"
 
       # Better performance.
-      "nconnect=4"
-      "async"
+      "nconnect=16"
 
       # Show in the file manager.
       "x-gvfs-icon=folder-remote"
