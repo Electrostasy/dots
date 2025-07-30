@@ -7,6 +7,7 @@ let
     "discard=async"
     "X-mount.owner=${config.users.users.electro.name}"
     "X-mount.group=${config.users.users.electro.group}"
+    "x-gvfs-hide"
   ] ++ extraOptions;
 in
 
@@ -33,12 +34,6 @@ in
       options = mkOptionsWith [ "subvol=steam" ];
     };
 
-    "/home/electro/.local/share/bottles" = {
-      device = "/dev/disk/by-label/games";
-      fsType = "btrfs";
-      options = mkOptionsWith [ "subvol=bottles" ];
-    };
-
     "/home/electro/.local/share/dolphin-emu" = {
       device = "/dev/disk/by-label/games";
       fsType = "btrfs";
@@ -50,6 +45,12 @@ in
       fsType = "btrfs";
       options = mkOptionsWith [ "subvol=pcsx2" ];
     };
+
+    "/home/electro/Games" = {
+      device = "/dev/disk/by-label/games";
+      fsType = "btrfs";
+      options = mkOptionsWith [ "subvol=wine" ];
+    };
   };
 
   preservation.preserveAt."/persist/cache".users.electro.directories = [ ".cache/mesa_shader_cache" ];
@@ -59,11 +60,11 @@ in
     sessionVariables.DOLPHIN_EMU_USERPATH = "\${XDG_DATA_HOME:-$HOME/.local/share}/dolphin-emu";
 
     systemPackages = with pkgs; [
-      bottles
       dolphin-emu
       dualsensectl
       mangohud
       pcsx2
+      umu-launcher
     ];
   };
 
@@ -113,14 +114,6 @@ in
       };
 
       protontricks.enable = true;
-    };
-
-    gamescope = {
-      enable = true;
-
-      # Does not work in the Steam FHSEnv due to bubblewrap, use ananicy-cpp
-      # instead: https://github.com/NixOS/nixpkgs/issues/217119
-      capSysNice = false;
     };
   };
 
