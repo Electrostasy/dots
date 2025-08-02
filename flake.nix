@@ -13,7 +13,7 @@
 
     # TODO: Change back to main branch when this is resolved:
     # https://github.com/nix-community/preservation/pull/16
-    preservation.url = "github:nix-community/preservation/2d53e88842ee5810ea3ec4f8dcec913aeaf2839d";
+    preservation.url = "github:nix-community/preservation/f011789779a08aefa8cef24c1a8774574badb551";
 
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
