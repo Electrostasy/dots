@@ -27,6 +27,14 @@ in
     };
   };
 
+  services.lact.enable = true;
+
+  hardware.amdgpu.overdrive = {
+    enable = true;
+
+    ppfeaturemask = "0xFFF7FFFF"; # enables overclocking.
+  };
+
   fileSystems = {
     "/home/electro/.local/share/Steam" = {
       device = "/dev/disk/by-label/games";
