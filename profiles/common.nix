@@ -43,7 +43,6 @@ in
       ];
 
       use-cgroups = true;
-      build-dir = "/var/tmp";
 
       # When deploying NixOS configurations with `nixos-rebuild --target-host`,
       # we can get an error about missing valid signatures for store paths
