@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -11,11 +11,10 @@
   nixpkgs = {
     hostPlatform.system = "aarch64-linux";
 
-    # TODO: Needs a refactor into either separate packages or over the upstream
-    # klipper-flash-* packages, which do not work right now.
     overlays = [
+      # Klipper NixOS module flash scripts do not work/build.
       (final: prev: {
-        klipper-flash-prusa-mk3s =
+        klipper-flash-einsy-rambo =
           let
             firmware = (prev.klipper-firmware.overrideAttrs (prevAttrs: {
               buildFlags = [ "out/klipper.elf.hex" ];
@@ -29,7 +28,7 @@
             };
           in
             prev.writeShellApplication {
-              name = "klipper-flash-prusa-mk3s";
+              name = "klipper-flash-einsy-rambo";
 
               runtimeInputs = [ prev.avrdude ];
               runtimeEnv = { inherit firmware; };
@@ -40,7 +39,7 @@
               '';
             };
 
-        klipper-flash-led-controller =
+        klipper-flash-rp2040 =
           let
             firmware = (prev.klipper-firmware.overrideAttrs (prevAttrs: {
               buildFlags = [ "out/klipper.uf2" "lib/rp2040_flash/rp2040_flash" ];
@@ -54,13 +53,13 @@
             };
           in
             prev.writeShellApplication {
-              name = "klipper-flash-led-controller";
+              name = "klipper-flash-rp2040";
 
               runtimeEnv = { inherit firmware; };
               passthru = { inherit firmware; };
 
               text = ''
-                $firmware/rp2040_flash $firmware/klipper.uf2 "$1"
+                $firmware/rp2040_flash $firmware/klipper.uf2
               '';
             };
           })
@@ -114,13 +113,13 @@
 
   zramSwap.enable = true;
 
-  # Required for Wi-Fi.
-  hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
-
-  networking.firewall = {
+  networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
     allowedTCPPorts = [ 80 443 ];
     allowedUDPPorts = [ 80 443 ];
   };
+
+  # Required for Wi-Fi.
+  hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
   networking.networkmanager = {
     enable = true;
@@ -149,7 +148,7 @@
 
         phobos-wifi = {
           connection = {
-            id = "work";
+            id = "home_ap";
             type = "wifi";
             autoconnect = true;
           };
@@ -168,14 +167,57 @@
     };
   };
 
+  systemd.tmpfiles.settings."10-klipper".${config.services.klipper.configDir} = {
+    # Our Klipper config consists of multiple files while the Klipper NixOS
+    # module expects and moves only the specified configFile to the configDir.
+    # The entire config must be copied to the configDir.
+    # We cannot use symlinks as Klipper will throw a "too many links" error.
+    "C+" = {
+      mode = "0644";
+      user = config.users.users.moonraker.name;
+      group = config.users.groups.moonraker.name;
+      argument = "${./klipper}";
+    };
+
+    # Remove the configdir and all its contents. Without this rule present, the
+    # config will not be updated on activation if the config files are already
+    # present.
+    "R" = { };
+
+    # Create the config dir with the correct permissions.
+    "d" = {
+      mode = "0755";
+      user = config.users.users.moonraker.name;
+      group = config.users.groups.moonraker.name;
+    };
+  };
+
+  systemd.services.klipper = {
+    wants = [ "systemd-tmpfiles-setup.service" ];
+    after = [ "systemd-tmpfiles-setup.service" ];
+
+    # Prevent the service from creating an empty printer.cfg on startup.
+    preStart = lib.mkForce "";
+  };
+
   services.klipper = {
     enable = true;
+
+    # Install Klipper with plugins.
+    # package = pkgs.klipper.overrideAttrs (oldAttrs: {
+    #   postInstall = ''
+    #     ${oldAttrs.postInstall or ""}
+    #
+    #     chmod +w $out/lib/klippy/extras
+    #     cp -rvT ${pkgs.klipper_tmc_autotune} $out
+    #   '';
+    # });
 
     # Allow Moonraker to control Klipper.
     user = config.users.users.moonraker.name;
     group = config.users.groups.moonraker.name;
 
-    configFile = ./mcu-prusa-mk3s.cfg;
+    configFile = "${config.services.klipper.configDir}/printer.cfg";
   };
 
   # Required for Moonraker's allowSystemControl.
@@ -216,9 +258,10 @@
 
   services.journald.storage = "volatile";
 
-  environment.systemPackages = with pkgs; [
-    klipper-flash-prusa-mk3s
-    klipper-flash-led-controller
+  environment.systemPackages = [
+    config.services.klipper.package # adds `klipper-calibrate-shaper`.
+    pkgs.klipper-flash-einsy-rambo
+    pkgs.klipper-flash-rp2040
   ];
 
   users.users.electro = {
