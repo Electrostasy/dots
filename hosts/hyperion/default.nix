@@ -45,34 +45,8 @@
       efi.canTouchEfiVariables = false;
     };
 
-    # TODO: We have neither PWM or hwmon support, I might be missing something
-    # but these don't seem to work:
-    # https://patchwork.kernel.org/project/linux-rockchip/list/?series=951113
-    # https://patchwork.kernel.org/project/linux-rockchip/list/?series=957166
-    kernelPackages = pkgs.linuxPackagesFor (pkgs.linuxManualConfig {
-      version = "6.14.0-collabora";
-      modDirVersion = "6.14.0";
-
-      src = pkgs.fetchFromGitLab {
-        domain = "gitlab.collabora.com";
-        owner = "hardware-enablement/rockchip-3588";
-        repo = "linux";
-        rev = "d11b3c9daf21d70b24dfbb4ab69b95540d9eb90d";
-        hash = "sha256-Ghw0o/tyDcdq0cDn/pgJUJ6ghD4xh3ysr4CXaPJWUT4=";
-      };
-
-      # In order to update/modify the config:
-      # $ nix develop /etc/nixos#nixosConfigurations.hyperion.config.boot.kernelPackages.kernel
-      # $ unpackPhase
-      # $ cd source
-      # $ patchPhase
-      # $ nix-shell -p 'pkg-config' 'ncurses'
-      # $ make menuconfig/oldconfig
-      allowImportFromDerivation = true;
-      configfile = ./kernel.config;
-
-      extraMeta.branch = "6.14";
-    });
+    # TODO: Missing PWM/thermal subsystem support, but mainline boots now!
+    kernelPackages = pkgs.linuxPackages_testing;
 
     kernelParams = [ "8250.nr_uarts=1" ];
 
