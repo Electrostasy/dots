@@ -99,6 +99,7 @@
     freerdp
     git-credential-keepassxc
     keepassxc
+    libnotify
     mission-center
     nautilus-amberol
     nautilus-open-any-terminal

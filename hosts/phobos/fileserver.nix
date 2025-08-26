@@ -1,6 +1,15 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
 {
+  imports = [ ../luna/nfs-share.nix ];
+
+  # NOTE: /mnt/luna/uploads needs execute permissions for nginx to be able to
+  # traverse it!
+  fileSystems."/srv/http/static" = {
+    device = "/mnt/luna/uploads";
+    options = [ "bind" ];
+  };
+
   networking.firewall = {
     enable = true;
 
@@ -9,23 +18,6 @@
       443
     ];
   };
-
-  fileSystems."/srv/http/static" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=static"
-      "noatime"
-      "compress-force=zstd:1"
-      "discard=async"
-      "X-mount.owner=${config.users.users.electro.name}"
-      "X-mount.group=${config.users.groups.users.name}"
-    ];
-  };
-
-  # `rsync` has to be installed on the remote in order for uploads initialized
-  # with it to work (such as `phobos-up` script).
-  environment.systemPackages = [ pkgs.rsync ];
 
   services.nginx = {
     enable = true;
@@ -37,7 +29,7 @@
 
       locations."/static" = {
         root = "/srv/http";
-        tryFiles = "$uri =404";
+        tryFiles = "$uri $uri/ =404";
       };
     };
   };

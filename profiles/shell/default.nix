@@ -33,7 +33,7 @@
       command-not-found
 
       (pkgs.runCommandLocal "install-fish-functions" { } ''
-        install -Dm0444 -t $out/share/fish/vendor_functions.d ${builtins.path { path = ./functions; name = "source"; }}/{hyperlink,phobos-up,nixpkgs-pr,fish_right_prompt}.fish
+        install -Dm0444 -t $out/share/fish/vendor_functions.d ${builtins.path { path = ./functions; name = "source"; }}/{hyperlink,nixpkgs-pr,fish_right_prompt}.fish
       '')
     ];
 
