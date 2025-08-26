@@ -1,6 +1,11 @@
 { config, ... }:
 
 {
+  fileSystems."/srv/nfs" = {
+    device = "/mnt/array";
+    options = [ "bind" ];
+  };
+
   networking.firewall = {
     # Required for NFS3/4.
     allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];

@@ -7,6 +7,7 @@
     ../../profiles/ssh
     ../../profiles/tailscale.nix
     ./nfs.nix
+    ./samba.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
@@ -23,6 +24,7 @@
 
     secrets = {
       electroPassword.neededForUsers = true;
+      sukcenoPassword.neededForUsers = true;
       electroIdentity = {
         mode = "0400";
         owner = config.users.users.electro.name;
@@ -102,11 +104,10 @@
 
     # Formatted from 5 disks using:
     # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/disk/by-id/ata-ST18000NM003D-3DL103_* -L array
-    "/srv/nfs" = {
+    "/mnt/array" = {
       device = "/dev/disk/by-label/array";
       fsType = "btrfs";
       options = [
-        "subvol=nfs"
         "compress-force=zstd:3"
         "noatime"
       ];
@@ -126,7 +127,7 @@
       enable = true;
 
       interval = "monthly";
-      fileSystems = [ "/srv/nfs" ];
+      fileSystems = [ "/mnt/array" ];
     };
 
     hddfancontrol = {
@@ -148,23 +149,32 @@
     };
   };
 
-  users.users.electro = {
-    isNormalUser = true;
-    uid = 1000;
+  users.users = {
+    electro = {
+      isNormalUser = true;
+      uid = 1000;
 
-    # Change password using:
-    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
-    hashedPasswordFile = config.sops.secrets.electroPassword.path;
+      # Change password using:
+      # $ systemd-ask-password | mkpasswd -m SHA-512 -s
+      hashedPasswordFile = config.sops.secrets.electroPassword.path;
 
-    extraGroups = [
-      "wheel" # allow using `sudo` for this user.
-    ];
+      extraGroups = [
+        "wheel" # allow using `sudo` for this user.
+      ];
 
-    openssh.authorizedKeys.keyFiles = [
-      ../mercury/id_ed25519.pub
-      ../terra/id_ed25519.pub
-      ../venus/id_ed25519.pub
-    ];
+      openssh.authorizedKeys.keyFiles = [
+        ../mercury/id_ed25519.pub
+        ../terra/id_ed25519.pub
+        ../venus/id_ed25519.pub
+      ];
+    };
+
+    sukceno = {
+      isNormalUser = true;
+      uid = 1001;
+
+      hashedPasswordFile = config.sops.secrets.sukcenoPassword.path;
+    };
   };
 
   system.stateVersion = "24.05";
