@@ -20,11 +20,6 @@ in
   boot = {
     kernelParams = [ "vm.swappiness=10" ];
     kernelModules = [ "ntsync" ];
-
-    initrd.systemd.tmpfiles.settings."10-mglru-thrashing-prevention" = {
-      "/sys/kernel/mm/lru_gen/enabled".w.argument = "y"; # ensure it is enabled.
-      "/sys/kernel/mm/lru_gen/min_ttl_ms".w.argument = "1000";
-    };
   };
 
   services.lact.enable = true;
