@@ -63,12 +63,16 @@ in
     ];
   };
 
-  boot.tmp.useTmpfs = true;
+  boot = {
+    tmp.useTmpfs = true;
 
-  zswap = {
-    enable = !config.zramSwap.enable;
-
-    compressor = "lz4";
+    kernel.sysfs = {
+      module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
+        enabled = true;
+        zpool = "zsmalloc";
+        compressor = "lz4";
+      };
+    };
   };
 
   time.timeZone = "Europe/Vilnius";
