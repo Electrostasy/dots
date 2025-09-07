@@ -11,9 +11,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # TODO: Change back to main branch when this is resolved:
-    # https://github.com/nix-community/preservation/pull/16
-    preservation.url = "github:nix-community/preservation/f011789779a08aefa8cef24c1a8774574badb551";
+    preservation.url = "github:nix-community/preservation/main";
 
     sops-nix = {
       url = "github:Mic92/sops-nix/master";
