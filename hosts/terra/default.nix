@@ -79,7 +79,7 @@
 
   environment.systemPackages = with pkgs; [
     freecad
-    gimp3
+    gimp
     kicad
     libreoffice-fresh
     picard
