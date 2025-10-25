@@ -28,10 +28,10 @@ in
     settings = {
       # Do not download a global flake registry, we use the system registry set
       # up by NixOS where `nixpkgs` is pinned.
-      flake-registry = builtins.toFile "global-registry.json" (builtins.toJSON {
+      flake-registry = pkgs.writers.writeJSON "global-registry.json" {
         version = 2;
         flakes = [ ];
-      });
+      };
 
       use-xdg-base-directories = true; # don't clutter $HOME.
 
