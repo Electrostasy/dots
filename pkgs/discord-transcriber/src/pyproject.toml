@@ -2,7 +2,7 @@
 name = "discord-transcriber"
 version = "0.1"
 dependencies = [
-	"discord.py~=2.5.0a0"
+	"discord.py>=2.5.0"
 ]
 
 [project.scripts]
