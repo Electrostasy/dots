@@ -1,0 +1,15 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "friendlyarm,nanopc-t6-lts";
+};
+
+&sys_led {
+	linux,default-trigger = "heartbeat";
+	panic-indicator;
+};
+
+&usr_led {
+	linux,default-trigger = "mmc0";
+};

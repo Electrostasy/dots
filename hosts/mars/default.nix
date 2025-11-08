@@ -33,6 +33,10 @@
 
     overlays = [
       {
+        name = "led-indicators-overlay";
+        dtsFile = ./led-indicators.dts;
+      }
+      {
         name = "fan-control-overlay";
         dtsFile = ./fan-control.dts;
       }
