@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 
 {
+  preservation.preserveAt."/persist/state".users.electro.directories = [
+    ".local/state/nvim"
+    ".local/share/nvim"
+  ];
+
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.user.tmpfiles.rules = [
@@ -41,7 +46,7 @@
       # Exclude parsers already bundled with Neovim:
       # https://neovim.io/doc/user/treesitter.html#treesitter-parsers
       (nvim-treesitter.withPlugins (ps: lib.pipe ps [
-        (attrset: lib.removeAttrs attrset [ "override" "overrideDerivation" ])
+        (lib.filterAttrs (name: lib.isDerivation))
 
         (lib.filterAttrs (_: value: with ps; !lib.elem value [
           tree-sitter-c
