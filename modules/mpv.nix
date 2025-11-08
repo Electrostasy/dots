@@ -63,6 +63,7 @@ in
 
       fonts = lib.mkOption {
         type = lib.types.lines;
+        default = "";
         description = "Customized fontconfig file for mpv.";
       };
     };
@@ -72,6 +73,10 @@ in
     programs.mpv.finalPackage = cfg.package.wrapper {
       mpv = cfg.package;
       scripts = builtins.map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
+
+      # WARN: Without this, mpv will not detect any user-defined profiles in
+      # the config for some reason.
+      extraMakeWrapperArgs = [ "--add-flags" "--config-dir=/etc/mpv" ];
     };
 
     environment = {
@@ -79,7 +84,7 @@ in
 
       etc = lib.mkMerge [
         (lib.optionalAttrs (cfg.settings != { }) {
-          "xdg/mpv/mpv.conf".source =
+          "mpv/mpv.conf".source =
             let
               format = pkgs.formats.iniWithGlobalSection { inherit listToValue; };
               filterGlobals = lib.filterAttrs (_: v: !lib.isAttrs v);
@@ -94,7 +99,7 @@ in
         (lib.optionalAttrs (cfg.bindings != { }) {
           # input.conf does not use = as separator between key-value pairs and
           # we cannot change the separator in `pkgs.formats.keyValue`.
-          "xdg/mpv/input.conf".source =
+          "mpv/input.conf".source =
             let
               generator = with lib.generators; toKeyValue { mkKeyValue = mkKeyValueDefault {} " "; };
               bindings' = lib.mapAttrs (_: v: if lib.isList v then listToValue v else v) cfg.bindings;
@@ -103,7 +108,7 @@ in
         })
 
         (lib.optionalAttrs (cfg.fonts != "") {
-          "xdg/mpv/fonts.conf".source = pkgs.writeText "fonts.conf" cfg.fonts;
+          "mpv/fonts.conf".source = pkgs.writeText "fonts.conf" cfg.fonts;
         })
 
         # For each script accompanied by configuration, generate a .conf file
@@ -111,7 +116,7 @@ in
         (let
           mkScriptConfig = scriptName: settings:
             lib.nameValuePair
-              "xdg/mpv/script-opts/${scriptName}.conf"
+              "mpv/script-opts/${scriptName}.conf"
               { source = settingsFormat.generate "${scriptName}.conf" settings; };
 
           scriptsWithSettings = lib.filter (s: !lib.isDerivation s && lib.isAttrs s) cfg.scripts;
