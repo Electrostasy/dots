@@ -28,6 +28,17 @@
     };
   };
 
+  hardware.deviceTree = {
+    name = "rockchip/rk3588-nanopc-t6-lts.dtb";
+
+    overlays = [
+      {
+        name = "fan-control-overlay";
+        dtsFile = ./fan-control.dts;
+      }
+    ];
+  };
+
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
@@ -38,11 +49,6 @@
       "console=ttyS0,1500000"
     ];
   };
-
-  environment.systemPackages = with pkgs; [
-    pciutils # `lspci`.
-    usbutils # `lsusb`.
-  ];
 
   fileSystems = {
     "/" = {

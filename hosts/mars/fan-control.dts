@@ -1,0 +1,97 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+	compatible = "friendlyarm,nanopc-t6-lts";
+};
+
+&{/} {
+	fan: pwm-fan {
+		compatible = "pwm-fan";
+		cooling-levels = <0 25 95 145 195 255>;
+		fan-supply = <&vcc5v0_sys>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <RK_PC4 IRQ_TYPE_EDGE_FALLING>;
+		pwms = <&pwm4 0 40000 0>; /* 25 kHz -> 40000 ns */
+		pinctrl-names = "default";
+		pinctrl-0 = <&fan_tacho>;
+		#cooling-cells = <2>;
+	};
+};
+
+&pinctrl {
+	fan {
+		fan_tacho: fan-tacho {
+			rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+&pwm4 {
+	status = "okay";
+};
+
+&package_thermal {
+	trips {
+		package_tepid: package-tepid {
+			temperature = <50000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_warm: package-warm {
+			temperature = <60000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_hot: package-hot {
+			temperature = <67500>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_vhot: package-vhot {
+			temperature = <75000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_crit: package-crit {
+			temperature = <115000>;
+			hysteresis = <0>;
+			type = "critical";
+		};
+	};
+
+	cooling-maps {
+		tepid {
+			trip = <&package_tepid>;
+			cooling-device = <&fan 0 1>;
+		};
+
+		warm {
+			trip = <&package_warm>;
+			cooling-device = <&fan 1 2>;
+		};
+
+		hot {
+			trip = <&package_hot>;
+			cooling-device = <&fan 2 3>;
+		};
+
+		vhot {
+			trip = <&package_vhot>;
+			cooling-device = <&fan 3 4>;
+		};
+
+		melt {
+			trip = <&package_crit>;
+			cooling-device = <&fan 5 THERMAL_NO_LIMIT>;
+		};
+	};
+};
