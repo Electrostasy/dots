@@ -230,7 +230,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.fullscreen-to-empty-workspace
+    gnomeExtensions.fullscreen-to-empty-workspace-2
     rnote
   ];
 

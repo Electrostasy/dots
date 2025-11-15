@@ -180,7 +180,7 @@
   preservation.enable = true;
 
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.fullscreen-to-empty-workspace
+    gnomeExtensions.fullscreen-to-empty-workspace-2
 
     libreoffice-fresh
     rnote
