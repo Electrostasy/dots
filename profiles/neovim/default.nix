@@ -24,6 +24,8 @@
     }"
   ];
 
+  xdg.mime.defaultApplications."text/plain" = "nvim.desktop";
+
   environment.variables = {
     EDITOR = "nvim";
     MANPAGER = "nvim -c 'set ft=man bt=nowrite noswapfile nobk shada=\\\"NONE\\\" ro noma' +Man! -o -";
