@@ -1,22 +1,9 @@
 { config, pkgs, lib, flake, ... }:
 
 {
-  imports = [
-    ../fonts.nix
-    ./debloat.nix
-    ./mimetypes.nix
-  ];
-
   nixpkgs.overlays = [ flake.overlays.f3d-interactive ];
 
-  boot = {
-    # When plymouth shows the LUKS password prompt, we may need to wait a few
-    # seconds before usbhid is loaded and the keyboard functions unless we load
-    # usbhid sooner.
-    initrd.kernelModules = [ "usbhid" ];
-
-    plymouth.enable = true;
-  };
+  boot.plymouth.enable = true;
 
   services = {
     displayManager = {
@@ -32,13 +19,18 @@
     };
 
     desktopManager.gnome.enable = true;
-  };
 
-  # Required for autologin:
-  # https://github.com/NixOS/nixpkgs/issues/103746
-  systemd.services = {
-    "getty@tty1".enable = false;
-    "autovt@tty1".enable = false;
+    avahi.enable = false;
+    dleyna.enable = false;
+    hardware.bolt.enable = false;
+    gnome = {
+      evolution-data-server.enable = lib.mkForce false;
+      gnome-browser-connector.enable = false;
+      gnome-initial-setup.enable = false;
+      gnome-online-accounts.enable = lib.mkForce false;
+      gnome-user-share.enable = false;
+      rygel.enable = false;
+    };
   };
 
   hardware.bluetooth.powerOnBoot = false;
@@ -90,59 +82,77 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    amberol
-    eyedropper
-    f3d
-    ffmpegthumbnailer
-    fractal
-    freerdp
-    git-credential-keepassxc
-    keepassxc
-    libnotify
-    mission-center
-    nautilus-amberol
-    nautilus-open-any-terminal
-    nautilus-python
-    nautilus-vimv
-    papers
-    ptyxis
-    wl-clipboard
+  environment = {
+    systemPackages = with pkgs; [
+      amberol
+      eyedropper
+      f3d
+      ffmpegthumbnailer
+      fractal
+      freerdp
+      git-credential-keepassxc
+      keepassxc
+      libnotify
+      mission-center
+      nautilus-amberol
+      nautilus-open-any-terminal
+      nautilus-python
+      nautilus-vimv
+      papers
+      ptyxis
+      wl-clipboard
 
-    (makeAutostartItem {
-      name = "random-wallpaper";
-      package = makeDesktopItem {
-        name = "random-wallpaper";
-        desktopName = "Select a random wallpaper on startup";
-        categories = [ "Utility" ];
-        noDisplay = true;
-        terminal = false;
-        type = "Application";
-        exec = lib.getExe (writeShellApplication {
-          name = "random-wallpaper";
-          runtimeInputs = [ xdg-user-dirs fd ];
+      adw-gtk3
+      morewaita-icon-theme
 
-          text = ''
-            wallpaper=$(fd '(.*\.jpeg|.*\.jpg|.*\.png)' "$(xdg-user-dir PICTURES)/wallpapers" | shuf -n 1)
-            for key in background/picture-uri{,-dark} screensaver/picture-uri; do
-              dconf write "/org/gnome/desktop/$key" "'file://$wallpaper'"
-            done
-          '';
-        });
-      };
-    })
+      gnomeExtensions.blur-my-shell
+      gnomeExtensions.desktop-cube
+      gnomeExtensions.iso8601-ish-clock
+      gnomeExtensions.system-monitor
+      gnomeExtensions.tiling-shell
+      gnomeExtensions.unblank
+      gnomeExtensions.user-themes
+      gnomeExtensions.wallpaper-slideshow
+    ];
 
-    adw-gtk3
-    morewaita-icon-theme
+    gnome.excludePackages = with pkgs; [
+      # For xdg-* commands to work correctly on gnome, `gio` is needed, provided
+      # by glib:
+      # glib
 
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.desktop-cube
-    gnomeExtensions.iso8601-ish-clock
-    gnomeExtensions.system-monitor
-    gnomeExtensions.tiling-shell
-    gnomeExtensions.unblank
-    gnomeExtensions.user-themes
-  ];
+      # https://gitlab.gnome.org/GNOME/gnome-shell-extensions/-/issues/512
+      # For `system-monitor` shell extension to work correctly, the GNOME Core
+      # program `system-monitor` is required:
+      # gnome-system-monitor
+
+      adwaita-fonts
+      baobab
+      decibels
+      epiphany
+      evince
+      geary
+      gnome-backgrounds
+      gnome-bluetooth
+      gnome-characters
+      gnome-clocks
+      gnome-color-manager
+      gnome-connections
+      gnome-console
+      gnome-contacts
+      gnome-font-viewer
+      gnome-logs
+      gnome-music
+      gnome-text-editor
+      gnome-themes-extra
+      gnome-tour
+      gnome-user-docs
+      orca
+      showtime
+      simple-scan
+      totem
+      yelp
+    ];
+  };
 
   programs.git.config.credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
 
@@ -335,8 +345,6 @@
           temperature-unit = "centigrade";
         };
 
-        "org/gnome/shell/extensions/user-theme".name = "electrostasy";
-
         "org/gnome/shell/extensions/desktop-cube" = {
           last-first-gap = false;
           mouse-rotation-speed = 1.0;
@@ -385,6 +393,11 @@
               ];
             }
           ];
+        };
+
+        "org/gnome/shell/extensions/azwallpaper" = {
+          slideshow-directory = "/home/electro/Pictures/wallpapers";
+          slideshow-slide-duration = mkTuple (lib.map mkInt32 [ 0 5 0 ]);
         };
 
         "io/bassi/Amberol".background-play = false;

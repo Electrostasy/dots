@@ -3,7 +3,8 @@
 {
   imports = [
     ../../profiles/firefox.nix
-    ../../profiles/gnome
+    ../../profiles/fonts.nix
+    ../../profiles/gnome.nix
     ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
