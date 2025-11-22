@@ -154,6 +154,11 @@
     ];
   };
 
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
   programs.git.config.credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
 
   programs.dconf.profiles = {
