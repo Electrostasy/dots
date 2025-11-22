@@ -56,7 +56,14 @@ in
     };
   };
 
-  preservation.preserveAt."/persist/cache".users.electro.directories = [ ".cache/mesa_shader_cache" ];
+  preservation.preserveAt = {
+    "/persist/cache".users.electro.directories = [
+      ".cache/mesa_shader_cache"
+    ];
+    "/persist/state".users.electro.directories = [
+      ".local/share/umu"
+    ];
+  };
 
   environment = {
     # Keep configs, state, etc. all in the same place.
