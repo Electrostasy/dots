@@ -127,9 +127,6 @@ in
 
     rulesProvider = pkgs.ananicy-rules-cachyos;
     extraRules = [
-      # https://store.steampowered.com/app/1203620/Enshrouded/
-      { name = "enshrouded.exe"; type = "Game"; }
-
       # https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/
       { name = "mafiadefinitiveedition.exe"; type = "Game"; }
 
