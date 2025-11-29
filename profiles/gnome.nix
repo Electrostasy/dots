@@ -237,6 +237,10 @@
           sleep-inactive-ac-type = "nothing";
         };
 
+        "org/gnome/settings-daemon/plugins/housekeeping" = {
+          donation-reminder-enabled = false;
+        };
+
         "org/gnome/nautilus/preferences" = {
           date-time-format = "detailed";
           default-folder-viewer = "list-view";
