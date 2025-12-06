@@ -13,13 +13,17 @@
 		reg = <0x2e>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		#pwm-cells = <3>;
 
 		fan0: fan@0 {
-			reg = <0>;
-			pwms = <&fan_controller 26000 0 1>;
-			cooling-levels = <51 102 153 204 255>;
+			reg = <0x0>;
+			label = "Compute Module 4 Fan";
+			cooling-levels = <0 50 100 150 200 255>;
 			#cooling-cells = <2>;
+		};
+
+		fan1: fan@1 {
+			reg = <0x1>;
+			label = "Drive Fan 1";
 		};
 	};
 };
@@ -60,27 +64,27 @@
 	cooling-maps {
 		tepid {
 			trip = <&cpu_tepid>;
-			cooling-device = <&fan0 THERMAL_NO_LIMIT 0>;
+			cooling-device = <&fan0 THERMAL_NO_LIMIT 1>;
 		};
 
 		warm {
 			trip = <&cpu_warm>;
-			cooling-device = <&fan0 1 1>;
+			cooling-device = <&fan0 2 2>;
 		};
 
 		hot {
 			trip = <&cpu_hot>;
-			cooling-device = <&fan0 2 2>;
+			cooling-device = <&fan0 3 3>;
 		};
 
 		vhot {
 			trip = <&cpu_vhot>;
-			cooling-device = <&fan0 3 3>;
+			cooling-device = <&fan0 4 4>;
 		};
 
 		melt {
 			trip = <&cpu_crit>;
-			cooling-device = <&fan0 4 THERMAL_NO_LIMIT>;
+			cooling-device = <&fan0 5 THERMAL_NO_LIMIT>;
 		};
 	};
 };
