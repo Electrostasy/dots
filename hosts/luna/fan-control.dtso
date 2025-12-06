@@ -25,6 +25,11 @@
 			reg = <0x1>;
 			label = "Drive Fan 1";
 		};
+
+		fan2: fan@2 {
+			reg = <0x2>;
+			label = "Drive Fan 2";
+		};
 	};
 };
 

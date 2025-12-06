@@ -32,9 +32,6 @@
     };
   };
 
-  # NOTE: If the device tree changes, it needs to be re-added into the /boot
-  # directory where the firmware lives:
-  # https://forums.raspberrypi.com/viewtopic.php?t=370304#p2227480
   hardware.deviceTree = {
     name = "broadcom/bcm2711-rpi-cm4-io.dtb";
 
@@ -135,7 +132,10 @@
           "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-5.0"
         ];
 
-        pwmPaths = [ "/sys/class/hwmon/hwmon2/pwm2:128:0" ];
+        pwmPaths = [
+          "/sys/class/hwmon/hwmon2/pwm2:100:0"
+          "/sys/class/hwmon/hwmon2/pwm3:100:0"
+        ];
 
         extraArgs = [ "--interval=1min" ];
       };
