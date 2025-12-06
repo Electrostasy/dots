@@ -34,11 +34,11 @@
     overlays = [
       {
         name = "red-led-on-panic-overlay";
-        dtsFile = ./red-led-on-panic.dts;
+        dtsFile = ./red-led-on-panic.dtso;
       }
       {
         name = "fan-control-overlay";
-        dtsFile = ./fan-control.dts;
+        dtsFile = ./fan-control.dtso;
       }
     ];
   };

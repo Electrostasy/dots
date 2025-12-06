@@ -41,11 +41,11 @@
     overlays = [
       {
         name = "enable-xhci-overlay";
-        dtsFile = ./enable-xhci.dts;
+        dtsFile = ./enable-xhci.dtso;
       }
       {
         name = "fan-control-overlay";
-        dtsFile = ./fan-control.dts;
+        dtsFile = ./fan-control.dtso;
       }
     ];
   };

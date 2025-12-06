@@ -92,11 +92,11 @@
     overlays = [
       {
         name = "disable-bt-overlay";
-        dtsFile = ./disable-bt.dts;
+        dtsFile = ./disable-bt.dtso;
       }
       {
         name = "usb-host-overlay";
-        dtsFile = ./usb-host.dts;
+        dtsFile = ./usb-host.dtso;
       }
     ];
   };
