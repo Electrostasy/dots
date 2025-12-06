@@ -11,6 +11,8 @@ in
     configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
 
     forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
+
+    nixos-init.enable = true;
   };
 
   sops = {
