@@ -1,9 +1,0 @@
-CompileFlags:
-  Remove:
-    - -mrecord-mcount
-    - -mindirect-branch-register
-    - -mindirect-branch=thunk-extern
-    - -fno-allow-store-data-races
-    - -fconserve-stack
-    - -fmin-function-alignment=16
-    - -mpreferred-stack-boundary=3
