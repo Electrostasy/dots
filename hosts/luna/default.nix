@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, flake, ... }:
 
 {
   imports = [
@@ -10,7 +10,10 @@
     ./samba.nix
   ];
 
-  nixpkgs.hostPlatform.system = "aarch64-linux";
+  nixpkgs = {
+    hostPlatform.system = "aarch64-linux";
+    overlays = [ flake.overlays.emc2305-patched ];
+  };
 
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
@@ -55,6 +58,8 @@
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
     ];
+
+    extraModulePackages = [ config.boot.kernelPackages.emc2305 ];
 
     initrd = {
       includeDefaultModules = false;
