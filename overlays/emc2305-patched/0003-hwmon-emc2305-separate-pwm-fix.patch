@@ -1,0 +1,22 @@
+diff --git a/drivers/hwmon/emc2305.c b/drivers/hwmon/emc2305.c
+index 60809289f..39db6f696 100644
+--- a/drivers/hwmon/emc2305.c
++++ b/drivers/hwmon/emc2305.c
+@@ -659,7 +659,7 @@ static int emc2305_probe(struct i2c_client *client)
+ 			}
+ 		} else {
+ 			data->max_state = EMC2305_FAN_MAX_STATE;
+-			data->pwm_separate = false;
++			data->pwm_separate = true;
+ 			data->pwm_output_mask = EMC2305_DEFAULT_OUTPUT;
+ 			data->pwm_polarity_mask = EMC2305_DEFAULT_POLARITY;
+ 			for (i = 0; i < EMC2305_PWM_MAX; i++) {
+@@ -669,7 +669,7 @@ static int emc2305_probe(struct i2c_client *client)
+ 		}
+ 	} else {
+ 		data->max_state = EMC2305_FAN_MAX_STATE;
+-		data->pwm_separate = false;
++		data->pwm_separate = true;
+ 		for (i = 0; i < EMC2305_PWM_MAX; i++)
+ 			data->pwm_min[i] = EMC2305_FAN_MIN;
+ 	}
