@@ -53,10 +53,7 @@
   boot = {
     loader.generic-extlinux-compatible.enable = true;
 
-    # Use emc230x instead of the in-kernel emc2305 driver.
-    blacklistedKernelModules = [ "emc2305" ];
-    extraModulePackages = [ (pkgs.emc230x.override { linuxPackages = config.boot.kernelPackages; }) ];
-
+    kernelPackages = pkgs.linuxPackages_latest; # >=6.16 for emc2305 OF support.
     kernelParams = [
       "8250.nr_uarts=1"
       "console=ttyS0,115200"
@@ -64,11 +61,7 @@
 
     initrd = {
       includeDefaultModules = false;
-      availableKernelModules = [
-        "mmc_block" # required to boot from eMMC.
-        "usb-storage"
-        "xhci-hcd"
-      ];
+      availableKernelModules = [ "mmc_block" ];
 
       systemd = {
         emergencyAccess = true;
