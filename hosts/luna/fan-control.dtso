@@ -1,8 +1,6 @@
 /dts-v1/;
 /plugin/;
 
-#include <dt-bindings/thermal/thermal.h>
-
 / {
 	compatible = "raspberrypi,4-compute-module";
 };
@@ -17,7 +15,7 @@
 		fan0: fan@0 {
 			reg = <0x0>;
 			label = "Compute Module 4 Fan";
-			cooling-levels = <0 50 100 150 200 255>;
+			cooling-levels = <0 32 64 128 255>;
 			#cooling-cells = <2>;
 		};
 
@@ -35,31 +33,31 @@
 
 &cpu_thermal {
 	trips {
-		cpu_tepid: cpu-tepid {
+		cpu_trip_tepid: tepid {
 			temperature = <50000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		cpu_warm: cpu-warm {
+		cpu_trip_warm: warm {
 			temperature = <60000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		cpu_hot: cpu-hot {
+		cpu_trip_hot: hot {
 			temperature = <67500>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		cpu_vhot: cpu-vhot {
+		cpu_trip_vhot: vhot {
 			temperature = <75000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		cpu_crit: cpu-crit {
+		cpu_trip_crit: crit {
 			temperature = <90000>;
 			hysteresis = <0>;
 			type = "critical";
@@ -67,29 +65,29 @@
 	};
 
 	cooling-maps {
-		tepid {
-			trip = <&cpu_tepid>;
-			cooling-device = <&fan0 THERMAL_NO_LIMIT 1>;
+		map0 {
+			trip = <&cpu_trip_tepid>;
+			cooling-device = <&fan0 0 0>;
 		};
 
-		warm {
-			trip = <&cpu_warm>;
+		map1 {
+			trip = <&cpu_trip_warm>;
+			cooling-device = <&fan0 1 1>;
+		};
+
+		map2 {
+			trip = <&cpu_trip_hot>;
 			cooling-device = <&fan0 2 2>;
 		};
 
-		hot {
-			trip = <&cpu_hot>;
+		map3 {
+			trip = <&cpu_trip_vhot>;
 			cooling-device = <&fan0 3 3>;
 		};
 
-		vhot {
-			trip = <&cpu_vhot>;
+		map4 {
+			trip = <&cpu_trip_crit>;
 			cooling-device = <&fan0 4 4>;
-		};
-
-		melt {
-			trip = <&cpu_crit>;
-			cooling-device = <&fan0 5 THERMAL_NO_LIMIT>;
 		};
 	};
 };

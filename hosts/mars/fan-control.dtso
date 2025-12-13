@@ -3,7 +3,6 @@
 
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/pinctrl/rockchip.h>
-#include <dt-bindings/thermal/thermal.h>
 
 / {
 	compatible = "friendlyarm,nanopc-t6-lts";
@@ -12,7 +11,7 @@
 &{/} {
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		cooling-levels = <0 25 95 145 195 255>;
+		cooling-levels = <0 32 64 128 255>;
 		fan-supply = <&vcc5v0_sys>;
 		interrupt-parent = <&gpio0>;
 		interrupts = <RK_PC4 IRQ_TYPE_EDGE_FALLING>;
@@ -37,31 +36,31 @@
 
 &package_thermal {
 	trips {
-		package_tepid: package-tepid {
+		package_trip_tepid: tepid {
 			temperature = <50000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		package_warm: package-warm {
+		package_trip_warm: warm {
 			temperature = <60000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		package_hot: package-hot {
+		package_trip_hot: hot {
 			temperature = <67500>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		package_vhot: package-vhot {
+		package_trip_vhot: vhot {
 			temperature = <75000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
-		package_crit: package-crit {
+		package_trip_crit: crit {
 			temperature = <115000>;
 			hysteresis = <0>;
 			type = "critical";
@@ -69,29 +68,29 @@
 	};
 
 	cooling-maps {
-		tepid {
-			trip = <&package_tepid>;
-			cooling-device = <&fan 0 1>;
+		map0 {
+			trip = <&package_trip_tepid>;
+			cooling-device = <&fan 0 0>;
 		};
 
-		warm {
-			trip = <&package_warm>;
-			cooling-device = <&fan 1 2>;
+		map1 {
+			trip = <&package_trip_warm>;
+			cooling-device = <&fan 1 1>;
 		};
 
-		hot {
-			trip = <&package_hot>;
-			cooling-device = <&fan 2 3>;
+		map2 {
+			trip = <&package_trip_hot>;
+			cooling-device = <&fan 2 2>;
 		};
 
-		vhot {
-			trip = <&package_vhot>;
-			cooling-device = <&fan 3 4>;
+		map3 {
+			trip = <&package_trip_vhot>;
+			cooling-device = <&fan 3 3>;
 		};
 
-		melt {
-			trip = <&package_crit>;
-			cooling-device = <&fan 5 THERMAL_NO_LIMIT>;
+		map4 {
+			trip = <&package_trip_crit>;
+			cooling-device = <&fan 4 4>;
 		};
 	};
 };
