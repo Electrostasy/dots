@@ -12,6 +12,9 @@
   # <3>WSL (11 - Relay) ERROR: CreateProcessCommon:725: execvpe(/nix/store/...-wrapped-bash/wrapper) failed: No such file or directory
   system.etc.overlay.enable = false;
 
+  # Requires system.etc.overlay.enable and services.userborn.enable/systemd.sysusers.enable.
+  system.nixos-init.enable = lib.mkForce false;
+
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [
