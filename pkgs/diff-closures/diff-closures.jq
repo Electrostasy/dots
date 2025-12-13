@@ -1,7 +1,9 @@
-def filter_pname: select(
-	# Packages that do not have a pname are not very interesting.
+#!/usr/bin/env -S jq -rfs
+
+# Filter out packages that do not have a pname, version, or are wrappers.
+def derivation_filter: select(
 	(.pname != null) and
-	# Likewise for wrapper packages.
+	(.version != null) and
 	(.pname | endswith("-wrapper") | not)
 );
 
@@ -29,13 +31,17 @@ def realname:
 # There may be packages with the same name but different versions present, so
 # to avoid incorrect version comparisons due to overlapping package names, we
 # split them by major version.
-def version_to_side($side): {
+def side($side): {
 	(realname): {
 		(.version as $version | $version | split(".") | .[0]): {
 			($side): .version
 		}
 	}
 };
+
+([.[0].[].env] | map(derivation_filter | side("left"))) as $left |
+([.[1].[].env] | map(derivation_filter | side("right"))) as $right |
+([.[2].[].env] | map(derivation_filter | realname)) as $path |
 
 def ansi: {
 	red: "\u001b[31m",
@@ -49,7 +55,6 @@ def ansi: {
 
 # If a package is in our PATH, colour it with $path_colour, otherwise
 # $regular_colour.
-([.[2].[].env] | map(filter_pname | realname)) as $path |
 def colourise($path_colour; $regular_colour):
 	if IN($path[]) then
 		$path_colour + . + ansi._reset
@@ -57,9 +62,7 @@ def colourise($path_colour; $regular_colour):
 		$regular_colour + . + ansi._reset
 	end;
 
-
-([.[0].[].env] | map(filter_pname | version_to_side("left"))) + ([.[1].[].env] | map(filter_pname | version_to_side("right")))
-| reduce .[] as $item ({}; . * $item)
+$left + $right | reduce .[] as $item ({}; . * $item)
 
 # NOTE: Handles major version changes assuming that there are only two packages
 # changing major version in order to prevent a major version upgrade to look
