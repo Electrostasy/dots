@@ -7,9 +7,10 @@
     # Override default Desktop Environment fonts.
     packages = with pkgs; lib.mkForce [
       inter
-      ipaexfont
       liberation_ttf
       nerd-fonts.symbols-only
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
       recursive
       twemoji-color-font
     ];
@@ -19,15 +20,28 @@
         monospace = [
           "Recursive Mn Lnr St"
           "Symbols Nerd Font Mono"
+          "Noto Sans Mono CJK JP"
+          "Noto Sans Mono CJK KR"
+          "Noto Sans Mono CJK SC"
+          "Noto Sans Mono CJK TC"
+          "Noto Sans Mono CJK HK"
         ];
         sansSerif = [
           "Inter"
           "Liberation Sans"
-          "IPAexGothic"
+          "Noto Sans CJK JP"
+          "Noto Sans CJK KR"
+          "Noto Sans CJK SC"
+          "Noto Sans CJK TC"
+          "Noto Sans CJK HK"
         ];
         serif = [
           "Liberation Serif"
-          "IPAexMincho"
+          "Noto Serif CJK JP"
+          "Noto Serif CJK KR"
+          "Noto Serif CJK SC"
+          "Noto Serif CJK TC"
+          "Noto Serif CJK HK"
         ];
         emoji = [
           "Twitter Color Emoji SVGinOT"
