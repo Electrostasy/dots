@@ -41,7 +41,6 @@ in
         "cgroups" # allow Nix to execute builds inside cgroups.
         "flakes" # enable flakes.
         "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
-        "no-url-literals" # disallow unquoted URLs in Nix language syntax.
       ];
 
       use-cgroups = true;
