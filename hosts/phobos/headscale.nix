@@ -92,12 +92,16 @@
         ];
       };
 
-      derp.server = {
-        enabled = true;
-        region_id = 999;
-        region_code = "headscale";
-        region_name = "controlplane.0x6776.lt";
-        stun_listen_addr = "0.0.0.0:3478";
+      derp = {
+        server = {
+          enabled = true;
+          region_id = 999;
+          verify_clients = true;
+          region_code = "headscale";
+          region_name = "controlplane.0x6776.lt";
+          stun_listen_addr = "0.0.0.0:3478";
+        };
+        urls = [];
       };
     };
   };
