@@ -74,8 +74,10 @@ in
         fi
 
         if [ $? -eq 0 ]; then
+          btrfs subvolume set-default /mnt
           btrfs subvolume delete -R /mnt/${cfg.to}
           btrfs subvolume snapshot /mnt/${cfg.from} /mnt/${cfg.to}
+          btrfs subvolume set-default /mnt/${cfg.to}
         else
           echo "Failed to delete subvolumes under /mnt/${cfg.to}!"
         fi
