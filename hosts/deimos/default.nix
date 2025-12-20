@@ -133,6 +133,7 @@
             id = "home";
             type = "wifi";
             autoconnect = true;
+            autoconnect-retries = 0;
           };
 
           wifi = {
@@ -151,6 +152,7 @@
             id = "home_ap";
             type = "wifi";
             autoconnect = true;
+            autoconnect-retries = 0;
           };
 
           wifi = {
