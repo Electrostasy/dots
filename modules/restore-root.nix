@@ -6,23 +6,23 @@ in
 
 {
   options.boot.initrd.restore-root = {
-    enable = lib.mkEnableOption "restoring the root filesystem from a snapshot";
+    enable = lib.mkEnableOption "restoring btrfs subvolume from a snapshot";
 
     device = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      description = "Block device that will be subject to root subvolume restoration";
+      description = "Target block device";
       default = null;
     };
 
     to = lib.mkOption {
       type = lib.types.str;
-      description = "Name of the root subvolume that will be restored to";
+      description = "Subvolume that will be restored to";
       default = "root";
     };
 
     from = lib.mkOption {
       type = lib.types.str;
-      description = "Name of the root snapshot that will be restored from";
+      description = "Snapshot that the subvolume will be restored from";
       default = "root-blank";
     };
   };
@@ -38,7 +38,6 @@ in
     # https://github.com/NixOS/nixpkgs/issues/309316
     boot.initrd.systemd.storePaths = with pkgs; [
       "${btrfs-progs}/bin/btrfs"
-      "${coreutils}/bin/cut"
       "${util-linux}/bin/mount"
       "${util-linux}/bin/umount"
     ];
@@ -50,21 +49,16 @@ in
       after = [ "cryptsetup.target" ];
       before = [ "local-fs-pre.target" ];
 
-      path = with pkgs; [
-        util-linux
-        btrfs-progs
-        coreutils
+      path = [
+        pkgs.btrfs-progs
+        pkgs.util-linux
       ];
 
       unitConfig.DefaultDependencies = "no";
       serviceConfig.Type = "oneshot";
 
-      # In order to restore the root subvolume from an empty snapshot, first
-      # the lower level subvolumes under /root need to be deleted, which seem
-      # to get created by systemd.
       script = ''
-        mkdir /mnt
-        if ! mount -t btrfs -o subvol=/ ${cfg.device} /mnt &> /dev/null; then
+        if ! mount -t btrfs -o subvol=/ ${cfg.device} -m /mnt &> /dev/null; then
           echo 'Error: failed to mount btrfs / subvolume to /mnt!'
           exit 1
         fi
@@ -79,12 +73,8 @@ in
           exit 1
         fi
 
-        for subvolume in $(btrfs subvolume list -o /mnt/${cfg.to} | cut -f9 -d' '); do
-          btrfs subvolume delete "/mnt/$subvolume"
-        done
-
         if [ $? -eq 0 ]; then
-          btrfs subvolume delete /mnt/${cfg.to}
+          btrfs subvolume delete -R /mnt/${cfg.to}
           btrfs subvolume snapshot /mnt/${cfg.from} /mnt/${cfg.to}
         else
           echo "Failed to delete subvolumes under /mnt/${cfg.to}!"
