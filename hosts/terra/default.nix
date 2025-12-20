@@ -38,16 +38,12 @@
 
   boot = {
     initrd = {
-      luks.devices."cryptroot" = {
-        device = "/dev/disk/by-partuuid/6e31b86f-1d1d-4cd8-91b3-79af16dda198";
-        allowDiscards = true;
-        bypassWorkqueues = true;
-      };
+      luks.devices."root".device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
 
       restore-root = {
         enable = true;
 
-        device = "/dev/mapper/cryptroot";
+        device = "/dev/mapper/root";
       };
 
       availableKernelModules = [
@@ -60,6 +56,7 @@
     };
 
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ "rootflags=noatime" ];
 
     loader = {
       systemd-boot = {
@@ -68,7 +65,7 @@
       };
 
       efi.canTouchEfiVariables = true;
-      timeout = 0; # show menu only while holding down a button.
+      timeout = 0; # show menu only while holding down <Esc>.
     };
 
     binfmt.emulatedSystems = [ "aarch64-linux" ];
@@ -97,53 +94,31 @@
 
   fileSystems = {
     "/" = {
-      # Ensure time out appears when the actual physical device fails to appear,
-      # otherwise, systemd cannot set the infinite timeout (such as when using
-      # /dev/disk/by-* symlinks) for entering the passphrase:
+      # systemd applies infinite timeout only to dm-crypt mapper entries:
       # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [
-        "subvol=root"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
     };
 
     "/boot" = {
-      device = "/dev/disk/by-label/BOOT";
+      device = "/dev/disk/by-designator/esp";
       fsType = "vfat";
       options = [ "umask=0077" ];
     };
 
     "/nix" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [
-        "subvol=nix"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
+      options = [ "subvol=nix" ];
     };
 
     "/persist" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [
-        "subvol=persist"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
+      options = [ "subvol=persist" ];
       neededForBoot = true;
     };
   };
-
-  swapDevices = [
-    { device = "/dev/disk/by-partuuid/212fa8ad-6681-44ff-9df4-1cf6b0df55be"; randomEncryption.enable = true; }
-  ];
 
   preservation = {
     enable = true;

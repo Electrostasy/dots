@@ -1,15 +1,4 @@
-{ config, pkgs, ... }:
-
-let
-  mkOptionsWith = extraOptions: [
-    "noatime"
-    "compress-force=zstd:1"
-    "discard=async"
-    "X-mount.owner=${config.users.users.electro.name}"
-    "X-mount.group=${config.users.users.electro.group}"
-    "x-gvfs-hide"
-  ] ++ extraOptions;
-in
+{ pkgs, ... }:
 
 {
   nixpkgs.allowUnfreePackages = [
@@ -30,38 +19,17 @@ in
     ppfeaturemask = "0xFFF7FFFF"; # enables overclocking.
   };
 
-  fileSystems = {
-    "/home/electro/.local/share/Steam" = {
-      device = "/dev/disk/by-label/games";
-      fsType = "btrfs";
-      options = mkOptionsWith [ "subvol=steam" ];
-    };
-
-    "/home/electro/.local/share/dolphin-emu" = {
-      device = "/dev/disk/by-label/games";
-      fsType = "btrfs";
-      options = mkOptionsWith [ "subvol=dolphin-emu" ];
-    };
-
-    "/home/electro/.config/PCSX2" = {
-      device = "/dev/disk/by-label/games";
-      fsType = "btrfs";
-      options = mkOptionsWith [ "subvol=pcsx2" ];
-    };
-
-    "/home/electro/Games" = {
-      device = "/dev/disk/by-label/games";
-      fsType = "btrfs";
-      options = mkOptionsWith [ "subvol=wine" ];
-    };
-  };
-
   preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
       ".cache/mesa_shader_cache"
     ];
+
     "/persist/state".users.electro.directories = [
       ".local/share/umu"
+      ".local/share/Steam"
+      ".local/share/dolphin-emu"
+      ".config/PCSX2"
+      "Games"
     ];
   };
 
