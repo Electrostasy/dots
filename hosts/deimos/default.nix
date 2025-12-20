@@ -90,10 +90,10 @@
     name = "broadcom/bcm2837-rpi-zero-2-w.dtb";
 
     overlays = [
-      {
-        name = "disable-bt-overlay";
-        dtsFile = ./disable-bt.dtso;
-      }
+      # {
+      #   name = "disable-bt-overlay";
+      #   dtsFile = ./disable-bt.dtso;
+      # }
       {
         name = "usb-host-overlay";
         dtsFile = ./usb-host.dtso;
