@@ -1,5 +1,5 @@
 final: prev: {
-  qemu = prev.qemu.overrideAttrs (oldAttrs: {
+  qemu-user = prev.qemu-user.overrideAttrs (oldAttrs: {
     # qemu-x86_64 doesn't support unshare on aarch64-linux (CLONE_NEWUSER):
     # https://gitlab.com/qemu-project/qemu/-/issues/871, and this questionable
     # patch (hack) enables generating images using the `image.repart` NixOS
