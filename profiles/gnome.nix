@@ -404,7 +404,8 @@
 
         "org/gnome/shell/extensions/azwallpaper" = {
           slideshow-directory = "/home/electro/Pictures/wallpapers";
-          slideshow-slide-duration = mkTuple (lib.map mkInt32 [ 0 5 0 ]);
+          slideshow-slide-duration = mkTuple (lib.map mkInt32 [ 0 30 0 ]);
+          slideshow-pause = true;
         };
 
         "io/bassi/Amberol".background-play = false;
