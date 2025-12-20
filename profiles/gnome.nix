@@ -110,8 +110,6 @@
       gnomeExtensions.iso8601-ish-clock
       gnomeExtensions.system-monitor
       gnomeExtensions.tiling-shell
-      gnomeExtensions.unblank
-      gnomeExtensions.user-themes
       gnomeExtensions.wallpaper-slideshow
     ];
 
