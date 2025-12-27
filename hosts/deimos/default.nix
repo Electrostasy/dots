@@ -107,8 +107,16 @@
       efi.canTouchEfiVariables = false;
     };
 
-    initrd.systemd.root = "gpt-auto";
-    supportedFilesystems.ext4 = true;
+    kernelParams = [ "8250.nr_uarts=1" ];
+
+    initrd = {
+      systemd = {
+        root = "gpt-auto";
+        tpm2.enable = false;
+      };
+
+      supportedFilesystems.ext4 = true;
+    };
   };
 
   zramSwap.enable = true;

@@ -3,7 +3,17 @@
 {
   nixpkgs.overlays = [ flake.overlays.f3d-interactive ];
 
-  boot.plymouth.enable = true;
+  boot = {
+    loader = {
+      # Show full resolution boot screen.
+      systemd-boot.consoleMode = "max";
+
+      # Hide bootloader options menu unless holding down a key.
+      timeout = 0;
+    };
+
+    plymouth.enable = true;
+  };
 
   services = {
     displayManager = {
@@ -39,7 +49,6 @@
     "networkmanager" # don't ask password when connecting to networks.
   ];
 
-  # Log in if the user password matches the LUKS password.
   security.pam.services.login.enableGnomeKeyring = true;
 
   xdg.terminal-exec = {

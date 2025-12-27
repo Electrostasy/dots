@@ -63,17 +63,30 @@
   };
 
   boot = {
-    initrd = {
-      luks.devices."cryptroot" = {
-        device = "/dev/disk/by-uuid/eea26205-2ae5-4d2c-9a13-32c7d9ae2421";
-        allowDiscards = true;
-        bypassWorkqueues = true;
-      };
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
 
-      restore-root = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ "mem_sleep_default=deep" ];
+
+    # If hid_asus takes control of the touchpad, no touchpad features besides
+    # pointing will work (and it will not be very good), unless it is bound to
+    # hid_multitouch first.
+    extraModprobeConfig = ''
+      softdep hid_asus pre: hid_multitouch
+    '';
+
+    initrd = {
+      systemd.root = "gpt-auto";
+      luks.forceLuksSupportInInitrd = true;
+      supportedFilesystems.btrfs = true;
+
+      restoreRoot = {
         enable = true;
 
-        device = "/dev/mapper/cryptroot";
+        device = "/dev/mapper/root";
       };
 
       availableKernelModules = [
@@ -83,83 +96,23 @@
       ];
     };
 
-    kernelPackages = pkgs.linuxPackages_latest;
-
-    # If hid_asus takes control of the touchpad, no touchpad features besides
-    # pointing will work (and it will not be very good), unless it is bound to
-    # hid_multitouch first.
-    extraModprobeConfig = ''
-      softdep hid_asus pre: hid_multitouch
-    '';
-
-    kernelParams = [
-      # Enable deep sleep/s2ram (suspend to RAM) due to much better battery life
-      # on this device than s2idle (suspend to idle).
-      "mem_sleep_default=deep"
-    ];
-
-    loader = {
-      systemd-boot = {
-        enable = true;
-        consoleMode = "max";
-      };
-
-      efi.canTouchEfiVariables = true;
-      timeout = 0; # show menu only while holding down a button.
-    };
-
     binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
   fileSystems = {
-    # Ensure time out appears when the actual physical device fails to appear,
-    # otherwise, systemd cannot set the infinite timeout (such as when using
-    # /dev/disk/by-* symlinks) for entering the passphrase:
-    # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
-    "/" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [
-        "subvol=root"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
-    };
-
-    "/boot" = {
-      device = "/dev/disk/by-label/boot";
-      fsType = "vfat";
-      options = [ "umask=0077" ];
-    };
-
     "/nix" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [
-        "subvol=nix"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
+      options = [ "subvol=nix" ];
     };
 
     "/persist" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [
-        "subvol=persist"
-        "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
-      ];
+      options = [ "subvol=persist" ];
       neededForBoot = true;
     };
   };
-
-  swapDevices = [
-    { device = "/dev/disk/by-partuuid/19569fdc-0dc6-4fd7-aef0-ec770aaf1f6a"; randomEncryption.enable = true; }
-  ];
 
   preservation.enable = true;
 

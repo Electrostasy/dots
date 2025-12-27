@@ -17,7 +17,7 @@
 
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
-    ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/generic-efi.nix
     ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-cm4.nix
   ];
@@ -51,24 +51,26 @@
   };
 
   boot = {
-    loader.generic-extlinux-compatible.enable = true;
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = false;
+    };
 
     kernelPackages = pkgs.linuxPackages_latest; # >=6.16 for emc2305 OF support.
-    kernelParams = [
-      "8250.nr_uarts=1"
-      "console=ttyS0,115200"
-    ];
+    kernelParams = [ "8250.nr_uarts=1" ];
 
     extraModulePackages = [ config.boot.kernelPackages.emc2305 ];
 
     initrd = {
-      includeDefaultModules = false;
-      availableKernelModules = [ "mmc_block" ];
-
       systemd = {
-        emergencyAccess = true;
+        root = "gpt-auto";
         tpm2.enable = false;
       };
+
+      supportedFilesystems.ext4 = true;
+
+      includeDefaultModules = false;
+      availableKernelModules = [ "mmc_block" ];
     };
   };
 
@@ -85,28 +87,13 @@
     };
   };
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/nixos";
-      fsType = "ext4";
-    };
-
-    "/boot" = {
-      device = "/dev/disk/by-label/BOOT";
-      fsType = "vfat";
-      options = [ "umask=0077" ];
-    };
-
-    # Formatted from 5 disks using:
-    # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/disk/by-id/ata-ST18000NM003D-3DL103_* -L array
-    "/mnt/array" = {
-      device = "/dev/disk/by-label/array";
-      fsType = "btrfs";
-      options = [
-        "compress-force=zstd:3"
-        "noatime"
-      ];
-    };
+  # Formatted from 5 disks using:
+  # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/disk/by-id/ata-ST18000NM003D-3DL103_* -L array
+  # $ btrfs property set /mnt/array compression zstd:3
+  fileSystems."/mnt/array" = {
+    device = "/dev/disk/by-label/array";
+    fsType = "btrfs";
+    options = [ "noatime" ];
   };
 
   zramSwap.enable = true;
@@ -156,9 +143,7 @@
       # $ systemd-ask-password | mkpasswd -m SHA-512 -s
       hashedPasswordFile = config.sops.secrets.electroPassword.path;
 
-      extraGroups = [
-        "wheel" # allow using `sudo` for this user.
-      ];
+      extraGroups = [ "wheel" ];
 
       openssh.authorizedKeys.keyFiles = [
         ../mercury/id_ed25519.pub

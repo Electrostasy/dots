@@ -17,27 +17,9 @@
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
 
-  nixpkgs.overlays = [
-    # If our bootloader EEPROM version from raspberrypi/rpi-eeprom is too new,
-    # then we need accordingly new firmware files or else we will not be able
-    # to boot.
-    # TODO: Remove when it is updated in nixpkgs.
-    (final: prev: {
-      raspberrypifw = prev.raspberrypifw.overrideAttrs (finalAttrs: oldAttrs: {
-        version = "1.20250305";
-
-        src = oldAttrs.src.override {
-          rev = null;
-          tag = finalAttrs.version;
-          hash = "sha256-J2Na7yGKvRDWKC+1gFEQMuaam+4vt+RsV9FjarDgvMs=";
-        };
-      });
-    })
-  ];
-
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
-    ../../profiles/image/generic-extlinux.nix
+    ../../profiles/image/generic-efi.nix
     ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-4-b.nix
   ];
@@ -54,10 +36,20 @@
     };
   };
 
+  hardware.deviceTree.name = "broadcom/bcm2711-rpi-4-b.dtb";
+
   boot = {
-    loader.generic-extlinux-compatible.enable = true;
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = false;
+    };
 
     kernelParams = [ "8250.nr_uarts=1" ];
+
+    initrd = {
+      systemd.root = "gpt-auto";
+      supportedFilesystems.ext4 = true;
+    };
   };
 
   nix = {
@@ -70,19 +62,6 @@
     optimise = {
       automatic = true;
       dates = [ "weekly" ];
-    };
-  };
-
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/nixos";
-      fsType = "ext4";
-    };
-
-    "/boot" = {
-      device = "/dev/disk/by-label/BOOT";
-      fsType = "vfat";
-      options = [ "umask=0077" ];
     };
   };
 

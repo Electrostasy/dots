@@ -2,7 +2,6 @@
 
 let
   inherit (pkgs.stdenv.hostPlatform) efiArch;
-  deviceTreeEnabled = config.hardware.deviceTree.enable && config.hardware.deviceTree.name != null;
 in
 
 {
@@ -17,6 +16,10 @@ in
       assertion = !config.boot.loader.generic-extlinux-compatible.enable;
       message = "generic-efi image profile cannot be used with extlinux";
     }
+    {
+      assertion = config.hardware.deviceTree.enable -> config.hardware.deviceTree.name != null;
+      message = "generic-efi image profile requires hardware.deviceTree.name to be set when using hardware.deviceTree.enable";
+    }
   ];
 
   image = {
@@ -29,18 +32,16 @@ in
           "/EFI/systemd/systemd-boot${efiArch}.efi".source = "${config.systemd.package}/lib/systemd/boot/efi/systemd-boot${efiArch}.efi";
           "/EFI/nixos/${config.system.boot.loader.kernelFile}".source = "${config.boot.kernelPackages.kernel}/${config.system.boot.loader.kernelFile}";
           "/EFI/nixos/${config.system.boot.loader.initrdFile}".source = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
-          "/EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}".source =
-            lib.mkIf
-              deviceTreeEnabled
-              "${config.hardware.deviceTree.package}/${config.hardware.deviceTree.name}";
 
           "/loader/entries/nixos-generation-1.conf".source = pkgs.writeText "nixos-generation-1.conf" ''
             title NixOS
             linux /EFI/nixos/${config.system.boot.loader.kernelFile}
             initrd /EFI/nixos/${config.system.boot.loader.initrdFile}
-            ${lib.optionalString deviceTreeEnabled "devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}"}
+            ${lib.optionalString config.hardware.deviceTree.enable "devicetree /EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}"}
             options init=${config.system.build.toplevel}/init ${builtins.toString config.boot.kernelParams}
           '';
+        } // lib.optionalAttrs config.hardware.deviceTree.enable {
+          "/EFI/nixos/${builtins.baseNameOf config.hardware.deviceTree.name}".source = "${config.hardware.deviceTree.package}/${config.hardware.deviceTree.name}";
         };
 
         repartConfig = {

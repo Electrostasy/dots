@@ -47,22 +47,24 @@
 
     # TODO: Missing PWM/thermal subsystem support, but mainline boots now!
     kernelPackages = pkgs.linuxPackages_testing;
-
     kernelParams = [ "8250.nr_uarts=1" ];
 
     initrd = {
-      includeDefaultModules = false;
-      availableKernelModules = [
-        "mmc_block" # required to boot from eMMC.
-      ];
-
-      systemd = {
-        root = "gpt-auto";
-        emergencyAccess = true;
-        tpm2.enable = false;
-      };
-
+      systemd.root = "gpt-auto";
       supportedFilesystems.ext4 = true;
+    };
+  };
+
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
     };
   };
 

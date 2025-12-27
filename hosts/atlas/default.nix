@@ -52,8 +52,23 @@
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "8250.nr_uarts=1" ];
 
-    initrd.systemd.root = "gpt-auto";
-    supportedFilesystems.ext4 = true;
+    initrd = {
+      systemd.root = "gpt-auto";
+      supportedFilesystems.ext4 = true;
+    };
+  };
+
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
+    };
   };
 
   zramSwap.enable = true;

@@ -37,10 +37,19 @@
   };
 
   boot = {
-    initrd = {
-      luks.devices."root".device = "/dev/disk/by-uuid/8c588999-abbc-455e-b09f-976983d8154d";
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
 
-      restore-root = {
+    kernelPackages = pkgs.linuxPackages_latest;
+
+    initrd = {
+      systemd.root = "gpt-auto";
+      luks.forceLuksSupportInInitrd = true;
+      supportedFilesystems.btrfs = true;
+
+      restoreRoot = {
         enable = true;
 
         device = "/dev/mapper/root";
@@ -53,19 +62,6 @@
         "usbhid"
         "sd_mod"
       ];
-    };
-
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "rootflags=noatime" ];
-
-    loader = {
-      systemd-boot = {
-        enable = true;
-        consoleMode = "max";
-      };
-
-      efi.canTouchEfiVariables = true;
-      timeout = 0; # show menu only while holding down <Esc>.
     };
 
     binfmt.emulatedSystems = [ "aarch64-linux" ];
@@ -93,19 +89,6 @@
   };
 
   fileSystems = {
-    "/" = {
-      # systemd applies infinite timeout only to dm-crypt mapper entries:
-      # https://github.com/NixOS/nixpkgs/issues/250003#issuecomment-1724708072
-      device = "/dev/mapper/root";
-      fsType = "btrfs";
-    };
-
-    "/boot" = {
-      device = "/dev/disk/by-designator/esp";
-      fsType = "vfat";
-      options = [ "umask=0077" ];
-    };
-
     "/nix" = {
       device = "/dev/mapper/root";
       fsType = "btrfs";

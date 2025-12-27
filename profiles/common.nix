@@ -67,6 +67,8 @@ in
   boot = {
     tmp.useTmpfs = true;
 
+    kernelParams = [ "rootflags=noatime" ];
+
     kernel.sysfs = {
       module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
         enabled = true;
