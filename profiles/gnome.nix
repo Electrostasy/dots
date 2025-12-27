@@ -99,6 +99,7 @@
       ffmpegthumbnailer
       fractal
       freerdp
+      ghostty
       git-credential-keepassxc
       keepassxc
       libnotify
@@ -108,7 +109,6 @@
       nautilus-python
       nautilus-vimv
       papers
-      ptyxis
       wl-clipboard
 
       adw-gtk3
@@ -203,20 +203,9 @@
         };
 
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {
-          terminal = "ptyxis";
+          terminal = "ghostty";
           use-generic-terminal-name = true;
         };
-
-        "org/gnome/Ptyxis/Shortcuts".close-tab = "<Shift><Control>w";
-
-        "org/gnome/Ptyxis" = {
-          default-profile-uuid = "6b79e535da7cbdbf6aaf249a66a71bb1";
-          new-tab-position = "next";
-          profile-uuids = [ "6b79e535da7cbdbf6aaf249a66a71bb1" ];
-          restore-session = false;
-        };
-
-        "org/gnome/Ptyxis/Profiles/6b79e535da7cbdbf6aaf249a66a71bb1".palette = "poimandres";
 
         "org/gnome/desktop/media-handling".automount = false;
 
@@ -269,7 +258,7 @@
 
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
-          command = "/usr/bin/env ptyxis --new-window";
+          command = "/usr/bin/env ghostty +new-window";
           name = "Terminal";
         };
 
@@ -448,33 +437,43 @@
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when
   # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.user.tmpfiles.rules = [
-    "L+ %h/.local/share/org.gnome.Ptyxis/palettes/poimandres.palette - - - - ${
-      (pkgs.formats.ini { }).generate "poimandres.palette" {
-        Palette = {
-          Name = "poimandres";
+    "L+ %h/.config/ghostty/themes/Poimandres - - - - ${
+      (pkgs.formats.keyValue { listsAsDuplicateKeys = true; }).generate "Poimandres" {
+        background = "#1b1e28";
+        foreground = "#e4f0fb";
+        cursor-color = "#ffffff";
+        window-titlebar-background = "#171922";
+        window-titlebar-foreground = "#e3f0fb";
+        split-divider-color = "#506477";
 
-          Background = "#1b1e28";
-          Foreground = "#e4f0fb";
-          Cursor = "#ffffff";
-
-          Color0 = "#171922"; # #000000 "black"
-          Color1 = "#d0679d"; # #800000 "red"
-          Color2 = "#5fb3a1"; # #008000 "green"
-          Color3 = "#42675a"; # #808000 "yellow"
-          Color4 = "#7390aa"; # #000080 "blue"
-          Color5 = "#767c9d"; # #800080 "magenta"
-          Color6 = "#91b4d5"; # #008080 "cyan"
-          Color7 = "#303340"; # #c0c0c0 "white"
-
-          Color8 = "#506477"; # #808080 "brblack"
-          Color9 = "#fcc5e9"; # #ff0000 "brred"
-          Color10 = "#5de4c7"; # #00ff00 "brgreen"
-          Color11 = "#fffac2"; # #ffff00 "bryellow"
-          Color12 = "#add7ff"; # #0000ff "brblue"
-          Color13 = "#fae4fc"; # #ff00ff "brmagenta"
-          Color14 = "#89ddff"; # #00ffff "brcyan"
-          Color15 = "#e4f0fb"; # #ffffff "brwhite"
-        };
+        palette = [
+          "0=#171922" # black
+          "1=#d0679d" # red
+          "2=#5fb3a1" # green
+          "3=#42675a" # yellow
+          "4=#7390aa" # blue
+          "5=#767c9d" # magenta
+          "6=#91b4d5" # cyan
+          "7=#303340" # white
+          "8=#506477" # brblack
+          "9=#fcc5e9" # brred
+          "10=#5de4c7" # brgreen
+          "11=#fffac2" # bryellow
+          "12=#add7ff" # brblue
+          "13=#fae4fc" # brmagenta
+          "14=#89ddff" # brcyan
+          "15=#e4f0fb" # brwhite
+        ];
+      }
+    }"
+    "L+ %h/.config/ghostty/config - - - - ${
+      (pkgs.formats.keyValue { }).generate "config" {
+        font-family = "monospace"; # default to fontconfig configured monospace font.
+        font-size = 10.5;
+        mouse-scroll-multiplier = 1;
+        shell-integration-features = "sudo,cursor,title,ssh-env";
+        theme = "Poimandres";
+        window-theme = "ghostty";
       }
     }"
   ];
