@@ -3,7 +3,7 @@
 {
   imports = [
     ../../profiles/minimal.nix
-    ../../profiles/shell
+    ../../profiles/shell.nix
     ../../profiles/ssh
     ../../profiles/tailscale.nix
     ./acme.nix

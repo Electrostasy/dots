@@ -3,7 +3,7 @@
 {
   imports = [
     ../../profiles/neovim
-    ../../profiles/shell
+    ../../profiles/shell.nix
   ];
 
   # This somehow conflicts with WSL - if this is enabled and a garbage

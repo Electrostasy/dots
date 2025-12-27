@@ -1,20 +1,24 @@
 {
   writeShellApplication,
   sqlite,
+  procps,
   path
 }:
 
 writeShellApplication {
   name = "command-not-found";
 
-  runtimeInputs = [ sqlite ];
+  runtimeInputs = [
+    sqlite
+    procps
+  ];
 
   text = ''
     if [[ ! -e '${path}/programs.sqlite' ]]; then
       echo "Failed to locate package containing '$1': programs.sqlite not found!"
       echo "Please set programs.command-not-found.dbPath in your NixOS configuration to where programs.sqlite is."
       echo "You can disable this feature by setting programs.command-not-found.enable to false in your NixOS configuration."
-      return
+      return 127
     fi
 
     parent_shell="$(ps -o comm= $PPID)"

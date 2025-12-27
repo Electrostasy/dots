@@ -60,6 +60,7 @@
     "/persist/cache".users.electro.directories = [
       ".cache/fontconfig"
       ".cache/keepassxc"
+      ".cache/tealdeer"
       ".cache/tracker3"
 
       # https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
@@ -94,21 +95,30 @@
   environment = {
     systemPackages = with pkgs; [
       amberol
+      aria2
       eyedropper
       f3d
+      fd
       ffmpegthumbnailer
+      file
       fractal
       freerdp
       ghostty
       git-credential-keepassxc
       keepassxc
       libnotify
+      magic-wormhole-rs
       mission-center
       nautilus-amberol
       nautilus-open-any-terminal
       nautilus-python
       nautilus-vimv
+      ouch
       papers
+      qrtool
+      ripgrep
+      tealdeer
+      vimv-rs
       wl-clipboard
 
       adw-gtk3
@@ -121,6 +131,11 @@
       gnomeExtensions.tiling-shell
       gnomeExtensions.wallpaper-slideshow
     ];
+
+    shellAliases = {
+      a2c = "aria2c";
+      wh = "wormhole-rs";
+    };
 
     gnome.excludePackages = with pkgs; [
       # For xdg-* commands to work correctly on gnome, `gio` is needed, provided

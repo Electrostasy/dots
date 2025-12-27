@@ -8,7 +8,7 @@
     ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
-    ../../profiles/shell
+    ../../profiles/shell.nix
     ../../profiles/ssh
     ../../profiles/tailscale.nix
     ../luna/nfs-share.nix
