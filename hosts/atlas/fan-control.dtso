@@ -10,6 +10,8 @@
 };
 
 &package_thermal {
+	polling-delay = <2000>;
+
 	trips {
 		package_trip_tepid: tepid {
 			temperature = <50000>;

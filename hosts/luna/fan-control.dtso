@@ -32,6 +32,8 @@
 };
 
 &cpu_thermal {
+	polling-delay = <2000>;
+
 	trips {
 		cpu_trip_tepid: tepid {
 			temperature = <50000>;
