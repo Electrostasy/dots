@@ -1,29 +1,17 @@
 { config, pkgs, lib, utils, ... }:
 
 let
-  cfg = config.boot.initrd.restore-root;
+  cfg = config.boot.initrd.restoreRoot;
 in
 
 {
-  options.boot.initrd.restore-root = {
-    enable = lib.mkEnableOption "restoring btrfs subvolume from a snapshot";
+  options.boot.initrd.restoreRoot = {
+    enable = lib.mkEnableOption "restoring btrfs default subvolume from a snapshot";
 
     device = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      description = "Target block device";
+      description = "Device with a btrfs filesystem containing the default subvolume to restore";
       default = null;
-    };
-
-    to = lib.mkOption {
-      type = lib.types.str;
-      description = "Subvolume that will be restored to";
-      default = "root";
-    };
-
-    from = lib.mkOption {
-      type = lib.types.str;
-      description = "Snapshot that the subvolume will be restored from";
-      default = "root-blank";
     };
   };
 
@@ -31,7 +19,7 @@ in
     assertions = [
       {
         assertion = cfg.device != null;
-        message = "device cannot be null";
+        message = "boot.initrd.restoreRoot.device cannot be null";
       }
     ];
 
@@ -43,10 +31,10 @@ in
     ];
 
     boot.initrd.systemd.services."restore-root-on-${utils.escapeSystemdPath cfg.device}" = {
-      description = "Restore from empty snapshot for impermanent btrfs device ${cfg.device}";
+      description = "Restore default subvolume from snapshot for btrfs filesystem on ${cfg.device}";
       wantedBy = [ "sysinit.target" ];
 
-      after = [ "cryptsetup.target" ];
+      after = [ "initrd-root-device.target" ];
       before = [ "local-fs-pre.target" ];
 
       path = [
@@ -59,30 +47,34 @@ in
 
       script = ''
         if ! mount -t btrfs -o subvol=/ ${cfg.device} -m /mnt &> /dev/null; then
-          echo 'Error: failed to mount btrfs / subvolume to /mnt!'
+          echo 'ERROR: Failed to mount subvolume / to /mnt for ${cfg.device}!'
           exit 1
         fi
 
-        if ! btrfs subvolume show /mnt/${cfg.to} &> /dev/null; then
-          echo 'Error: failed to find /mnt/${cfg.to} subvolume!'
+        trap 'umount /mnt' EXIT
+
+        if ! btrfs subvolume get-default /mnt &> /dev/null; then
+          echo 'ERROR: failed to find default subvolume on /mnt!'
+          echo 'Set default subvolume with:'
+          echo '# btrfs subvolume set-default /mnt/root'
           exit 1
         fi
 
-        if ! btrfs subvolume show /mnt/${cfg.from} &> /dev/null; then
-          echo 'Error: failed to find /mnt/${cfg.from} subvolume!'
+        if ! btrfs subvolume show /mnt/root-blank &> /dev/null; then
+          echo 'ERROR: failed to find snapshot at /mnt/root-blank!'
+          echo 'Create a snapshot with:'
+          echo '# btrfs subvolume snapshot -r /mnt/root /mnt/root-blank'
           exit 1
         fi
 
         if [ $? -eq 0 ]; then
           btrfs subvolume set-default /mnt
-          btrfs subvolume delete -R /mnt/${cfg.to}
-          btrfs subvolume snapshot /mnt/${cfg.from} /mnt/${cfg.to}
-          btrfs subvolume set-default /mnt/${cfg.to}
+          btrfs subvolume delete -R /mnt/root
+          btrfs subvolume snapshot /mnt/root-blank /mnt/root
+          btrfs subvolume set-default /mnt/root
         else
-          echo "Failed to delete subvolumes under /mnt/${cfg.to}!"
+          echo "ERROR: Failed to delete subvolumes under /mnt/root!"
         fi
-
-        umount /mnt
       '';
     };
   };
