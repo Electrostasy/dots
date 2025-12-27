@@ -36,19 +36,19 @@
 
 	trips {
 		cpu_trip_tepid: tepid {
-			temperature = <50000>;
+			temperature = <45000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
 		cpu_trip_warm: warm {
-			temperature = <60000>;
+			temperature = <50000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
 		cpu_trip_hot: hot {
-			temperature = <67500>;
+			temperature = <60000>;
 			hysteresis = <2000>;
 			type = "active";
 		};

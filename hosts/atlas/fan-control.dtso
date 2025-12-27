@@ -20,13 +20,13 @@
 		};
 
 		package_trip_warm: warm {
-			temperature = <60000>;
+			temperature = <55000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
 		package_trip_hot: hot {
-			temperature = <67500>;
+			temperature = <65000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
