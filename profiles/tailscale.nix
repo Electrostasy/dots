@@ -14,8 +14,13 @@
     # $ headscale --user sol preauthkeys create --expiration 99y
     authKeyFile = config.sops.secrets.tailscaleKey.path;
 
-    extraSetFlags = [
+    extraUpFlags = [
       "--login-server" "https://controlplane.${config.networking.domain}"
+
+      # If `extraUpFlags` is changed, then we will require manual intervention with
+      # `tailscale up` after activation, repeating all the `extraUpFlags`, and
+      # adding `--reset` to the end anyway.
+      "--reset"
     ];
   };
 
