@@ -4,8 +4,9 @@
   imports = [
     ../../profiles/minimal.nix
     ../../profiles/shell.nix
-    ../../profiles/ssh
+    ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../users/electro
     ./acme.nix
     ./dendrite.nix
     ./discord-transcriber.nix
@@ -23,18 +24,6 @@
     ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-4-b.nix
   ];
-
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
 
   hardware.deviceTree.name = "broadcom/bcm2711-rpi-4-b.dtb";
 
@@ -71,25 +60,6 @@
   services.prometheus.exporters.node.enable = true;
 
   services.journald.storage = "volatile";
-
-  users.users.electro = {
-    isNormalUser = true;
-    uid = 1000;
-
-    # Change password using:
-    # $ nix run nixpkgs#mkpasswd -- -m SHA-512 -s
-    hashedPasswordFile = config.sops.secrets.electroPassword.path;
-
-    extraGroups = [
-      "wheel" # allow using `sudo` for this user.
-    ];
-
-    openssh.authorizedKeys.keyFiles = [
-      ../mercury/id_ed25519.pub
-      ../terra/id_ed25519.pub
-      ../venus/id_ed25519.pub
-    ];
-  };
 
   system.stateVersion = "25.05";
 }

@@ -1,11 +1,12 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
     ../../profiles/minimal.nix
     ../../profiles/shell.nix
-    ../../profiles/ssh
+    ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../users/electro
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
@@ -15,18 +16,6 @@
     ../../profiles/image/generic-efi.nix
     ../../profiles/image/interactive.nix
   ];
-
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      electroPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
 
   hardware.deviceTree = {
     name = "rockchip/rk3588-armsom-sige7.dtb";
@@ -74,20 +63,6 @@
   zramSwap.enable = true;
 
   services.journald.storage = "volatile";
-
-  users.users.electro = {
-    isNormalUser = true;
-    uid = 1000;
-
-    hashedPasswordFile = config.sops.secrets.electroPassword.path;
-    extraGroups = [ "wheel" ];
-
-    openssh.authorizedKeys.keyFiles = [
-      ../mercury/id_ed25519.pub
-      ../terra/id_ed25519.pub
-      ../venus/id_ed25519.pub
-    ];
-  };
 
   system.stateVersion = "25.05";
 }

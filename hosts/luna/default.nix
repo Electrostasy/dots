@@ -4,8 +4,10 @@
   imports = [
     ../../profiles/minimal.nix
     ../../profiles/shell.nix
-    ../../profiles/ssh
+    ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../users/electro
+    ../../users/sukceno
     ./nfs.nix
     ./samba.nix
   ];
@@ -21,19 +23,6 @@
     ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-cm4.nix
   ];
-
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-
-    secrets = {
-      electroPassword.neededForUsers = true;
-      sukcenoPassword.neededForUsers = true;
-      electroIdentity = {
-        mode = "0400";
-        owner = config.users.users.electro.name;
-      };
-    };
-  };
 
   hardware.deviceTree = {
     name = "broadcom/bcm2711-rpi-cm4-io.dtb";
@@ -131,32 +120,6 @@
 
         extraArgs = [ "--interval=1min" ];
       };
-    };
-  };
-
-  users.users = {
-    electro = {
-      isNormalUser = true;
-      uid = 1000;
-
-      # Change password using:
-      # $ systemd-ask-password | mkpasswd -m SHA-512 -s
-      hashedPasswordFile = config.sops.secrets.electroPassword.path;
-
-      extraGroups = [ "wheel" ];
-
-      openssh.authorizedKeys.keyFiles = [
-        ../mercury/id_ed25519.pub
-        ../terra/id_ed25519.pub
-        ../venus/id_ed25519.pub
-      ];
-    };
-
-    sukceno = {
-      isNormalUser = true;
-      uid = 1001;
-
-      hashedPasswordFile = config.sops.secrets.sukcenoPassword.path;
     };
   };
 

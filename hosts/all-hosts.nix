@@ -29,12 +29,17 @@ lib.pipe ./. [
           inputModules
           outputModules
           [
-            # Allow modules to refer to this flake by argument.
-            # WARN: Do not use `self` to import modules!
-            { _module.args.flake = self; }
+            {
+              # Allow modules to refer to this flake by argument.
+              # WARN: Do not use `self` to import modules!
+              _module.args.flake = self;
+
+              sops.defaultSopsFile = ./${name}/secrets.yaml;
+
+              networking = { inherit hostName; };
+            }
 
             ../profiles/common.nix
-            { networking = { inherit hostName; }; }
             ./${name}
           ]
         ];

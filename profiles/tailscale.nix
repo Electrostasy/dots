@@ -30,4 +30,9 @@
 
   networking.networkmanager.unmanaged = [ config.services.tailscale.interfaceName ];
   systemd.network.wait-online.ignoredInterfaces = [ config.services.tailscale.interfaceName ];
+
+  programs.ssh.extraConfig = ''
+    Match exec "timeout 0.1s tailscale ip %h"
+      Port 3101
+  '';
 }
