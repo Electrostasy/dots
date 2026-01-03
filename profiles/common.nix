@@ -161,13 +161,26 @@ in
         "/var/lib/nixos"
         "/var/lib/systemd"
         "/var/log/journal"
-        (lib.mkIf hasSecrets { directory = builtins.dirOf config.sops.age.keyFile; inInitrd = true; })
+        (lib.mkIf hasSecrets { directory = dirOf config.sops.age.keyFile; inInitrd = true; })
       ];
 
       files = [
-        { file = "/etc/machine-id"; inInitrd = true; how = "symlink"; configureParent = true; }
+        {
+          file = "/etc/machine-id";
+          inInitrd = true;
+          how = "symlink";
+          configureParent = true;
+          createLinkTarget = true;
+        }
       ];
     };
+  };
+
+  # As of systemd v258, /etc/machine-id cannot be created at first boot if it
+  # points to a non-existent file:
+  # https://github.com/systemd/systemd/issues/39717
+  boot.initrd.systemd.tmpfiles.settings.preservation."/sysroot/persist/state/etc/machine-id".f = {
+    argument = "uninitialized";
   };
 
   systemd.services.systemd-machine-id-commit = lib.mkIf config.preservation.enable {
