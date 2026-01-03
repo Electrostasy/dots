@@ -19,7 +19,6 @@
     hostPlatform.system = "x86_64-linux";
     overlays = [
       flake.overlays.libewf-fuse
-      flake.overlays.untrunc-anthwlock
     ];
   };
 
