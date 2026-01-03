@@ -36,6 +36,7 @@
 
   programs.fish = {
     enable = true;
+    useBabelfish = true;
 
     interactiveShellInit = /* fish */ ''
       set -g fish_greeting # disable greeting.
