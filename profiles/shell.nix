@@ -1,10 +1,55 @@
 { config, pkgs, lib, ... }:
 
+let
+  poimandres = pkgs.writeText "poimandres.theme" ''
+    [dark]
+    fish_color_autosuggestion 506477 --italic
+    fish_color_cancel d0679d --reverse
+    fish_color_command 89ddff
+    fish_color_comment 4b4f5c
+    fish_color_cwd 5fb3a1
+    fish_color_cwd_root d0679d
+    fish_color_end 91b4d5
+    fish_color_error d0679d
+    fish_color_escape 5fb3a1
+    fish_color_history_current --bold
+    fish_color_host e4f0fb
+    fish_color_host_remote fffac2
+    fish_color_keyword 91b4d5
+    fish_color_normal e3f0fb
+    fish_color_operator add7ff
+    fish_color_option 7390aa
+    fish_color_param 91b4d5
+    fish_color_quote fffac2
+    fish_color_redirection add7ff
+    fish_color_search_match e4f0fb --background=1b1e28 --bold
+    fish_color_selection e4f0fb --background=1b1e28 --bold
+    fish_color_status d0679d
+    fish_color_user 5de4c7
+    fish_color_valid_path 5fb3a1 --underline
+    fish_pager_color_completion e3f0fb
+    fish_pager_color_description 42675a --italic
+    fish_pager_color_prefix 5fb3a1
+    fish_pager_color_progress 506477 --reverse --italic
+    fish_pager_color_selected_background --background=313a48
+    fish_pager_color_selected_completion e3f0fb --background=313a48
+    fish_pager_color_selected_description e3f0fb --background=313a48 --italic
+    fish_pager_color_selected_prefix 5fb3a1 --background=313a48
+  '';
+
+  installPoimandresTheme = "L+ %h/.config/fish/themes/poimandres.theme - - - - ${poimandres}";
+in
+
 {
   preservation.preserveAt."/persist/state".users.electro.directories = [
     # https://github.com/fish-shell/fish-shell/issues/8627
     ".local/share/fish"
   ];
+
+  # Fish only reads extra themes from $__fish_config_dir/themes which evaluates
+  # to ~/.config/fish/themes. Install theme for root and other users.
+  systemd.tmpfiles.rules = [ installPoimandresTheme ];
+  systemd.user.tmpfiles.rules = [ installPoimandresTheme ];
 
   environment = {
     systemPackages = [
@@ -40,6 +85,8 @@
 
     interactiveShellInit = /* fish */ ''
       set -g fish_greeting # disable greeting.
+
+      fish_config theme choose poimandres
 
       function fish_right_prompt -d "Print the right-side prompt"
         # Print the command duration.
@@ -82,19 +129,6 @@
           end
         end
       end
-
-      # TODO: Configure theme independent of the terminal emulator theme.
-      set -U fish_color_cancel red --reverse
-      set -U fish_color_command brcyan
-      set -U fish_color_comment white
-      set -U fish_color_cwd green
-      set -U fish_color_end blue
-      set -U fish_color_error red
-      set -U fish_color_operator brblue
-      set -U fish_color_param cyan
-      set -U fish_color_quote bryellow
-      set -U fish_color_redirection blue
-      set -U fish_color_valid_path green --underline
     '';
   };
 }
