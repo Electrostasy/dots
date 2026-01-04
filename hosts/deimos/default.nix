@@ -65,6 +65,11 @@
   networking.networkmanager = {
     enable = true;
 
+    wifi = {
+      scanRandMacAddress = false;
+      powersave = false;
+    };
+
     ensureProfiles = {
       environmentFiles = [ config.sops.secrets.networkmanager.path ];
 
@@ -74,7 +79,6 @@
             id = "home";
             type = "wifi";
             autoconnect = true;
-            autoconnect-retries = 0;
           };
 
           wifi = {
@@ -93,7 +97,6 @@
             id = "home_ap";
             type = "wifi";
             autoconnect = true;
-            autoconnect-retries = 0;
           };
 
           wifi = {
