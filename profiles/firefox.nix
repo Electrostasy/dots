@@ -120,6 +120,7 @@ in
       pref("sidebar.verticalTabs", true); // enable vertical tabs in sidebar.
       pref("browser.ml.chat.enabled", false); // disable sidebar chatbot.
       pref("sidebar.main.tools", "history"); // only show history button in sidebar.
+      pref("media.webspeech.synth.enabled", false); // disable speech synthesis API.
 
       // Hide suggestions in urlbar.
       pref("browser.urlbar.showSearchSuggestionsFirst", false);
@@ -155,7 +156,7 @@ in
         seen =
           [ "developer-button" ]
           # Hide all browser extension actions from the toolbars.
-          ++ builtins.map (extension:
+          ++ map (extension:
               lib.toLower
               (builtins.replaceStrings
                 [ "." "@" ]
