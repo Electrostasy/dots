@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 let
   poimandres = pkgs.writeText "poimandres.theme" ''
@@ -54,7 +54,6 @@ in
   environment = {
     systemPackages = [
       pkgs.btop
-      pkgs.command-not-found
       pkgs.eza
     ];
 
@@ -64,20 +63,6 @@ in
   };
 
   users.defaultUserShell = config.programs.fish.package;
-
-  # TODO: When https://github.com/NixOS/nixpkgs/pull/415070 is merged, remove
-  # these and set our command-not-found as programs.command-not-found.package.
-  programs.bash.interactiveShellInit = ''
-    command_not_found_handle() {
-      "${lib.getExe pkgs.command-not-found}" "$@"
-    }
-  '';
-
-  programs.zsh.interactiveShellInit = ''
-    command_not_found_handler() {
-      "${lib.getExe pkgs.command-not-found}" "$@"
-    }
-  '';
 
   programs.fish = {
     enable = true;
