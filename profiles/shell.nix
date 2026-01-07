@@ -68,10 +68,14 @@ in
     enable = true;
     useBabelfish = true;
 
+    shellInit = /* fish */ ''
+      # If this is only set in interactive shells, fish does not display syntax
+      # highlighting using our theme from scripts (e.g. fish_indent --ansi).
+      fish_config theme choose poimandres
+    '';
+
     interactiveShellInit = /* fish */ ''
       set -g fish_greeting # disable greeting.
-
-      fish_config theme choose poimandres
 
       function fish_right_prompt -d "Print the right-side prompt"
         # Print the command duration.
