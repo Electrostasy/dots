@@ -3,10 +3,12 @@ final: prev:
 let
   inherit (prev) lib;
 
-  packages = lib.packagesFromDirectoryRecursive {
-    callPackage = lib.callPackageWith (prev // packages);
-    directory = ../pkgs;
-  };
+  packages = lib.removeAttrs
+    (lib.packagesFromDirectoryRecursive {
+      callPackage = lib.callPackageWith (prev // packages);
+      directory = ../pkgs;
+    })
+    [ "default" ];
 
   recurse = lib.mapAttrs (name: value:
     if lib.hasAttrByPath [ name "overrideScope" ] prev then
