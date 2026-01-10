@@ -14,7 +14,9 @@
 
   nixpkgs = {
     hostPlatform.system = "aarch64-linux";
-    overlays = [ flake.overlays.emc2305-patched ];
+    overlays = [
+      flake.outputs.overlays.emc2305-patched
+    ];
   };
 
   image.modules.default.imports = [

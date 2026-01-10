@@ -18,7 +18,7 @@
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [
-      flake.overlays.libewf-fuse
+      flake.outputs.overlays.libewf-fuse
     ];
   };
 

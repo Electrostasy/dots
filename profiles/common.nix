@@ -58,9 +58,9 @@ in
   };
 
   nixpkgs = {
-    config.allowAliases = false; # aliases bother me.
+    config.allowAliases = false;
     overlays = [
-      flake.overlays.default # include self-packaged packages.
+      flake.outputs.overlays.packages
     ];
   };
 
@@ -179,8 +179,10 @@ in
   # As of systemd v258, /etc/machine-id cannot be created at first boot if it
   # points to a non-existent file:
   # https://github.com/systemd/systemd/issues/39717
-  boot.initrd.systemd.tmpfiles.settings.preservation."/sysroot/persist/state/etc/machine-id".f = {
-    argument = "uninitialized";
+  boot.initrd.systemd.tmpfiles.settings.preservation = lib.mkIf config.preservation.enable {
+    "/sysroot/persist/state/etc/machine-id".f = {
+      argument = "uninitialized";
+    };
   };
 
   systemd.services.systemd-machine-id-commit = lib.mkIf config.preservation.enable {

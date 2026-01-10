@@ -1,7 +1,9 @@
 { config, pkgs, lib, flake, ... }:
 
 {
-  nixpkgs.overlays = [ flake.overlays.f3d-interactive ];
+  nixpkgs.overlays = [
+    flake.outputs.overlays.f3d-interactive
+  ];
 
   boot = {
     loader = {

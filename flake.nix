@@ -20,10 +20,10 @@
   };
 
   outputs = inputs: {
-    checks = import ./checks/all-checks.nix inputs;
-    legacyPackages = import ./pkgs/all-packages.nix inputs;
-    nixosConfigurations = import ./hosts/all-hosts.nix inputs;
-    nixosModules = import ./modules/all-modules.nix inputs;
-    overlays = import ./overlays/all-overlays.nix inputs;
+    checks = import ./checks inputs;
+    legacyPackages = import ./pkgs inputs;
+    nixosConfigurations = import ./hosts inputs;
+    nixosModules = import ./modules inputs;
+    overlays = import ./overlays inputs;
   };
 }

@@ -17,6 +17,6 @@ lib.genAttrs
             callPackage = lib.callPackageWith (nixpkgs.legacyPackages.${system} // packages);
             directory = ./.;
           })
-        [ "all-packages" ];
+        [ "default" ];
     in
       packages)

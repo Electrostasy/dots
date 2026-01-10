@@ -11,7 +11,7 @@ lib.pipe ./. [
   builtins.readDir
 
   (lib.filterAttrs (name: _:
-    name != "all-checks.nix"))
+    name != "default.nix"))
 
   (lib.mapAttrsToList (name: _:
     import ./${name} inputs))
