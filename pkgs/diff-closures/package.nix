@@ -9,8 +9,16 @@ writeShellApplication {
   runtimeInputs = [ jq ];
 
   text = ''
+    function nix {
+      command nix --extra-experimental-features 'nix-command flakes' "$@"
+    }
+
     if [[ $# -eq 0 ]]; then
-      set -- "/run/current-system" "/etc/nixos#nixosConfigurations.\"$HOSTNAME\".config.system.build.toplevel"
+      if [ -e /etc/nixos/flake.nix ]; then
+        set -- "/run/current-system" "/etc/nixos#nixosConfigurations.\"$HOSTNAME\".config.system.build.toplevel"
+      else
+        set -- "/run/current-system" "$(nix-instantiate '<nixpkgs/nixos>' -A system)"
+      fi
     elif ! nix path-info --derivation "$1" "$2" &> /dev/null; then
       echo 'Error: arguments must evaluate to Nix derivations!'
       exit 1
