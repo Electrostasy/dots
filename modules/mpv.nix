@@ -4,7 +4,7 @@ let
   cfg = config.programs.mpv;
 
   # Lists in mpv config are separated by comma.
-  listToValue = lib.concatMapStringsSep "," builtins.toString;
+  listToValue = lib.concatMapStringsSep "," toString;
   settingsFormat = pkgs.formats.keyValue { inherit listToValue; };
 in
 
@@ -70,9 +70,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.mpv.finalPackage = cfg.package.wrapper {
-      mpv = cfg.package;
-      scripts = builtins.map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
+    programs.mpv.finalPackage = pkgs.mpv.override {
+      mpv-unwrapped = cfg.package;
+      scripts = map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
 
       # WARN: Without this, mpv will not detect any user-defined profiles in
       # the config for some reason.
@@ -101,7 +101,7 @@ in
           # we cannot change the separator in `pkgs.formats.keyValue`.
           "mpv/input.conf".source =
             let
-              generator = with lib.generators; toKeyValue { mkKeyValue = mkKeyValueDefault {} " "; };
+              generator = with lib.generators; toKeyValue { mkKeyValue = mkKeyValueDefault { } " "; };
               bindings' = lib.mapAttrs (_: v: if lib.isList v then listToValue v else v) cfg.bindings;
             in
             pkgs.writeText "input.conf" (generator bindings');
@@ -122,7 +122,7 @@ in
           scriptsWithSettings = lib.filter (s: !lib.isDerivation s && lib.isAttrs s) cfg.scripts;
         in
           builtins.listToAttrs
-            (builtins.map
+            (map
               (s:
                 mkScriptConfig s.script.passthru.scriptName s.settings)
               scriptsWithSettings))
