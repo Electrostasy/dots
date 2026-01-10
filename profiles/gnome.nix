@@ -178,6 +178,37 @@
     ];
   };
 
+  xdg.mime.defaultApplications =
+    let
+      associate = { desktops, mimeTypes }:
+        lib.listToAttrs (map (mime: { name = mime; value = desktops; }) mimeTypes);
+    in
+    lib.attrsets.mergeAttrsList [
+      (associate {
+        desktops = [ "io.bassi.Amberol.desktop" ];
+        mimeTypes = [
+          "audio/aac"
+          "audio/ac3"
+          "audio/aiff"
+          "audio/flac"
+          "audio/m4a"
+          "audio/mp1"
+          "audio/mp2"
+          "audio/mp3"
+          "audio/mpeg2"
+          "audio/mpeg3"
+          "audio/mpegurl"
+          "audio/mpg"
+          "audio/musepack"
+          "audio/ogg"
+          "audio/vnd.wave"
+          "audio/vorbis"
+          "audio/vorbis"
+          "audio/x-wav"
+        ];
+      })
+    ];
+
   programs.appimage = {
     enable = true;
     binfmt = true;
