@@ -66,8 +66,6 @@
     libreoffice-fresh
     picard
     prusa-slicer
-    sonic-lineup
-    sonic-visualiser
   ];
 
   hardware = {
