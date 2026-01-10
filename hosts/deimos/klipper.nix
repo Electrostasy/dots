@@ -142,7 +142,7 @@
     };
   };
 
-  services.mainsail = {
+  services.fluidd = {
     enable = true;
 
     nginx.extraConfig = ''
