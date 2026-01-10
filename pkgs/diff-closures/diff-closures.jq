@@ -102,5 +102,5 @@ $left + $right | reduce .[] as $item ({}; . * $item)
 	end
 )
 | add
-| .[0:-1]
+| .[0:-1] // []
 | join("\n")
