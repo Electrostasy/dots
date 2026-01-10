@@ -21,7 +21,6 @@
     hostPlatform.system = "x86_64-linux";
     overlays = [
       flake.outputs.overlays.qemu-unshare-fix
-      flake.outputs.overlays.sonic-visualiser-update
     ];
   };
 
