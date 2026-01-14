@@ -32,7 +32,8 @@
 
     desktopManager.gnome.enable = true;
 
-    avahi.enable = false;
+    # Use 999 for a higher priority than the default 1000.
+    avahi.enable = lib.mkOverride 999 false;
     dleyna.enable = false;
     hardware.bolt.enable = false;
     gnome = {
