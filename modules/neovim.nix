@@ -71,7 +71,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ cfg.finalPackage ];
+    environment.systemPackages = [
+      cfg.finalPackage
+
+      # Replace 'Neovim wrapper' with 'Neovim', inspired by:
+      # https://discourse.nixos.org/t/make-neovim-wrapper-desktop-optional/37597/3#alternatives-3
+      (lib.hiPrio (pkgs.runCommand "hide-neovim-wrapper-desktop" { } ''
+        mkdir -p "$out/share/applications"
+        cp ${config.programs.neovim.package}/share/applications/nvim.desktop "$out/share/applications/nvim.desktop"
+      ''))
+    ];
 
     programs.neovim.finalPackage =
       let

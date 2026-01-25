@@ -1,14 +1,10 @@
 return {
-  cmd = { 'lua-language-server' },
+  cmd = { 'emmylua_ls' },
   filetypes = { 'lua' },
   root_markers = {
     '.luacheckrc',
     '.luarc.json',
-    '.luarc.jsonc',
-    '.stylua.toml',
-    'selene.toml',
-    'selene.yml',
-    'stylua.toml',
+    '.emmyrc.json',
     '.git',
   },
 
@@ -16,7 +12,7 @@ return {
     Lua = {
       runtime = {
         version = 'LuaJIT',
-        path = {
+        requirePattern = {
           'lua/?.lua',
           'lua/?/init.lua',
         },
@@ -24,11 +20,9 @@ return {
       diagnostics = { globals = { 'vim' } },
       workspace = {
         library = vim.api.nvim_get_runtime_file('lua', true),
-        checkThirdParty = false,
       },
       hint = {
-        enable = true,
-        arrayIndex = "Disable",
+        indexHint = false,
       },
     },
   },

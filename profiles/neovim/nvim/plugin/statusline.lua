@@ -225,22 +225,12 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter', 'BufWrite' }, {
 
 function __StatusLine(current)
   local win = vim.api.nvim_get_current_win()
-  local win_nr = vim.api.nvim_win_get_number(win)
   local buf = vim.api.nvim_win_get_buf(win)
-  local gutter_width = vim.fn.getwininfo()[win_nr].textoff
 
   local groups = {}
 
-  -- Max line number in gutter.
-  ---@diagnostic disable-next-line: undefined-field
-  if vim.wo.number or vim.wo.relativenumber then
-    local buf_length_digits = int_len(vim.api.nvim_buf_line_count(buf))
-    table.insert(groups, ('%s%s '):format(string.rep(' ', gutter_width - buf_length_digits - 2), '%L'))
-  end
-
   -- Mode indicator.
   local mode, mode_hl = unpack(mode_map[vim.api.nvim_get_mode().mode:sub(1, 1)])
-  ---@diagnostic disable-next-line: undefined-field
   if current == 0 and not vim.o.showmode then
     table.insert(groups, ('%%#%s# %s %%*'):format(mode_hl, mode))
   end
@@ -265,7 +255,6 @@ function __StatusLine(current)
     table.insert(groups, (' %s'):format('󰦝'))
   end
 
-  ---@diagnostic disable-next-line: undefined-field
   local ruler = vim.o.ruler
   if ruler then
     local format = vim.o.rulerformat

@@ -291,10 +291,9 @@ groups.lsp = {
 }
 
 groups.plugins = {
-  --- indent-blankline.nvim. :h ibl.highlights
-  IblIndent = { fg = palette.background1 },
-  -- IblWhitespace = {},
-  IblScope = { fg = palette.blue4 },
+  --- blink.indent. :h blink-indent-config
+  BlinkIndent = { fg = palette.background1 },
+  BlinkIndentScope = { fg = palette.blue4 },
 
   --- hlargs.nvim. :h hlargs-customize
   Hlargs = { link = '@parameter' },

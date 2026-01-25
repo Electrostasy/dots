@@ -38,7 +38,7 @@ vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeavePre' }, {
 
     -- Execute `OptionSet` autocmds manually instead of running this nested.
     vim.api.nvim_exec_autocmds('OptionSet', {
-      group = 'IndentBlankline',
+      group = 'blink.indent',
       pattern = 'listchars',
     })
   end

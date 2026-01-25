@@ -40,6 +40,14 @@ require('blink.cmp').setup({
         },
       },
     },
+    ghost_text = {
+      enabled = true,
+    },
+    list = {
+      selection = {
+        auto_insert = false,
+      },
+    },
   },
   sources = {
     providers = {
@@ -47,13 +55,13 @@ require('blink.cmp').setup({
         -- If an LSP takes a long time to initialize or return completions,
         -- conditionally mark it as async so we get other completions first:
         -- https://github.com/Saghen/blink.cmp/issues/540#issuecomment-2542050104
-        async = function()
-          local clients = { 'lua-language-server' }
-          return vim.iter(vim.lsp.get_clients({ bufnr = 0 }))
-            :any(function(client)
-              return vim.tbl_contains(clients, client.name)
-            end)
-        end,
+        -- async = function()
+        --   local clients = { 'lua-language-server' }
+        --   return vim.iter(vim.lsp.get_clients({ bufnr = 0 }))
+        --     :any(function(client)
+        --       return vim.tbl_contains(clients, client.name)
+        --     end)
+        -- end,
       },
     },
   },
