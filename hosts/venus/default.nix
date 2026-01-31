@@ -148,8 +148,6 @@
       options = [
         "subvol=nix"
         "noatime"
-        "compress-force=zstd:3"
-        "discard=async"
       ];
     };
 
@@ -159,8 +157,6 @@
       options = [
         "subvol=persist"
         "noatime"
-        "compress-force=zstd:3"
-        "discard=async"
       ];
       neededForBoot = true;
     };

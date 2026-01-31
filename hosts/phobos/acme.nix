@@ -7,8 +7,6 @@
     options = [
       "subvol=acme"
       "noatime"
-      "compress-force=zstd:1"
-      "discard=async"
       "X-mount.owner=${config.users.users.acme.name}"
       "X-mount.group=${config.users.groups.acme.name}"
     ];

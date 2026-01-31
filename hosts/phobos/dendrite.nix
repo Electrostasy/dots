@@ -17,8 +17,8 @@
       options = [
         "subvol=dendrite"
         "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
+        "X-mount.owner=${config.users.users.dendrite.name}"
+        "X-mount.group=${config.users.groups.dendrite.name}"
       ];
     };
 
@@ -28,8 +28,6 @@
       options = [
         "subvol=postgresql"
         "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
         "X-mount.owner=${config.users.users.postgres.name}"
         "X-mount.group=${config.users.groups.postgres.name}"
       ];

@@ -8,8 +8,6 @@
       options = [
         "subvol=prometheus"
         "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
         "X-mount.owner=${config.users.users.prometheus.name}"
         "X-mount.group=${config.users.groups.prometheus.name}"
       ];
@@ -21,8 +19,6 @@
       options = [
         "subvol=grafana"
         "noatime"
-        "compress-force=zstd:1"
-        "discard=async"
         "X-mount.owner=${config.users.users.grafana.name}"
         "X-mount.group=${config.users.groups.grafana.name}"
       ];
@@ -61,7 +57,7 @@
 
         static_configs = [
           {
-            targets = builtins.map (host: "${host}:${builtins.toString config.services.prometheus.exporters.node.port}") [
+            targets = map (host: "${host}:${toString config.services.prometheus.exporters.node.port}") [
               "luna"
               "phobos"
               "terra"
@@ -82,7 +78,7 @@
       locations."/grafana/" = {
         recommendedProxySettings = true;
         proxyWebsockets = true;
-        proxyPass = "http://localhost:${builtins.toString config.services.grafana.settings.server.http_port}";
+        proxyPass = "http://localhost:${toString config.services.grafana.settings.server.http_port}";
       };
     };
   };
@@ -97,7 +93,7 @@
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "http://localhost:${builtins.toString config.services.prometheus.port}";
+          url = "http://localhost:${toString config.services.prometheus.port}";
           isDefault = true;
           # Needs to match the scrape_interval or else $__rate_interval will break:
           # https://community.grafana.com/t/agent-scrape-interval-break-cpu-chart/110491/8

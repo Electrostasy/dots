@@ -93,13 +93,19 @@
     "/nix" = {
       device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [ "subvol=nix" ];
+      options = [
+        "subvol=nix"
+        "noatime"
+      ];
     };
 
     "/persist" = {
       device = "/dev/mapper/root";
       fsType = "btrfs";
-      options = [ "subvol=persist" ];
+      options = [
+        "subvol=persist"
+        "noatime"
+      ];
       neededForBoot = true;
     };
   };
