@@ -4,6 +4,17 @@
     options = [ "bind" ];
   };
 
+  services.resolved.settings.Resolve.MulticastDNS = true;
+  systemd.network.networks."40-enable-mdns-on-lan" = {
+    matchConfig.Name = "en*";
+    networkConfig.MulticastDNS = true;
+    linkConfig.Multicast = true;
+  };
+
+  networking.firewall.allowedUDPPorts = [
+    5353 # Multicast DNS (mDNS).
+  ];
+
   services.samba = {
     enable = true;
 
@@ -33,10 +44,11 @@
         # Performance options:
         # https://wiki.archlinux.org/title/Samba#Improve_throughput
         "deadtime" = 30;
-        "use sendfile" = true;
+        "use sendfile" = "yes";
         "min receivefile size" = 16384;
+        "strict sync" = "no";
 
-        "server string" = "Samba server on Luna";
+        "server string" = "Samba %v Server on %h";
         "security" = "user";
         "hosts allow" = "192.168.205. 100.64.0. 127.0.0.1 localhost";
         "hosts deny" = "0.0.0.0/0";
@@ -48,13 +60,9 @@
 
       "share" = {
         "path" = "/srv/smb";
-        "comment" = "NAS accessible by electro and sukceno";
-        "valid users" = "electro sukceno @users";
+        "writeable" = "yes";
         "force group" = "+users";
-        "public" = "no";
-        "browseable" = "yes";
-        "read only" = "no";
-        "guest ok" = "no";
+        "valid users" = "electro sukceno @users";
       };
     };
   };
@@ -63,20 +71,5 @@
     enable = true;
 
     openFirewall = true;
-  };
-
-  services.avahi = {
-    enable = true;
-
-    openFirewall = true;
-
-    publish = {
-      enable = true;
-
-      # Automatically register mDNS records (without the need for an `extraServiceFile`).
-      userServices = true;
-    };
-
-    nssmdns4 = true;
   };
 }
