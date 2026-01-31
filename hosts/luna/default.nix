@@ -89,6 +89,15 @@
 
   zramSwap.enable = true;
 
+  systemd.network.networks."40-dhcp-ipv4-only" = {
+    matchConfig.Name = "en*";
+    networkConfig = {
+      DHCP = "ipv4";
+      IPv6AcceptRA = "no";
+      LinkLocalAddressing = "no";
+    };
+  };
+
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
 
   services = {
