@@ -17,7 +17,7 @@
 
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
-    allowUnfreePackages = [ "nvidia-x11" ];
+    config.allowUnfreePackages = [ "nvidia-x11" ];
   };
 
   sops.secrets.networkmanager = { };
