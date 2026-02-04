@@ -38,6 +38,8 @@ def transcribe_file_blocking(input_file: Path, model_file: Path) -> str:
         'whisper-cli',
         '-m', model_file.as_posix(),
         '-np', # suppress all output that isn't the transcribed text.
+        '-nt', # suppress timestamps.
+        '-otxt',
         '-f', '-',
     ], input=ffmpeg.stdout, capture_output=True)
 
@@ -52,28 +54,6 @@ async def transcribe_file(input_file: Path, model_file: Path) -> str:
     func = partial(transcribe_file_blocking, input_file, model_file)
 
     return await loop.run_in_executor(None, func)
-
-def format_transcription(text: str) -> str:
-    '''
-    Format the transcription created with whisper-cpp by removing leading zero
-    pairs and putting the start times in inline code blocks.
-
-    Example input string:
-        [00:00:00.880 --> 00:00:03.380]   This is the future we live in now, Bates.
-        [00:00:03.380 --> 00:00:05.200]   This is what you've done.
-        [00:00:05.200 --> 00:00:06.840]   You've done it to yourself.
-        [00:00:06.840 --> 00:00:08.000]   This is your fault.
-
-    Example output string:
-        `00.880` This is the future we live in now, Bates.
-        `03.380` This is what you've done.
-        `05.200` You've done it to yourself.
-        `06.840` This is your fault.
-    '''
-    input_lines = text.splitlines()
-    pairs = input_lines[-1][1:12].split(':').count('00')
-    output_lines = [f'`{ts[0][1 + 2 * pairs + pairs:]}` {ts[3]}' for ts in (l.split(maxsplit=3) for l in input_lines)]
-    return '\n'.join(output_lines)
 
 
 class TranscriberClient(discord.Client):
@@ -136,8 +116,7 @@ async def transcribe(interaction: discord.Interaction, message: discord.Message)
             attachment_path = Path(attachment_file.name)
             _ = await attachment.save(attachment_path)
 
-            transcription = await transcribe_file(attachment_path, client.model_path)
-            result = format_transcription(transcription)
+            result = await transcribe_file(attachment_path, client.model_path)
 
             # Message contents are limited to 2000 characters, so we add it as
             # a file if it goes over the limit.
