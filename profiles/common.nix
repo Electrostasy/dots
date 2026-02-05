@@ -80,8 +80,7 @@ in
 
   time.timeZone = "Europe/Vilnius";
 
-  # Set ISO-8601 datetime except for WSL where setlocale fails.
-  i18n.extraLocaleSettings.LC_TIME = lib.mkIf (!config.wsl.enable) "en_DK.UTF-8";
+  i18n.extraLocaleSettings.LC_TIME = "en_DK.UTF-8"; # set ISO-8601 datetime.
 
   networking = {
     domain = "0x6776.lt";

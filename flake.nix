@@ -6,11 +6,6 @@
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
 
-    nixos-wsl = {
-      url = "github:nix-community/NixOS-WSL/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     preservation.url = "github:nix-community/preservation/main";
 
     sops-nix = {
