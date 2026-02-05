@@ -14,70 +14,70 @@ device="$3"
 
 # See section 'MONITOR MODE' in mdadm(8) for the list of events.
 case "$event" in
-    'DeviceDisappeared')
-        notify-send-all "${flags[@]}" -u 'critical' \
-		"Array $array has disappeared!" \
-		"An md array $array which previously was configured appears to no longer be configured."
-        ;;
-    'RebuildStarted')
-	notify-send-all "${flags[@]}" -u 'normal' \
-		"Array $array rebuild started" \
-		"An md array $array started reconstruction (recovery, resync, reshape, check, repair)."
-        ;;
-    'Rebuild'[0-9][0-9])
-	if [[ "$event" =~ ^Rebuild([0-9][0-9])$ ]]; then
-		percent="${BASH_REMATCH[1]}"
+	'DeviceDisappeared')
+		notify-send-all "${flags[@]}" -u 'critical' \
+			"Array $array has disappeared!" \
+			"An md array $array which previously was configured appears to no longer be configured."
+		;;
+	'RebuildStarted')
 		notify-send-all "${flags[@]}" -u 'normal' \
-			"Array $array rebuild status" \
-			"Rebuild of array $array at ${percent}%."
-	fi
-        ;;
-    'RebuildFinished')
-        notify-send-all "${flags[@]}" -u 'normal' \
-		"Array $array rebuild finished" \
-		"Rebuild finished on array $array"
-        ;;
-    'Fail')
-	notify-send-all "${flags[@]}" -u 'critical' \
-		"Device $device in array $array is faulty!" \
-		"An active component device $device of an array $array has been marked as faulty."
-        ;;
-    'FailSpare')
-	notify-send-all "${flags[@]}" -u 'critical' \
-		"Failed to replace faulty device with $device in array $array!" \
-		"A spare component device $device which was being rebuilt to replace a faulty device of an array $array has failed."
-        ;;
-    'SpareActive')
-	notify-send-all "${flags[@]}" -u 'normal' \
-		"Successfully replaced faulty device with $device in array $array!" \
-		"A spare component device $device which was being rebuilt to replace a faulty device of an array $array has been successfully rebuilt and has been made active."
-        ;;
-    'NewArray')
-	notify-send-all "${flags[@]}" -u 'normal' \
-		"New array $array detected!" \
-		"A new md array $array has been detected in the /proc/mdstat file."
-        ;;
-    'DegradedArray')
-	notify-send-all "${flags[@]}" -u 'critical' \
-		"Array $array is degraded!" \
-		"A newly noticed array $array appears to be degraded"
-        ;;
-    'MoveSpare')
-	notify-send-all "${flags[@]}" -u 'normal' \
-		"Spare device $device has been moved to array $array" \
-		"A spare device $device has been moved from one array in a spare-group or domain to array $array to allow a failed drive to be replaced."
-        ;;
-    'SparesMissing')
-	notify-send-all "${flags[@]}" -u 'critical' \
-		"Spare devices missing in array $array!" \
-		"mdadm detected fewer spare devices than configured."
-        ;;
-    'TestMessage')
-	notify-send-all "${flags[@]}" -u 'normal' \
-		"Array $array found at startup" \
-		"An array $array was found at startup, and the --test flag was given."
-        ;;
-    *)
-        echo "Unhandled message for event $event, array $array, device ${device:-UNKNOWN}." | logger -t mdadm-notify -p err
+			"Array $array rebuild started" \
+			"An md array $array started reconstruction (recovery, resync, reshape, check, repair)."
+		;;
+	'Rebuild'[0-9][0-9])
+		if [[ "$event" =~ ^Rebuild([0-9][0-9])$ ]]; then
+			percent="${BASH_REMATCH[1]}"
+			notify-send-all "${flags[@]}" -u 'normal' \
+				"Array $array rebuild status" \
+				"Rebuild of array $array at ${percent}%."
+		fi
+		;;
+	'RebuildFinished')
+		notify-send-all "${flags[@]}" -u 'normal' \
+			"Array $array rebuild finished" \
+			"Rebuild finished on array $array"
+		;;
+	'Fail')
+		notify-send-all "${flags[@]}" -u 'critical' \
+			"Device $device in array $array is faulty!" \
+			"An active component device $device of an array $array has been marked as faulty."
+		;;
+	'FailSpare')
+		notify-send-all "${flags[@]}" -u 'critical' \
+			"Failed to replace faulty device with $device in array $array!" \
+			"A spare component device $device which was being rebuilt to replace a faulty device of an array $array has failed."
+		;;
+	'SpareActive')
+		notify-send-all "${flags[@]}" -u 'normal' \
+			"Successfully replaced faulty device with $device in array $array!" \
+			"A spare component device $device which was being rebuilt to replace a faulty device of an array $array has been successfully rebuilt and has been made active."
+		;;
+	'NewArray')
+		notify-send-all "${flags[@]}" -u 'normal' \
+			"New array $array detected!" \
+			"A new md array $array has been detected in the /proc/mdstat file."
+		;;
+	'DegradedArray')
+		notify-send-all "${flags[@]}" -u 'critical' \
+			"Array $array is degraded!" \
+			"A newly noticed array $array appears to be degraded"
+		;;
+	'MoveSpare')
+		notify-send-all "${flags[@]}" -u 'normal' \
+			"Spare device $device has been moved to array $array" \
+			"A spare device $device has been moved from one array in a spare-group or domain to array $array to allow a failed drive to be replaced."
+		;;
+	'SparesMissing')
+		notify-send-all "${flags[@]}" -u 'critical' \
+			"Spare devices missing in array $array!" \
+			"mdadm detected fewer spare devices than configured."
+		;;
+	'TestMessage')
+		notify-send-all "${flags[@]}" -u 'normal' \
+			"Array $array found at startup" \
+			"An array $array was found at startup, and the --test flag was given."
+		;;
+	*)
+		echo "Unhandled message for event $event, array $array, device ${device:-UNKNOWN}." | logger -t mdadm-notify -p err
 	;;
 esac
