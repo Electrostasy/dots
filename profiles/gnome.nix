@@ -56,7 +56,7 @@
 
   xdg.terminal-exec = {
     enable = true;
-    settings.GNOME = [ "org.gnome.Ptyxis.desktop" ];
+    settings.GNOME = [ "com.mitchellh.ghostty.desktop" ];
   };
 
   preservation.preserveAt = {
@@ -113,7 +113,6 @@
       magic-wormhole-rs
       mission-center
       nautilus-amberol
-      nautilus-open-any-terminal
       nautilus-python
       nautilus-vimv
       ouch
