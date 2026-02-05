@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+export PATH="@nut@/bin:@notify-send-all@/bin:@util-linux@/bin:@wrapperDir@:$PATH"
+
+# Elevate to root with sudo.
+# TODO: Is there a better way to do this?
+notify_send_all_exe="$(command -v notify-send-all)"
+if (( EUID != 0 )) && sudo -n "$notify_send_all_exe" 2> /dev/null; then
+	function notify-send-all {
+		sudo "$notify_send_all_exe" "$@"
+	}
+else
+	echo 'upsmon-notify needs root privileges in order to send notifications to all users, exiting...' >&2
+	exit 1
+fi
+
+flags=(
+	-a 'upsmon'
+	-i 'uninterruptible-power-supply'
+	-c 'device'
+)
+
+mfr="$(upsc "$UPSNAME" 'ups.mfr')"
+model="$(upsc "$UPSNAME" 'ups.model')"
+
+# If connection with the UPS is lost, we cannot query its information.
+if [ -n "$mfr" ] && [ -n "$model" ]; then
+	# Aliases for long manufacturer names.
+	case "$mfr" in
+		'American Power Conversion') mfr='APC' ;;
+		*) ;;
+	esac
+
+	body="$mfr $model reported '$NOTIFYTYPE'."
+else
+	body="UPS '$UPSNAME' reported '$NOTIFYTYPE'."
+fi
+
+# See subsection 'NOTIFYMSG' under section 'CONFIGURATION DIRECTIVES' in
+# upsmon.conf(5) for the list of events.
+case "$NOTIFYTYPE" in
+	'ONLINE')
+		notify-send-all "${flags[@]}" -u 'normal' 'On line power' "$body" ;;
+	'ONBATT')
+		notify-send-all "${flags[@]}" -u 'normal' 'On battery' "$body" ;;
+	'LOWBATT')
+		charge="$(upsc "$UPSNAME" 'battery.charge')"
+		notify-send-all "${flags[@]}" -u 'critical' "Battery is low at $charge%" "$body" ;;
+	'REPLBATT')
+		notify-send-all "${flags[@]}" -u 'critical' 'Battery needs to be replaced' "$body" ;;
+	'FSD')
+		notify-send-all "${flags[@]}" -u 'critical' 'Forced shutdown in progress' "$body" ;;
+	'SHUTDOWN')
+		notify-send-all "${flags[@]}" -u 'critical' 'Auto logout and shutdown proceeding' "$body" ;;
+	'COMMOK')
+		notify-send-all "${flags[@]}" -u 'normal' 'Communications (re-)established' "$body" ;;
+	'COMMBAD')
+		notify-send-all "${flags[@]}" -u 'normal' 'Communications lost' "$body" ;;
+	'NOCOMM')
+		notify-send-all "${flags[@]}" -u 'critical' 'Not available' "$body" ;;
+	'NOPARENT')
+		notify-send-all "${flags[@]}" -u 'critical' 'upsmon parent dead, shutdown impossible' "$body" ;;
+	'SUSPEND_STARTING')
+		notify-send-all "${flags[@]}" -u 'normal' 'System is entering suspension' "$body" ;;
+	'SUSPEND_FINISHED')
+		notify-send-all "${flags[@]}" -u 'normal' 'System has left suspension' "$body" ;;
+	*)
+		echo "Unhandled message $NOTIFYTYPE for UPS $UPSNAME!" | logger -t upsmon-notify -p err ;;
+esac
