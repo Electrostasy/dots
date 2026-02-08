@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/zramswap.nix
     ../../users/electro
   ];
 
@@ -59,8 +60,6 @@
       dates = [ "weekly" ];
     };
   };
-
-  zramSwap.enable = true;
 
   services.journald.storage = "volatile";
 

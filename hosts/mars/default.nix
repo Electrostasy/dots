@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/zramswap.nix
     ../../users/electro
   ];
 
@@ -55,8 +56,6 @@
       options = [ "umask=0077" ];
     };
   };
-
-  zramSwap.enable = true;
 
   services.journald.storage = "volatile";
 

@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/zramswap.nix
     ../../users/electro
     ../../users/sukceno
     ./nfs.nix
@@ -86,8 +87,6 @@
     fsType = "btrfs";
     options = [ "noatime" ];
   };
-
-  zramSwap.enable = true;
 
   systemd.network.networks."40-dhcp-ipv4-only" = {
     matchConfig.Name = "en*";

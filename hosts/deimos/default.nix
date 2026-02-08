@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/zramswap.nix
     ../../users/electro
     ./klipper.nix
   ];
@@ -49,8 +50,6 @@
       supportedFilesystems.ext4 = true;
     };
   };
-
-  zramSwap.enable = true;
 
   services.journald.storage = "volatile";
 

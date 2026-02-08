@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/zramswap.nix
     ../../users/electro
     ./acme.nix
     ./dendrite.nix
@@ -53,8 +54,6 @@
       dates = [ "weekly" ];
     };
   };
-
-  zramSwap.enable = true;
 
   networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
   services.prometheus.exporters.node.enable = true;
