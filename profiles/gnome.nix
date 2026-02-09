@@ -180,8 +180,7 @@
 
   xdg.mime.defaultApplications =
     let
-      associate = { desktops, mimeTypes }:
-        lib.listToAttrs (map (mime: { name = mime; value = desktops; }) mimeTypes);
+      associate = { desktops, mimeTypes }: lib.genAttrs mimeTypes (_: desktops);
     in
     lib.attrsets.mergeAttrsList [
       (associate {
