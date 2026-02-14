@@ -1,4 +1,4 @@
-{ config, pkgs, flake, ... }:
+{ config, flake, ... }:
 
 {
   imports = [
@@ -48,7 +48,6 @@
       efi.canTouchEfiVariables = false;
     };
 
-    kernelPackages = pkgs.linuxPackages_latest; # >=6.16 for emc2305 OF support.
     kernelParams = [ "8250.nr_uarts=1" ];
 
     extraModulePackages = [ config.boot.kernelPackages.emc2305 ];
