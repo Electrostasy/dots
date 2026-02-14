@@ -61,7 +61,15 @@
     };
   };
 
-  services.journald.storage = "volatile";
+  services.journald = {
+    storage = "volatile";
+
+    upload = {
+      enable = true;
+
+      settings.Upload.URL = "http://phobos.sol.tailnet.0x6776.lt";
+    };
+  };
 
   system.stateVersion = "25.05";
 }

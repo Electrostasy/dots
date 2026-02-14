@@ -51,7 +51,15 @@
     };
   };
 
-  services.journald.storage = "volatile";
+  services.journald = {
+    storage = "volatile";
+
+    upload = {
+      enable = true;
+
+      settings.Upload.URL = "http://phobos.sol.tailnet.0x6776.lt";
+    };
+  };
 
   networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
     allowedTCPPorts = [ 80 443 ];

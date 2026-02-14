@@ -55,10 +55,28 @@
     };
   };
 
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
+  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
+    config.services.prometheus.exporters.node.port
+    config.services.journald.remote.port
+  ];
+
   services.prometheus.exporters.node.enable = true;
 
-  services.journald.storage = "volatile";
+  fileSystems."/var/log/journal" = {
+    device = "/dev/disk/by-label/pidata";
+    fsType = "btrfs";
+    options = [
+      "subvol=journal"
+      "noatime"
+      "X-mount.group=${config.users.groups.systemd-journal.name}"
+    ];
+  };
+
+  services.journald.remote = {
+    enable = true;
+
+    listen = "http";
+  };
 
   system.stateVersion = "25.05";
 }

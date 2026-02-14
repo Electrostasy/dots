@@ -102,7 +102,15 @@
   services = {
     prometheus.exporters.node.enable = true;
 
-    journald.storage = "volatile";
+    journald = {
+      storage = "volatile";
+
+      upload = {
+        enable = true;
+
+        settings.Upload.URL = "http://phobos.sol.tailnet.0x6776.lt";
+      };
+    };
 
     btrfs.autoScrub = {
       enable = true;
