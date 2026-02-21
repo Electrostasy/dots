@@ -1,6 +1,11 @@
 { config, ... }:
 
 {
+  sops.secrets.grafanaSecretKey = {
+    owner = config.users.users.grafana.name;
+    group = config.users.groups.grafana.name;
+  };
+
   fileSystems = {
     "/var/lib/${config.services.prometheus.stateDir}" = {
       device = "/dev/disk/by-label/pidata";
@@ -108,6 +113,10 @@
         domain = config.networking.hostName + ".sol.tailnet." + config.networking.domain;
         root_url = "%(protocol)s://%(domain)s:%(http_port)s/grafana/";
         serve_from_sub_path = true;
+      };
+
+      security = {
+        secret_key = "$__file{${config.sops.secrets.grafanaSecretKey.path}}";
       };
 
       analytics = {
