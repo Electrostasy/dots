@@ -62,6 +62,7 @@
   preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
       ".cache/fontconfig"
+      ".cache/gajim"
       ".cache/keepassxc"
       ".cache/tealdeer"
       ".cache/tracker3"
@@ -84,7 +85,9 @@
         ];
 
         directories = [
+          ".config/gajim"
           ".config/keepassxc"
+          ".local/share/gajim"
           "Documents"
           "Downloads"
           "Music"
@@ -106,6 +109,7 @@
       file
       fractal
       freerdp
+      gajim
       ghostty
       git-credential-keepassxc
       keepassxc
