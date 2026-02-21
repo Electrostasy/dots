@@ -132,7 +132,7 @@
           "*://${config.networking.hostName}"
 
           # Tailscale MagicDNS.
-          "*://${config.networking.hostName}.sol.tailnet.${config.networking.domain}"
+          "*://${config.networking.hostName}.sol.tailnet.0x6776.lt"
         ];
         trusted_clients = [
           "127.0.0.1/32"

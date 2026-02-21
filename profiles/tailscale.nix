@@ -15,7 +15,7 @@
     authKeyFile = config.sops.secrets.tailscaleKey.path;
 
     extraUpFlags = [
-      "--login-server" "https://controlplane.${config.networking.domain}"
+      "--login-server" "https://controlplane.0x6776.lt"
 
       # If `extraUpFlags` is changed, then we will require manual intervention with
       # `tailscale up` after activation, repeating all the `extraUpFlags`, and
@@ -26,7 +26,7 @@
 
   # For some reason, tailscale does not always successfully add the tailnet to
   # /etc/resolv.conf, so hardcode it here.
-  networking.search = [ "sol.tailnet.${config.networking.domain}" ];
+  networking.search = [ "sol.tailnet.0x6776.lt" ];
 
   networking.networkmanager.unmanaged = [ config.services.tailscale.interfaceName ];
   systemd.network.wait-online.ignoredInterfaces = [ config.services.tailscale.interfaceName ];

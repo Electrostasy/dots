@@ -8,13 +8,13 @@
     ../../profiles/tailscale.nix
     ../../profiles/zramswap.nix
     ../../users/electro
-    ./acme.nix
     ./dendrite.nix
     ./discord-transcriber.nix
     ./fileserver.nix
     ./headscale.nix
     ./hostapd.nix
     ./prometheus.nix
+    ./prosody.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";

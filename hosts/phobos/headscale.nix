@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./acme.nix
+  ];
+
   sops.secrets = {
     headscaleKey = {
       mode = "0440";
@@ -9,27 +13,6 @@
     };
 
     tailscaleKey = { };
-  };
-
-  boot.kernelParams = [
-    # IPv6 seems to (often silently) break Tailscale and DNS in various ways:
-    # - unable to resolve public DNS servers (even on Tailscale clients after
-    #   disconnecting)
-    # - unable to resolve sol.0x6776.lt (even on this Pi)
-    # - even flushing DNS caches doesn't fix this
-    # - queries outside the VPN network show everything is fine
-    # Better to just take a big hammer and disable it for all interfaces, save
-    # myself the trouble.
-    # NOTE: `ipv6.disable=1`, which disables the IPv6 stack in general, does NOT
-    # fix this, apparently.
-    "net.ipv6.conf.all.disable_ipv6=1"
-  ];
-
-  networking.firewall = {
-    enable = true;
-
-    allowedTCPPorts = [ 80 443 ];
-    allowedUDPPorts = [ 3478 ];
   };
 
   fileSystems."/var/lib/headscale" = {
@@ -43,14 +26,16 @@
     ];
   };
 
+  security.acme.certs."0x6776.lt".extraDomainNames = [ "controlplane.0x6776.lt" ];
+
   services.nginx = {
     enable = true;
 
     recommendedTlsSettings = true;
 
-    virtualHosts."controlplane.${config.networking.domain}" = {
-      enableACME = true;
+    virtualHosts."controlplane.0x6776.lt" = {
       forceSSL = true;
+      useACMEHost = "0x6776.lt";
 
       locations."/" = {
         recommendedProxySettings = false;
@@ -79,10 +64,10 @@
       # $ headscale generate private-key
       private_key_path = config.sops.secrets.headscaleKey.path;
 
-      server_url = "https://controlplane.${config.networking.domain}:443";
+      server_url = "https://controlplane.0x6776.lt:443";
 
       dns = {
-        base_domain = "sol.tailnet." + config.networking.domain;
+        base_domain = "sol.tailnet.0x6776.lt";
         magic_dns = true;
         nameservers.global = [
           "9.9.9.9"
@@ -139,5 +124,12 @@ VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 0, datetime('now'), datetim
 EOF
       fi
     '';
+  };
+
+  networking.firewall = {
+    enable = true;
+
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 3478 ];
   };
 }

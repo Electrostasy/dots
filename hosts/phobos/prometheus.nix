@@ -77,7 +77,7 @@
     enable = true;
 
     # TODO: Serve on subdomain, might need a DNS with CNAME records.
-    virtualHosts."${config.networking.hostName}.sol.tailnet.${config.networking.domain}" = {
+    virtualHosts."${config.networking.hostName}.sol.tailnet.0x6776.lt" = {
       forceSSL = false;
 
       locations."/grafana/" = {
@@ -110,7 +110,7 @@
     settings = {
       server = {
         # This block is only necessary when serving from a subpath or using oauth.
-        domain = config.networking.hostName + ".sol.tailnet." + config.networking.domain;
+        domain = config.networking.hostName + ".sol.tailnet.0x6776.lt";
         root_url = "%(protocol)s://%(domain)s:%(http_port)s/grafana/";
         serve_from_sub_path = true;
       };

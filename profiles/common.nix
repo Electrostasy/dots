@@ -83,8 +83,6 @@ in
   i18n.extraLocaleSettings.LC_TIME = "en_DK.UTF-8"; # set ISO-8601 datetime.
 
   networking = {
-    domain = "0x6776.lt";
-
     nameservers = [
       "9.9.9.9"
       "1.1.1.1"

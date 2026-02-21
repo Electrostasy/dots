@@ -1,50 +1,29 @@
 { config, pkgs, lib, ... }:
 
 {
-  networking.firewall = {
-    enable = true;
+  imports = [
+    ./acme.nix
+    ./postgresql.nix
+  ];
 
-    allowedTCPPorts = [
-      80
-      443
+  sops.secrets.matrix_key = { };
+
+  fileSystems."/var/lib/dendrite" = {
+    device = "/dev/disk/by-label/pidata";
+    fsType = "btrfs";
+    options = [
+      "subvol=dendrite"
+      "noatime"
+      "X-mount.owner=${config.users.users.dendrite.name}"
+      "X-mount.group=${config.users.groups.dendrite.name}"
     ];
   };
-
-  fileSystems = {
-    "/var/lib/dendrite" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=dendrite"
-        "noatime"
-        "X-mount.owner=${config.users.users.dendrite.name}"
-        "X-mount.group=${config.users.groups.dendrite.name}"
-      ];
-    };
-
-    "/var/lib/postgresql" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=postgresql"
-        "noatime"
-        "X-mount.owner=${config.users.users.postgres.name}"
-        "X-mount.group=${config.users.groups.postgres.name}"
-      ];
-    };
-  };
-
-  # PostgreSQL systemd service hardening has "PrivateMounts" enabled, which
-  # prevents the "ExecStartPre" script from symlinking the config file to the data
-  # directory, our mountpoint that is now excluded from the service's mount namespace.
-  # This allows the data directory mountpoint to be visible to the service again.
-  systemd.services.postgresql.serviceConfig.ReadWritePaths = [ config.services.postgresql.dataDir ];
 
   services.nginx = {
     enable = true;
     recommendedTlsSettings = true;
 
-    virtualHosts.${config.networking.domain} = {
+    virtualHosts."0x6776.lt" = {
       enableACME = true;
       forceSSL = true;
 
@@ -52,17 +31,15 @@
         "/_matrix".proxyPass = "http://127.0.0.1:8008";
 
         "/.well-known/matrix/server".return = ''
-          200 '{ "m.server": "${config.networking.domain}:443" }'
+          200 '{ "m.server": "0x6776.lt:443" }'
         '';
 
         "/.well-known/matrix/client".return = ''
-          200 '{ "m.homeserver": { "base_url": "https://${config.networking.domain}" } }'
+          200 '{ "m.homeserver": { "base_url": "https://0x6776.lt" } }'
         '';
       };
     };
   };
-
-  sops.secrets.matrix_key = { };
 
   environment.systemPackages = [ pkgs.dendrite ];
 
@@ -75,7 +52,7 @@
         # Generate a private_key using:
         # $ dendrite --command generate-keys --private-key matrix_key.pem
         private_key = "$CREDENTIALS_DIRECTORY/private_key";
-        server_name = config.networking.domain;
+        server_name = "0x6776.lt";
         database.connection_string = "postgres://dendrite@/dendrite?host=/run/postgresql&sslmode=disable";
         key_validity_period = "168h0m0s";
         disable_federation = false;
@@ -124,8 +101,16 @@
     };
   };
 
+  services.postgresql = {
+    ensureDatabases = [ "dendrite" ];
+    ensureUsers = [
+      { name = "dendrite";
+        ensureDBOwnership = true;
+      }
+    ];
+  };
+
   systemd.services.dendrite = {
-    # Dendrite may try loading after postgresql, failing before it can connect.
     after = [ "postgresql.service" ];
 
     serviceConfig = {
@@ -135,16 +120,12 @@
     };
   };
 
-  services.postgresql = {
+  networking.firewall = {
     enable = true;
 
-    package = pkgs.postgresql_16;
-
-    ensureDatabases = [ "dendrite" ];
-    ensureUsers = [
-      { name = "dendrite";
-        ensureDBOwnership = true;
-      }
+    allowedTCPPorts = [
+      80
+      443
     ];
   };
 }
