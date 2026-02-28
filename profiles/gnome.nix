@@ -107,7 +107,6 @@
       fd
       ffmpegthumbnailer
       file
-      fractal
       freerdp
       gajim
       ghostty
