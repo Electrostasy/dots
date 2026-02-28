@@ -8,7 +8,6 @@
     ../../profiles/tailscale.nix
     ../../profiles/zramswap.nix
     ../../users/electro
-    ./dendrite.nix
     ./discord-transcriber.nix
     ./fileserver.nix
     ./headscale.nix
