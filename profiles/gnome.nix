@@ -337,13 +337,13 @@
 
         "org/gnome/shell" = {
           enabled-extensions =
-            builtins.map
+            map
               (lib.getAttr "extensionUuid")
               (lib.filter (lib.hasAttr "extensionUuid") config.environment.systemPackages);
 
           favorite-apps = [
             "org.keepassxc.KeePassXC.desktop"
-            "org.gnome.Fractal.desktop"
+            "org.gajim.Gajim.desktop"
             (lib.optionalString config.programs.firefox.enable "firefox.desktop")
             (lib.optionalString config.programs.steam.enable "steam.desktop")
           ];
