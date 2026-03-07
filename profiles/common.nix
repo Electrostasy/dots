@@ -54,6 +54,8 @@ in
       # Avoid the caller sending stuff over SSH to the builder when the builder
       # can fetch it themselves.
       builders-use-substitutes = true;
+
+      trace-import-from-derivation = true;
     };
   };
 
