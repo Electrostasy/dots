@@ -232,6 +232,35 @@ in
         "wireplumber.settings" = {
           "device.routes.default-sink-volume" = 1.0;
         };
+
+        "monitor.alsa.rules" = [
+          # The microphone sink must never be picked if the DAC sink is ever
+          # available. At some point, wireplumber started to default to the
+          # microphone sink if the DAC is turned on before wireplumber is
+          # available.
+          {
+            matches = [
+              { "node.name" = "alsa_output.usb-JDS_Labs_JDS_Labs_EL_DAC_II_-00.analog-stereo"; }
+            ];
+            actions = {
+              update-props = {
+                "priority.driver" = 1110;
+                "priority.session" = 1110;
+              };
+            };
+          }
+          {
+            matches = [
+              { "node.name" = "alsa_output.usb-FIFINE_Microphones_Fifine_K658_Microphone_REV1.0-00.analog-stereo"; }
+            ];
+            actions = {
+              update-props = {
+                "priority.driver" = 1109;
+                "priority.session" = 1109;
+              };
+            };
+          }
+        ];
       };
 
       "60-disabled-devices" = {
