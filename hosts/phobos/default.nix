@@ -11,6 +11,7 @@
     ./fileserver.nix
     ./headscale.nix
     ./hostapd.nix
+    ./murmur.nix
     ./prometheus.nix
     ./prosody.nix
   ];
