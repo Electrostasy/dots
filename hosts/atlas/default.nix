@@ -48,6 +48,12 @@
     };
   };
 
+  fileSystems."/mnt/data" = {
+    device = "/dev/disk/by-path/platform-a40000000.pcie-pci-0000:01:00.0-nvme-1-part1";
+    fsType = "btrfs";
+    options = [ "noatime" ];
+  };
+
   nix = {
     gc = {
       automatic = true;
