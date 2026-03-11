@@ -25,10 +25,12 @@
     ];
 
     "/persist/state".users.electro.directories = [
-      ".local/share/umu"
+      ".config/Mumble"
+      ".config/PCSX2"
+      ".local/share/Mumble"
       ".local/share/Steam"
       ".local/share/dolphin-emu"
-      ".config/PCSX2"
+      ".local/share/umu"
       "Games"
     ];
   };
@@ -41,6 +43,7 @@
       dolphin-emu
       dualsensectl
       mangohud
+      mumble
       pcsx2
       umu-launcher
     ];
