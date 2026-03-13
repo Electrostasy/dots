@@ -8,6 +8,7 @@
     ../../profiles/tailscale.nix
     ../../profiles/zramswap.nix
     ../../users/electro
+    ./vintagestory-server.nix
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
