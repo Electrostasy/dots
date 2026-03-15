@@ -75,7 +75,7 @@
           "@resources" # needed or it coredumps for some reason.
           "~@privileged"
         ];
-        UMask = "0177";
+        UMask = "0077";
       };
     };
 
