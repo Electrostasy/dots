@@ -1,9 +1,5 @@
 { config, pkgs, lib, modulesPath, flake, ... }:
 
-let
-  hasSecrets = config.sops.secrets != { };
-in
-
 {
   imports = [ "${modulesPath}/profiles/perlless.nix" ];
 
@@ -128,9 +124,9 @@ in
     stub-ld.enable = lib.mkDefault false;
 
     # Tell `sops` where to find the private key.
-    sessionVariables.SOPS_AGE_KEY_FILE = lib.mkIf hasSecrets config.sops.age.keyFile;
+    sessionVariables.SOPS_AGE_KEY_FILE = config.sops.age.keyFile;
 
-    systemPackages = lib.mkIf hasSecrets [
+    systemPackages = [
       pkgs.rage
       pkgs.sops
     ];
@@ -160,7 +156,7 @@ in
         "/var/lib/nixos"
         "/var/lib/systemd"
         "/var/log/journal"
-        (lib.mkIf hasSecrets { directory = dirOf config.sops.age.keyFile; inInitrd = true; })
+        { directory = dirOf config.sops.age.keyFile; inInitrd = true; }
       ];
 
       files = [
