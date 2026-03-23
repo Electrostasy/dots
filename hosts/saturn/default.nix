@@ -238,6 +238,7 @@
     libreoffice-fresh
     mkvtoolnix-cli # `mkvextract`, `mkvinfo`, `mkvmerge`, `mkvpropedit`.
     openterface-qt
+    pev # `peldd`, `pescan`, `readpe`, ...
     qpdf
     repgrep # `rgr`.
     ripgrep
@@ -247,7 +248,7 @@
     smartmontools # `smartctl`.
     sqlitebrowser
     stegseek
-    testdisk # `fidentify`, `testdisk`, `photorec`, `testdisk`.
+    testdisk # `fidentify`, `photorec`, `testdisk`.
     tio
     unixtools.xxd
     untrunc-anthwlock # `untrunc`.
