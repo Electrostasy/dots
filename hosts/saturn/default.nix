@@ -237,7 +237,6 @@
     libewf
     libreoffice-fresh
     mkvtoolnix-cli # `mkvextract`, `mkvinfo`, `mkvmerge`, `mkvpropedit`.
-    openterface-qt
     pev # `peldd`, `pescan`, `readpe`, ...
     qpdf
     repgrep # `rgr`.
@@ -258,8 +257,6 @@
 
     gnomeExtensions.brightness-control-using-ddcutil
   ];
-
-  services.udev.packages = [ pkgs.openterface-qt ];
 
   systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
   services.snapper = {
