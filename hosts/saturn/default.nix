@@ -98,12 +98,6 @@
       neededForBoot = true;
     };
 
-    "/data" = {
-      device = "/dev/disk/by-label/data";
-      fsType = "xfs";
-      options = [ "noatime" ];
-    };
-
     # Formatted from 4 disks using:
     # $ for disk in /dev/sd[a-d]; do sgdisk $disk -n 1:0:0 -t 1:fd00; done
     # $ mdadm --create /dev/md/pool --name=pool --level=10 --layout=n2 --raid-devices=4 /dev/sd[a-d]1

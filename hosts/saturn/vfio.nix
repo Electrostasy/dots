@@ -42,6 +42,12 @@
     '';
   };
 
+  fileSystems."/mnt/machines" = {
+    device = "/dev/disk/by-label/machines";
+    fsType = "xfs";
+    options = [ "noatime" ];
+  };
+
   networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
     allowedTCPPorts = [ 3389 ];
     allowedUDPPorts = [ 3389 ];
