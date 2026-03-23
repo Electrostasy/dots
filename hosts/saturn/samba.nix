@@ -9,7 +9,7 @@
 
   fileSystems = {
     "/srv/smb/pool" = {
-      device = "/data/pool";
+      device = "/mnt/pool";
       options = [ "bind" ];
     };
 
