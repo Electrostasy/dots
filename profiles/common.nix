@@ -190,6 +190,9 @@
     ];
   };
 
+  # Fontconfig is enabled by default even on headless systems.
+  fonts.fontconfig.enable = lib.mkDefault config.services.graphical-desktop.enable;
+
   programs.git = {
     enable = true;
 
