@@ -14,14 +14,10 @@
     ];
   };
 
-  security.acme.certs."0x6776.lt" = {
-    reloadServices = [ "murmur.service" ];
-
-    postRun = ''
-      ${pkgs.acl}/bin/setfacl -m u:${config.services.murmur.user}:rx /var/lib/acme/0x6776.lt
-      ${pkgs.acl}/bin/setfacl -m u:${config.services.murmur.group}:r /var/lib/acme/0x6776.lt/{fullchain,cert,key}.pem
-    '';
-  };
+  security.acme.certs."0x6776.lt".postRun = ''
+    ${pkgs.acl}/bin/setfacl -m u:${config.services.murmur.user}:rx ${config.security.acme.certs."0x6776.lt".directory}
+    ${pkgs.acl}/bin/setfacl -m u:${config.services.murmur.group}:r ${config.security.acme.certs."0x6776.lt".directory}/{chain,cert,key}.pem
+  '';
 
   services.murmur = {
     enable = true;
@@ -32,8 +28,6 @@
     port = 64738;
     openFirewall = true;
 
-    sslCa = "${config.security.acme.certs."0x6776.lt".directory}/fullchain.pem";
-    sslCert = "${config.security.acme.certs."0x6776.lt".directory}/cert.pem";
-    sslKey = "${config.security.acme.certs."0x6776.lt".directory}/key.pem";
+    tls.useACMEHost = "0x6776.lt";
   };
 }
