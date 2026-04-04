@@ -209,6 +209,18 @@
           "audio/x-wav"
         ];
       })
+      (associate {
+        desktops = [ "f3d-plugin-native.desktop" ];
+        mimeTypes = [
+          "model/stl"
+        ];
+      })
+      (associate {
+        desktops = [ "f3d-plugin-assimp.desktop" ];
+        mimeTypes = [
+          "model/3mf"
+        ];
+      })
     ];
 
   programs.appimage = {
