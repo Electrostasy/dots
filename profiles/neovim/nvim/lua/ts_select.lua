@@ -1,3 +1,6 @@
+-- TODO: Consider replacing this with the built-in incremental selection from v0.12.
+-- Waiting on https://github.com/neovim/neovim/issues/38211 for a public API.
+
 local M = {}
 
 local select_node = function(node)

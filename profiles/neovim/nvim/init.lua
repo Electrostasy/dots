@@ -41,17 +41,6 @@ vim.opt.guicursor = {
   'r-cr-o:hor20-Cursor'
 }
 
--- https://github.com/neovim/neovim/issues/4396#issuecomment-1377191592
-vim.api.nvim_create_autocmd('VimLeave', {
-  group = vim.api.nvim_create_augroup('RestoreCursor', { }),
-  desc = 'Restore cursor for VTE based (and some other) terminal emulators',
-  pattern = '*',
-  callback = function()
-    vim.opt.guicursor = {}
-    vim.api.nvim_chan_send(vim.v.stderr, '\x1b[ q')
-  end
-})
-
 -- Better window separators.
 vim.opt.fillchars:append({
   horiz = '━',

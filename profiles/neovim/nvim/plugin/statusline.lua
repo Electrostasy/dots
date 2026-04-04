@@ -159,6 +159,7 @@ end
 
 -- LSP progress timer for statusline, based on:
 -- https://gist.github.com/runiq/2e81265c1c2a7587fbe9c184ceaa94c6
+-- TODO: Evaluate if I can use vim.ui.status_progress() instead.
 local progress_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
 local timer = vim.uv.new_timer()
 vim.api.nvim_create_autocmd('LspProgress', {
@@ -371,7 +372,7 @@ vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   group = augroup,
   pattern = '*',
   callback = function()
-    vim.wo.statusline = [[%{%v:lua.__StatusLine(0)%}]]
+    vim.o.statusline = [[%{%v:lua.__StatusLine(0)%}]]
   end
 })
 
@@ -379,6 +380,6 @@ vim.api.nvim_create_autocmd({ 'WinLeave', 'BufLeave' }, {
   group = augroup,
   pattern = '*',
   callback = function()
-    vim.wo.statusline = [[%{%v:lua.__StatusLine(1)%}]]
+    vim.o.statusline = [[%{%v:lua.__StatusLine(1)%}]]
   end
 })

@@ -177,13 +177,13 @@ if not devicons.has_loaded() then
 end
 local default_devicon = devicons.get_default_icon()
 
-local devicon_decorator = function(_winid, bufnr, row)
-  local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, true)[1]
+local devicon_decorator = function(_winid, bufnr, begin_row, _begin_col, _end_row, _end_col)
+  local line = vim.api.nvim_buf_get_lines(bufnr, begin_row, begin_row + 1, true)[1]
   if #line == 0 then
     return
   end
 
-  local id = row + 1
+  local id = begin_row + 1
 
   if #vim.api.nvim_buf_get_extmark_by_id(bufnr, ns_devicons, id, {}) > 0 then
     return
@@ -193,16 +193,16 @@ local devicon_decorator = function(_winid, bufnr, row)
   local icon = devicons.get_icon_by_filetype(ft) or default_devicon.icon
   local name = devicons.get_icon_name_by_filetype(ft) or default_devicon.name
 
-  vim.api.nvim_buf_set_extmark(bufnr, ns_devicons, row, 0, {
+  vim.api.nvim_buf_set_extmark(bufnr, ns_devicons, begin_row, 0, {
     id = id,
     virt_text = { { icon .. ' ', 'DevIcon' .. name:gsub('^%l', string.upper), } },
     virt_text_pos = 'inline',
   })
 end
 
-local line_number_decorator = function(_winid, bufnr, row)
-  local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, true)[1]
-  local id = row + 1
+local line_number_decorator = function(_winid, bufnr, begin_row, _begin_col, _end_row, _end_col)
+  local line = vim.api.nvim_buf_get_lines(bufnr, begin_row, begin_row + 1, true)[1]
+  local id = begin_row + 1
 
   if #vim.api.nvim_buf_get_extmark_by_id(bufnr, ns_linenrs, id, {}) > 0 then
     return
@@ -221,7 +221,7 @@ local line_number_decorator = function(_winid, bufnr, row)
   local cursor_row = math.max(cursor_mark[1], cursor_charpos[2])
   local cursor_col = math.max(cursor_mark[2], cursor_charpos[3])
 
-  vim.api.nvim_buf_set_extmark(bufnr, ns_linenrs, row, -1, {
+  vim.api.nvim_buf_set_extmark(bufnr, ns_linenrs, begin_row, -1, {
     id = id,
     virt_text = { { (':%d:%d'):format(cursor_row, cursor_col), 'NonText' } },
     virt_text_pos = 'inline',
@@ -229,20 +229,20 @@ local line_number_decorator = function(_winid, bufnr, row)
   })
 end
 
-local fuzzy_match_decorator = function(_winid, bufnr, row)
+local fuzzy_match_decorator = function(_winid, bufnr, begin_row, _begin_col, _end_row, _end_col)
   local id = 1
 
   if next(state.matches) == nil then
     return
   end
 
-  local matches = state.matches[2][row + 1]
+  local matches = state.matches[2][begin_row + 1]
   if matches == nil then
     return
   end
 
   for _, col in next, matches do
-    vim.api.nvim_buf_set_extmark(bufnr, ns_matches, row, col, {
+    vim.api.nvim_buf_set_extmark(bufnr, ns_matches, begin_row, col, {
       id = id,
       end_col = col + 1,
       hl_group = 'Special',
@@ -360,7 +360,7 @@ local open_picker = function(items, opts, on_choice)
         return false
       end
     end,
-    on_line = function(_, ...)
+    on_range = function(_, ...)
       for _, decorator in next, decorators do
         decorator(...)
       end
