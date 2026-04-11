@@ -78,7 +78,14 @@
 
   time.timeZone = "Europe/Vilnius";
 
-  i18n.extraLocaleSettings.LC_TIME = "en_DK.UTF-8"; # set ISO-8601 datetime.
+  i18n = {
+    defaultLocale = "lt_LT.UTF-8";
+
+    extraLocaleSettings = {
+      LC_MESSAGES = "en_US.UTF-8";
+      LC_TIME = "en_DK.UTF-8";
+    };
+  };
 
   networking = {
     nameservers = [
