@@ -195,12 +195,6 @@
     enable = true;
 
     config = {
-      url = {
-        "https://github.com/".insteadOf = [ "gh:" "github:" ];
-        "https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
-        "https://sr.ht/".insteadOf = [ "srht:" "sourcehut:" ];
-      };
-
       user = {
         name = "Gediminas Valys";
         email = "steamykins@gmail.com";
