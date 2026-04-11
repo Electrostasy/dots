@@ -1,6 +1,7 @@
 {
   fileSystems."/srv/smb" = {
     device = "/mnt/array";
+    fsType = "none";
     options = [ "bind" ];
   };
 

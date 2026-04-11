@@ -10,6 +10,7 @@
   fileSystems = {
     "/srv/smb/pool" = {
       device = "/mnt/pool";
+      fsType = "none";
       options = [ "bind" ];
     };
 

@@ -1,6 +1,7 @@
 {
   fileSystems."/srv/nfs" = {
     device = "/mnt/array";
+    fsType = "none";
     options = [ "bind" ];
   };
 

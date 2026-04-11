@@ -8,6 +8,7 @@
   # traverse it!
   fileSystems."/srv/http/static" = {
     device = "/mnt/luna/uploads";
+    fsType = "none";
     options = [ "bind" ];
   };
 
