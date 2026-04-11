@@ -116,8 +116,6 @@
   # no network.
   systemd.network.wait-online.enable = !(config.networking.networkmanager.enable && config.systemd.services.NetworkManager-wait-online.enable);
 
-  security.sudo.wheelNeedsPassword = false;
-
   environment = {
     # We do not need an explanation why we cannot run dynamically linked,
     # unpatched binaries on NixOS.
