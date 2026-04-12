@@ -6,8 +6,8 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/users/electro
     ../../profiles/zramswap.nix
-    ../../users/electro
     ./fileserver.nix
     ./headscale.nix
     ./hostapd.nix

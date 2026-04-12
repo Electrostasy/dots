@@ -11,7 +11,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
-    ../../users/electro
+    ../../profiles/users/electro
   ];
 
   nixpkgs.hostPlatform.system = "x86_64-linux";

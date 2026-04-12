@@ -6,9 +6,9 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/users/electro
+    ../../profiles/users/sukceno
     ../../profiles/zramswap.nix
-    ../../users/electro
-    ../../users/sukceno
     ./nfs.nix
     ./samba.nix
   ];

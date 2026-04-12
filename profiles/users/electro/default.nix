@@ -27,9 +27,9 @@
     extraGroups = [ "wheel" ];
 
     openssh.authorizedKeys.keyFiles = [
-      ../../hosts/mercury/id_ed25519.pub
-      ../../hosts/terra/id_ed25519.pub
-      ../../hosts/venus/id_ed25519.pub
+      ../../../hosts/mercury/id_ed25519.pub
+      ../../../hosts/terra/id_ed25519.pub
+      ../../../hosts/venus/id_ed25519.pub
     ];
   };
 

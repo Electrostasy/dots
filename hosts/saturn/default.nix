@@ -10,7 +10,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
-    ../../users/electro
+    ../../profiles/users/electro
     ../luna/nfs-share.nix
     ./samba.nix
     ./ups.nix

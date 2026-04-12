@@ -6,8 +6,8 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/users/electro
     ../../profiles/zramswap.nix
-    ../../users/electro
   ];
 
   nixpkgs.hostPlatform.system = "aarch64-linux";
