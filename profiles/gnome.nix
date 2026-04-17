@@ -100,6 +100,7 @@
 
   environment = {
     systemPackages = with pkgs; [
+      _7zz
       amberol
       aria2
       eyedropper
@@ -118,7 +119,6 @@
       nautilus-amberol
       nautilus-python
       nautilus-vimv
-      ouch
       papers
       qrtool
       ripgrep
