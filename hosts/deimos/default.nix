@@ -16,7 +16,6 @@
   image.modules.default.imports = [
     ../../profiles/image/expand-root.nix
     ../../profiles/image/generic-efi.nix
-    ../../profiles/image/interactive.nix
     ../../profiles/image/platform/raspberrypi-zero-2-w.nix
   ];
 
