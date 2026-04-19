@@ -64,19 +64,6 @@
     };
   };
 
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 15d";
-    };
-
-    optimise = {
-      automatic = true;
-      dates = [ "weekly" ];
-    };
-  };
-
   # Formatted from 5 disks using:
   # $ mkfs.btrfs -d raid6 -m raid1c3 /dev/disk/by-id/ata-ST18000NM003D-3DL103_* -L array
   # $ btrfs property set /mnt/array compression zstd:3

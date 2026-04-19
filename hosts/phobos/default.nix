@@ -41,19 +41,6 @@
     };
   };
 
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 15d";
-    };
-
-    optimise = {
-      automatic = true;
-      dates = [ "weekly" ];
-    };
-  };
-
   services = {
     prometheus.exporters.node.enable = true;
 

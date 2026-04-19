@@ -23,6 +23,12 @@
   nix = {
     package = pkgs.nixVersions.latest;
 
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+
     settings = {
       # Do not download a global flake registry, we use the system registry set
       # up by NixOS where `nixpkgs` is pinned.
@@ -52,6 +58,7 @@
       builders-use-substitutes = true;
 
       trace-import-from-derivation = true;
+      auto-optimise-store = true;
     };
   };
 
