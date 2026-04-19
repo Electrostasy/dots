@@ -30,12 +30,6 @@
     };
   };
 
-  networking.firewall = {
-    enable = true;
-
-    allowedTCPPorts = [ 80 ];
-  };
-
   services.prometheus = {
     enable = true;
 
@@ -73,18 +67,13 @@
     ];
   };
 
-  services.nginx = {
-    enable = true;
+  services.nginx.virtualHosts."${config.networking.hostName}.sol.tailnet.0x6776.lt" = {
+    forceSSL = false;
 
-    # TODO: Serve on subdomain, might need a DNS with CNAME records.
-    virtualHosts."${config.networking.hostName}.sol.tailnet.0x6776.lt" = {
-      forceSSL = false;
-
-      locations."/grafana/" = {
-        recommendedProxySettings = true;
-        proxyWebsockets = true;
-        proxyPass = "http://localhost:${toString config.services.grafana.settings.server.http_port}";
-      };
+    locations."/grafana/" = {
+      recommendedProxySettings = true;
+      proxyWebsockets = true;
+      proxyPass = "http://localhost:${toString config.services.grafana.settings.server.http_port}";
     };
   };
 

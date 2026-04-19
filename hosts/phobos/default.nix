@@ -54,27 +54,58 @@
     };
   };
 
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
-    config.services.prometheus.exporters.node.port
-    config.services.journald.remote.port
-  ];
+  services = {
+    prometheus.exporters.node.enable = true;
 
-  services.prometheus.exporters.node.enable = true;
+    nginx = {
+      enable = true;
 
-  fileSystems."/var/log/journal" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=journal"
-      "noatime"
-      "X-mount.group=${config.users.groups.systemd-journal.name}"
-    ];
+      recommendedTlsSettings = true;
+    };
+
+    journald.remote = {
+      enable = true;
+
+      listen = "http";
+    };
   };
 
-  services.journald.remote = {
+  fileSystems = {
+    "/var/log/nginx" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=nginx"
+        "noatime"
+        "X-mount.group=${config.users.groups.nginx.name}"
+      ];
+    };
+
+    "/var/log/journal" = {
+      device = "/dev/disk/by-label/pidata";
+      fsType = "btrfs";
+      options = [
+        "subvol=journal"
+        "noatime"
+        "X-mount.group=${config.users.groups.systemd-journal.name}"
+      ];
+    };
+  };
+
+  networking.firewall = {
     enable = true;
 
-    listen = "http";
+    allowedTCPPorts = [
+      80
+      443
+    ];
+
+    interfaces.${config.services.tailscale.interfaceName} = {
+      allowedTCPPorts = [
+        config.services.prometheus.exporters.node.port
+        config.services.journald.remote.port
+      ];
+    };
   };
 
   system.stateVersion = "25.05";

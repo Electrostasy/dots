@@ -89,21 +89,17 @@
     };
   };
 
-  services.nginx = {
-    enable = true;
+  services.nginx.virtualHosts."files.0x6776.lt" = {
+    forceSSL = true;
+    useACMEHost = "0x6776.lt";
 
-    virtualHosts."files.0x6776.lt" = {
-      forceSSL = true;
-      useACMEHost = "0x6776.lt";
-
-      locations."/xmpp" = {
-        proxyPass = "http://127.0.0.1:5280/";
-        recommendedProxySettings = true;
-        extraConfig = ''
-          proxy_buffering off;
-          tcp_nodelay on;
-        '';
-      };
+    locations."/xmpp" = {
+      proxyPass = "http://127.0.0.1:5280/";
+      recommendedProxySettings = true;
+      extraConfig = ''
+        proxy_buffering off;
+        tcp_nodelay on;
+      '';
     };
   };
 
@@ -137,7 +133,5 @@
     5223 # mod_c2s: client-to-server connections over TLS.
     5269 # mod_s2s: server-to-server connections.
     5270 # mod_s2s: server-to-server connections over TLS.
-    80
-    443
   ];
 }

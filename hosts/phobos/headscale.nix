@@ -28,31 +28,25 @@
 
   security.acme.certs."0x6776.lt".extraDomainNames = [ "controlplane.0x6776.lt" ];
 
-  services.nginx = {
-    enable = true;
+  services.nginx.virtualHosts."controlplane.0x6776.lt" = {
+    forceSSL = true;
+    useACMEHost = "0x6776.lt";
 
-    recommendedTlsSettings = true;
+    locations."/" = {
+      recommendedProxySettings = false;
 
-    virtualHosts."controlplane.0x6776.lt" = {
-      forceSSL = true;
-      useACMEHost = "0x6776.lt";
-
-      locations."/" = {
-        recommendedProxySettings = false;
-
-        proxyPass = "http://" + config.services.headscale.settings.listen_addr;
-        proxyWebsockets = true;
-        extraConfig = ''
-          keepalive_requests 100000;
-          keepalive_timeout 160s;
-          proxy_buffering off;
-          proxy_ignore_client_abort on;
-          proxy_send_timeout 600s;
-          proxy_read_timeout 900s;
-          proxy_connect_timeout 75s;
-          send_timeout 600s;
-        '';
-      };
+      proxyPass = "http://" + config.services.headscale.settings.listen_addr;
+      proxyWebsockets = true;
+      extraConfig = ''
+        keepalive_requests 100000;
+        keepalive_timeout 160s;
+        proxy_buffering off;
+        proxy_ignore_client_abort on;
+        proxy_send_timeout 600s;
+        proxy_read_timeout 900s;
+        proxy_connect_timeout 75s;
+        send_timeout 600s;
+      '';
     };
   };
 
@@ -126,10 +120,5 @@ EOF
     '';
   };
 
-  networking.firewall = {
-    enable = true;
-
-    allowedTCPPorts = [ 80 443 ];
-    allowedUDPPorts = [ 3478 ];
-  };
+  networking.firewall.allowedUDPPorts = [ 3478 ];
 }

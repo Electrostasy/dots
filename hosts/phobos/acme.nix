@@ -17,12 +17,6 @@
     defaults.email = "steamykins@gmail.com";
   };
 
-  services.nginx = {
-    enable = true;
-
-    # Enable https://letsencrypt.org/docs/challenge-types/#http-01-challenge.
-    virtualHosts."0x6776.lt".enableACME = true;
-  };
-
-  networking.firewall.allowedTCPPorts = [ 80 ];
+  # Enable https://letsencrypt.org/docs/challenge-types/#http-01-challenge.
+  services.nginx.virtualHosts."0x6776.lt".enableACME = true;
 }

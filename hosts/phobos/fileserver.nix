@@ -14,27 +14,13 @@
 
   security.acme.certs."0x6776.lt".extraDomainNames = [ "files.0x6776.lt" ];
 
-  services.nginx = {
-    enable = true;
-    recommendedTlsSettings = true;
+  services.nginx.virtualHosts."files.0x6776.lt" = {
+    forceSSL = true;
+    useACMEHost = "0x6776.lt";
 
-    virtualHosts."files.0x6776.lt" = {
-      forceSSL = true;
-      useACMEHost = "0x6776.lt";
-
-      locations."/static" = {
-        root = "/srv/http";
-        tryFiles = "$uri $uri/ =404";
-      };
+    locations."/static" = {
+      root = "/srv/http";
+      tryFiles = "$uri $uri/ =404";
     };
-  };
-
-  networking.firewall = {
-    enable = true;
-
-    allowedTCPPorts = [
-      80
-      443
-    ];
   };
 }
