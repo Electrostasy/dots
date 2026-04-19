@@ -478,30 +478,4 @@ vim.keymap.set('n', '<Esc>', close_picker, { buffer = state.prompt_bufnr })
 
 vim.ui.select = open_picker
 
-vim.keymap.set('n', '<leader>e', function()
-  local result = vim.system({ 'fd', '--type', 'file' }, { text = true }):wait().stdout or ''
-  local items = vim.split(result, '\n', { trimempty = true })
-  vim.ui.select(
-    items,
-    {
-      prompt = 'Files',
-      kind = 'files',
-    },
-    vim.cmd.edit
-  )
-end)
-
-vim.keymap.set('n', '<leader>b', function()
-  local items = vim.iter(vim.api.nvim_list_bufs()):filter(function(buf) return vim.fn.buflisted(buf) == 1 end):totable()
-  vim.ui.select(
-    items,
-    {
-      prompt = 'Buffers',
-      kind = 'buffers',
-      format_item = vim.fn.bufname,
-    },
-    vim.api.nvim_set_current_buf
-  )
-end)
-
 vim.g.loaded_picker = 1

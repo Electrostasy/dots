@@ -1,24 +1,19 @@
--- Disable built-in plugins.
+-- Disable some built-in plugins.
 vim.g.loaded_netrw = 1
-vim.g.loaded_netrwFileHandlers = 1
 vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_netrwSettings = 1
 vim.g.loaded_gzip = 1
 vim.g.loaded_tar = 1
 vim.g.loaded_tarPlugin = 1
 vim.g.loaded_zip = 1
 vim.g.loaded_zipPlugin = 1
-vim.g.loaded_getscript = 1
-vim.g.loaded_getscriptPlugin = 1
-vim.g.loaded_vimball = 1
-vim.g.loaded_vimballPlugin = 1
 vim.g.loaded_matchit = 1
 vim.g.loaded_matchparen = 1
-vim.g.loaded_2html_plugin = 1
 
 vim.o.termguicolors = true
 vim.o.background = 'dark'
 vim.cmd.colorscheme('poimandres')
+
+require('vim._core.ui2').enable()
 
 vim.g.mapleader = ' ' -- Set <Leader> for keymaps.
 vim.o.showmode = false -- Don't show mode in command line.
@@ -57,13 +52,13 @@ vim.api.nvim_create_autocmd('FileType', {
   desc = 'Enable treesitter for supported filetypes',
   pattern = '*',
   callback = function(event)
-    if #vim.api.nvim_get_runtime_file(('parser/%s.so'):format(event.match), false) == 0 then
-      return
+    local lang = vim.treesitter.language.get_lang(event.match)
+
+    if vim.treesitter.query.get(lang, 'highlights') then
+      vim.treesitter.start(event.buf, lang)
     end
 
-    vim.treesitter.start(event.buf, event.match)
-
-    if vim.treesitter.query.get(event.match, 'folds') then
+    if vim.treesitter.query.get(lang, 'folds') then
       vim.wo.foldmethod = 'expr'
       vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
       vim.wo.foldlevel = 99
@@ -94,13 +89,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-local ignored_buftypes = { 'quickfix', 'nofile', 'help' }
-local ignored_filetypes = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' }
 vim.api.nvim_create_autocmd({ 'FileType', 'BufReadPost' }, {
   desc = 'Restore cursor to last known position',
   group = vim.api.nvim_create_augroup('RestoreCursorPosition', { }),
   callback = function(event)
-    if vim.tbl_contains(ignored_buftypes, vim.bo.buftype) or vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
+    if vim.tbl_contains({ 'quickfix', 'nofile', 'help' }, vim.bo.buftype) then
+      return
+    end
+
+    if vim.tbl_contains({ 'gitcommit', 'gitrebase', 'svn', 'hgcommit' }, vim.bo.filetype) then
       return
     end
 
@@ -131,3 +128,24 @@ vim.keymap.set('v', '<Space>', require('ts_select').expand)
 vim.keymap.set('v', '<C-Space>', require('ts_select').contract)
 
 vim.keymap.set({ 'n', 'v' }, 'gs', require('ts_sort').sort_nodes_on_cursor)
+
+vim.keymap.set('n', '<leader>e', function()
+  local items = vim.split(vim.system({ 'fd', '--hidden', '--type', 'file', '--exclude', '.git' }, { text = true }):wait().stdout or '', '\n', { trimempty = true })
+  local opts = {
+    prompt = 'Files',
+    kind = 'files',
+  }
+
+  vim.ui.select(items, opts, vim.cmd.edit)
+end)
+
+vim.keymap.set('n', '<leader>b', function()
+  local items = vim.iter(vim.api.nvim_list_bufs()):filter(function(buf) return vim.fn.buflisted(buf) == 1 end):totable()
+  local opts = {
+    prompt = 'Buffers',
+    kind = 'buffers',
+    format_item = vim.fn.bufname,
+  }
+
+  vim.ui.select(items, opts, vim.api.nvim_set_current_buf)
+end)

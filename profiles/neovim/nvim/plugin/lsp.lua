@@ -33,27 +33,29 @@ vim.api.nvim_create_autocmd('LspAttach', {
       return
     end
 
-    if client:supports_method('textDocument/semanticTokens/full') then
+    if client.server_capabilities.semanticTokensProvider then
       require('hlargs').disable_buf(args.buf)
     end
 
-    vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+    if client.server_capabilities.inlayHintProvider then
+      vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
 
-    -- Inlay hint updates can take a while presumably due to the LSP roundtrip,
-    -- so instead of showing them all the time while editing and them getting stuck,
-    -- we disable them depending on the active mode.
-    vim.api.nvim_create_autocmd('ModeChanged', {
-      group = 'LspMappings',
-      pattern = { 'n:[^cV]', '[^cV]:n' },
-      callback = function(ev)
-        if ev.buf ~= args.buf then
-          return
-        end
+      -- Inlay hint updates can take a while presumably due to the LSP roundtrip,
+      -- so instead of showing them all the time while editing and them getting stuck,
+      -- we disable them depending on the active mode.
+      vim.api.nvim_create_autocmd('ModeChanged', {
+        group = 'LspMappings',
+        pattern = { 'n:[^cV]', '[^cV]:n' },
+        callback = function(ev)
+          if ev.buf ~= args.buf then
+            return
+          end
 
-        local enable = ev.match:sub(ev.match:len()) == 'n' or ev.match:sub(1, 1) ~= 'n'
-        vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
-      end,
-    })
+          local enable = ev.match:sub(ev.match:len()) == 'n' or ev.match:sub(1, 1) ~= 'n'
+          vim.lsp.inlay_hint.enable(enable, { bufnr = args.buf })
+        end,
+      })
+    end
   end
 })
 

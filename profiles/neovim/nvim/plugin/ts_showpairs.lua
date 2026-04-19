@@ -101,7 +101,6 @@ local _add_highlight = function(bufnr)
           end
         }
 
-        ---@diagnostic disable: missing-fields
         if vim.treesitter.node_contains(mocked_node, cursor_range) then
           vim.api.nvim_buf_set_extmark(bufnr, ns, opening_start_row, opening_start_col, {
             id = 1,
@@ -126,8 +125,6 @@ local _add_highlight = function(bufnr)
       node = node:parent()
     end
 
-    -- We check for nil during the while loop condition.
-    ---@diagnostic disable-next-line: cast-local-type
     tree = tree:parent()
   end
 

@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'FileType' }, {
   desc = 'Set up treesitter commentstring for the buffer',
   callback = function(event)
     local ok, parser = pcall(vim.treesitter.get_parser, event.buf)
-    if not ok then
+    if not ok or not parser then
       return
     end
 
