@@ -19,8 +19,8 @@
     bantime-increment = {
       enable = true;
 
-      rndtime = "15m";
-      maxtime = "1m";
+      rndtime = "1h";
+      maxtime = "3mo";
       overalljails = true;
     };
 
@@ -29,7 +29,7 @@
         filter = "nginx-bots";
         logpath = "/var/log/nginx/access.log";
         backend = "auto";
-        findtime = "1w";
+        findtime = "1d";
         bantime = "1h";
       };
     };
