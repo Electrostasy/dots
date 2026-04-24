@@ -228,7 +228,23 @@
     binfmt = true;
   };
 
-  programs.git.config.credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
+  programs.git = {
+    enable = true;
+
+    config = {
+      user = {
+        name = "Gediminas Valys";
+        email = "steamykins@gmail.com";
+      };
+
+      credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
+
+      # Since git 2.35.2 this workaround is needed to fix an annoying error
+      # when using `git` or `nixos-rebuild` as non-root in /etc/nixos:
+      # fatal: detected dubious ownership in repository at '/etc/nixos'
+      safe.directory = "/etc/nixos";
+    };
+  };
 
   programs.dconf.profiles = {
     gdm.databases = [{

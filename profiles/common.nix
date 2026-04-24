@@ -205,21 +205,5 @@
   # Fontconfig is enabled by default even on headless systems.
   fonts.fontconfig.enable = lib.mkDefault config.services.graphical-desktop.enable;
 
-  programs.git = {
-    enable = true;
-
-    config = {
-      user = {
-        name = "Gediminas Valys";
-        email = "steamykins@gmail.com";
-      };
-
-      # Since git 2.35.2 this workaround is needed to fix an annoying error
-      # when using `git` or `nixos-rebuild` as non-root in /etc/nixos:
-      # fatal: detected dubious ownership in repository at '/etc/nixos'
-      safe.directory = "/etc/nixos";
-    };
-  };
-
   users.mutableUsers = lib.mkDefault false;
 }
