@@ -130,11 +130,6 @@
 
     # Tell `sops` where to find the private key.
     sessionVariables.SOPS_AGE_KEY_FILE = config.sops.age.keyFile;
-
-    systemPackages = [
-      pkgs.rage
-      pkgs.sops
-    ];
   };
 
   preservation.preserveAt = {
