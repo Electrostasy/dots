@@ -37,15 +37,10 @@
         flakes = [ ];
       };
 
-      use-xdg-base-directories = true; # don't clutter $HOME.
-
       experimental-features = [
-        "cgroups" # allow Nix to execute builds inside cgroups.
-        "flakes" # enable flakes.
-        "nix-command" # enable `nix {build,repl,shell,develop,...}` subcommands.
+        "flakes"
+        "nix-command"
       ];
-
-      use-cgroups = true;
 
       # When deploying NixOS configurations with `nixos-rebuild --target-host`,
       # we can get an error about missing valid signatures for store paths
@@ -53,12 +48,10 @@
       # https://github.com/NixOS/nix/issues/2127#issuecomment-1465191608
       trusted-users = [ "@wheel" ];
 
-      # Avoid the caller sending stuff over SSH to the builder when the builder
-      # can fetch it themselves.
-      builders-use-substitutes = true;
-
-      trace-import-from-derivation = true;
       auto-optimise-store = true;
+      builders-use-substitutes = true;
+      trace-import-from-derivation = true;
+      use-xdg-base-directories = true;
     };
   };
 
