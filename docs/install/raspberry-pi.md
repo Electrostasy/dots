@@ -74,7 +74,7 @@ systemd-dissect --with nixos-deimos* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
 
 Due to the limitations of the Raspberry Pi Zero 2 W, booting from GPT formatted
-media directly is not supported and the image needs a [hybrid MBR] containing
+media directly is not supported and the image needs a hybrid MBR containing
 the partition with Raspberry Pi firmware:
 ```sh
 echo -e 'size=+1GiB, type=0c\n start=1, type=ee' | sfdisk -Y dos nixos-deimos*
@@ -84,5 +84,3 @@ Flash the image to microSD card:
 ```sh
 dd if=nixos-deimos* of=/dev/sdX bs=1M status=progress oflag=direct
 ```
-
-[hybrid MBR]: ../raspberry-pi/hybrid-mbr.md
