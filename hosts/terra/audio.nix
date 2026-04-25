@@ -27,6 +27,8 @@ in
     enable = true;
     pulse.enable = true;
 
+    extraLadspaPackages = [ pkgs.rnnoise-plugin ];
+
     extraConfig.pipewire = {
       "60-parametric-equalizer" = {
         "context.modules" = [
@@ -199,7 +201,7 @@ in
                   {
                     type = "ladspa";
                     name = "rnnoise";
-                    plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                    plugin = "librnnoise_ladspa";
                     label = "noise_suppressor_mono";
                     control = {
                       "VAD Threshold (%)" = 85.0;
