@@ -1,0 +1,27 @@
+// Adapted from downstream:
+// https://github.com/raspberrypi/linux/blob/3a44d1cb497e2c28bdcbda21369111287be953db/arch/arm/boot/dts/overlays/pcie-32bit-dma-overlay.dts
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2711";
+};
+
+&{/aliases} {
+	/*
+	 * Removing this alias stops the firmware from patching the PCIE DT
+	 * dma-ranges based on the detected chip revision.
+	 */
+	pcie0 = "";
+};
+
+&pcie0 {
+	/*
+	 * The size of the range is rounded up to a power of 2, so the range
+	 * ends up being 0-4 GB, and the MSI vector gets pushed beyond 4 GB.
+	 */
+	#address-cells = <3>;
+	#size-cells = <2>;
+	dma-ranges = <0x02000000 0x0 0x00000000 0x0 0x00000000 0x0 0x80000000>;
+};

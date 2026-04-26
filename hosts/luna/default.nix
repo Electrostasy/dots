@@ -38,6 +38,19 @@
         name = "fan-control-overlay";
         dtsFile = ./fan-control.dtso;
       }
+      {
+        # Since Linux 6.18.24, JMB585 is forced into 32-bit DMA because 64-bit
+        # DMA is reportedly broken:
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f5a5d0e8704ecd23e1eca59aebffc7512196a218
+        # The ahci driver probe fails for the JMB585 when in 32-bit DMA mode,
+        # causing the disks connected via the controller to not be found:
+        # [   13.700637] ahci 0000:01:00.0: failed to start port 0 (errno=-12)
+        # [   13.706339] ahci 0000:01:00.0: probe with driver ahci failed with error -12
+        # The solution is to drop the dma-ranges down to 2 GB:
+        # https://github.com/raspberrypi/linux/issues/4848#issuecomment-1028191675
+        name = "pcie-32bit-dma-overlay";
+        dtsFile = ./pcie-32bit-dma.dtso;
+      }
     ];
   };
 
