@@ -21,7 +21,7 @@
   };
 
   nix = {
-    package = pkgs.nixVersions.latest;
+    package = pkgs.lixPackageSets.stable.lix;
 
     gc = {
       automatic = true;
@@ -50,7 +50,6 @@
 
       auto-optimise-store = true;
       builders-use-substitutes = true;
-      trace-import-from-derivation = true;
       use-xdg-base-directories = true;
     };
   };
