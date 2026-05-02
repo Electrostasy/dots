@@ -1,21 +1,59 @@
-# Installation guides for Rockchip devices
+## Installation guides
 
-This document contains installation guides for the following Rockchip devices:
-- [ArmSoM Sige5](https://docs.armsom.org/armsom-sige5)
-- [ArmSoM Sige7](https://docs.armsom.org/armsom-sige7)
-- [FriendlyElec NanoPC-T6 LTS](https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6)
+This document contains installation guides for the following devices:
+- Raspberry Pi single-board computers:
+  - [Raspberry Pi 4 Model B]
+  - [Raspberry Pi Zero 2 W]
+  - [Raspberry Pi Compute Module 4]
+- Rockchip-based single-board computers:
+  - [ArmSoM Sige5]
+  - [ArmSoM Sige7]
+  - [FriendlyElec NanoPC-T6 LTS]
 
 
-## ArmSoM Sige5
-### hyperion
+## Building the image
 
 Build the image on an `aarch64-linux` platform and insert the `age` private
-key:
+key (replace `$HOST` with the desired system):
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#hyperion --image-variant default
-cp ./result/nixos-hyperion* .
-systemd-dissect --with nixos-hyperion* install -D {,.}/var/lib/sops-nix/keys.txt
+nixos-rebuild build-image --flake github:Electrostasy/dots#$HOST --image-variant default
+cp ./result/nixos-* .
+systemd-dissect --with nixos-* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
+
+
+## Flashing the image
+### Raspberry Pi 4 Model B
+### Raspberry Pi Zero 2 W
+
+Flash the image to microSD card:
+```sh
+dd if=nixos-* of=/dev/sdX bs=1M status=progress oflag=direct
+```
+
+
+### Raspberry Pi Compute Module 4
+
+Flash the image to eMMC storage using the [Raspberry Pi Compute Module 4 IO
+Board]:
+
+1. Bridge the first set of pins on the 'J2' jumper to disable eMMC boot.
+2. Connect the IO Board with the host PC you will flash from using a micro USB
+   cable.
+3. Power on the IO Board.
+4. Run `rpiboot` on the host PC to see eMMC storage as a block device:
+   ```sh
+   rpiboot
+   ```
+5. Flash the image to it:
+   ```sh
+   dd if=nixos-* of=/dev/sdX bs=1M status=progress oflag=direct
+   ```
+6. Disconnect the micro USB cable from the host PC.
+7. Power off the IO Board.
+8. Detach the CM4 and attach it to your carrier board.
+
+### ArmSoM Sige5
 
 Change Storage functionality does not seem to work correctly on RK3576, so we
 first flash U-Boot to microSD separately and then the image to eMMC storage
@@ -46,7 +84,7 @@ using `rkdeveloptool`:
    ```sh
    rkdeveloptool cs 1
    rkdeveloptool ef
-   rkdeveloptool wl 0 nixos-hyperion*
+   rkdeveloptool wl 0 nixos-*
    ```
 8. Reboot the device:
    ```sh
@@ -55,16 +93,7 @@ using `rkdeveloptool`:
 9. Disconnect the USB cable from the board and the host PC.
 
 
-## ArmSoM Sige7
-### atlas
-
-Build the image on an `aarch64-linux` platform and insert the `age` private
-key:
-```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#atlas --image-variant default
-cp ./result/nixos-atlas* .
-systemd-dissect --with nixos-atlas* install -D {,.}/var/lib/sops-nix/keys.txt
-```
+### ArmSoM Sige7
 
 First ensure the board's microSD card slot is populated, then flash U-Boot to
 microSD and the image to eMMC storage using `rkdeveloptool`:
@@ -95,7 +124,7 @@ microSD and the image to eMMC storage using `rkdeveloptool`:
    ```sh
    rkdeveloptool cs 1
    rkdeveloptool ef
-   rkdeveloptool wl 0 nixos-atlas*
+   rkdeveloptool wl 0 nixos-*
    ```
 7. Reboot the device:
    ```sh
@@ -104,16 +133,7 @@ microSD and the image to eMMC storage using `rkdeveloptool`:
 8. Disconnect the USB cable from the board and the host PC.
 
 
-## FriendlyElec NanoPC-T6 LTS
-### mars
-
-Build the image on an `aarch64-linux` platform and insert the `age` private
-key:
-```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#mars --image-variant default
-cp ./result/nixos-mars* .
-systemd-dissect --with nixos-mars* install -D {,.}/var/lib/sops-nix/keys.txt
-```
+### FriendlyElec NanoPC-T6 LTS
 
 Flash U-Boot to SPI NOR flash and the image to eMMC storage using
 `rkdeveloptool`:
@@ -145,10 +165,19 @@ Flash U-Boot to SPI NOR flash and the image to eMMC storage using
    ```sh
    rkdeveloptool cs 1
    rkdeveloptool ef
-   rkdeveloptool wl 0 nixos-mars*
+   rkdeveloptool wl 0 nixos-*
    ```
 7. Reboot the device:
    ```sh
    rkdeveloptool rd
    ```
 8. Disconnect the USB-C cable from the board and the host PC.
+
+
+[Raspberry Pi 4 Model B]: https://www.raspberrypi.com/products/raspberry-pi-4-model-b/
+[Raspberry Pi Zero 2 W]: https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/
+[Raspberry Pi Compute Module 4]: https://www.raspberrypi.com/products/compute-module-4/?variant=raspberry-pi-cm4001000
+[Raspberry Pi Compute Module 4 IO Board]: https://www.raspberrypi.com/products/compute-module-4-io-board/
+[ArmSoM Sige5]: https://docs.armsom.org/armsom-sige5
+[ArmSoM Sige7]: https://docs.armsom.org/armsom-sige7
+[FriendlyElec NanoPC-T6 LTS]: https://wiki.friendlyelec.com/wiki/index.php/NanoPC-T6

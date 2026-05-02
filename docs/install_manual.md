@@ -1,23 +1,20 @@
-# Installation guide for impermanent BTRFS root devices
+## Guide for manual install
 
-This guide describes the steps necessary to install a btrfs encrypted root
+### Impermanent LUKS encrypted Btrfs root filesystem
+
+This guide describes the steps necessary to install a Btrfs encrypted root
 NixOS system with rollbacks of the root file tree to an empty snapshot on every
-boot, inspired by [erase-your-darlings]. Points of consideration:
+boot, inspired by [erase-your-darlings].
+
+Assumptions:
 - System architecture is assumed to be x86_64, for other architectures, the
   appropriate root partition typecode must be used for compatibility with
   `root=gpt-auto` setups, see `sgdisk -L`.
 - Subvolumes are assumed to follow the flat layout, where the root file tree is
   contained in `/root`, and the empty root snapshot in `/root-blank`.
-- The rollbacks are accomplished using a [systemd service] in the initrd,
-  therefore systemd must be enabled in the initrd:
-  ```nix
-  {
-    boot.initrd.systemd.enable = true;
-  }
-  ```
-- The btrfs subvolume that is marked default is the one that is rolled back.
+- The Btrfs subvolume that is marked default is the one that is rolled back.
 
-The installation steps are as follows:
+Installation steps:
 1. Partition the installation device:
    ```sh
    # `8304` corresponds to `Linux x86-64 root (/)`, see `sgdisk -L`.
@@ -31,7 +28,7 @@ The installation steps are as follows:
    mkfs.btrfs /dev/mapper/root
    mkswap /dev/nvme0n1p3
    ```
-3. Set up the btrfs subvolumes and empty root snapshot:
+3. Set up the Btrfs subvolumes and empty root snapshot:
    ```sh
    mount /dev/mapper/root -o subvol=/ /mnt
    btrfs subvolume create /mnt/{root,nix,persist,persist/{cache,state}}
@@ -63,4 +60,3 @@ The installation steps are as follows:
    ```
 
 [erase-your-darlings]: https://grahamc.com/blog/erase-your-darlings/
-[systemd service]: ../../modules/restore-root.nix
