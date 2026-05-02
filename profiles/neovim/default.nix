@@ -1,6 +1,8 @@
 { pkgs, lib, ... }:
 
 {
+  nixpkgs.config.allowUnfreePackages = [ "nvim-highlight-colors" ];
+
   preservation.preserveAt."/persist/state".users.electro.directories = [
     ".local/state/nvim"
     ".local/share/nvim"
