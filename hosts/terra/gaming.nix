@@ -102,17 +102,6 @@
     enable = true;
 
     package = pkgs.ananicy-cpp;
-
     rulesProvider = pkgs.ananicy-rules-cachyos;
-    extraRules = [
-      # https://store.steampowered.com/app/1030840/Mafia_Definitive_Edition/
-      { name = "mafiadefinitiveedition.exe"; type = "Game"; }
-
-      # https://store.steampowered.com/app/892970/Valheim/
-      { name = "valheim.exe"; type = "Game"; }
-    ];
   };
-
-  # https://gitlab.com/ananicy-cpp/ananicy-cpp/-/issues/40#note_1036996573
-  systemd.services."user@".serviceConfig.Delegate = "cpu cpuset io memory pids";
 }
