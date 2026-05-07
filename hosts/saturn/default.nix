@@ -222,6 +222,7 @@
   environment.systemPackages = with pkgs; [
     bintools-unwrapped
     binwalk
+    cdrkit # `genisoimage`, `wodim`, ...
     chars
     detox
     dos2unix
