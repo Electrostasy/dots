@@ -1,7 +1,7 @@
 { self, ... }:
 
-# These derivations are not normally checked if they evaluate, so they must be
-# specified as checks.
+# `nix flake check` does not check config.system.build.images, which is why
+# these additional checks are necessary.
 
 {
   aarch64-linux = {
