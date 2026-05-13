@@ -60,6 +60,12 @@
       flake.outputs.overlays.packages
     ];
   };
+  
+  # Only include devicetree dtbs matching the devicetree dtb that is loaded.
+  hardware.deviceTree.filter =
+    lib.mkIf
+      (config.hardware.deviceTree.enable -> config.hardware.deviceTree.name != null)
+      (lib.mkDefault (baseNameOf config.hardware.deviceTree.name));
 
   boot = {
     tmp.useTmpfs = true;
