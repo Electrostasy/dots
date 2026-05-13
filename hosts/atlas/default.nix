@@ -34,10 +34,7 @@
   };
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = false;
-    };
+    loader.systemd-boot.enable = true;
 
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "8250.nr_uarts=1" ];

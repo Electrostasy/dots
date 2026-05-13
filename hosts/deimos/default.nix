@@ -34,19 +34,12 @@
   };
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = false;
-    };
+    loader.systemd-boot.enable = true;
 
     kernelParams = [ "8250.nr_uarts=1" ];
 
     initrd = {
-      systemd = {
-        root = "gpt-auto";
-        tpm2.enable = false;
-      };
-
+      systemd.root = "gpt-auto";
       supportedFilesystems.ext4 = true;
     };
   };

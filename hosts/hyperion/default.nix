@@ -29,10 +29,7 @@
   };
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = false;
-    };
+    loader.systemd-boot.enable = true;
 
     # TODO: Missing PWM/thermal subsystem support, but mainline boots now!
     kernelPackages = pkgs.linuxPackages_testing;

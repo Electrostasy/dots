@@ -28,10 +28,7 @@
   hardware.deviceTree.name = "broadcom/bcm2711-rpi-4-b.dtb";
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = false;
-    };
+    loader.systemd-boot.enable = true;
 
     kernelParams = [ "8250.nr_uarts=1" ];
 
