@@ -26,28 +26,36 @@
     ../../profiles/image/platform/raspberrypi-cm4.nix
   ];
 
+  # An Axzez (now Exaviz) Interceptor carrier board v1.0 for the Raspberry Pi
+  # Compute Module 4 is used.
   hardware.deviceTree = {
+    # There is no open source devicetree for this carrier board, but the vendor
+    # devicetree when decompiled is very similar to the official Raspberry Pi
+    # Compute Module 4 IO Board, so it is extended with overlays.
     name = "broadcom/bcm2711-rpi-cm4-io.dtb";
 
     overlays = [
+      # Enable the on-board USB ports by enabling the xHCI controller.
       {
         name = "enable-xhci-overlay";
         dtsFile = ./enable-xhci.dtso;
       }
+
+      # Add external PWM fan control controlled with I²C on the J9 FFC
+      # connector because the on-board Molex KK 254 3 pin fan headers do not
+      # support PWM fan control.
       {
         name = "fan-control-overlay";
         dtsFile = ./fan-control.dtso;
       }
+
+      # Fix SATA drives connected to the on-board JMB585 SATA-PCIe bridge not
+      # being found on Linux 6.18.24 or later by dropping the DMA ranges down
+      # to 2 GB. Since 6.18.24, JMB585 is forced into 32-bit DMA because 64-bit
+      # DMA is broken and Raspberry Pi has issues with 32-bit DMA:
+      # https://github.com/artmoty-dev/n5pro-jmb585-fix#whats-happening
+      # https://github.com/raspberrypi/linux/issues/4848#issuecomment-1028191675
       {
-        # Since Linux 6.18.24, JMB585 is forced into 32-bit DMA because 64-bit
-        # DMA is reportedly broken:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f5a5d0e8704ecd23e1eca59aebffc7512196a218
-        # The ahci driver probe fails for the JMB585 when in 32-bit DMA mode,
-        # causing the disks connected via the controller to not be found:
-        # [   13.700637] ahci 0000:01:00.0: failed to start port 0 (errno=-12)
-        # [   13.706339] ahci 0000:01:00.0: probe with driver ahci failed with error -12
-        # The solution is to drop the dma-ranges down to 2 GB:
-        # https://github.com/raspberrypi/linux/issues/4848#issuecomment-1028191675
         name = "pcie-32bit-dma-overlay";
         dtsFile = ./pcie-32bit-dma.dtso;
       }
@@ -59,6 +67,8 @@
 
     kernelParams = [ "8250.nr_uarts=1" ];
 
+    # Shadow the built-in emc2305 driver with our patched one due to various
+    # issues with it upstream.
     extraModulePackages = [ config.boot.kernelPackages.emc2305 ];
 
     initrd = {

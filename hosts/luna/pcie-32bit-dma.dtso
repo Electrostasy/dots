@@ -10,7 +10,7 @@
 
 &{/aliases} {
 	/*
-	 * Removing this alias stops the firmware from patching the PCIE DT
+	 * Removing this alias stops the firmware from patching the PCIe DT
 	 * dma-ranges based on the detected chip revision.
 	 */
 	pcie0 = "";
