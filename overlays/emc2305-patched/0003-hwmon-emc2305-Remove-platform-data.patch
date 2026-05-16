@@ -1,0 +1,121 @@
+From 5b6c2365da7b400002be4004a0415d79cc4c42f7 Mon Sep 17 00:00:00 2001
+From: Gediminas Valys <steamykins@gmail.com>
+Date: Sat, 16 May 2026 12:56:47 +0300
+Subject: [PATCH 1/2] hwmon: emc2305: Remove platform data
+
+---
+ drivers/hwmon/emc2305.c               | 40 ++++++---------------------
+ include/linux/platform_data/emc2305.h | 28 -------------------
+ 2 files changed, 8 insertions(+), 60 deletions(-)
+ delete mode 100644 include/linux/platform_data/emc2305.h
+
+diff --git a/drivers/hwmon/emc2305.c b/drivers/hwmon/emc2305.c
+index c5a0b2146..b8f89fbff 100644
+--- a/drivers/hwmon/emc2305.c
++++ b/drivers/hwmon/emc2305.c
+@@ -9,7 +9,6 @@
+ #include <linux/hwmon.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+-#include <linux/platform_data/emc2305.h>
+ #include <linux/thermal.h>
+ #include <linux/pwm.h>
+ #include <linux/of_device.h>
+@@ -33,6 +32,7 @@
+ #define EMC2305_OPEN_DRAIN		0x0
+ #define EMC2305_PUSH_PULL		0x1
+ #define EMC2305_PWM_SHUTDOWN_UNSET      -1
++#define EMC2305_PWM_MAX                 5
+ 
+ #define EMC2305_PWM_DUTY2STATE(duty, max_state, pwm_max) \
+ 	DIV_ROUND_CLOSEST((duty) * (max_state), (pwm_max))
+@@ -627,7 +627,6 @@ static int emc2305_probe(struct i2c_client *client)
+ 	struct i2c_adapter *adapter = client->adapter;
+ 	struct device *dev = &client->dev;
+ 	struct emc2305_data *data;
+-	struct emc2305_platform_data *pdata;
+ 	int vendor;
+ 	int ret;
+ 	int i;
+@@ -657,37 +656,14 @@ static int emc2305_probe(struct i2c_client *client)
+ 
+ 	pwm_childs = emc2305_probe_childs_from_dt(dev);
+ 
+-	pdata = dev_get_platdata(&client->dev);
+-
+ 	if (!pwm_childs) {
+-		if (pdata) {
+-			if (!pdata->max_state || pdata->max_state > EMC2305_FAN_MAX_STATE)
+-				return -EINVAL;
+-			data->max_state = pdata->max_state;
+-			/*
+-			 * Validate a number of active PWM channels. Note that
+-			 * configured number can be less than the actual maximum
+-			 * supported by the device.
+-			 */
+-			if (!pdata->pwm_num || pdata->pwm_num > EMC2305_PWM_MAX)
+-				return -EINVAL;
+-			data->pwm_num = pdata->pwm_num;
+-			data->pwm_output_mask = pdata->pwm_output_mask;
+-			data->pwm_polarity_mask = pdata->pwm_polarity_mask;
+-			data->pwm_separate = pdata->pwm_separate;
+-			for (i = 0; i < EMC2305_PWM_MAX; i++) {
+-				data->pwm_min[i] = pdata->pwm_min[i];
+-				data->pwm_freq[i] = pdata->pwm_freq[i];
+-			}
+-		} else {
+-			data->max_state = EMC2305_FAN_MAX_STATE;
+-			data->pwm_separate = false;
+-			data->pwm_output_mask = EMC2305_DEFAULT_OUTPUT;
+-			data->pwm_polarity_mask = EMC2305_DEFAULT_POLARITY;
+-			for (i = 0; i < EMC2305_PWM_MAX; i++) {
+-				data->pwm_min[i] = EMC2305_FAN_MIN;
+-				data->pwm_freq[i] = base_freq_table[3];
+-			}
++		data->max_state = EMC2305_FAN_MAX_STATE;
++		data->pwm_separate = false;
++		data->pwm_output_mask = EMC2305_DEFAULT_OUTPUT;
++		data->pwm_polarity_mask = EMC2305_DEFAULT_POLARITY;
++		for (i = 0; i < EMC2305_PWM_MAX; i++) {
++			data->pwm_min[i] = EMC2305_FAN_MIN;
++			data->pwm_freq[i] = base_freq_table[3];
+ 		}
+ 	} else {
+ 		data->max_state = EMC2305_FAN_MAX_STATE;
+diff --git a/include/linux/platform_data/emc2305.h b/include/linux/platform_data/emc2305.h
+deleted file mode 100644
+index 76043a97f..000000000
+--- a/include/linux/platform_data/emc2305.h
++++ /dev/null
+@@ -1,28 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-
+-#ifndef __LINUX_PLATFORM_DATA_EMC2305__
+-#define __LINUX_PLATFORM_DATA_EMC2305__
+-
+-#define EMC2305_PWM_MAX	5
+-
+-/**
+- * struct emc2305_platform_data - EMC2305 driver platform data
+- * @max_state: maximum cooling state of the cooling device;
+- * @pwm_num: number of active channels;
+- * @pwm_output_mask: PWM output mask
+- * @pwm_polarity_mask: PWM polarity mask
+- * @pwm_separate: separate PWM settings for every channel;
+- * @pwm_min: array of minimum PWM per channel;
+- * @pwm_freq: array of PWM frequency per channel
+- */
+-struct emc2305_platform_data {
+-	u8 max_state;
+-	u8 pwm_num;
+-	u8 pwm_output_mask;
+-	u8 pwm_polarity_mask;
+-	bool pwm_separate;
+-	u8 pwm_min[EMC2305_PWM_MAX];
+-	u16 pwm_freq[EMC2305_PWM_MAX];
+-};
+-
+-#endif
+-- 
+2.53.0
+
