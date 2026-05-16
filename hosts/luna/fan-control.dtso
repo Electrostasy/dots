@@ -11,10 +11,13 @@
 		reg = <0x2e>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+		#pwm-cells = <3>;
 
 		fan0: fan@0 {
 			reg = <0x0>;
 			label = "Compute Module 4 Fan";
+			pwms = <&fan_controller 26000 0 1>;
+			fan-shutdown-percent = <0>;
 			cooling-levels = <0 32 64 128 255>;
 			#cooling-cells = <2>;
 		};
@@ -22,18 +25,21 @@
 		fan1: fan@1 {
 			reg = <0x1>;
 			label = "Drive Fan 1";
+			pwms = <&fan_controller 26000 0 1>;
+			fan-shutdown-percent = <0>;
 		};
 
 		fan2: fan@2 {
 			reg = <0x2>;
 			label = "Drive Fan 2";
+			pwms = <&fan_controller 26000 0 1>;
+			fan-shutdown-percent = <0>;
 		};
 	};
 };
 
 &cpu_thermal {
 	polling-delay = <2000>;
-	polling-delay-passive = <2000>;
 
 	trips {
 		cpu_trip_tepid: tepid {
