@@ -7,10 +7,7 @@
 
   boot = {
     loader = {
-      # Show full resolution boot screen.
       systemd-boot.consoleMode = "max";
-
-      # Hide bootloader options menu unless holding down a key.
       timeout = 0;
     };
 
@@ -18,21 +15,15 @@
   };
 
   services = {
-    displayManager = {
-      gdm = {
-        enable = true;
-        autoSuspend = false;
-      };
-
-      autoLogin = {
-        enable = true;
-        user = "electro";
-      };
-    };
-
+    displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
 
-    # Use 999 for a higher priority than the default 1000.
+    displayManager.gdm.autoSuspend = false;
+    displayManager.autoLogin = {
+      enable = true;
+      user = "electro";
+    };
+
     avahi.enable = lib.mkOverride 999 false;
     dleyna.enable = false;
     hardware.bolt.enable = false;
@@ -48,8 +39,13 @@
 
   hardware.bluetooth.powerOnBoot = false;
 
-  users.users.electro.extraGroups = [
-    "networkmanager" # don't ask password when connecting to networks.
+  # There is no powerOnBoot option for wlan.
+  networking.networkmanager.dispatcherScripts = [
+    {
+      source = pkgs.writeShellScript "upHook" ''
+        ${config.networking.networkmanager.package}/bin/nmcli radio wifi off
+      '';
+    }
   ];
 
   security.pam.services.login.enableGnomeKeyring = true;
@@ -88,6 +84,7 @@
           ".config/gajim"
           ".config/keepassxc"
           ".local/share/gajim"
+          ".local/share/keyrings"
           "Documents"
           "Downloads"
           "Music"
@@ -169,6 +166,7 @@
       gnome-font-viewer
       gnome-logs
       gnome-music
+      gnome-tecla
       gnome-text-editor
       gnome-themes-extra
       gnome-tour
@@ -249,9 +247,6 @@
   programs.dconf.profiles = {
     gdm.databases = [{
       settings = {
-        # GDM by default is always unscaled compared to the GNOME lockscreen.
-        "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
-
         "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
         "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
       };
@@ -261,11 +256,6 @@
       # Enables a way to easily reference other values in this attrset without
       # using recursive attrsets.
       settings = lib.fix (self: with lib.gvariant; {
-        # Disable ^I GTK inspector warning.
-        "org/gtk/gtk4/settings/debug".inspector-warning = false;
-
-        "org/gnome/desktop/calendar".show-weekdate = true;
-
         "org/gnome/desktop/input-sources".sources = [
           (mkTuple [ "xkb" "us" ])
           (mkTuple [ "xkb" "lt" ])
@@ -278,11 +268,6 @@
           icon-theme = "MoreWaita";
           monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
-        };
-
-        "com/github/stunkymonkey/nautilus-open-any-terminal" = {
-          terminal = "ghostty";
-          use-generic-terminal-name = true;
         };
 
         "org/gnome/desktop/media-handling".automount = false;
@@ -300,8 +285,6 @@
         "org/gnome/desktop/wm/preferences".resize-with-right-button = true;
 
         "org/gnome/mutter".experimental-features = [
-          "scale-monitor-framebuffer"
-          "variable-refresh-rate"
           "xwayland-native-scaling"
         ];
 
@@ -364,10 +347,10 @@
         };
 
         "org/gnome/shell" = {
-          enabled-extensions =
-            map
-              (lib.getAttr "extensionUuid")
-              (lib.filter (lib.hasAttr "extensionUuid") config.environment.systemPackages);
+          enabled-extensions = lib.pipe config.environment.systemPackages [
+            (builtins.filter (builtins.hasAttr "extensionUuid"))
+            (map (builtins.getAttr "extensionUuid"))
+          ];
 
           favorite-apps = [
             "org.keepassxc.KeePassXC.desktop"
@@ -426,6 +409,18 @@
           distance-unit = "meters";
           speed-unit = "ms";
           temperature-unit = "centigrade";
+        };
+
+        "org/gnome/gnome-system-monitor" = {
+          network-in-bits = true;
+          process-memory-in-iec = true;
+          resource-memory-in-iec = true;
+          show-dependencies = true;
+          show-whose-processes = "all";
+        };
+
+        "org/gnome/gnome-system-monitor/proctree" = {
+          col-11-visible = true; # `Nice`.
         };
 
         "org/gnome/shell/extensions/desktop-cube" = {
@@ -489,23 +484,6 @@
     }];
   };
 
-  # Normally, when dconf changes are made to the `user` profile, the user will
-  # need to log out and log in again for the changes to be applied. However, in
-  # NixOS, this is not sufficient for some cases (automatically enabling
-  # extensions), because on a live system, the /etc/dconf path is not updated
-  # to the new database on activation. This restores the intended behaviour.
-  system.activationScripts.update-dconf-path = {
-    text = ''
-      dconf_nix_path='${config.environment.etc.dconf.source}'
-      if ! [[ /etc/dconf -ef "$dconf_nix_path" ]]; then
-        ln -sf "$dconf_nix_path" /etc/dconf
-        dconf update /etc/dconf
-      fi
-    '';
-  };
-
-  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
-  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
   systemd.tmpfiles.settings."10-gnome-autostart" = {
     # Link the monitors.xml files together. This is not ideal, but GDM and
     # gnome-shell don't quite communicate on unified display settings yet.
@@ -556,7 +534,7 @@
     }"
   ];
 
-  programs.firefox.autoConfig = ''
+  programs.firefox.autoConfig = /* js */ ''
     pref("widget.gtk.non-native-titlebar-buttons.enabled", false);
     pref("widget.gtk.rounded-bottom-corners.enabled", true);
     pref("widget.use-xdg-desktop-portal.file-picker", 1);

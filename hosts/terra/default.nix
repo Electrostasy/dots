@@ -56,7 +56,10 @@
   };
 
   programs.dconf.profiles.user.databases = [{
-    settings."org/gnome/shell/extensions/tilingshell".selected-layouts = [ [ "50% Horizontal Split" "50% Vertical Split" ] ];
+    settings."org/gnome/shell/extensions/tilingshell".selected-layouts = [
+      [ "50% Vertical Split" "50% Horizontal Split" ]
+      [ "50% Vertical Split" "50% Horizontal Split" ]
+    ];
   }];
 
   environment.systemPackages = with pkgs; [
