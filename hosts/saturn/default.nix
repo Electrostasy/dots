@@ -113,19 +113,12 @@
   services.smartd = {
     enable = true;
 
-    defaults =
-      let
-        smartd-notify = pkgs.writeShellScript "smartd-notify" ''
-          ${lib.getExe pkgs.notify-send-all} -a 'smartd' -i 'drive-harddisk' -c 'device' \
-            "$SMARTD_MESSAGE" "$SMARTD_FULLMESSAGE" &> /dev/null
-        '';
-      in
-      {
-        # Schedule a short self-test every morning at 06:00, a long self-test every
-        # Saturday at midnight, and send a notification if something goes wrong.
-        monitored = "-a -n standby -s (S/../.././06|L/../../6/00) -m <nomailer> -M exec ${smartd-notify}";
-        autodetected = "-a -m <nomailer> -M exec ${smartd-notify}";
-      };
+    # Schedule a short self-test every morning at 06:00, a long self-test every
+    # Saturday at midnight, and send a notification if something goes wrong.
+    defaults.monitored = "-a -n standby -s (S/../.././06|L/../../6/00) -m <nomailer> -M exec ${pkgs.writeShellScript "smartd-notify" ''
+      ${lib.getExe pkgs.notify-send-all} -a 'smartd' -i 'drive-harddisk' -c 'device' \
+        "$SMARTD_MESSAGE" "$SMARTD_FULLMESSAGE" &> /dev/null
+    ''}";
 
     devices = [
       { device = "/dev/disk/by-path/pci-0000:02:00.0-nvme-1"; }
