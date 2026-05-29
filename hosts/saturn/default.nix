@@ -252,6 +252,15 @@
     gnomeExtensions.brightness-control-using-ddcutil
   ];
 
+  # This mouse's scroll wheel is super sensitive to the point where
+  # middle-clicking can generate scroll events.
+  environment.etc."libinput/local-overrides.quirks".text = ''
+    [Logitech M705]
+    MatchVendor=0x046D
+    MatchProduct=0x406D
+    ModelScrollOnMiddleClick=1
+  '';
+
   systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
   services.snapper = {
     persistentTimer = true;
