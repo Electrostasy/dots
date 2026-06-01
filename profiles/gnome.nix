@@ -89,6 +89,9 @@
           "Downloads"
           "Music"
           "Pictures"
+          "Projects"
+          "Public"
+          "Templates"
           "Videos"
         ];
       };
