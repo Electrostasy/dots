@@ -55,6 +55,14 @@
       ];
     };
 
+    # This only loads the driver when the USB device is plugged in, but since
+    # the modalias is not present in the driver's device ID table, it will not
+    # bind the device to the driver - we use a udev rule for that below.
+    extraModprobeConfig = ''
+      # Unitech MSR206U Card Reader requires pl2303 driver for serial.
+      alias usb:v067Bp206Ad*dc*dsc*dp*ic*isc*ip*in* pl2303
+    '';
+
     swraid = {
       enable = true;
 
@@ -65,6 +73,10 @@
 
     binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
+
+  services.udev.extraRules = /* udev */ ''
+    ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb-serial/drivers/pl2303", ATTR{new_id}="067b 206a"
+  '';
 
   hardware = {
     cpu.amd.updateMicrocode = true;
