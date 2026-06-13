@@ -142,6 +142,16 @@
       wh = "wormhole-rs";
     };
 
+    sessionVariables = {
+      # A lot of Qt packages try to invoke FileChooser, ColorPicker and other
+      # windows via GTK3 on GNOME, cannot find the necessary gsettings schemas
+      # and proceed to crash:
+      # https://github.com/NixOS/nixpkgs/pull/507455
+      # We could wrap individual packages like FreeCAD (it will result in
+      # doublewrapping), but instead set this globally as a workaround.
+      GSETTINGS_SCHEMA_DIR = "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}/glib-2.0/schemas";
+    };
+
     gnome.excludePackages = with pkgs; [
       # For xdg-* commands to work correctly on gnome, `gio` is needed, provided
       # by glib:
