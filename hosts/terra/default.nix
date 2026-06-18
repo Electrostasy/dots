@@ -1,4 +1,4 @@
-{ config, pkgs, flake, ... }:
+{ pkgs, flake, ... }:
 
 {
   imports = [
@@ -11,6 +11,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../luna/nfs-share.nix
     ./audio.nix
@@ -124,12 +125,6 @@
       TIMELINE_LIMIT_QUARTERLY = 0;
       TIMELINE_LIMIT_YEARLY = 0;
     };
-  };
-
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
-  services.prometheus.exporters.node = {
-    enable = true;
-    enabledCollectors = [ "cpu.info" ];
   };
 
   system.stateVersion = "24.11";

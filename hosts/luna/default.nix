@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../../profiles/users/sukceno
     ../../profiles/zramswap.nix
@@ -102,11 +103,7 @@
     };
   };
 
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
-
   services = {
-    prometheus.exporters.node.enable = true;
-
     journald = {
       storage = "volatile";
 

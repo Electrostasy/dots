@@ -6,6 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
+    ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../../profiles/zramswap.nix
     ./fail2ban.nix
@@ -39,8 +40,6 @@
   };
 
   services = {
-    prometheus.exporters.node.enable = true;
-
     nginx = {
       enable = true;
 
@@ -84,12 +83,9 @@
       443
     ];
 
-    interfaces.${config.services.tailscale.interfaceName} = {
-      allowedTCPPorts = [
-        config.services.prometheus.exporters.node.port
-        config.services.journald.remote.port
-      ];
-    };
+    interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
+      config.services.journald.remote.port
+    ];
   };
 
   system.stateVersion = "25.05";
