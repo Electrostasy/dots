@@ -72,11 +72,8 @@ in
   config = lib.mkIf cfg.enable {
     programs.mpv.finalPackage = pkgs.mpv.override {
       mpv-unwrapped = cfg.package;
-      scripts = map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
 
-      # WARN: Without this, mpv will not detect any user-defined profiles in
-      # the config for some reason.
-      extraMakeWrapperArgs = [ "--add-flags" "--config-dir=/etc/mpv" ];
+      scripts = map (s: if !lib.isDerivation s && lib.isAttrs s then s.script else s) cfg.scripts;
     };
 
     environment = {
