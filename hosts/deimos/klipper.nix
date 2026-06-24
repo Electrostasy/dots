@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
   hardware.deviceTree.overlays = [
@@ -11,15 +11,22 @@
   services.klipper = {
     enable = true;
 
-    # Install Klipper with plugins.
-    # package = pkgs.klipper.overrideAttrs (oldAttrs: {
-    #   postInstall = ''
-    #     ${oldAttrs.postInstall or ""}
-    #
-    #     chmod +w $out/lib/klippy/extras
-    #     cp -rvT ${pkgs.klipper_tmc_autotune} $out
-    #   '';
-    # });
+    package = pkgs.klipper.overrideAttrs (oldAttrs: {
+      postInstall =
+        let
+          klipper_tmc_autotune = pkgs.fetchFromGitHub {
+            owner = "andrewmcgr";
+            repo = "klipper_tmc_autotune";
+            rev = "aa26fc04f444997bd64b30a37414d678107cc04c";
+            hash = "sha256-v+8VFkG9iJ43wbXVNpXzdA5sUnRQxhcJIxHPbNoBUp4=";
+          };
+        in
+      ''
+        cp ${klipper_tmc_autotune}/{autotune_tmc.py,motor_constants.py,motor_database.cfg} $out/lib/klipper/extras
+
+        ${oldAttrs.postInstall or ""}
+      '';
+    });
 
     firmwares = {
       mcu = {
@@ -27,7 +34,6 @@
         enableKlipperFlash = true;
 
         serial = "/dev/serial/by-path/platform-3f980000.usb-usb-0:1.1:1.0";
-
         configFile = ./configs/einsy-rambo.config;
       };
 
@@ -51,10 +57,12 @@
     # Allow Moonraker to control Klipper.
     mutableConfig = true;
     configDir = "${config.services.moonraker.stateDir}/config";
-    configFile = "${config.services.moonraker.stateDir}/config/printer.cfg";
+    configFile = "${config.services.klipper.configDir}/printer.cfg";
     user = config.users.users.moonraker.name;
     group = config.users.groups.moonraker.name;
   };
+
+  environment.systemPackages = [ config.services.klipper.package ];
 
   # Required for Moonraker's allowSystemControl.
   security.polkit.enable = true;
@@ -92,8 +100,4 @@
       client_max_body_size 1024m;
     '';
   };
-
-  environment.systemPackages = [
-    config.services.klipper.package # adds `klipper-calibrate-shaper`.
-  ];
 }
