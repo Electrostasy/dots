@@ -1,0 +1,108 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/bcm2835.h>
+
+/ {
+	compatible = "brcm,bcm2837";
+};
+
+&{/} {
+	cam1_clk: cam1_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+		status = "okay";
+	};
+
+	cam_dummy_reg: cam_dummy_reg {
+		compatible = "regulator-fixed";
+		regulator-name = "cam-dummy-reg";
+		status = "okay";
+	};
+
+	cam1_reg: cam1_regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "cam1-reg";
+		startup-delay-us = <70000>;
+		off-on-delay-us = <30000>;
+		regulator-min-microvolt = <2700000>;
+		regulator-max-microvolt = <2700000>;
+		gpio = <&gpio 40 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		// Downstream says: "Needs to be enabled, as removing a regulator is very unsafe."
+		// Can we remove this?
+		status = "okay";
+	};
+};
+
+&gpio {
+	cam1_shutdown: cam1_shutdown {
+		// GPIO 11 on the CSI connector corresponds to GPIO 40 on the
+		// Pi, which is the ENABLE pin (CAM_GPIO1). Camera Module 3
+		// reference schematic references CAM_GPIO0, but it is in fact
+		// CAM_GPIO1:
+		// https://forums.raspberrypi.com/viewtopic.php?t=313414#p1875095
+
+		// If this pin isn't high then the sensor has no power and
+		// won't respond to I2C commands:
+		// https://forums.raspberrypi.com/viewtopic.php?p=2327657#p2327657
+
+		// Downstream doesn't specify this in their overlay.
+		brcm,pins = <40>;
+		brcm,function = <BCM2835_FSEL_GPIO_OUT>;
+	};
+};
+
+&i2c0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	clock-frequency = <100000>;
+	status = "okay";
+
+	// GPIO 44 and 45 correspond to the I2C SDA0, SCL0 pins in the CSI
+	// connector, used to communicate with the camera.
+	// Downstream uses a muxed i2c, but we do not need it.
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_gpio44>;
+
+	imx708: imx708@1a {
+		compatible = "sony,imx708";
+		reg = <0x1a>;
+
+		clocks = <&cam1_clk>;
+		clock-names = "inclk";
+
+		vana1-supply = <&cam1_reg>;	/* 2.8v */
+		vana2-supply = <&cam_dummy_reg>;/* 1.8v */
+		vdig-supply = <&cam_dummy_reg>;	/* 1.1v */
+		vddl-supply = <&cam_dummy_reg>;	/* 1.8v */
+
+		port {
+			imx708_ep: endpoint {
+				remote-endpoint = <&csi_ep>;
+				clock-lanes = <0>;
+				data-lanes = <1 2>;
+				link-frequencies = /bits/ 64 <450000000>;
+				clock-noncontinuous;
+			};
+		};
+	};
+};
+
+&csi1 {
+	// By default it is configured for 4 lanes.
+	// Can we remove this?
+	brcm,num-data-lanes = <0x02>;
+	status = "okay";
+
+	port {
+		csi_ep: endpoint {
+			remote-endpoint = <&imx708_ep>;
+			clock-lanes = <0>;
+			data-lanes = <1 2>;
+			clock-noncontinuous;
+		};
+	};
+};
