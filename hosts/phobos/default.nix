@@ -46,11 +46,7 @@
       recommendedTlsSettings = true;
     };
 
-    journald.remote = {
-      enable = true;
-
-      listen = "http";
-    };
+    journald.remote.enable = true;
   };
 
   fileSystems = {
