@@ -29,33 +29,84 @@ final: prev: {
       inherit (prev) fetchpatch;
     in
     {
-      # TODO: This driver is required to use the ISP's fixed function hardware
-      # to debayer in hardware, providing YUYV.
-      # TODO: I'm not sure I can even build all these as a module?
-      # bcm2835-isp = prev.stdenv.mkDerivation {
-      #   pname = "bcm2835-isp";
-      #   version = "${kernel.version}";
-      #
-      #   inherit (kernel) src;
-      #
-      #   hardeningDisable = [ "pic" ];
-      #   nativeBuildInputs = kernel.moduleBuildDependencies;
-      #
-      #   patches = [
-      #     # https://patchwork.kernel.org/cover/14094495
-      #     (fetchpatch {
-      #       name = "0001-platform-raspberrypi-Add-Broadcom-Videocore-shared-memory-support.patch";
-      #       url = "https://patchwork.kernel.org/series/1038382/mbox/";
-      #       hash = "";
-      #     })
-      #     # https://patchwork.kernel.org/cover/14101153
-      #     (fetchpatch {
-      #       name = "0002-media-Add-support-for-Broadcom-RPi-BCM2835-ISP.patch";
-      #       url = "https://patchwork.kernel.org/series/1052591/mbox/";
-      #       hash = "";
-      #     })
-      #   ];
-      # };
+      # Driver responsible for hardware accelerated Bayer conversion in the SoC's ISP.
+      bcm2835-isp = prev.stdenv.mkDerivation {
+        pname = "bcm2835-isp";
+        version = "${kernel.version}";
+
+        inherit (kernel) src;
+
+        hardeningDisable = [ "pic" ];
+        nativeBuildInputs = kernel.moduleBuildDependencies;
+
+        # WARN: fetchpatch, fetchpatch2 and `patch` create false positive patch
+        # conflicts - the fetchers strip file rename information, reorder hunks
+        # and do other nasty things, causing patching to fail when it otherwise
+        # would not (https://github.com/NixOS/nixpkgs/issues/32084); the same
+        # applies for the `patch` command since it cannot handle rename headers
+        # correctly.
+        # Apply the patch series to a local linux tree using `git am` and save
+        # them to a file in a `patch` compatible format instead:
+        # git format-patch f96c828...48ea873 --no-renames --stdout > ...
+        patches = [
+          # https://patchwork.kernel.org/cover/14084995
+          ./0001-staging-Destage-VCHIQ-interface-and-MMAL.patch
+
+          # https://patchwork.kernel.org/cover/14094495
+          ./0002-platform-raspberrypi-Add-Broadcom-Videocore-shared-memory-support.patch
+
+          # https://patchwork.kernel.org/cover/14101153
+          ./0003-media-Add-support-for-Broadcom-RPi-BCM2835-ISP.patch
+        ];
+
+        patchPhase = ''
+          cd drivers
+          cat << 'EOF' > Makefile
+obj-m := vchiq.o vchiq-mmal.o vc-sm-cma.o
+vchiq-y := platform/raspberrypi/vchiq-interface/vchiq_core.o \
+           platform/raspberrypi/vchiq-interface/vchiq_arm.o \
+           platform/raspberrypi/vchiq-interface/vchiq_bus.o \
+           platform/raspberrypi/vchiq-interface/vchiq_debugfs.o \
+           platform/raspberrypi/vchiq-interface/vchiq_dev.o
+vchiq-mmal-y := platform/raspberrypi/vchiq-mmal/
+vc-sm-cma-y := platform/raspberrypi/vc-sm-cma/
+
+modules:
+	$(MAKE) -C "$(KERNEL_DIR)" M="$(PWD)" modules
+
+modules_install:
+	$(MAKE) -C "$(KERNEL_DIR)" M="$(PWD)" modules_install
+EOF
+        '';
+
+        # postPatch = ''
+        #   patchShebangs ./scripts/config
+        # '';
+        #
+        # buildPhase = ''
+        #   make allnoconfig
+        #   ./scripts/config --enable CONFIG_MODULES
+        #   ./scripts/config --module BCM2835_VCHIQ
+        #   ./scripts/config --module VCHIQ_CDEV
+        #   ./scripts/config --module BCM2835_VCHIQ_MMAL
+        #   ./scripts/config --module BCM_VC_SM_CMA
+        #   # ./scripts/config --module VIDEOBUF2_CORE
+        #   # ./scripts/config --module VIDEOBUF2_V4L2
+        #   # ./scripts/config --module VIDEOBUF2_MEMOPS
+        #   # ./scripts/config --module VIDEOBUF2_DMA_CONTIG
+        #   # ./scripts/config --module VIDEOBUF2_VMALLOC
+        #   # ./scripts/config --module VIDEOBUF2_DMA_SG
+        #   # ./scripts/config --module VIDEOBUF2_DVB
+        #   # ./scripts/config --module VIDEO_ISP_BCM2835
+        #   make oldconfig
+        # '';
+
+        makeFlags = [ "KERNEL_DIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build" ];
+        installFlags = [ "INSTALL_MOD_PATH=${placeholder "out"}" ];
+
+        buildTargets = [ "modules" ];
+        installTargets = [ "modules_install" ];
+      };
 
       dw9807-vcm = prev.stdenv.mkDerivation {
         pname = "dw9807-vcm";
