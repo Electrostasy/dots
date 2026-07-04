@@ -26,8 +26,8 @@ in
     # https://github.com/NixOS/nixpkgs/issues/309316
     boot.initrd.systemd.storePaths = with pkgs; [
       "${btrfs-progs}/bin/btrfs"
-      "${util-linux}/bin/mount"
-      "${util-linux}/bin/umount"
+      "${util-linuxMinimal}/bin/mount"
+      "${util-linuxMinimal}/bin/umount"
     ];
 
     boot.initrd.systemd.services."restore-root-on-${utils.escapeSystemdPath cfg.device}" = {
@@ -39,7 +39,7 @@ in
 
       path = [
         pkgs.btrfs-progs
-        pkgs.util-linux
+        pkgs.util-linuxMinimal
       ];
 
       unitConfig.DefaultDependencies = "no";
