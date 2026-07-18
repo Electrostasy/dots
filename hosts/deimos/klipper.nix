@@ -8,6 +8,12 @@
     }
   ];
 
+  swapDevices = [
+    # SHAPER_CALIBRATE can use more memory than the anemic 512M this device
+    # has; add 1G of swap space so that it does not lock up during emergencies.
+    { device = "/var/lib/swapfile"; size = 1024; }
+  ];
+
   services.klipper = {
     enable = true;
 
