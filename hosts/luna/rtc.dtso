@@ -1,0 +1,13 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "raspberrypi,4-compute-module";
+};
+
+&i2c0_0 {
+	rtc: rv3028@52 {
+		compatible = "microcrystal,rv3028";
+		reg = <0x52>;
+	};
+};

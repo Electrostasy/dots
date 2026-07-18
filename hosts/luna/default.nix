@@ -42,6 +42,14 @@
         dtsFile = ./enable-xhci.dtso;
       }
 
+      # Enable the on-board Micro Crystal RV-3028 RTC. CM4 IO Board uses an NXP
+      # PCF85063A RTC that does not have a label in devicetree, so it cannot be
+      # disabled.
+      {
+        name = "rtc-overlay";
+        dtsFile = ./rtc.dtso;
+      }
+
       # Add external PWM fan control controlled with I²C on the J9 FFC
       # connector because the on-board Molex KK 254 3 pin fan headers do not
       # support PWM fan control.
