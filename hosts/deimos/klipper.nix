@@ -20,9 +20,16 @@
             rev = "aa26fc04f444997bd64b30a37414d678107cc04c";
             hash = "sha256-v+8VFkG9iJ43wbXVNpXzdA5sUnRQxhcJIxHPbNoBUp4=";
           };
+          klipper-led_effect = pkgs.fetchFromGitHub {
+            owner = "julianschill";
+            repo = "klipper-led_effect";
+            rev = "266f1049c7172c2fba0da4a52314dcfc0c3bb56f";
+            hash = "sha256-ZGYk1Qdm7GFEiS7xepjqIlo1L/AZZKEEIOWdG9UA+4I=";
+          };
         in
       ''
         cp ${klipper_tmc_autotune}/{autotune_tmc.py,motor_constants.py,motor_database.cfg} $out/lib/klipper/extras
+        cp ${klipper-led_effect}/src/led_effect.py $out/lib/klipper/extras
 
         ${oldAttrs.postInstall or ""}
       '';
