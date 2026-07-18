@@ -129,6 +129,21 @@
       fileSystems = [ "/mnt/array" ];
     };
 
+    smartd = {
+      enable = true;
+
+      # Schedule a short self-test every Saturday from 05:00 and a long
+      # self-test every month on the 28th from midnight.
+      defaults.monitored = "-a -n standby -s (S/../../6/05|L/../28/./00)";
+      devices = [
+        { device = "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-1.0"; }
+        { device = "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-2.0"; }
+        { device = "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-3.0"; }
+        { device = "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-4.0"; }
+        { device = "/dev/disk/by-path/platform-fd500000.pcie-pci-0000:01:00.0-ata-5.0"; }
+      ];
+    };
+
     hddfancontrol = {
       enable = true;
 
