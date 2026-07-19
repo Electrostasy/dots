@@ -1,9 +1,16 @@
 { config, ... }:
 
 {
-  sops.secrets.grafanaSecretKey = {
-    owner = config.users.users.grafana.name;
-    group = config.users.groups.grafana.name;
+  sops.secrets = {
+    nginxGrafanaHtpasswd = {
+      owner = config.users.users.nginx.name;
+      group = config.users.groups.nginx.name;
+    };
+
+    grafanaSecretKey = {
+      owner = config.users.users.grafana.name;
+      group = config.users.groups.grafana.name;
+    };
   };
 
   fileSystems = {
@@ -73,7 +80,13 @@
     locations."/grafana/" = {
       recommendedProxySettings = true;
       proxyWebsockets = true;
-      proxyPass = "http://localhost:${toString config.services.grafana.settings.server.http_port}";
+      proxyPass = "http://127.0.0.1:${toString config.services.grafana.settings.server.http_port}";
+      basicAuthFile = config.sops.secrets.nginxGrafanaHtpasswd.path;
+
+      # TODO: Set X-Webauth-Role, default is Viewer.
+      extraConfig = ''
+        proxy_set_header X-Remote-User $remote_user;
+      '';
     };
   };
 
@@ -87,7 +100,7 @@
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "http://localhost:${toString config.services.prometheus.port}";
+          url = "http://127.0.0.1:${toString config.services.prometheus.port}";
           isDefault = true;
           # Needs to match the scrape_interval or else $__rate_interval will break:
           # https://community.grafana.com/t/agent-scrape-interval-break-cpu-chart/110491/8
@@ -113,6 +126,29 @@
         feedback_links_enabled = false;
         check_for_plugin_updates = false;
       };
+
+      log = {
+        mode = "console";
+      };
+
+      auth = {
+        disable_login_form = true;
+      };
+
+      "auth.basic".enabled = false;
+
+      "auth.proxy" = {
+        enabled = true;
+        header_name = "X-REMOTE-USER";
+        header_property = "username";
+        auto_sign_up = true;
+        whitelist = "127.0.0.1";
+      };
+
+      help.enabled = false;
+      profile.enabled = false;
+      news.news_feed_enabled = false;
+      metrics.enabled = false;
     };
   };
 }
