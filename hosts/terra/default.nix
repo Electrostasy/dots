@@ -11,7 +11,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
-    ../../profiles/telemetry.nix
+    ../../profiles/telemetry
     ../../profiles/users/electro
     ../luna/nfs-share.nix
     ./audio.nix

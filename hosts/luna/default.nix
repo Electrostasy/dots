@@ -6,7 +6,7 @@
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
-    ../../profiles/telemetry.nix
+    ../../profiles/telemetry
     ../../profiles/users/electro
     ../../profiles/users/sukceno
     ../../profiles/zramswap.nix

@@ -2,6 +2,10 @@
 
 {
   sops.secrets = {
+    # NOTE: When updating the telegraf credentials, they need to be updated in
+    # the profiles/telemetry module too! Update using:
+    # $ openssl rand -base64 <length>
+    # $ htpasswd -nb telegraf <password>
     nginxGrafanaHtpasswd = {
       owner = config.users.users.nginx.name;
       group = config.users.groups.nginx.name;
@@ -49,21 +53,9 @@
     scrapeConfigs = [
       {
         job_name = "node";
-
-        # Relabel "instance" from "host:port" to "host":
-        # https://github.com/prometheus/docs/issues/2296#issuecomment-1527133892
-        relabel_configs = [
-          {
-            source_labels = [ "__address__" ];
-            regex = "(.+):(\\d+)";
-            target_label = "instance";
-            replacement = "$1";
-          }
-        ];
-
         static_configs = [
           {
-            targets = map (host: "${host}:${toString config.services.prometheus.exporters.node.port}") [
+            targets = map (host: "${host}:9100") [
               "luna"
               "phobos"
               "terra"
