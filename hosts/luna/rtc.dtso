@@ -1,3 +1,8 @@
+/*
+ * DT overlay for enabling the on-board Micro Crystal RV-3028 RTC on the Exaviz
+ * Interceptor carrier board v1.0 for the Raspberry Pi Compute Module 4.
+ */
+
 /dts-v1/;
 /plugin/;
 
@@ -6,6 +11,10 @@
 };
 
 &i2c0_0 {
+	/*
+	 * The Raspberry Pi Compute Module 4 IO Board uses an NXP PCF85063A RTC
+	 * that does not have a label in devicetree, so it cannot be disabled.
+	 */
 	rtc: rv3028@52 {
 		compatible = "microcrystal,rv3028";
 		reg = <0x52>;

@@ -1,3 +1,12 @@
+/*
+ * DT overlay for enabling the on-board USB ports, which requires enabling the
+ * xHCI controller.
+ *
+ * If the Raspberry Pi firmware tries to access the dwc or xHCI when the
+ * firmware has not initialized it, the system will freeze - "otg_mode=1" must
+ * be specified in config.txt.
+ */
+
 /dts-v1/;
 /plugin/;
 

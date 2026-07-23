@@ -1,3 +1,12 @@
+/*
+ * DT overlay for adding external PWM fan control to the Exaviz Interceptor
+ * carrier board v1.0 for the Raspberry Pi Compute Module 4.
+ *
+ * This expects a Microchip EMC2305 fan controller connected to I²C on the J9
+ * FFC connector (pins 10, 11, 12, 13 are 3.3V, ID_SD, ID_SC, GND), with an
+ * external 4.7kΩ pull up to 3.3V on ADDR_SEL for the 0x2e address.
+ */
+
 /dts-v1/;
 /plugin/;
 

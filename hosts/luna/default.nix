@@ -27,43 +27,26 @@
     ../../profiles/image/platform/raspberrypi-cm4.nix
   ];
 
-  # An Axzez (now Exaviz) Interceptor carrier board v1.0 for the Raspberry Pi
-  # Compute Module 4 is used.
   hardware.deviceTree = {
-    # There is no open source devicetree for this carrier board, but the vendor
-    # devicetree when decompiled is very similar to the official Raspberry Pi
-    # Compute Module 4 IO Board, so it is extended with overlays.
+    # There is no open source devicetree for this Exaviz Interceptor carrier
+    # board v1.0 for the Raspberry Pi Compute Module 4. The decompiled vendor
+    # devicetree is the most similar to the Raspberry Pi Compute Module 4 IO
+    # Board, so it is used as the base instead.
     name = "broadcom/bcm2711-rpi-cm4-io.dtb";
 
     overlays = [
-      # Enable the on-board USB ports by enabling the xHCI controller.
       {
         name = "enable-xhci-overlay";
         dtsFile = ./enable-xhci.dtso;
       }
-
-      # Enable the on-board Micro Crystal RV-3028 RTC. CM4 IO Board uses an NXP
-      # PCF85063A RTC that does not have a label in devicetree, so it cannot be
-      # disabled.
       {
         name = "rtc-overlay";
         dtsFile = ./rtc.dtso;
       }
-
-      # Add external PWM fan control controlled with I²C on the J9 FFC
-      # connector because the on-board Molex KK 254 3 pin fan headers do not
-      # support PWM fan control.
       {
         name = "fan-control-overlay";
         dtsFile = ./fan-control.dtso;
       }
-
-      # Fix SATA drives connected to the on-board JMB585 SATA-PCIe bridge not
-      # being found on Linux 6.18.24 or later by dropping the DMA ranges down
-      # to 2 GB. Since 6.18.24, JMB585 is forced into 32-bit DMA because 64-bit
-      # DMA is broken and Raspberry Pi has issues with 32-bit DMA:
-      # https://github.com/artmoty-dev/n5pro-jmb585-fix#whats-happening
-      # https://github.com/raspberrypi/linux/issues/4848#issuecomment-1028191675
       {
         name = "pcie-32bit-dma-overlay";
         dtsFile = ./pcie-32bit-dma.dtso;
