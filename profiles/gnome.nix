@@ -104,7 +104,7 @@
       amberol
       aria2
       eyedropper
-      # f3d # vtk build failure, needs https://github.com/NixOS/nixpkgs/pull/537721.
+      f3d
       fd
       ffmpegthumbnailer
       file
