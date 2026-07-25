@@ -64,7 +64,7 @@
   }];
 
   environment.systemPackages = with pkgs; [
-    # freecad # vtk build failure, needs https://github.com/NixOS/nixpkgs/pull/537721.
+    freecad
     gimp
     kicad
     libreoffice-fresh
