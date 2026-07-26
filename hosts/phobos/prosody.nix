@@ -57,6 +57,11 @@
     httpPorts = [ 5280 ];
     httpsPorts = [ 5281 ];
 
+    modules = {
+      bosh = true;
+      websocket = true;
+    };
+
     extraConfig = ''
       c2s_ports = { 5222 }
       s2s_ports = { 5269 }
