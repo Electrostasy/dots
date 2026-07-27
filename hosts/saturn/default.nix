@@ -240,6 +240,7 @@
     gimp
     gptfdisk # `gdisk`, `sgdisk`.
     imagemagick # `magick`.
+    inetutils # `whois`, ...
     jq
     libewf
     libreoffice-fresh
