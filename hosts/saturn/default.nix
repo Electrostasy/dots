@@ -240,6 +240,7 @@
     gimp
     gptfdisk # `gdisk`, `sgdisk`.
     imagemagick # `magick`.
+    jq
     libewf
     libreoffice-fresh
     mkvtoolnix-cli # `mkvextract`, `mkvinfo`, `mkvmerge`, `mkvpropedit`.
