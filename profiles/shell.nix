@@ -96,20 +96,23 @@ in
           return 1
         end
 
-        echo 'The following executables are provided by this ephemeral shell:'
-        for entry in $PATH
-          # Some programs installed with Nix will append themselves to PATH, so
-          # we only check the entries prepended to PATH by Nix.
-          if not string match -q '/nix/store/*' -- $entry
+        # Some programs installed with Nix will append themselves to PATH, so
+        # we only check the entries prepended to PATH by Nix by breaking on the
+        # first non-store path.
+        set -l paths
+        for path in $PATH
+          if not string match -q '/nix/store/*' -- $path
             break
           end
 
-          # Assuming the bin, libexec, etc. directories are added to PATH, we
-          # can get the package name from the parent directory.
-          echo "$(path dirname $entry | string sub --start 45):"
-          for executable in (path basename $entry/*)
-            echo "  $executable"
-          end
+          set -a paths $path
+        end
+
+        if test (count $paths) -gt 0
+          echo 'The following executables are provided by this ephemeral shell:'
+          printf '  %s\n' (path filter --type file --perm exec $paths/*)
+        else
+          echo 'No executables are provided by this ephemeral shell.'
         end
       end
     '';
