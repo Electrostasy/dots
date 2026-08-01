@@ -278,6 +278,8 @@
           gtk-enable-primary-paste = false;
           gtk-theme = "adw-gtk3-dark";
           icon-theme = "MoreWaita";
+          font-name = "Inter 11";
+          document-font-name = "Inter 11";
           monospace-font-name = "Recursive 10 @MONO=1,CRSV=0,wght=400";
           show-battery-percentage = true;
         };
