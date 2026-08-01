@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   sops.secrets.tailscaleKey.sopsFile = ../hosts/phobos/secrets.yaml;
@@ -35,4 +35,8 @@
     Match exec "timeout 0.05s tailscale ip %h &> /dev/null"
       Port 3101
   '';
+
+  # Address a race condition when Tailscale tries to connect to the
+  # controlplane while Mullvad is initializing, leaving Tailscale unconnected.
+  systemd.services.tailscaled.before = lib.mkIf config.services.mullvad-vpn.enable [ "mullvad-daemon.service" ];
 }
