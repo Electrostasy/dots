@@ -32,7 +32,7 @@
   systemd.network.wait-online.ignoredInterfaces = [ config.services.tailscale.interfaceName ];
 
   programs.ssh.extraConfig = ''
-    Match exec "timeout 0.1s tailscale ip %h"
+    Match exec "timeout 0.05s tailscale ip %h &> /dev/null"
       Port 3101
   '';
 }
