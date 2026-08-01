@@ -1,6 +1,10 @@
 { pkgs, lib, ... }:
 
 {
+  preservation.preserveAt."/persist/cache".users.electro.directories = [
+    ".cache/fontconfig"
+  ];
+
   fonts = {
     enableDefaultPackages = false;
 

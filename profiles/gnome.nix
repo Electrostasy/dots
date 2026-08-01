@@ -57,7 +57,6 @@
 
   preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
-      ".cache/fontconfig"
       ".cache/gajim"
       ".cache/keepassxc"
       ".cache/tealdeer"
