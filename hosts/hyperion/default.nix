@@ -32,6 +32,15 @@ in
         name = "red-led-on-panic-overlay";
         dtsFile = ./red-led-on-panic.dtso;
       }
+
+      # TODO: Fan control is a bit flaky, sometimes pwm-fan doesn't probe, and
+      # when it does probe, it's 100% duty cycle until emul_temp is touched
+      # once, then it seems to work fine. Until then, can't control pwm
+      # manually in sysfs.
+      {
+        name = "fan-control-overlay";
+        dtsFile = ./fan-control.dtso;
+      }
     ];
   };
 

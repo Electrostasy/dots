@@ -1,0 +1,84 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "armsom,sige5";
+};
+
+&{/} {
+	fan: pwm-fan {
+		compatible = "pwm-fan";
+		cooling-levels = <0 32 64 128 255>;
+		fan-supply = <&vcc_5v0_sys>;
+		pwms = <&pwm2_8ch_7 0 50000 0>; /* 20 kHz -> 50000 ns */
+		#cooling-cells = <2>;
+	};
+};
+
+&pwm2_8ch_7 {
+	status = "okay";
+	pinctrl-0 = <&pwm2m3_ch7>;
+};
+
+&package_thermal {
+	polling-delay = <2000>;
+
+	trips {
+		package_trip_tepid: tepid {
+			temperature = <50000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_trip_warm: warm {
+			temperature = <55000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_trip_hot: hot {
+			temperature = <65000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_trip_vhot: vhot {
+			temperature = <75000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		package_trip_crit: crit {
+			temperature = <115000>;
+			hysteresis = <0>;
+			type = "critical";
+		};
+	};
+
+	cooling-maps {
+		map0 {
+			trip = <&package_trip_tepid>;
+			cooling-device = <&fan 0 0>;
+		};
+
+		map1 {
+			trip = <&package_trip_warm>;
+			cooling-device = <&fan 1 1>;
+		};
+
+		map2 {
+			trip = <&package_trip_hot>;
+			cooling-device = <&fan 2 2>;
+		};
+
+		map3 {
+			trip = <&package_trip_vhot>;
+			cooling-device = <&fan 3 3>;
+		};
+
+		map4 {
+			trip = <&package_trip_crit>;
+			cooling-device = <&fan 4 4>;
+		};
+	};
+};
