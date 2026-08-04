@@ -57,11 +57,6 @@
     httpPorts = [ 5280 ];
     httpsPorts = [ 5281 ];
 
-    modules = {
-      bosh = true;
-      websocket = true;
-    };
-
     extraConfig = ''
       c2s_ports = { 5222 }
       s2s_ports = { 5269 }
@@ -94,17 +89,32 @@
     };
   };
 
-  services.nginx.virtualHosts."files.0x6776.lt" = {
-    forceSSL = true;
-    useACMEHost = "0x6776.lt";
-
-    locations."/xmpp" = {
-      proxyPass = "http://127.0.0.1:5280/";
-      recommendedProxySettings = true;
-      extraConfig = ''
-        proxy_buffering off;
-        tcp_nodelay on;
+  services.nginx.virtualHosts = {
+    "0x6776.lt".locations."= /.well-known/host-meta" = {
+      alias = pkgs.writeText "host-meta.xml" ''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd.xsd">
+        </XRD>
       '';
+
+      extraConfig = ''
+        default_type application/xrd+xml;
+        add_header Cache-Control "public, max-age=86400";
+      '';
+    };
+
+    "files.0x6776.lt" = {
+      forceSSL = true;
+      useACMEHost = "0x6776.lt";
+
+      locations."/xmpp" = {
+        proxyPass = "http://127.0.0.1:5280/";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          proxy_buffering off;
+          tcp_nodelay on;
+        '';
+      };
     };
   };
 
