@@ -12,7 +12,7 @@
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
     ../../profiles/users/electro
-    ../luna/nfs-share.nix
+    ../pandora/nfs-share.nix
   ];
 
   nixpkgs = {

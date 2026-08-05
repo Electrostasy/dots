@@ -1,13 +1,13 @@
 {
   imports = [
-    ../luna/nfs-share.nix
+    ../pandora/nfs-share.nix
     ./acme.nix
   ];
 
-  # NOTE: /mnt/luna/uploads needs execute permissions for nginx to be able to
+  # NOTE: /mnt/pandora/uploads needs execute permissions for nginx to be able to
   # traverse it!
   fileSystems."/srv/http/static" = {
-    device = "/mnt/luna/uploads";
+    device = "/mnt/pandora/uploads";
     fsType = "none";
     options = [ "bind" ];
   };

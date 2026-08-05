@@ -13,7 +13,7 @@
     ../../profiles/tailscale.nix
     ../../profiles/telemetry.nix
     ../../profiles/users/electro
-    ../luna/nfs-share.nix
+    ../pandora/nfs-share.nix
     ./audio.nix
     ./gaming.nix
   ];

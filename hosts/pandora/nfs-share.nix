@@ -1,8 +1,8 @@
 { lib, ... }:
 
 {
-  fileSystems."/mnt/luna" = {
-    device = "luna:/";
+  fileSystems."/mnt/pandora" = {
+    device = "pandora:/";
     fsType = "nfs";
     options = [
       # Prevent lockups on timeout/error.
