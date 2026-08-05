@@ -7,11 +7,11 @@
     ../../profiles/gnome.nix
     ../../profiles/mpv.nix
     ../../profiles/neovim
+    ../../profiles/nfs-share.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
     ../../profiles/users/electro
-    ../pandora/nfs-share.nix
     ./samba.nix
     ./ups.nix
     ./vfio.nix

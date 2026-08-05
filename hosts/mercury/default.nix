@@ -8,11 +8,11 @@
     ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
+    ../../profiles/nfs-share.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
     ../../profiles/users/electro
-    ../pandora/nfs-share.nix
   ];
 
   nixpkgs = {

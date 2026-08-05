@@ -1,7 +1,7 @@
 { lib, ... }:
 
 {
-  fileSystems."/mnt/pandora" = {
+  fileSystems."/mnt/box" = {
     device = "pandora:/";
     fsType = "nfs";
     options = [

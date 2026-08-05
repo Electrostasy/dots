@@ -1,13 +1,12 @@
 {
   imports = [
-    ../pandora/nfs-share.nix
+    ../../profiles/nfs-share.nix
     ./acme.nix
   ];
 
-  # NOTE: /mnt/pandora/uploads needs execute permissions for nginx to be able to
-  # traverse it!
+  # NOTE: nginx requires execute permissions for traversal.
   fileSystems."/srv/http/static" = {
-    device = "/mnt/pandora/uploads";
+    device = "/mnt/box/uploads";
     fsType = "none";
     options = [ "bind" ];
   };
