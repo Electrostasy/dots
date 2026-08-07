@@ -104,17 +104,17 @@
     };
 
     script = ''
-      namespaces=($(headscale namespaces list | sed -r '/^\s*$/d;1d;$d' | cut -d'|' -f2 | tr -d ' '))
+      namespaces=($(headscale users list | sed -r '/^\s*$/d;1d;$d' | cut -d'|' -f2 | tr -d ' '))
       if [ "$namespaces" = 'sol' ]; then
         exit 0
       fi
 
       if [ -z "$namespaces" ]; then
-        headscale namespaces create sol
+        headscale users create sol
 
         sqlite3 ${config.users.users.headscale.home}/db.sqlite << EOF
 INSERT INTO pre_auth_keys (key, user_id, reusable, ephemeral, created_at, expiration)
-VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 0, datetime('now'), datetime('now', '+1 year'));
+VALUES ('$(systemd-creds cat 'tailscaleKey')', 1, 1, 0, datetime('now'), datetime('now', '+10 year'));
 EOF
       fi
     '';
