@@ -124,9 +124,6 @@ vim.keymap.set('n', '<C-Up>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Down>', '<C-w>j', { silent = true })
 vim.keymap.set('n', '<C-Right>', '<C-w>l', { silent = true })
 
-vim.keymap.set('v', '<Space>', require('ts_select').expand)
-vim.keymap.set('v', '<C-Space>', require('ts_select').contract)
-
 vim.keymap.set({ 'n', 'v' }, 'gs', require('ts_sort').sort_nodes_on_cursor)
 
 vim.keymap.set('n', '<leader>e', function()
