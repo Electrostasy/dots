@@ -84,22 +84,6 @@
     enable = true;
     analysis.enable = true;
 
-    package = pkgs.moonraker.override {
-      python3 = pkgs.python3.override {
-        packageOverrides = final: prev: {
-          paho-mqtt = prev.paho-mqtt.overrideAttrs (prevAttrs: {
-            disabledTests = prevAttrs.disabledTests or [] ++ [
-              # https://github.com/NixOS/nixpkgs/issues/542586
-              "test_03_publish_helper_qos0"
-              "test_03_publish_helper_qos0_v5"
-              "test_03_publish_helper_qos1_disconnect"
-              "test_08_ssl_fake_cacert"
-            ];
-          });
-        };
-      };
-    };
-
     allowSystemControl = true;
 
     settings = {
