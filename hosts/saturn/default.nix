@@ -1,4 +1,4 @@
-{ config, pkgs, lib, flake, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -20,8 +20,8 @@
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [
-      flake.overlays.libewf-fuse
-      flake.overlays.qemu-unshare-fix
+      (import ../../overlays/libewf-fuse.nix)
+      (import ../../overlays/qemu-unshare-fix)
     ];
   };
 

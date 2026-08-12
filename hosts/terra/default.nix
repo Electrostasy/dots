@@ -1,4 +1,4 @@
-{ pkgs, flake, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -21,7 +21,7 @@
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
     overlays = [
-      flake.outputs.overlays.qemu-unshare-fix
+      (import ../../overlays/qemu-unshare-fix)
     ];
   };
 

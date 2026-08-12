@@ -1,4 +1,4 @@
-{ config, pkgs, lib, modulesPath, flake, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [ "${modulesPath}/profiles/perlless.nix" ];
@@ -57,7 +57,7 @@
   nixpkgs = {
     config.allowAliases = false;
     overlays = [
-      flake.outputs.overlays.packages
+      (import ../overlays/packages.nix)
     ];
   };
   

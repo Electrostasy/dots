@@ -17,8 +17,6 @@ lib.pipe ./. [
       self.inputs.sops-nix.nixosModules.default
       self.outputs.nixosModules.default
       {
-        _module.args.flake = self;
-
         sops.defaultSopsFile = ./${host}/secrets.yaml;
 
         networking.hostName = lib.removeSuffix ".nix" host;

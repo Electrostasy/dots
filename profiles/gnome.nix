@@ -1,8 +1,8 @@
-{ config, pkgs, lib, flake, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   nixpkgs.overlays = [
-    flake.outputs.overlays.f3d-interactive
+    (import ../overlays/f3d-interactive.nix)
   ];
 
   boot = {

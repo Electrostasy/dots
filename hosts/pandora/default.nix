@@ -1,4 +1,4 @@
-{ config, flake, modulesPath, ... }:
+{ config, modulesPath, ... }:
 
 {
   imports = [
@@ -17,7 +17,7 @@
   nixpkgs = {
     hostPlatform.system = "aarch64-linux";
     overlays = [
-      flake.outputs.overlays.emc2305-patched
+      (import ../../overlays/emc2305-patched)
     ];
   };
 

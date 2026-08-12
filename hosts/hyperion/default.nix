@@ -1,7 +1,7 @@
-{ pkgs, modulesPath, flake, ... }:
+{ pkgs, modulesPath, ... }:
 
 let
-  pkgs' = import flake.inputs.nixpkgs {
+  pkgs' = import pkgs.path {
     crossSystem = "aarch64-linux";
     localSystem = "x86_64-linux";
   };
