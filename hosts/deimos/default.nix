@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -53,6 +54,8 @@
       settings.Upload.URL = "http://phobos.sol.tailnet.0x6776.lt";
     };
   };
+
+  networking.hostName = "deimos";
 
   networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
     allowedTCPPorts = [ 80 443 ];

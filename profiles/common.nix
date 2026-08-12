@@ -4,14 +4,14 @@
   imports = [ "${modulesPath}/profiles/perlless.nix" ];
 
   system = {
-    configurationRevision = flake.rev or "dirty"; # for `nixos-version`.
-
     forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
 
     nixos-init.enable = true;
   };
 
   sops = {
+    defaultSopsFile = ../hosts/${config.networking.hostName}/secrets.yaml;
+
     age = {
       keyFile = "/var/lib/sops-nix/keys.txt";
       sshKeyPaths = [ ];

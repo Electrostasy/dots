@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -55,6 +56,8 @@
       options = [ "umask=0077" ];
     };
   };
+
+  networking.hostName = "mars";
 
   services.journald = {
     storage = "volatile";

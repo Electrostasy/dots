@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../profiles/common.nix
     ../../profiles/firefox.nix
     ../../profiles/fonts.nix
     ../../profiles/gnome.nix
@@ -142,6 +143,8 @@
   };
 
   networking = {
+    hostName = "saturn";
+
     networkmanager = {
       enable = true;
 

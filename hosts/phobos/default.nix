@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -71,17 +72,21 @@
     };
   };
 
-  networking.firewall = {
-    enable = true;
+  networking = {
+    hostName = "phobos";
 
-    allowedTCPPorts = [
-      80
-      443
-    ];
+    firewall = {
+      enable = true;
 
-    interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
-      config.services.journald.remote.port
-    ];
+      allowedTCPPorts = [
+        80
+        443
+      ];
+
+      interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
+        config.services.journald.remote.port
+      ];
+    };
   };
 
   system.stateVersion = "25.05";

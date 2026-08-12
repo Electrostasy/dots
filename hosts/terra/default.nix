@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../profiles/common.nix
     ../../profiles/firefox.nix
     ../../profiles/fonts.nix
     ../../profiles/gnome.nix
@@ -111,6 +112,8 @@
       ".local/share/kicad"
     ];
   };
+
+  networking.hostName = "terra";
 
   systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
   services.snapper = {

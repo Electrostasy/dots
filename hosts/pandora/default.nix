@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -84,6 +85,8 @@
     fsType = "btrfs";
     options = [ "noatime" ];
   };
+
+  networking.hostName = "pandora";
 
   systemd.network.networks."40-dhcp-ipv4-only" = {
     matchConfig.Name = "en*";

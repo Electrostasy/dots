@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../profiles/common.nix
     ../../profiles/firefox.nix
     ../../profiles/fonts.nix
     ../../profiles/gnome.nix
@@ -174,6 +175,8 @@
   programs.dconf.profiles.user.databases = [{
     settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
   }];
+
+  networking.hostName = "venus";
 
   systemd.network = {
     networks."40-wireless" = {

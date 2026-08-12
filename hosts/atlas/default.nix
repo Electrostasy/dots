@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -50,6 +51,8 @@
     fsType = "btrfs";
     options = [ "noatime" ];
   };
+
+  networking.hostName = "atlas";
 
   services.journald = {
     storage = "volatile";

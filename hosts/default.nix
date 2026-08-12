@@ -16,12 +16,7 @@ lib.pipe ./. [
       self.inputs.preservation.nixosModules.default
       self.inputs.sops-nix.nixosModules.default
       self.outputs.nixosModules.default
-      {
-        sops.defaultSopsFile = ./${host}/secrets.yaml;
-
-        networking.hostName = lib.removeSuffix ".nix" host;
-      }
-      ../profiles/common.nix
+      { system.configurationRevision = self.rev or "dirty"; }
       ./${host}
     ];
   }))

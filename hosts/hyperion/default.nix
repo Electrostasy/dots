@@ -10,6 +10,7 @@ in
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/common.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -85,6 +86,8 @@ in
       supportedFilesystems.ext4 = true;
     };
   };
+
+  networking.hostName = "hyperion";
 
   services.journald = {
     storage = "volatile";

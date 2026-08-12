@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../profiles/common.nix
     ../../profiles/firefox.nix
     ../../profiles/fonts.nix
     ../../profiles/gnome.nix
@@ -126,6 +127,8 @@
       TIMELINE_LIMIT_YEARLY = 0;
     };
   };
+
+  networking.hostName = "mercury";
 
   networking.networkmanager.ensureProfiles = {
     environmentFiles = [ config.sops.secrets.networkmanager.path ];
