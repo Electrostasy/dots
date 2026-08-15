@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   sops.secrets.hostapd_wlan0 = { };
@@ -67,7 +67,9 @@
         # regression, thus we cannot authenticate:
         # https://github.com/NixOS/nixpkgs/pull/263138
         # https://github.com/raspberrypi/linux/issues/3619
-        settings.ieee80211w = 2;
+        # nixpkgs sets MFP to optional (1) when auth mode is wpa2-sha256:
+        # https://github.com/NixOS/nixpkgs/commit/7ae1e7bb8114522e5929385532400a5c4e043b35
+        settings.ieee80211w = lib.mkForce 2;
       };
     };
   };
