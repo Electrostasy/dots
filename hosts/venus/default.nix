@@ -9,6 +9,7 @@
     ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
+    ../../profiles/networking.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/tailscale.nix
@@ -177,18 +178,6 @@
   }];
 
   networking.hostName = "venus";
-
-  systemd.network = {
-    networks."40-wireless" = {
-      matchConfig.WLANInterfaceType = "station";
-      dhcpV4Config.Anonymize = true;
-    };
-
-    links."40-wireless" = {
-      matchConfig.WLANInterfaceType = "station";
-      linkConfig.MACAddressPolicy = "random";
-    };
-  };
 
   system.stateVersion = "23.11";
 }

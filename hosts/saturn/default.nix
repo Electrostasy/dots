@@ -8,6 +8,7 @@
     ../../profiles/gnome.nix
     ../../profiles/mpv.nix
     ../../profiles/neovim
+    ../../profiles/networking.nix
     ../../profiles/nfs-share.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix

@@ -92,42 +92,6 @@
     };
   };
 
-  networking = {
-    nameservers = [
-      "9.9.9.9"
-      "1.1.1.1"
-    ];
-
-    timeServers = [
-      "1.europe.pool.ntp.org"
-      "1.lt.pool.ntp.org"
-      "2.europe.pool.ntp.org"
-    ];
-
-    # This defaults to true because of `networking.networkmanager`.
-    # Use 999 for a higher priority than the default 1000.
-    modemmanager.enable = lib.mkOverride 999 false;
-
-    networkmanager = {
-      wifi.backend = lib.mkDefault "iwd";
-
-      # Disable IWD's autoconnect mechanism to have only NetworkManager
-      # initiate connections. If left up to IWD, it will never autoconnect to
-      # any networks configured through the NetworkManager NixOS option
-      # `ensureProfiles`.
-      settings = lib.mkIf (config.networking.networkmanager.wifi.backend == "iwd") {
-        device."wifi.iwd.autoconnect" = false;
-      };
-    };
-
-    useNetworkd = lib.mkDefault true; # translate `networking.*` into `systemd.network`.
-    useDHCP = lib.mkDefault true;
-  };
-
-  # Only one can be enabled, otherwise we will run into errors saying we have
-  # no network.
-  systemd.network.wait-online.enable = !(config.networking.networkmanager.enable && config.systemd.services.NetworkManager-wait-online.enable);
-
   environment = {
     # We do not need an explanation why we cannot run dynamically linked,
     # unpatched binaries on NixOS.

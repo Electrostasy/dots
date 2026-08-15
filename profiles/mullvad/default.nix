@@ -55,28 +55,24 @@
   # nftables chain as well as the dispatcher script to add the route. Without
   # these, a host running Mullvad, even with LAN sharing enabled, will
   # completely drop all ICMP and other incoming requests over Tailscale.
-  networking.nftables = lib.mkIf config.services.tailscale.enable {
-    enable = true;
+  networking.nftables.tables."tailscale-mullvad-compat" = lib.mkIf config.services.tailscale.enable {
+    family = "inet";
 
-    tables."ts-mullvad" = {
-      family = "inet";
+    # Marks traffic with a connection tracking mark (0x00000f41) to get
+    # through the firewall and a meta mark (0x6d6f6c65) to route the traffic
+    # outside the tunnel:
+    # https://mullvad.net/en/help/split-tunneling-with-linux-advanced#allow-incoming
+    content = ''
+      chain prerouting {
+        type filter hook prerouting priority -100; policy accept;
+        ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+      }
 
-      # Marks traffic with a connection tracking mark (0x00000f41) to get
-      # through the firewall and a meta mark (0x6d6f6c65) to route the traffic
-      # outside the tunnel:
-      # https://mullvad.net/en/help/split-tunneling-with-linux-advanced#allow-incoming
-      content = ''
-        chain prerouting {
-          type filter hook prerouting priority -100; policy accept;
-          ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
-        }
-
-        chain outgoing {
-          type route hook output priority -100; policy accept;
-          ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
-        }
-      '';
-    };
+      chain outgoing {
+        type route hook output priority -100; policy accept;
+        ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+      }
+    '';
   };
 
   services.networkd-dispatcher = lib.mkIf config.services.tailscale.enable {

@@ -9,6 +9,7 @@
     ../../profiles/mpv.nix
     ../../profiles/mullvad
     ../../profiles/neovim
+    ../../profiles/networking.nix
     ../../profiles/nfs-share.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
@@ -166,18 +167,6 @@
 
         ipv4.method = "auto";
       };
-    };
-  };
-
-  systemd.network = {
-    networks."40-wireless" = {
-      matchConfig.WLANInterfaceType = "station";
-      dhcpV4Config.Anonymize = true;
-    };
-
-    links."40-wireless-random-mac" = {
-      matchConfig.WLANInterfaceType = "station";
-      linkConfig.MACAddressPolicy = "random";
     };
   };
 
