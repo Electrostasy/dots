@@ -57,6 +57,7 @@
         static_configs = [
           {
             targets = map (host: "${host}:${toString config.services.prometheus.exporters.node.port}") [
+              "atlas"
               "pandora"
               "phobos"
               "terra"
