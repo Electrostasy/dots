@@ -59,6 +59,7 @@
             targets = map (host: "${host}:${toString config.services.prometheus.exporters.node.port}") [
               "atlas"
               "deimos"
+              "hyperion"
               "pandora"
               "phobos"
               "terra"
