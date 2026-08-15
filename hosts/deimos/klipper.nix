@@ -80,6 +80,11 @@
   # Required for Moonraker's allowSystemControl.
   security.polkit.enable = true;
 
+  networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 80 443 ];
+  };
+
   services.moonraker = {
     enable = true;
     analysis.enable = true;
