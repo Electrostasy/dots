@@ -60,6 +60,7 @@
               "atlas"
               "deimos"
               "hyperion"
+              "mars"
               "pandora"
               "phobos"
               "terra"
