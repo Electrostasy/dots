@@ -31,7 +31,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     mkdir -p $out/share/vintagestory $out/bin
     cp -r * $out/share/vintagestory
-  '' + lib.optionalString stdenvNoCC.isAarch64 ''
+  '' + lib.optionalString stdenvNoCC.hostPlatform.isAarch64 ''
     rm -f $out/share/vintagestory/VintagestoryServer
     rm -f $out/share/vintagestory/VintagestoryServer.dll
     rm -f $out/share/vintagestory/VintagestoryServer.deps.json
