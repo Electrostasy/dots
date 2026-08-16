@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    ../../profiles/networking.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
     ../../profiles/users/electro
@@ -46,10 +47,7 @@
   # Required for Wi-Fi.
   hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
-  networking.firewall = {
-    allowedTCPPorts = [ 8080 ];
-    allowedUDPPorts = [ 8080 ];
-  };
+  networking.hostName = "deimos-imx708";
 
   networking.networkmanager = {
     enable = true;
@@ -98,6 +96,50 @@
             psk = "$PSK_PHOBOS_WIFI";
           };
         };
+      };
+    };
+  };
+
+  systemd = {
+    services.wifi-watchdog = {
+      description = "Monitor wireless connectivity state and restore it if lost";
+      path = [
+        config.networking.networkmanager.package
+        pkgs.gnugrep
+        pkgs.coreutils-full
+      ];
+
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "wifi-watchdog.sh" ''
+          if [[ $(nmcli -g STATE general status) == 'connected' ]]; then
+            exit 0
+          fi
+
+          while read -r conn; do
+            if [ -z "$conn" ] || [[ $conn == 'lo' ]]; then
+              continue
+            fi
+
+            if nmcli connection up "$conn"; then
+              echo "Connection '$conn' successfully brought up!"
+              exit 0
+            fi
+          done < <(nmcli -g NAME,TYPE connection show | grep 802-11-wireless | cut -d ':' -f 1)
+
+          echo 'Could not bring up any configured connection!' >&2
+          exit 1
+        '';
+      };
+    };
+
+    timers.wifi-watchdog = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "1m";
+        OnUnitActiveSec = "1m";
+        Unit = "wifi-watchdog.service";
       };
     };
   };
