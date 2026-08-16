@@ -1,4 +1,4 @@
-{ config, pkgs, flake, ... }:
+{ config, pkgs, ... }:
 
 # This module is an attempt to build a minimal kernel that includes the
 # submitted driver for the Sony IMX708 camera sensor, the downstream driver for
@@ -11,8 +11,7 @@
 let
   inherit (pkgs) fetchurl fetchpatch;
 
-  # TODO: Is there a neater way to cross compile?
-  pkgs' = import flake.inputs.nixpkgs {
+  pkgs' = import pkgs.path {
     crossSystem = "aarch64-linux";
     localSystem = "x86_64-linux";
   };
@@ -217,22 +216,27 @@ in
     ## End of dw9817 patches.
     ## Start of imx708 patches.
 
-    # [0/2] media: Add bindings and driver for Sony IMX708
-    # https://patchwork.kernel.org/cover/14134391
+    # [v2,0/3] media: Add bindings and driver for Sony IMX708
+    # https://patchwork.kernel.org/cover/14140778
     (fetchurl {
-      name = "0021-1-2-dt-bindings-media-i2c-Add-imx708-image-sensor.diff";
-      url = "https://patchwork.kernel.org/patch/14689477/raw";
-      hash = "sha256-ul26T5DxABtho0AyXLP/XvX2u1b4I+7nzIk6I33Mfdk=";
+      name = "0021-v2-1-3-dt-bindings-media-i2c-Add-imx708-image-sensor.diff";
+      url = "https://patchwork.kernel.org/patch/14737302/raw";
+      hash = "sha256-CQDNP7lV4Pj98rVCk8tFlXAvvkjq5ucRWfJFnXsgAFo=";
+    })
+    (fetchurl {
+      name = "0022-v2-2-3-media-ccs-pll-Support-optional-input-for-VT-pixel-rate.diff";
+      url = "https://patchwork.kernel.org/patch/14737303/raw";
+      hash = "sha256-aNwM78uxFHE18wPqlu0UodWEcXT6wcjyl/vZmjUSG4o=";
     })
     (fetchpatch {
-      name = "0022-2-2-media-i2c-Add--a-driver-for-Sony-IMX708.diff";
-      url = "https://patchwork.kernel.org/patch/14689478/raw";
-      hash = "sha256-Y6SwHO+Ca1FospqahnNDxl4WWoBZz9BJFHLo19siMNQ=";
+      name = "0023-v2-3-3-media-i2c-Add-a-driver-for-Sony-IMX708.diff";
+      url = "https://patchwork.kernel.org/patch/14737304/raw";
+      hash = "sha256-s/5ipai/QoffBNQZBwO3GEWc8WfEQwbgt+lAuUbmi3o=";
       excludes = [
         "drivers/media/i2c/Makefile"
       ];
     })
-    ./0023-fixup-imx708-makefile.diff
+    ./0024-fixup-imx708-makefile.diff
 
     ## End of imx708 patches.
   ];
