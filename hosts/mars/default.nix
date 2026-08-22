@@ -39,11 +39,6 @@
     loader.generic-extlinux-compatible.enable = true;
 
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      # Enable serial console over USB-C debug UART port.
-      "8250.nr_uarts=1"
-      "console=ttyS0,1500000"
-    ];
   };
 
   fileSystems = {

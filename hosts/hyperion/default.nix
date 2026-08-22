@@ -51,8 +51,6 @@ in
     loader.systemd-boot.enable = true;
 
     kernelPackages = pkgs.linuxPackagesFor pkgs'.linuxKernel.kernels.linux_7_1;
-    kernelParams = [ "8250.nr_uarts=1" ];
-
     kernelPatches = map (p: { name = if p ? name then p.name else baseNameOf p; patch = p; }) [
       # [v5,0/6] Add Rockchip RK3576 PWM Support Through MFPWM
       # https://patchwork.kernel.org/cover/14114798
