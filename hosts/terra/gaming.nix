@@ -101,16 +101,7 @@
   services.ananicy = {
     enable = true;
 
-    package = pkgs.ananicy-cpp.overrideAttrs (prevAttrs: {
-      # https://github.com/NixOS/nixpkgs/pull/552211
-      patches = prevAttrs.patches or [] ++ [
-        (pkgs.fetchurl {
-          name = "0001-fix-add-missing-cstring-and-cstdint-headers-for-glibc-2-42.diff";
-          url = "https://gitlab.com/ananicy-cpp/ananicy-cpp/-/merge_requests/43.diff?diff_id=1960031612";
-          hash = "sha256-6J7dOunqoa8umCDW6mX28HbL/cn+aaOCcLyhgZBrVX4=";
-        })
-      ];
-    });
+    package = pkgs.ananicy-cpp;
     rulesProvider = pkgs.ananicy-rules-cachyos;
   };
 }
