@@ -45,22 +45,6 @@
     # no network.
     wait-online.enable = !(config.networking.networkmanager.enable && config.systemd.services.NetworkManager-wait-online.enable);
 
-    # Disable IPv6 on lan interfaces to prevent them from acquiring an IPv6
-    # address when IPv4 DHCP does not provide one. IPv6 is not used anywhere on
-    # lan, but it may be used on Wi-Fi or mobile connections.
-    networks."40-lan-ipv4-only" = {
-      matchConfig = {
-        Type = "ether";
-        Kind = "!*";
-      };
-
-      networkConfig = {
-        IPv6AcceptRA = "no";
-        IPv6PrivacyExtensions = "no";
-        LinkLocalAddressing = "no";
-      };
-    };
-
     # Follow RFC 7844 (Anonymity Profiles for DHCP Clients) for Wi-Fi
     # interfaces to minimize disclosure of identifying information.
     networks."40-wireless-anonymous" = {
