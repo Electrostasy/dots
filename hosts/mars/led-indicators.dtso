@@ -6,10 +6,10 @@
 };
 
 &sys_led {
-	linux,default-trigger = "heartbeat";
+	linux,default-trigger = "none";
 	panic-indicator;
 };
 
 &usr_led {
-	linux,default-trigger = "mmc0";
+	linux,default-trigger = "heartbeat";
 };
