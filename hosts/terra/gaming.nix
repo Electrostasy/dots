@@ -44,7 +44,7 @@
       dualsensectl
       mangohud
       mumble
-      (pcsx2.override { ffmpeg = pkgs.ffmpeg_8; }) # https://github.com/NixOS/nixpkgs/pull/552272
+      pcsx2
       umu-launcher
     ];
   };
