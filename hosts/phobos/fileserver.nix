@@ -1,8 +1,5 @@
 {
-  imports = [
-    ../../profiles/nfs-share.nix
-    ./acme.nix
-  ];
+  imports = [ ../../profiles/nfs-share.nix ];
 
   # NOTE: nginx requires execute permissions for traversal.
   fileSystems."/srv/http/static" = {

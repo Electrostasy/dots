@@ -6,29 +6,10 @@
     group = config.users.groups.grafana.name;
   };
 
-  fileSystems = {
-    "/var/lib/${config.services.prometheus.stateDir}" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=prometheus"
-        "noatime"
-        "X-mount.owner=${config.users.users.prometheus.name}"
-        "X-mount.group=${config.users.groups.prometheus.name}"
-      ];
-    };
-
-    "${config.services.grafana.dataDir}" = {
-      device = "/dev/disk/by-label/pidata";
-      fsType = "btrfs";
-      options = [
-        "subvol=grafana"
-        "noatime"
-        "X-mount.owner=${config.users.users.grafana.name}"
-        "X-mount.group=${config.users.groups.grafana.name}"
-      ];
-    };
-  };
+  preservation.preserveAt."/persist/state".directories = [
+    config.services.prometheus.stateDir
+    config.services.grafana.dataDir
+  ];
 
   services.prometheus = {
     enable = true;

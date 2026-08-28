@@ -1,21 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ./acme.nix
-    ./postgresql.nix
+  preservation.preserveAt."/persist/state".directories = [
+    config.services.prosody.dataDir
+    config.services.postgresql.dataDir
   ];
-
-  fileSystems."${config.services.prosody.dataDir}" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=prosody"
-      "noatime"
-      "X-mount.owner=${config.services.prosody.user}"
-      "X-mount.group=${config.services.prosody.group}"
-    ];
-  };
 
   security.acme.certs."0x6776.lt" = {
     extraDomainNames = [
@@ -119,6 +108,8 @@
   };
 
   services.postgresql = {
+    enable = true;
+
     ensureDatabases = [ "prosody" ];
     ensureUsers = [
       {

@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ./acme.nix
-  ];
-
   sops.secrets = {
     headscaleKey = {
       mode = "0440";
@@ -15,16 +11,7 @@
     tailscaleKey = { };
   };
 
-  fileSystems."/var/lib/headscale" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=headscale"
-      "noatime"
-      "X-mount.owner=${config.users.users.headscale.name}"
-      "X-mount.group=${config.users.groups.headscale.name}"
-    ];
-  };
+  preservation.preserveAt."/persist/state".directories = [ "/var/lib/headscale" ];
 
   security.acme.certs."0x6776.lt".extraDomainNames = [ "controlplane.0x6776.lt" ];
 

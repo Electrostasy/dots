@@ -3,16 +3,7 @@
 {
   sops.secrets.murmurEnv = { };
 
-  fileSystems."${config.services.murmur.stateDir}" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=murmur"
-      "noatime"
-      "X-mount.owner=${config.services.murmur.user}"
-      "X-mount.group=${config.services.murmur.group}"
-    ];
-  };
+  preservation.preserveAt."/persist/state".directories = [ config.services.murmur.stateDir ];
 
   security.acme.certs."0x6776.lt".postRun = ''
     ${pkgs.acl}/bin/setfacl -m u:${config.services.murmur.user}:rx ${config.security.acme.certs."0x6776.lt".directory}

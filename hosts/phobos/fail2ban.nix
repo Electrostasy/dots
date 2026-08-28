@@ -1,12 +1,5 @@
 {
-  fileSystems."/var/lib/fail2ban" = {
-    device = "/dev/disk/by-label/pidata";
-    fsType = "btrfs";
-    options = [
-      "subvol=fail2ban"
-      "noatime"
-    ];
-  };
+  preservation.preserveAt."/persist/state".directories = [ "/var/lib/fail2ban" ];
 
   services.fail2ban = {
     enable = true;
