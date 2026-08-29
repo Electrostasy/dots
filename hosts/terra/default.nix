@@ -69,7 +69,7 @@
     freecad
     gimp
     kicad
-    libreoffice-fresh
+    libreoffice
     picard
     prusa-slicer
   ];

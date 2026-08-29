@@ -247,7 +247,7 @@
     inetutils # `whois`, ...
     jq
     libewf
-    libreoffice-fresh
+    libreoffice
     mkvtoolnix-cli # `mkvextract`, `mkvinfo`, `mkvmerge`, `mkvpropedit`.
     pev # `peldd`, `pescan`, `readpe`, ...
     qpdf
