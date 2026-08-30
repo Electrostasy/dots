@@ -45,26 +45,22 @@
     # no network.
     wait-online.enable = !(config.networking.networkmanager.enable && config.systemd.services.NetworkManager-wait-online.enable);
 
-    # Follow RFC 7844 (Anonymity Profiles for DHCP Clients) for Wi-Fi
-    # interfaces to minimize disclosure of identifying information.
-    networks."40-wireless-anonymous" = {
-      matchConfig = {
-        WLANInterfaceType = "station";
-      };
-
+    networks."99-wireless-client-dhcp" = {
+      # Follow RFC 7844 (Anonymity Profiles for DHCP Clients) for Wi-Fi
+      # interfaces to minimize disclosure of identifying information.
       dhcpV4Config = {
         Anonymize = true;
       };
     };
 
-    # Required by 40-wireless-anonymous.network, have the kernel use a random
-    # MAC address for Wi-Fi interfaces each time the device appears.
-    links."40-wireless-random-mac" = {
+    links."99-wireless-client-random-mac" = {
       matchConfig = {
         WLANInterfaceType = "station";
       };
 
       linkConfig = {
+        # Required by Anonymize=true, have the kernel use a random MAC address
+        # for Wi-Fi interfaces each time the device appears.
         MACAddressPolicy = "random";
       };
     };
