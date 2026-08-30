@@ -87,7 +87,32 @@
     options = [ "noatime" ];
   };
 
-  networking.hostName = "pandora";
+  networking = {
+    hostName = "pandora";
+
+    firewall.allowedUDPPorts = [
+      5353 # Multicast DNS (mDNS).
+    ];
+  };
+
+  systemd.network.networks."40-ethernet-mdns-dhcp" = {
+    matchConfig = {
+      Kind = "!*";
+      Type = "ether";
+    };
+
+    networkConfig = {
+      DHCP = "yes";
+      IPv6PrivacyExtensions = "kernel";
+      MulticastDNS = true;
+    };
+
+    linkConfig = {
+      Multicast = true;
+    };
+  };
+
+  services.resolved.settings.Resolve.MulticastDNS = true;
 
   services = {
     journald = {

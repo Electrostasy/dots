@@ -5,17 +5,6 @@
     options = [ "bind" ];
   };
 
-  services.resolved.settings.Resolve.MulticastDNS = true;
-  systemd.network.networks."40-enable-mdns-on-lan" = {
-    matchConfig.Name = "en*";
-    networkConfig.MulticastDNS = true;
-    linkConfig.Multicast = true;
-  };
-
-  networking.firewall.allowedUDPPorts = [
-    5353 # Multicast DNS (mDNS).
-  ];
-
   services.samba = {
     enable = true;
 
