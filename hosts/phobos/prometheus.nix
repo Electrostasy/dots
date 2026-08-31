@@ -7,7 +7,7 @@
   };
 
   preservation.preserveAt."/persist/state".directories = [
-    config.services.prometheus.stateDir
+    "/var/lib/${config.services.prometheus.stateDir}"
     config.services.grafana.dataDir
   ];
 
