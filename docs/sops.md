@@ -13,11 +13,10 @@ rage-keygen -o ~/keys.txt
 
 These commands can rotate the keys in all encrypted files in-place:
 ```sh
-regex=$(regexes=($(rg 'path_regex: (.*)$' -Nor '$1' .sops.yaml)); IFS='|'; echo "(${regexes[*]})")
 key="$(rg '# public key: (.*)' -or '$1' /var/lib/sops-nix/keys.txt)"
 key_new="$(rg '# public key: (.*)' -or '$1' ~/keys.txt)"
 
-fd --full-path "$regex" -x sops rotate -i --add-age "$key_new" --rm-age "$key"
+fd --full-path "secrets.yaml" -x sops rotate -i --add-age "$key_new" --rm-age "$key"
 ```
 
 > [!IMPORTANT]
