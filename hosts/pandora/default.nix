@@ -116,13 +116,13 @@
 
   services = {
     journald = {
-      storage = "volatile";
-
       upload = {
         enable = true;
 
         settings.Upload.URL = "http://phobos.sol.tailnet.0x6776.lt";
       };
+
+      settings.Journal.Storage = "volatile";
     };
 
     btrfs.autoScrub = {
