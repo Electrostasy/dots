@@ -27,6 +27,7 @@
     "/persist/state".users.electro.directories = [
       ".config/Mumble"
       ".config/PCSX2"
+      ".config/gpu-screen-recorder"
       ".local/share/Mumble"
       ".local/share/Steam"
       ".local/share/dolphin-emu"
@@ -80,7 +81,10 @@
   ];
 
   programs = {
-    gpu-screen-recorder.enable = true;
+    gpu-screen-recorder = {
+      enable = true;
+      ui.enable = true;
+    };
 
     steam = {
       enable = true;
