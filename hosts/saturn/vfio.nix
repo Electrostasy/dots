@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  nixpkgs.overlays = [
+    (import ../../overlays/looking-glass-client-dev)
+  ];
+
   boot = {
     initrd.kernelModules = [
       "vfio_pci"
