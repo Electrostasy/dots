@@ -25,6 +25,11 @@
       (import ../../overlays/libewf-fuse.nix)
       (import ../../overlays/qemu-unshare-fix)
     ];
+
+    config.allowUnfreePackages = [
+      "dumpifs"
+      "unrar"
+    ];
   };
 
   sops.secrets.networkmanager = { };
@@ -230,7 +235,7 @@
 
   environment.systemPackages = with pkgs; [
     bintools-unwrapped
-    binwalk
+    (binwalk.override { enableUnfree = true; })
     cdrkit # `genisoimage`, `wodim`, ...
     chars
     detox
