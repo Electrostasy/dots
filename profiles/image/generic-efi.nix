@@ -23,6 +23,8 @@ in
   ];
 
   image.repart = {
+    enable = true;
+
     name = "nixos-${config.networking.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
 
     partitions = {
