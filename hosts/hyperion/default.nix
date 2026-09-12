@@ -50,7 +50,7 @@ in
   boot = {
     loader.systemd-boot.enable = true;
 
-    kernelPackages = pkgs.linuxPackagesFor pkgs'.linuxKernel.kernels.linux_7_1;
+    kernelPackages = pkgs.linuxPackagesFor pkgs'.linuxKernel.kernels.linux_7_2;
     kernelPatches = map (p: { name = if p ? name then p.name else baseNameOf p; patch = p; }) [
       # [v5,0/6] Add Rockchip RK3576 PWM Support Through MFPWM
       # https://patchwork.kernel.org/cover/14114798
@@ -79,6 +79,11 @@ in
         url = "https://patchwork.kernel.org/patch/14530935/raw";
         hash = "sha256-4LIdz314LB7PHZgBXFdgZO+IahLKH7dpex5ky1Smc14=";
       })
+      # Linux commit 4aca5e6 replaces dev->of_node_reused with calls to
+      # dev_{,set_,assign_}of_node_reused() and removes the of_node_reused
+      # member variable from struct device. Once this patch series is updated,
+      # this patch will likely not be necessary.
+      ./0006-driver-core-Replace-dev-of_node_reused-with-dev_of_node_reused.diff
     ];
 
     initrd = {

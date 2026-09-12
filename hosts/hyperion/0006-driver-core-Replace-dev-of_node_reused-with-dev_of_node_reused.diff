@@ -1,0 +1,26 @@
+diff --git a/drivers/counter/rockchip-pwm-capture.c b/drivers/counter/rockchip-pwm-capture.c
+index 09a92f2bc..740dc85aa 100644
+--- a/drivers/counter/rockchip-pwm-capture.c
++++ b/drivers/counter/rockchip-pwm-capture.c
+@@ -247,7 +247,7 @@ static int rockchip_pwm_capture_probe(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	/* Set our (still unset) OF node to the parent MFD device's OF node */
+-	pdev->dev.parent->of_node_reused = true;
++	dev_set_of_node_reused(pdev->dev.parent);
+ 	device_set_node(&pdev->dev,
+ 			of_fwnode_handle(no_free_ptr(pdev->dev.parent->of_node)));
+ 
+diff --git a/drivers/pwm/pwm-rockchip-v4.c b/drivers/pwm/pwm-rockchip-v4.c
+index b7de72c43..bece37c9a 100644
+--- a/drivers/pwm/pwm-rockchip-v4.c
++++ b/drivers/pwm/pwm-rockchip-v4.c
+@@ -306,7 +306,7 @@ static int rockchip_pwm_v4_probe(struct platform_device *pdev)
+ 	 * For referencing the PWM in the DT to work, we need the parent MFD
+ 	 * device's OF node.
+ 	 */
+-	dev->of_node_reused = true;
++	dev_set_of_node_reused(dev);
+ 	device_set_node(dev, of_fwnode_handle(dev->parent->of_node));
+ 
+ 	chip = devm_pwmchip_alloc(dev, 1, sizeof(*pc));
