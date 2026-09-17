@@ -13,11 +13,8 @@
       "files.0x6776.lt"
     ];
 
-    reloadServices = [ "prosody.service" ];
-
     postRun = ''
-      ${pkgs.acl}/bin/setfacl -m u:prosody:rx /var/lib/acme/0x6776.lt
-      ${pkgs.acl}/bin/setfacl -m u:prosody:r /var/lib/acme/0x6776.lt/{fullchain,key}.pem
+      systemctl --no-block restart prosody
     '';
   };
 
@@ -33,8 +30,8 @@
     s2sSecureAuth = true;
 
     ssl = {
-      cert = "${config.security.acme.certs."0x6776.lt".directory}/fullchain.pem";
-      key = "${config.security.acme.certs."0x6776.lt".directory}/key.pem";
+      cert = "/run/credentials/prosody.service/fullchain.pem";
+      key = "/run/credentials/prosody.service/key.pem";
     };
 
     virtualHosts."xmpp.0x6776.lt" = {
@@ -131,6 +128,11 @@
     wants = [
       "nginx.service"
       "postgresql.service"
+    ];
+
+    serviceConfig.LoadCredential = [
+      "fullchain.pem:${config.security.acme.certs."0x6776.lt".directory}/fullchain.pem"
+      "key.pem:${config.security.acme.certs."0x6776.lt".directory}/key.pem"
     ];
   };
 
