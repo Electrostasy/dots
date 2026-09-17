@@ -25,9 +25,15 @@
     };
   };
 
-  systemd.services.murmur.serviceConfig.LoadCredential = [
-    "cert.pem:${config.security.acme.certs."0x6776.lt".directory}/cert.pem"
-    "chain.pem:${config.security.acme.certs."0x6776.lt".directory}/chain.pem"
-    "key.pem:${config.security.acme.certs."0x6776.lt".directory}/key.pem"
-  ];
+  systemd.services.murmur = {
+    after = [ "acme-0x6776.lt.service" ];
+
+    wants = [ "acme-0x6776.lt.service" ];
+
+    serviceConfig.LoadCredential = [
+      "cert.pem:${config.security.acme.certs."0x6776.lt".directory}/cert.pem"
+      "chain.pem:${config.security.acme.certs."0x6776.lt".directory}/chain.pem"
+      "key.pem:${config.security.acme.certs."0x6776.lt".directory}/key.pem"
+    ];
+  };
 }

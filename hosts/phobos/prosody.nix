@@ -123,11 +123,13 @@
     after = [
       "nginx.service"
       "postgresql.service"
+      "acme-0x6776.lt.service"
     ];
 
     wants = [
       "nginx.service"
       "postgresql.service"
+      "acme-0x6776.lt.service"
     ];
 
     serviceConfig.LoadCredential = [
