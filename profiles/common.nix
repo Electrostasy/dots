@@ -100,6 +100,7 @@
     sessionVariables.SOPS_AGE_KEY_FILE = config.sops.age.keyFile;
 
     defaultPackages = lib.mkDefault [ ];
+    corePackages = lib.mkForce [ ];
   };
 
   preservation.preserveAt = {

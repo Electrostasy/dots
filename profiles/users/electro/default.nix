@@ -37,4 +37,8 @@
     Match user ${config.users.users.electro.name}
       IdentityFile ${config.sops.secrets.electroIdentity.path}
   '';
+
+  environment.systemPackages = [
+    config.programs.ssh.package
+  ];
 }
