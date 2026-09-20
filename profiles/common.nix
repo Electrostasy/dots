@@ -1,11 +1,8 @@
-{ config, pkgs, lib, modulesPath, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  imports = [ "${modulesPath}/profiles/perlless.nix" ];
-
   system = {
-    forbiddenDependenciesRegexes = lib.mkForce []; # override perlless profile.
-
+    etc.overlay.enable = true;
     nixos-init.enable = true;
   };
 
@@ -70,6 +67,8 @@
   boot = {
     tmp.useTmpfs = true;
 
+    loader.grub.enable = lib.mkDefault false;
+
     kernelParams = [ "rootflags=noatime" ];
 
     kernel.sysfs = {
@@ -99,6 +98,8 @@
 
     # Tell `sops` where to find the private key.
     sessionVariables.SOPS_AGE_KEY_FILE = config.sops.age.keyFile;
+
+    defaultPackages = lib.mkDefault [ ];
   };
 
   preservation.preserveAt = {
@@ -162,5 +163,6 @@
   # Fontconfig is enabled by default even on headless systems.
   fonts.fontconfig.enable = lib.mkDefault config.services.graphical-desktop.enable;
 
+  services.userborn.enable = true;
   users.mutableUsers = lib.mkDefault false;
 }
