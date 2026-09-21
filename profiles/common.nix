@@ -164,6 +164,11 @@
   # Fontconfig is enabled by default even on headless systems.
   fonts.fontconfig.enable = lib.mkDefault config.services.graphical-desktop.enable;
 
+  security = {
+    sudo.enable = false;
+    polkit.enablePkexecWrapper = lib.mkDefault false;
+  };
+
   services.userborn.enable = true;
   users.mutableUsers = lib.mkDefault false;
 }
