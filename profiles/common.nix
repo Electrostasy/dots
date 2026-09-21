@@ -4,6 +4,7 @@
   system = {
     etc.overlay.enable = true;
     nixos-init.enable = true;
+    tools.nixos-rebuild.enableRun0Elevation = true;
   };
 
   sops = {
@@ -69,7 +70,7 @@
 
     loader.grub.enable = lib.mkDefault false;
 
-    kernelParams = [ "rootflags=noatime" ];
+    kernelParams = [ "rootflags=nosuid,noatime" ];
 
     kernel.sysfs = {
       module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
@@ -167,6 +168,20 @@
   security = {
     sudo.enable = false;
     polkit.enablePkexecWrapper = lib.mkDefault false;
+    run0 = {
+      enable = true;
+      persistentAuth = {
+        enable = true;
+        enableRemote = true;
+      };
+    };
+
+    account-utils.enable = true;
+    enableWrappers = false;
+  };
+
+  systemd.settings.Manager = {
+    NoNewPrivileges = true;
   };
 
   services.userborn.enable = true;
