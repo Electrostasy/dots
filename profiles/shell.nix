@@ -91,6 +91,12 @@ in
         command eza -gTL1 --binary --group-directories-first --icons=auto $flags $entries
       end
 
+      function 0 --wraps run0
+        echo -ne '\e]11;rgb:26/21/2d\e\\'
+        command run0 --background= --shell-prompt-prefix='🛡️ ' $argv
+        echo -ne '\e]111;\e\\'
+      end
+
       function ? --description 'Print a list of all executables provided by this Nix shell'
         if not in_nix_shell
           echo 'Not in Nix shell!'
