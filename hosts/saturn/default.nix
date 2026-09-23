@@ -62,11 +62,8 @@
       ];
     };
 
-    # This only loads the driver when the USB device is plugged in, but since
-    # the modalias is not present in the driver's device ID table, it will not
-    # bind the device to the driver - we use a udev rule for that below.
     extraModprobeConfig = ''
-      # Unitech MSR206U Card Reader requires pl2303 driver for serial.
+      # Load pl2303 driver for Unitech MSR206U Card Reader.
       alias usb:v067Bp206Ad*dc*dsc*dp*ic*isc*ip*in* pl2303
     '';
 
@@ -82,7 +79,14 @@
   };
 
   services.udev.extraRules = /* udev */ ''
+    # Unitech MSR206U Card Reader modalias is not present in the pl2303
+    # driver's device ID table, we must bind it to pl2303 ourselves.
     ACTION=="add", SUBSYSTEM=="drivers", ENV{DEVPATH}=="/bus/usb-serial/drivers/pl2303", ATTR{new_id}="067b 206a"
+
+    # Apple MacBook Air SuperDrive requires a magic byte sequence to wake it up
+    # before it works with non Apple devices:
+    # https://www.cmos.blog/use-apples-usb-superdrive-with-linux/
+    ACTION=="add", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="1500", DRIVERS=="usb", RUN+="${pkgs.sg3_utils}/bin/sg_raw -C 1 %r/sr%n EA 00 00 00 00 00 01"
   '';
 
   hardware = {
