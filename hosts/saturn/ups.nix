@@ -1,20 +1,10 @@
-{ config, pkgs, lib, ... }:
+{ config, ... }:
 
 {
   sops.secrets.upsuserPassword = {
     mode = "0400";
     group = config.users.groups.upsuser.name;
   };
-
-  security.sudo.extraRules = [
-    {
-      users = [ "${config.power.ups.upsmon.user}" ];
-      groups = [ "${config.power.ups.upsmon.group}" ];
-      commands = [
-        { command = "${lib.getExe pkgs.notify-send-all}"; options = [ "NOPASSWD" ]; }
-      ];
-    }
-  ];
 
   users.groups.upsuser = { };
 
@@ -64,21 +54,19 @@
         ];
 
         NOTIFYFLAG = [
-          [ "ONLINE" "SYSLOG+WALL+EXEC" ]
-          [ "ONBATT" "SYSLOG+WALL+EXEC" ]
-          [ "LOWBATT" "SYSLOG+WALL+EXEC" ]
-          [ "REPLBATT" "SYSLOG+WALL+EXEC" ]
-          [ "FSD" "SYSLOG+WALL+EXEC" ]
-          [ "SHUTDOWN" "SYSLOG+WALL+EXEC" ]
-          [ "COMMOK" "SYSLOG+WALL+EXEC" ]
-          [ "COMMBAD" "SYSLOG+WALL+EXEC" ]
-          [ "NOCOMM" "SYSLOG+WALL+EXEC" ]
+          [ "ONLINE" "SYSLOG+WALL" ]
+          [ "ONBATT" "SYSLOG+WALL" ]
+          [ "LOWBATT" "SYSLOG+WALL" ]
+          [ "REPLBATT" "SYSLOG+WALL" ]
+          [ "FSD" "SYSLOG+WALL" ]
+          [ "SHUTDOWN" "SYSLOG+WALL" ]
+          [ "COMMOK" "SYSLOG+WALL" ]
+          [ "COMMBAD" "SYSLOG+WALL" ]
+          [ "NOCOMM" "SYSLOG+WALL" ]
           [ "NOPARENT" "SYSLOG+WALL" ]
-          [ "SUSPEND_STARTING" "SYSLOG+WALL+EXEC" ]
-          [ "SUSPEND_FINISHED" "SYSLOG+WALL+EXEC" ]
+          [ "SUSPEND_STARTING" "SYSLOG+WALL" ]
+          [ "SUSPEND_FINISHED" "SYSLOG+WALL" ]
         ];
-
-        NOTIFYCMD = "${lib.getExe pkgs.upsmon-notify}";
 
         RBWARNTIME = 216000;
         NOCOMMWARNTIME = 300;
