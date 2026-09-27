@@ -3,6 +3,7 @@
 {
   nixpkgs.overlays = [
     (import ../overlays/f3d-interactive.nix)
+    (import ../overlays/xte-dependencies.nix)
   ];
 
   boot = {
