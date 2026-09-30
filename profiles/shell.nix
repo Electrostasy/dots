@@ -54,6 +54,7 @@ in
   environment = {
     systemPackages = [
       pkgs.coreutils
+      pkgs.util-linux
       pkgs.btop
       pkgs.eza
     ];
