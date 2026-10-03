@@ -53,7 +53,7 @@ in
 
   environment = {
     systemPackages = [
-      pkgs.coreutils
+      pkgs.coreutils-full
       pkgs.util-linux
       pkgs.btop
       pkgs.eza
