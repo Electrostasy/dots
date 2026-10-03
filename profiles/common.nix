@@ -72,6 +72,11 @@
 
     kernelParams = [ "rootflags=nosuid,noatime" ];
 
+    initrd.systemd.root =
+      lib.mkIf
+        (!builtins.any (fs: fs.mountPoint == "/") config.system.build.fileSystems)
+        "gpt-auto";
+
     kernel.sysfs = {
       module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
         enabled = true;

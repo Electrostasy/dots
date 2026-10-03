@@ -36,7 +36,6 @@
     kernelParams = [ "8250.nr_uarts=1" ];
 
     initrd = {
-      systemd.root = "gpt-auto";
       supportedFilesystems.ext4 = true;
 
       # /persist is mounted from a USB connected SATA SSD, which cannot be

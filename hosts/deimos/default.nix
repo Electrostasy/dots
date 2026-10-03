@@ -41,10 +41,7 @@
 
     kernelParams = [ "8250.nr_uarts=1" ];
 
-    initrd = {
-      systemd.root = "gpt-auto";
-      supportedFilesystems.ext4 = true;
-    };
+    initrd.supportedFilesystems.ext4 = true;
   };
 
   services.journald = {

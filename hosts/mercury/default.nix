@@ -71,7 +71,6 @@
     '';
 
     initrd = {
-      systemd.root = "gpt-auto";
       luks.forceLuksSupportInInitrd = true;
       supportedFilesystems.btrfs = true;
 

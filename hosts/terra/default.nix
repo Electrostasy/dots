@@ -36,7 +36,6 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     initrd = {
-      systemd.root = "gpt-auto";
       luks.forceLuksSupportInInitrd = true;
       supportedFilesystems.btrfs = true;
 

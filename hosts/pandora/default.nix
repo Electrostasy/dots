@@ -66,10 +66,7 @@
     extraModulePackages = [ config.boot.kernelPackages.emc2305 ];
 
     initrd = {
-      systemd = {
-        root = "gpt-auto";
-        tpm2.enable = false;
-      };
+      systemd.tpm2.enable = false;
 
       supportedFilesystems.ext4 = true;
 

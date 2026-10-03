@@ -86,10 +86,7 @@ in
       ./0006-driver-core-Replace-dev-of_node_reused-with-dev_of_node_reused.diff
     ];
 
-    initrd = {
-      systemd.root = "gpt-auto";
-      supportedFilesystems.ext4 = true;
-    };
+    initrd.supportedFilesystems.ext4 = true;
   };
 
   networking.hostName = "hyperion";

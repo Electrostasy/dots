@@ -41,10 +41,7 @@
 
     kernelPackages = pkgs.linuxPackages_latest;
 
-    initrd = {
-      systemd.root = "gpt-auto";
-      supportedFilesystems.ext4 = true;
-    };
+    initrd.supportedFilesystems.ext4 = true;
   };
 
   fileSystems."/mnt/data" = {
