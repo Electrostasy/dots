@@ -70,12 +70,20 @@
 
     loader.grub.enable = lib.mkDefault false;
 
-    kernelParams = [ "rootflags=nosuid,noatime" ];
+    initrd.systemd = {
+      root =
+        lib.mkIf
+          (!builtins.any (fs: fs.mountPoint == "/") config.system.build.fileSystems)
+          "gpt-auto";
 
-    initrd.systemd.root =
-      lib.mkIf
-        (!builtins.any (fs: fs.mountPoint == "/") config.system.build.fileSystems)
-        "gpt-auto";
+      units."sysroot.mount" = lib.mkIf (config.boot.initrd.systemd.root == "gpt-auto") {
+        overrideStrategy = "asDropin";
+        text = ''
+          [Mount]
+          Options=nosuid,noatime
+        '';
+      };
+    };
 
     kernel.sysfs = {
       module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
