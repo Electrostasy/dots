@@ -60,13 +60,6 @@
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "mem_sleep_default=deep" ];
 
-    # If hid_asus takes control of the touchpad, no touchpad features besides
-    # pointing will work (and it will not be very good), unless it is bound to
-    # hid_multitouch first.
-    extraModprobeConfig = ''
-      softdep hid_asus pre: hid_multitouch
-    '';
-
     initrd = {
       luks.forceLuksSupportInInitrd = true;
       supportedFilesystems.btrfs = true;
