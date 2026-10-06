@@ -39,15 +39,17 @@
   };
 
   hardware.bluetooth.powerOnBoot = false;
+  systemd.services."disable-wifi-on-boot" = {
+    description = "Disable Wi-Fi on boot";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
 
-  # There is no powerOnBoot option for wlan.
-  networking.networkmanager.dispatcherScripts = [
-    {
-      source = pkgs.writeShellScript "upHook" ''
-        ${config.networking.networkmanager.package}/bin/nmcli radio wifi off
-      '';
-    }
-  ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${config.networking.networkmanager.package}/bin/nmcli radio wifi off";
+      RemainAfterExit = true;
+    };
+  };
 
   security.pam.services.login.enableGnomeKeyring = true;
 
