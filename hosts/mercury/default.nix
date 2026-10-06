@@ -101,7 +101,15 @@
     };
   };
 
-  preservation.enable = true;
+  preservation = {
+    enable = true;
+
+    preserveAt = {
+      "/persist/state".users.electro.directories = [
+        ".local/share/umu"
+      ];
+    };
+  };
 
   systemd.tmpfiles.settings."10-snapper"."/persist/state/.snapshots"."v".mode = "0770";
   services.snapper = {
@@ -162,6 +170,7 @@
   environment.systemPackages = with pkgs; [
     gnomeExtensions.fullscreen-to-empty-workspace-2
     rnote
+    umu-launcher
   ];
 
   programs.dconf.profiles.user.databases = [{
