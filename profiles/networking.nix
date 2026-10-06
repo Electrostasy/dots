@@ -32,6 +32,12 @@
       };
     };
 
+    wireless.iwd.settings = {
+      # https://github.com/NixOS/nixpkgs/issues/454655
+      # https://github.com/NixOS/nixpkgs/pull/567200
+      DriverQuirks.DefaultInterface = "";
+    };
+
     # Use the systemd-networkd networking backend and translate `networking.*`
     # options to it.
     useNetworkd = lib.mkDefault true;
