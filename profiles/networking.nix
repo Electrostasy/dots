@@ -40,6 +40,13 @@
     useDHCP = lib.mkDefault true;
   };
 
+  # https://github.com/NixOS/nixpkgs/issues/551427
+  # https://github.com/NixOS/nixpkgs/pull/563952
+  systemd.services.iwd.wantedBy =
+    lib.optional
+      (config.networking.networkmanager.enable && (config.networking.networkmanager.wifi.backend == "iwd"))
+      "multi-user.target";
+
   systemd.network = {
     # Only one can be enabled, otherwise we will run into errors saying we have
     # no network.
