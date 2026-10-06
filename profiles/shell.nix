@@ -53,6 +53,9 @@ in
 
   environment = {
     systemPackages = [
+      # Without bash present in PATH, nixos-install does not seem to work (or
+      # any scripts depending on BASH in PATH for that matter).
+      pkgs.bashInteractive
       pkgs.coreutils-full
       pkgs.util-linux
       pkgs.btop
