@@ -28,12 +28,9 @@
 
   hardware = {
     enableRedistributableFirmware = true;
-    bluetooth.powerOnBoot = false;
-    sensor.iio.enable = true; # orientation detection for auto-rotate.
+    sensor.iio.enable = true;
 
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-
       open = true;
       nvidiaSettings = false;
 
@@ -43,12 +40,12 @@
       };
 
       prime = {
-        intelBusId = "PCI:0:2:0";
-        nvidiaBusId = "PCI:1:0:0";
+        intelBusId = "PCI:0@0:2:0";
+        nvidiaBusId = "PCI:1@0:0:0";
 
         offload = {
           enable = true;
-          enableOffloadCmd = true; # adds `nvidia-offload` script.
+          enableOffloadCmd = true;
         };
       };
     };
