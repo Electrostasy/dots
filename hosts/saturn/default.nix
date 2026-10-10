@@ -304,11 +304,6 @@
 
   programs.dconf.profiles.user.databases = [{
     settings = with lib.gvariant; {
-      "org/gnome/shell/extensions/tilingshell".selected-layouts = [
-        [ "50% Vertical Split" "50% Horizontal Split" ]
-        [ "50% Vertical Split" "50% Horizontal Split" ]
-      ];
-
       # Turn displays off after 10 minutes of inactivity, and lock the
       # session after 30 minutes of inactivity.
       "org/gnome/desktop/session".idle-delay = mkUint32 (10 * 60);

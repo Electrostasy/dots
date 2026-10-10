@@ -168,14 +168,9 @@
   };
 
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.fullscreen-to-empty-workspace-2
     rnote
     umu-launcher
   ];
-
-  programs.dconf.profiles.user.databases = [{
-    settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
-  }];
 
   system.stateVersion = "25.05";
 }

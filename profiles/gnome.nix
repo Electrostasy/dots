@@ -39,6 +39,7 @@
   };
 
   hardware.bluetooth.powerOnBoot = false;
+
   systemd.services."disable-wifi-on-boot" = {
     description = "Disable Wi-Fi on boot";
     after = [ "network.target" ];
@@ -47,6 +48,40 @@
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${config.networking.networkmanager.package}/bin/nmcli radio wifi off";
+      RemainAfterExit = true;
+    };
+  };
+
+  systemd.user.services."random-wallpaper" = {
+    description = "Set a random wallpaper";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+
+    path = [
+      pkgs.coreutils-full
+      pkgs.fd
+      pkgs.glib
+    ];
+
+    unitConfig = {
+      StartLimitIntervalSec = 0;
+    };
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writers.writeFish "random-wallpaper.fish" /* fish */ ''
+        set -l wallpaper (fd --type f . "$HOME/Pictures/wallpapers" --exec-batch shuf -n 1 -e)
+
+        if test (count $wallpaper) -eq 0
+          echo 'No wallpaper found!' >&2
+          exit 1
+        end
+
+        for key in picture-uri picture-uri-dark
+          gsettings set org.gnome.desktop.background "$key" "file://$(string escape --style=url "$wallpaper")"
+        end
+      '';
       RemainAfterExit = true;
     };
   };
@@ -78,12 +113,12 @@
 
       users.electro = {
         files = [
-          ".config/git-credential-keepassxc"
           ".config/monitors.xml"
         ];
 
         directories = [
           ".config/gajim"
+          ".config/gtk-3.0"
           ".config/keepassxc"
           ".local/share/gajim"
           ".local/share/keyrings"
@@ -108,20 +143,16 @@
       eyedropper
       f3d
       fd
-      ffmpegthumbnailer
       file
       freerdp
       gajim
       ghostty
-      git-credential-keepassxc
       keepassxc
       libnotify
       magic-wormhole-rs
-      mission-center
       nautilus-amberol
       nautilus-python
       nautilus-vimv
-      papers
       qrtool
       ripgrep
       tealdeer
@@ -132,11 +163,26 @@
       morewaita-icon-theme
 
       gnomeExtensions.blur-my-shell
-      gnomeExtensions.desktop-cube
+      gnomeExtensions.fullscreen-to-empty-workspace-2
       gnomeExtensions.iso8601-ish-clock
-      gnomeExtensions.system-monitor
-      gnomeExtensions.tiling-shell
-      gnomeExtensions.wallpaper-slideshow
+      gnomeExtensions.tiling-assistant
+
+      # Nautilus translations do not respect LC_TIME:
+      # - When LC_TIME=C, Nautilus uses %m/%d/%y %H:%M instead of %a %b %e %H:%M:%S %Y
+      # - When LC_TIME=en_US.UTF-8, Nautilus uses %m/%d/%y %H:%M instead of %a %d %b %Y %r %Z
+      # - When LC_TIME=en_DK.UTF-8, Nautilus uses %d/%m/%y %H.%M instead of %Y-%m-%dT%T %Z
+      # - When LC_TIME=lt_LT.UTF-8, Nautilus uses %y-%m-%d %H:%M instead of %Y m. %B %d d. %T
+      # Current LC_TIME is en_DK.UTF-8, closest match for nautilus is apparently lt_LT.UTF-8.
+      # DBusActivatable has to be false, or else the Exec line may be ignored:
+      # https://wiki.archlinux.org/title/Desktop_entries#Modify_environment_variables
+      (lib.hiPrio (pkgs.runCommand "change-nautilus-LC_TIME" { } ''
+        mkdir -p "$out/share/applications"
+        substitute \
+          ${pkgs.nautilus}/share/applications/org.gnome.Nautilus.desktop \
+          "$out/share/applications/org.gnome.Nautilus.desktop" \
+          --replace-fail 'DBusActivatable=true' 'DBusActivatable=false' \
+          --replace-fail 'Exec=nautilus --new-window' 'Exec=/usr/bin/env LC_TIME=lt_LT.UTF-8 nautilus --new-window'
+      ''))
     ];
 
     shellAliases = {
@@ -155,21 +201,10 @@
     };
 
     gnome.excludePackages = with pkgs; [
-      # For xdg-* commands to work correctly on gnome, `gio` is needed, provided
-      # by glib:
-      # glib
-
-      # https://gitlab.gnome.org/GNOME/gnome-shell-extensions/-/issues/512
-      # For `system-monitor` shell extension to work correctly, the GNOME Core
-      # program `system-monitor` is required:
-      # gnome-system-monitor
-
       adwaita-fonts
       baobab
       decibels
       epiphany
-      evince
-      geary
       gnome-backgrounds
       gnome-bluetooth
       gnome-characters
@@ -181,15 +216,14 @@
       gnome-font-viewer
       gnome-logs
       gnome-music
+      gnome-system-monitor
       gnome-tecla
       gnome-text-editor
-      gnome-themes-extra
       gnome-tour
       gnome-user-docs
       orca
       showtime
       simple-scan
-      totem
       yelp
     ];
   };
@@ -244,13 +278,15 @@
   programs.git = {
     enable = true;
 
+    package = pkgs.gitFull;
+
     config = {
       user = {
         name = "Gediminas Valys";
         email = "steamykins@gmail.com";
       };
 
-      credential.helper = "${lib.getExe pkgs.git-credential-keepassxc} --git-groups";
+      credential.helper = "${config.programs.git.package}/libexec/git-core/git-credential-libsecret";
 
       # Since git 2.35.2 this workaround is needed to fix an annoying error
       # when using `git` or `nixos-rebuild` as non-root in /etc/nixos:
@@ -263,7 +299,6 @@
     gdm.databases = [{
       settings = {
         "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
-        "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
       };
     }];
 
@@ -278,7 +313,6 @@
 
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
-          gtk-enable-primary-paste = false;
           gtk-theme = "adw-gtk3-dark";
           icon-theme = "MoreWaita";
           font-name = "Inter 11";
@@ -290,8 +324,6 @@
         "org/gnome/desktop/media-handling".automount = false;
 
         "org/gnome/desktop/peripherals/mouse".accel-profile = "flat";
-
-        "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
 
         "org/gnome/desktop/privacy".remember-recent-files = false;
 
@@ -307,7 +339,6 @@
 
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "interactive";
-          # Suspend only on battery power, not while charging.
           sleep-inactive-ac-type = "nothing";
         };
 
@@ -318,6 +349,7 @@
         "org/gnome/nautilus/preferences" = {
           date-time-format = "detailed";
           default-folder-viewer = "list-view";
+          migrated-gtk-settings = true;
         };
 
         "org/gnome/nautilus/list-view" = {
@@ -328,39 +360,30 @@
 
         "org/gtk/gtk4/settings/file-chooser" = {
           show-hidden = true;
-          sort-directories-first = true;
-          view-type = "list";
         };
 
         "org/gnome/settings-daemon/plugins/media-keys".home = [ "<Super>e" ];
 
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+        "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
+          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/"
+        ];
+
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal" = {
+          name = "Terminal";
           binding = "<Super>Return";
           command = "/usr/bin/env ghostty +new-window";
-          name = "Terminal";
         };
-
-        # This is necessary for some reason, or the above custom-keybindings don't work.
-        "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
-          "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-        ];
 
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Shift><Super>w" ];
-          move-to-workspace-left = [ "<Control><Super>a" ];
-          move-to-workspace-right = [ "<Control><Super>d" ];
-          panel-run-dialog = [ "<Super><Alt>space" ];
+          move-to-workspace-left = [ "<Shift><Super>a" ];
+          move-to-workspace-right = [ "<Shift><Super>d" ];
           switch-input-source = [ "<Alt>Shift_L" ]; # https://unix.stackexchange.com/a/436347
           switch-input-source-backward = mkEmptyArray type.string;
-          switch-to-workspace-1 = [ "<Super>1" ];
-          switch-to-workspace-2 = [ "<Super>2" ];
-          switch-to-workspace-3 = [ "<Super>3" ];
-          switch-to-workspace-4 = [ "<Super>4" ];
           switch-to-workspace-left = [ "<Super>a" ];
           switch-to-workspace-right = [ "<Super>d" ];
           toggle-fullscreen = [ "<Shift><Super>f" ];
           toggle-maximized = [ "<Super>f" ];
-          toggle-on-all-workspaces = [ "<Control><Super>s" ];
         };
 
         "org/gnome/shell" = {
@@ -368,35 +391,27 @@
             (builtins.filter (builtins.hasAttr "extensionUuid"))
             (map (builtins.getAttr "extensionUuid"))
           ];
+        };
 
-          favorite-apps = [
-            "org.keepassxc.KeePassXC.desktop"
-            "org.gajim.Gajim.desktop"
-            (lib.optionalString config.programs.firefox.enable "firefox.desktop")
-            (lib.optionalString config.programs.steam.enable "steam.desktop")
-          ];
+        "org/gnome/shell/extensions/fullscreen-to-empty-workspace" = {
+          move-window-when-maximized = false;
+        };
+
+        "org/gnome/shell/extensions/tiling-assistant" = {
+          enable-layout-picker = false;
         };
 
         "org/gnome/shell/keybindings" = {
-          # Following binds need to be disabled, as their defaults are used for
-          # the binds above, and will run into conflicts.
-          switch-to-application-1 = mkEmptyArray type.string;
-          switch-to-application-2 = mkEmptyArray type.string;
-          switch-to-application-3 = mkEmptyArray type.string;
-          switch-to-application-4 = mkEmptyArray type.string;
           toggle-application-view = mkEmptyArray type.string;
-          toggle-quick-settings = mkEmptyArray type.string;
-
           screenshot = mkEmptyArray type.string;
           show-screen-recording-ui = [ "<Shift><Super>r" ];
           show-screenshot-ui = [ "<Shift><Super>s" ];
         };
 
-        # Weather shown in the panel's date/notification menu.
         "org/gnome/shell/weather" = {
           automatic-location = false;
 
-          # Locations are based on data/Locations.xml in the GNOME/libgweather repository.
+          # Locations are based on data/Locations.xml in the GNOME/gweather-locations repository.
           locations =
             let
               mkLocation = { name, code, latitude, longitude }:
@@ -436,66 +451,6 @@
           show-whose-processes = "all";
         };
 
-        "org/gnome/gnome-system-monitor/proctree" = {
-          col-11-visible = true; # `Nice`.
-        };
-
-        "org/gnome/shell/extensions/desktop-cube" = {
-          last-first-gap = false;
-          mouse-rotation-speed = 1.0;
-        };
-
-        "org/gnome/shell/extensions/tilingshell" = {
-          enable-blur-selected-tilepreview = true;
-          enable-blur-snap-assistant = true;
-          enable-snap-assist = false;
-          enable-tiling-system-windows-suggestions = true;
-          inner-gaps = mkUint32 0;
-          outer-gaps = mkUint32 0;
-
-          layouts-json = builtins.toJSON [
-            {
-              id = "50% Horizontal Split";
-              tiles = [
-                { groups = [ 1 ]; height = 1; width = 0.5; x = 0; y = 0; }
-                { groups = [ 1 ]; height = 1; width = 0.5; x = 0.5; y = 0; }
-              ];
-            }
-            {
-              id = "50% Vertical Split";
-              tiles = [
-                { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0; }
-                { groups = [ 1 ]; height = 0.5; width = 1; x = 0; y = 0.5; }
-              ];
-            }
-            {
-              id = "33% Horizontal Grid";
-              tiles = [
-                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0; y = 0; }
-                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.333333; y = 0; }
-                { groups = [ 1 ]; height = 1; width = 0.333333; x = 0.666666; y = 0; }
-              ];
-            }
-            {
-              id = "16.67% Grid";
-              tiles = [
-                { groups = [ 1 4 ]; height = 0.5; width = 0.333333; x = 0; y = 0; }
-                { groups = [ 2 3 1 ]; height = 0.5; width = 0.333333; x = 0.333333; y = 0; }
-                { groups = [ 5 2 ]; height = 0.5; width = 0.333333; x = 0.666666; y = 0; }
-                { groups = [ 3 2 1 ]; height = 0.5; width = 0.333333; x = 0.333333; y = 0.5; }
-                { groups = [ 4 1 ]; height = 0.5; width = 0.333333; x = 0; y = 0.5; }
-                { groups = [ 5 2 ]; height = 0.5; width = 0.333333; x = 0.666666; y = 0.5; }
-              ];
-            }
-          ];
-        };
-
-        "org/gnome/shell/extensions/azwallpaper" = {
-          slideshow-directory = "/home/electro/Pictures/wallpapers";
-          slideshow-slide-duration = mkTuple (lib.map mkInt32 [ 0 30 0 ]);
-          slideshow-pause = true;
-        };
-
         "io/bassi/Amberol".background-play = false;
       });
     }];
@@ -504,7 +459,7 @@
   systemd.tmpfiles.settings."10-gnome-autostart" = {
     # Link the monitors.xml files together. This is not ideal, but GDM and
     # gnome-shell don't quite communicate on unified display settings yet.
-    "/run/gdm/.config/monitors.xml"."L+".argument = "/persist/state/home/electro/.config/monitors.xml";
+    "/run/gdm/.config/monitors.xml"."L+".argument = (lib.optionalString config.preservation.enable "/persist/state") + "/home/electro/.config/monitors.xml";
   };
 
   # TODO: Refactor to `systemd.user.tmpfiles.settings` when

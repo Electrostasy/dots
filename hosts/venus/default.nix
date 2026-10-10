@@ -167,15 +167,9 @@
   preservation.enable = true;
 
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.fullscreen-to-empty-workspace-2
-
     libreoffice
     rnote
   ];
-
-  programs.dconf.profiles.user.databases = [{
-    settings."org/gnome/shell/extensions/fullscreen-to-empty-workspace".move-window-when-maximized = false;
-  }];
 
   networking.hostName = "venus";
 
