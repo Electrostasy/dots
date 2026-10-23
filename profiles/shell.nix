@@ -80,37 +80,61 @@ in
 
       # https://github.com/NixOS/nix/issues/3862#issuecomment-707320241
       function in_nix_shell
-        test $SHLVL -gt 1 && string match -q -- '/nix/store/*' $PATH[1]
+        test $SHLVL -gt 1; and string match -q -- '/nix/store/*' $PATH[1]
       end
 
-      function fish_right_prompt -d 'Print the right-side prompt'
+      function fish_right_prompt --description 'Print the right-side prompt'
         if in_nix_shell
-          set_color 7AB1DB; echo ' '
+          set_color 7AB1DB
+          printf '\uF313 '
+          set_color normal
         end
       end
 
       function ls --wraps eza
-        set -l flags (path filter -v -- $argv | string match -rg '^\./(-.*)$')
-        set -l entries (path normalize -- $argv | string match -rv '^\./' | path resolve; or pwd)
-        command eza -gTL1 --binary --group-directories-first --icons=auto $flags $entries
+        command eza --group --tree --level=1 --binary --group-directories-first --icons=auto --git $argv
       end
 
       function 0 --wraps run0
-        echo -ne '\e]11;rgb:26/21/2d\e\\'
+        echo -ne '\e]11;rgb:26/21/2d\e\\' # set the default background colour.
+
         command run0 --background= --shell-prompt-prefix='🛡️ ' $argv
-        echo -ne '\e]111;\e\\'
+
+        if test $EUID != 0
+          echo -ne '\e]111;\e\\' # reset the default background colour.
+        end
       end
 
-      function ? --description 'Print a list of all executables provided by this Nix shell'
+      function ? --description 'Resolve executables to Nix store paths'
+        if test (count $argv) -gt 0
+          set -l paths (command -s $argv | path resolve)
+
+          set -l paths_nix (string match -a '/nix/store/*' -- $paths)
+          if test (count $paths_nix) -gt 0
+            echo 'The following executables resolved to Nix store paths:'
+            printf '  %s\n' $paths_nix
+          end
+
+          set -l paths_other (string match -av '/nix/store/*' -- $paths)
+          if test (count $paths_other) -gt 0
+            echo 'The following executables resolved to other paths:'
+            printf '  %s\n' $paths_other
+          end
+
+          return
+        end
+
+        # If no arguments are provided, interrogate PATH for Nix store paths
+        # under the condition that we are in a Nix shell.
         if not in_nix_shell
-          echo 'Not in Nix shell!'
           return 1
         end
 
-        # Some programs installed with Nix will append themselves to PATH, so
-        # we only check the entries prepended to PATH by Nix by breaking on the
-        # first non-store path.
         set -l paths
+
+        # Nix shell installed programs are prepended to PATH, some (rarely)
+        # NixOS installed programs are appended to PATH. Collect all the paths
+        # up to the first non-Nix store path.
         for path in $PATH
           if not string match -q '/nix/store/*' -- $path
             break
