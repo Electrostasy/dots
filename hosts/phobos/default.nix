@@ -11,7 +11,6 @@
     ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../../profiles/zramswap.nix
-    ./fail2ban.nix
     ./fileserver.nix
     ./headscale.nix
     ./hostapd.nix
