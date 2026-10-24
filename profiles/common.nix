@@ -85,12 +85,12 @@
       };
     };
 
-    kernel.sysfs = {
-      module.zswap.parameters = lib.mkIf (!config.zramSwap.enable) {
-        enabled = true;
-        zpool = "zsmalloc";
-        compressor = "lz4";
-      };
+    zswap = {
+      enable = !config.zramSwap.enable;
+
+      # A swap partition discovered by GPT partition auto discovery or a
+      # swapfile is always present, otherwise, zram is used instead.
+      dynamicSwap = true;
     };
   };
 
