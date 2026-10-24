@@ -138,7 +138,7 @@
   environment = {
     systemPackages = with pkgs; [
       _7zz
-      amberol
+      (amberol.override { reuse = null; }) # https://github.com/NixOS/nixpkgs/issues/576624
       aria2
       eyedropper
       f3d
