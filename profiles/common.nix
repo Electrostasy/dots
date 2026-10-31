@@ -138,7 +138,7 @@
 
       directories = [
         "/etc/nixos"
-        "/var/lib/nixos"
+        { directory = "/var/lib/nixos"; inInitrd = true; }
         "/var/lib/systemd"
         "/var/log/journal"
         { directory = dirOf config.sops.age.keyFile; inInitrd = true; }
