@@ -53,7 +53,7 @@ buildUBoot {
   extraMeta.platforms = [ "aarch64-linux" ];
   env = {
     BL31 = "${armTrustedFirmwareRK3576}/bl31.elf";
-    ROCKCHIP_TPL = "${rkbin}/bin/rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin";
+    ROCKCHIP_TPL = "${rkbin}/bin/rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.13.bin";
   };
   filesToInstall = [
     "u-boot.itb"
