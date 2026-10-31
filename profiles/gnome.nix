@@ -383,6 +383,11 @@
           ];
         };
 
+        "org/gnome/shell/extensions/blur-my-shell/popup" = {
+          # https://github.com/aunetx/blur-my-shell/issues/1052
+          static-blur = true;
+        };
+
         "org/gnome/shell/extensions/fullscreen-to-empty-workspace" = {
           move-window-when-maximized = false;
         };
