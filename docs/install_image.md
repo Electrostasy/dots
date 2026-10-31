@@ -16,7 +16,7 @@ This document contains installation guides for the following devices:
 Build the image on an `aarch64-linux` platform and insert the `age` private
 key (replace `$HOST` with the desired system):
 ```sh
-nixos-rebuild build-image --flake github:Electrostasy/dots#$HOST --image-variant default
+nixos-rebuild build-image --flake github:Electrostasy/dots#$HOSTNAME --image-variant default
 cp ./result/nixos-* .
 systemd-dissect --with nixos-* install -D {,.}/var/lib/sops-nix/keys.txt
 ```
@@ -78,7 +78,7 @@ using `rkdeveloptool`:
    the board:
    ```sh
    NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
-   rkdeveloptool db ./result/bin/rk3576_spl_loader_v*.bin
+   rkdeveloptool db ./result/bin/rk3576_loader_v*.bin
    ```
 7. Select eMMC memory as storage and flash the NixOS image to it:
    ```sh
@@ -111,7 +111,7 @@ microSD and the image to eMMC storage using `rkdeveloptool`:
    the board:
    ```sh
    NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
-   rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
+   rkdeveloptool db ./result/bin/rk3588_loader_v*.bin
    ```
 5. Build the U-Boot firmware, then select SD as storage and flash it:
    ```sh
@@ -151,7 +151,7 @@ Flash U-Boot to SPI NOR flash and the image to eMMC storage using
    the board:
    ```sh
    NIXPKGS_ALLOW_UNFREE=1 nix build --impure nixpkgs#rkboot
-   rkdeveloptool db ./result/bin/rk3588_spl_loader_v*.bin
+   rkdeveloptool db ./result/bin/rk3588_loader_v*.bin
    ```
 5. Build the U-Boot firmware, then select SPI NOR flash as storage and flash
    it:
