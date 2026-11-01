@@ -7,14 +7,14 @@
     ../../profiles/networking.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
-    ../../profiles/tailscale.nix
     ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../../profiles/zramswap.nix
+    ./coturn-server.nix
     ./fileserver.nix
-    ./headscale.nix
     ./hostapd.nix
     ./murmur.nix
+    ./netbird-server.nix
     ./prometheus.nix
     ./prosody.nix
   ];
@@ -100,7 +100,7 @@
         443
       ];
 
-      interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
+      interfaces.${config.services.netbird.clients.default.interface}.allowedTCPPorts = [
         config.services.journald.remote.port
       ];
     };

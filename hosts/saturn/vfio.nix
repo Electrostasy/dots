@@ -52,7 +52,7 @@
     options = [ "noatime" ];
   };
 
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
+  networking.firewall.interfaces.${config.services.netbird.clients.default.interface} = {
     allowedTCPPorts = [ 3389 ];
     allowedUDPPorts = [ 3389 ];
   };

@@ -7,13 +7,12 @@
     ../../profiles/fonts.nix
     ../../profiles/gnome.nix
     ../../profiles/mpv.nix
-    ../../profiles/mullvad
+    # ../../profiles/mullvad
     ../../profiles/neovim
     ../../profiles/networking.nix
     ../../profiles/nfs-share.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
-    ../../profiles/tailscale.nix
     ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ./audio.nix

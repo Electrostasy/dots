@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, ... }:
 
 {
   sops.secrets.mullvadAccount = {
@@ -50,12 +50,7 @@
   # Tailscale connections cannot be accepted with just firewall rules:
   # https://github.com/mullvad/mullvadvpn-app/issues/6086
   # https://github.com/mullvad/mullvadvpn-app/blob/045a5c33f140945072e42553939adcf7bace52c1/talpid-types/src/net/mod.rs#L24
-  # As a workaround, for outgoing connections, the outgoing nftables chain is
-  # enough. However, for incoming connections, we require BOTH the prerouting
-  # nftables chain as well as the dispatcher script to add the route. Without
-  # these, a host running Mullvad, even with LAN sharing enabled, will
-  # completely drop all ICMP and other incoming requests over Tailscale.
-  networking.nftables.tables."tailscale-mullvad-compat" = lib.mkIf config.services.tailscale.enable {
+  networking.nftables.tables."mullvad-split-tunnelling" = {
     family = "inet";
 
     # Marks traffic with a connection tracking mark (0x00000f41) to get
@@ -73,23 +68,6 @@
         ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
       }
     '';
-  };
-
-  services.networkd-dispatcher = lib.mkIf config.services.tailscale.enable {
-    enable = true;
-
-    # https://github.com/mullvad/mullvadvpn-app/issues/6833#issuecomment-2387277203
-    rules."50-add-tailscale-route" = {
-      onState = [ "routable" "off" ];
-      script = ''
-        if [ "$IFACE" == "${config.services.tailscale.interfaceName}" ]; then
-          case "$STATE" in
-            "routable") ${pkgs.iproute2}/bin/ip route add 100.64.0.0/10 dev tailscale0 table main ;;
-            "off") ${pkgs.iproute2}/bin/ip route del 100.64.0.0/10 dev tailscale0 table main ;;
-          esac
-        fi
-      '';
-    };
   };
 
   networking.networkmanager.unmanaged = [ "wg0-mullvad" ];

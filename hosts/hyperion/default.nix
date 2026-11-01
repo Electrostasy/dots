@@ -14,7 +14,6 @@ in
     ../../profiles/networking.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix
-    ../../profiles/tailscale.nix
     ../../profiles/telemetry.nix
     ../../profiles/users/electro
     ../../profiles/zramswap.nix

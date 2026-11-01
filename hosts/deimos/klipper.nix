@@ -80,7 +80,7 @@
   # Required for Moonraker's allowSystemControl.
   security.polkit.enable = true;
 
-  networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
+  networking.firewall.interfaces.${config.services.netbird.clients.default.interface} = {
     allowedTCPPorts = [ 80 443 ];
     allowedUDPPorts = [ 80 443 ];
   };

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 {
   fileSystems."/mnt/box" = {
@@ -28,7 +28,7 @@
       "x-systemd.mount-timeout=10"
 
       "noresvport"
-      "x-systemd.requires=tailscaled.service"
+      "x-systemd.requires=${config.services.netbird.clients.default.service.name}"
       "xprtsec=none"
     ];
   };
