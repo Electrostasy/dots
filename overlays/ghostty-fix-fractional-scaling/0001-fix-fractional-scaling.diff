@@ -1,0 +1,16 @@
+diff --git a/src/apprt/gtk/class/render_surface.zig b/src/apprt/gtk/class/render_surface.zig
+index 2d02195f3..11d24954d 100644
+--- a/src/apprt/gtk/class/render_surface.zig
++++ b/src/apprt/gtk/class/render_surface.zig
+@@ -199,7 +199,10 @@ pub const RenderSurface = extern struct {
+         }
+ 
+         snap.appendTexture(texture, &.{
+-            .f_origin = .{ .f_x = @floatCast(origin.x), .f_y = @floatCast(origin.y) },
++            .f_origin = .{
++                .f_x = @floatCast(origin.x),
++                .f_y = @floatCast(if (flip) -origin.y else origin.y)
++            },
+             .f_size = .{ .f_width = css_w, .f_height = css_h },
+         });
+     }
