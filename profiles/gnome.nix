@@ -3,6 +3,7 @@
 {
   nixpkgs.overlays = [
     (import ../overlays/f3d-interactive.nix)
+    (import ../overlays/ghostty-fix-fractional-scaling)
     (import ../overlays/xte-dependencies.nix)
   ];
 
