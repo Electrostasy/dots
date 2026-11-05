@@ -11,6 +11,7 @@ in
   imports = [
     "${modulesPath}/profiles/minimal.nix"
     ../../profiles/common.nix
+    ../../profiles/hardened.nix
     ../../profiles/networking.nix
     ../../profiles/shell.nix
     ../../profiles/ssh.nix

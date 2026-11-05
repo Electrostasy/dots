@@ -80,7 +80,7 @@
         overrideStrategy = "asDropin";
         text = ''
           [Mount]
-          Options=nosuid,noatime
+          Options=noatime
         '';
       };
     };
@@ -180,7 +180,7 @@
 
   security = {
     sudo.enable = false;
-    polkit.enablePkexecWrapper = lib.mkDefault false;
+    polkit.enablePkexecWrapper = false;
     run0 = {
       enable = true;
       persistentAuth = {
@@ -190,11 +190,6 @@
     };
 
     account-utils.enable = true;
-    enableWrappers = false;
-  };
-
-  systemd.settings.Manager = {
-    NoNewPrivileges = true;
   };
 
   services.userborn.enable = true;
