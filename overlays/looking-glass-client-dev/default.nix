@@ -5,12 +5,13 @@
 # [1]: https://github.com/gnif/LookingGlass/commit/13b6e042560ea5d63e9f973b2a00f2523b9f0518
 
 final: prev: {
-  looking-glass-client = prev.looking-glass-client.overrideAttrs (prevAttrs: {
-    version = "B7-unstable-2026-09-01";
+  looking-glass-client = prev.looking-glass-client.overrideAttrs (finalAttrs: prevAttrs: {
+    version = "B8-rc1";
 
     src = prevAttrs.src.override {
-      rev = "236efcb155f952f5d7d9fcd5891a3060ad254e68";
-      hash = "sha256-NAfV4Z0RZp2IGBzVAFysm53aGMEReT03RIN+45TveUU=";
+      rev = null;
+      tag = finalAttrs.version;
+      hash = "sha256-ropEJC9+Gg85DS9XRuTb2IRGNNmUcA09Sy/cN6DTvZE=";
     };
 
     buildInputs = prevAttrs.buildInputs ++ [
