@@ -15,13 +15,13 @@
     ];
 
     bindings = {
-      # Don't perform window management functions.
-      MBTN_LEFT = "ignore";
-      MBTN_LEFT_DBL = "ignore";
       MBTN_RIGHT = "cycle pause";
     };
 
     settings = {
+    # Don't perform window management functions.
+      input-builtin-dragging = "no";
+
       keep-open = "no";
       osd-bar = "no";
       border = "yes";
