@@ -97,7 +97,6 @@
   preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
       ".cache/gajim"
-      ".cache/keepassxc"
       ".cache/tealdeer"
       ".cache/tracker3"
 
@@ -123,6 +122,7 @@
           ".config/keepassxc"
           ".local/share/gajim"
           ".local/share/keyrings"
+          ".local/state/keepassxc"
           "Documents"
           "Downloads"
           "Music"
