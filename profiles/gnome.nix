@@ -1,10 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  nixpkgs.overlays = [
-    (import ../overlays/f3d-interactive.nix)
-  ];
-
   boot = {
     loader = {
       systemd-boot.consoleMode = "max";
