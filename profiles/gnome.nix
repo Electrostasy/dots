@@ -3,8 +3,6 @@
 {
   nixpkgs.overlays = [
     (import ../overlays/f3d-interactive.nix)
-    (import ../overlays/ghostty-fix-fractional-scaling)
-    (import ../overlays/xte-dependencies.nix)
   ];
 
   boot = {
@@ -89,11 +87,6 @@
 
   security.pam.services.login.enableGnomeKeyring = true;
 
-  xdg.terminal-exec = {
-    enable = true;
-    settings.GNOME = [ "com.mitchellh.ghostty.desktop" ];
-  };
-
   preservation.preserveAt = {
     "/persist/cache".users.electro.directories = [
       ".cache/gajim"
@@ -147,7 +140,6 @@
       file
       freerdp
       gajim
-      ghostty
       keepassxc
       libnotify
       magic-wormhole-rs
@@ -202,7 +194,6 @@
       gnome-clocks
       gnome-color-manager
       gnome-connections
-      gnome-console
       gnome-contacts
       gnome-font-viewer
       gnome-logs
@@ -362,7 +353,7 @@
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal" = {
           name = "Terminal";
           binding = "<Super>Return";
-          command = "/usr/bin/env ghostty +new-window";
+          command = "/usr/bin/env kgx";
         };
 
         "org/gnome/desktop/wm/keybindings" = {
@@ -452,50 +443,6 @@
     # gnome-shell don't quite communicate on unified display settings yet.
     "/run/gdm/.config/monitors.xml"."L+".argument = (lib.optionalString config.preservation.enable "/persist/state") + "/home/electro/.config/monitors.xml";
   };
-
-  # TODO: Refactor to `systemd.user.tmpfiles.settings` when
-  # https://github.com/NixOS/nixpkgs/pull/317383 is merged.
-  systemd.user.tmpfiles.rules = [
-    "L+ %h/.config/ghostty/themes/Poimandres - - - - ${
-      (pkgs.formats.keyValue { listsAsDuplicateKeys = true; }).generate "Poimandres" {
-        background = "#1b1e28";
-        foreground = "#e4f0fb";
-        cursor-color = "#ffffff";
-        window-titlebar-background = "#171922";
-        window-titlebar-foreground = "#e3f0fb";
-        split-divider-color = "#506477";
-
-        palette = [
-          "0=#171922" # black
-          "1=#d0679d" # red
-          "2=#5fb3a1" # green
-          "3=#42675a" # yellow
-          "4=#7390aa" # blue
-          "5=#767c9d" # magenta
-          "6=#91b4d5" # cyan
-          "7=#303340" # white
-          "8=#506477" # brblack
-          "9=#fcc5e9" # brred
-          "10=#5de4c7" # brgreen
-          "11=#fffac2" # bryellow
-          "12=#add7ff" # brblue
-          "13=#fae4fc" # brmagenta
-          "14=#89ddff" # brcyan
-          "15=#e4f0fb" # brwhite
-        ];
-      }
-    }"
-    "L+ %h/.config/ghostty/config - - - - ${
-      (pkgs.formats.keyValue { }).generate "config" {
-        font-family = "monospace"; # default to fontconfig configured monospace font.
-        font-size = 10.5;
-        mouse-scroll-multiplier = 1;
-        shell-integration-features = "sudo,cursor,title,ssh-env";
-        theme = "Poimandres";
-        window-theme = "ghostty";
-      }
-    }"
-  ];
 
   programs.firefox.autoConfig = /* js */ ''
     pref("widget.gtk.non-native-titlebar-buttons.enabled", false);
