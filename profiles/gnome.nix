@@ -139,7 +139,6 @@
       keepassxc
       libnotify
       magic-wormhole-rs
-      nautilus-amberol
       nautilus-python
       nautilus-vimv
       qrtool
