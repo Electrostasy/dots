@@ -211,38 +211,27 @@
     in
     lib.attrsets.mergeAttrsList [
       (associate {
+        # The below MIME types should not be opened by mpv.
         desktops = [ "io.bassi.Amberol.desktop" ];
         mimeTypes = [
+          # The audio/x-* MIME types are seemingly irrelevant and nowadays have
+          # an audio/* standardized MIME type variant that should be matched.
           "audio/aac"
-          "audio/ac3"
           "audio/aiff"
           "audio/flac"
-          "audio/m4a"
-          "audio/mp1"
-          "audio/mp2"
-          "audio/mp3"
-          "audio/mpeg2"
-          "audio/mpeg3"
-          "audio/mpegurl"
+          "audio/mpeg"
           "audio/mpg"
-          "audio/musepack"
-          "audio/ogg"
-          "audio/vnd.wave"
+          "audio/wav"
+          "audio/speex"
           "audio/vorbis"
-          "audio/vorbis"
-          "audio/x-wav"
         ];
       })
       (associate {
-        desktops = [ "f3d-plugin-native.desktop" ];
-        mimeTypes = [
-          "model/stl"
-        ];
-      })
-      (associate {
-        desktops = [ "f3d-plugin-assimp.desktop" ];
+        # The below MIME types should not be opened by prusa-slicer.
+        desktops = [ "f3d.desktop" ];
         mimeTypes = [
           "model/3mf"
+          "model/stl"
         ];
       })
     ];
