@@ -305,11 +305,6 @@
 
   programs.dconf.profiles.user.databases = [{
     settings = with lib.gvariant; {
-      # Turn displays off after 10 minutes of inactivity, and lock the
-      # session after 30 minutes of inactivity.
-      "org/gnome/desktop/session".idle-delay = mkUint32 (10 * 60);
-      "org/gnome/desktop/screensaver".lock-delay = mkUint32 (30 * 60);
-
       "org/gnome/shell/extensions/display-brightness-ddcutil" = {
         button-location = mkInt32 1;
         hide-system-indicator = true;
