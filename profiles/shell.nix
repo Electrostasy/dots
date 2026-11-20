@@ -41,10 +41,11 @@ let
 in
 
 {
-  preservation.preserveAt."/persist/state".users.electro.directories = [
-    # https://github.com/fish-shell/fish-shell/issues/8627
-    ".local/share/fish"
-  ];
+  # https://github.com/fish-shell/fish-shell/issues/8627
+  preservation.preserveAt."/persist/state" = {
+    users.root.directories = [ ".local/share/fish" ];
+    users.electro.directories = [ ".local/share/fish" ];
+  };
 
   # Fish only reads extra themes from $__fish_config_dir/themes which evaluates
   # to ~/.config/fish/themes. Install theme for root and other users.
