@@ -142,6 +142,7 @@
       nautilus-python
       nautilus-vimv
       qrtool
+      resources
       ripgrep
       tealdeer
       vimv-rs
@@ -409,13 +410,7 @@
           temperature-unit = "centigrade";
         };
 
-        "org/gnome/gnome-system-monitor" = {
-          network-in-bits = true;
-          process-memory-in-iec = true;
-          resource-memory-in-iec = true;
-          show-dependencies = true;
-          show-whose-processes = "all";
-        };
+        "org/gnome/Resources".show-logical-cpus = true;
 
         "io/bassi/Amberol".background-play = false;
       });
